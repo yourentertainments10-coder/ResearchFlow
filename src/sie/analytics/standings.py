@@ -78,8 +78,12 @@ def gender_totals(df: pd.DataFrame) -> pd.DataFrame:
 def gender_leaders(df: pd.DataFrame, top: int = 5) -> dict[str, pd.DataFrame]:
     out = {}
     for g in GENDERS.values():
-        x = df[df.gender == g].pivot_table(index=["code", "country"], columns="medal", values="n", aggfunc="sum")
+        x = df[df.gender == g].pivot_table(
+            index=["code", "country"], columns="medal", values="n", aggfunc="sum"
+        )
         x = x[["Gold", "Silver", "Bronze"]].astype(int)
         x["Total"] = x.sum(axis=1)
-        out[g] = x.sort_values(["Gold", "Silver", "Bronze"], ascending=False).head(top).reset_index()
+        out[g] = (
+            x.sort_values(["Gold", "Silver", "Bronze"], ascending=False).head(top).reset_index()
+        )
     return out

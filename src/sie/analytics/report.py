@@ -25,23 +25,37 @@ def build(records: list[dict], out_dir: Path, captured: str = "2026-10-04") -> d
         s.to_excel(w, sheet_name="Country summary", index=False)
         df.to_excel(w, sheet_name="Country x medal x gender", index=False)
         gt.to_excel(w, sheet_name="Gender totals", index=False)
-        pd.DataFrame(list(c.items()), columns=["metric", "value"]).to_excel(w, sheet_name="Concentration", index=False)
+        pd.DataFrame(list(c.items()), columns=["metric", "value"]).to_excel(
+            w, sheet_name="Concentration", index=False
+        )
         for g, t in leaders.items():
             t.to_excel(w, sheet_name=f"Top {g}", index=False)
-        pd.DataFrame({"note": [f"Source: {SOURCE}", f"Captured: {captured}",
-                               "Event-level (country x sport) analysis needs the per-sport feeds; not in this file."]}
-                     ).to_excel(w, sheet_name="About", index=False)
+        pd.DataFrame(
+            {
+                "note": [
+                    f"Source: {SOURCE}",
+                    f"Captured: {captured}",
+                    "Event-level (country x sport) analysis needs the per-sport feeds; not in this file.",
+                ]
+            }
+        ).to_excel(w, sheet_name="About", index=False)
 
     mx = int(s["Total"].max())
     rows = "".join(
         f"<tr><td>{r.Rank}</td><td>{html.escape(r.country)} ({r.code})</td><td>{r.Gold}</td><td>{r.Silver}</td>"
         f"<td>{r.Bronze}</td><td><b>{r.Total}</b></td><td class=bar><i style='width:{r.Total / mx * 100:.0f}%'></i></td>"
         f"<td>{r.share}</td><td>{r.gshare}</td><td>{r.Mixed}</td><td>{r.Women_pct}</td></tr>"
-        for r in s.rename(columns={"Share_%": "share", "Gold_share_%": "gshare", "Women_%": "Women_pct"}).itertuples()
+        for r in s.rename(
+            columns={"Share_%": "share", "Gold_share_%": "gshare", "Women_%": "Women_pct"}
+        ).itertuples()
     )
-    gt_rows = "".join(f"<tr><td>{r.gender}</td><td>{r.Gold}</td><td>{r.Silver}</td><td>{r.Bronze}</td><td>{r.Total}</td><td>{r.share}%</td></tr>"
-                      for r in gt.rename(columns={"Share_%": "share"}).itertuples())
-    cards = "".join(f"<div class=card><span>{k.replace('_', ' ')}</span><b>{v}</b></div>" for k, v in c.items())
+    gt_rows = "".join(
+        f"<tr><td>{r.gender}</td><td>{r.Gold}</td><td>{r.Silver}</td><td>{r.Bronze}</td><td>{r.Total}</td><td>{r.share}%</td></tr>"
+        for r in gt.rename(columns={"Share_%": "share"}).itertuples()
+    )
+    cards = "".join(
+        f"<div class=card><span>{k.replace('_', ' ')}</span><b>{v}</b></div>" for k, v in c.items()
+    )
     page = f"""<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
 <title>Asian Games 2026 Medal Analysis</title>
 <style>:root{{--bg:#fff;--fg:#1a1a1a;--mut:#666;--line:#e3e3e3;--ac:#2b6cb0}}
