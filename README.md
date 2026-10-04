@@ -61,4 +61,4 @@ pytest
 The capture is made in the owner's browser (snippet in `docs/SOURCE_DISCOVERY.md`) and is not stored in Git because it holds athlete names.
 
 ### Host the dashboard free
-Cloudflare Pages or GitHub Pages: publish the `site/` folder (no build step).
+Cloudflare (Workers static assets, config in `wrangler.jsonc`) or Pages: publish the `site/` folder. No build step; the deploy command is `npx wrangler deploy`.

@@ -1,0 +1,6 @@
+{
+  // Cloudflare static-site deploy: serves the dashboard in ./site. No server code, no build step.
+  "name": "researchflow",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./site" }
+}
