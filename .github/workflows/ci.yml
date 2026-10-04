@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e ".[dev]"
+      - run: pip install -e ".[dev,reports]"
       - run: ruff check .
       - run: ruff format --check .
       - run: pytest --cov=sie --cov-report=term-missing --junitxml=pytest-report.xml
