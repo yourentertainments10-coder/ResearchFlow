@@ -62,3 +62,17 @@ def test_open_event_gender_comes_from_event_code_not_athlete():
         "Event": "O.GT7---------------.FNL-", "EventDesc": "Gran Turismo 7 Finals", "Bib": "1", "Gender": "M",
     }  # fmt: skip
     assert parse_medal_rows([row])[0].gender == "Open"
+
+
+def test_dashboard_builds_and_embeds_all_rows(tmp_path):
+    import pandas as pd
+
+    from sie.dashboard import build
+
+    csv = tmp_path / "p.csv"
+    placings_frame(parse_medal_rows(load("ARC_medals_discipline.json"))).drop(
+        columns=["entrant_name", "awarded_at", "entrant_type"]
+    ).to_csv(csv, index=False)
+    out = build(csv, "2026-10-04", tmp_path / "i.html", 6)
+    text = out.read_text()
+    assert text.count('"m":') == len(pd.read_csv(csv)) and "__DATA__" not in text

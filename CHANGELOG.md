@@ -10,6 +10,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 
 - `src/sie/analytics/` : country x medal x gender analytics (shares, HHI concentration, gender split, 3-2-1 points) from the official standings feed, validated against the feed's own totals; Excel and HTML report in `reports/`. 130 tests.
 - Event-level pipeline pieces: `parse_medals.py` (drops personal data, event gender from event code), `analytics/events.py` (reconciliation, country x sport, concentration, specialisation LQ), `analytics/full_report.py` (HTML, Excel, `placings.csv`). Full capture of 59 disciplines reconciles with the official table: 1568 medals, 469 events, 0 mismatches. See `docs/SOURCE_DISCOVERY.md` section 11.
+- Phase 2 loader `src/sie/load.py` and `sie load-capture`: idempotent load into PostgreSQL through `apply_placing` (raw version by sha256, reallocation on change, unknown countries refused). The real capture loads to 469 events / 1568 placings, rerun writes nothing, and `v_medal_facts` equals the official table for all 40 countries.
+- Static dashboard `src/sie/dashboard.py` -> `site/index.html` (filters by gender, sport, country; HHI, shares). Hosts free on Cloudflare Pages or GitHub Pages.
+- `docs/SOURCE_DISCOVERY.md` section 12: no terms of use exist on the portal; conservative rules recorded.
 
 ## [0.1.0] - 2026-10-04
 Phase 1 complete: project skeleton and database. Documentation moves to docs-0.3.0.

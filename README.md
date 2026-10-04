@@ -39,4 +39,26 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 4. Phase 0 (source discovery) is a gate. Nothing else starts until it is done.
 
 ## Status
-Planning reviewed (docs-0.2.0). Implementation not started. The design-freeze checklist in `docs/ROADMAP.md` (Phase 1) must pass before migration 001 is written.
+Working end to end for the Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 sports, 1568 medals, reconciled with the official table (0 mismatches).
+
+| Part | State |
+|------|-------|
+| PostgreSQL schema, roles, migrations | done (Phase 1) |
+| Loader into PostgreSQL (`sie load-capture`) | done, idempotent, reallocation-aware |
+| Analytics (country, sport, gender, concentration, specialisation) | done |
+| Static dashboard (`site/index.html`) and Excel/HTML reports (`reports/`) | done |
+| Live fetching from the portal | not built: no terms of use published, needs organisers' OK (`docs/SOURCE_DISCOVERY.md` section 12) |
+| Scheduler, backups, conflict engine, hosted Postgres | planned (Phases 3 and 6) |
+
+### Run it
+```bash
+pip install -e ".[dev]"
+python -m sie.analytics.full_report path/to/ag2026_all_medals.json   # reports/*.xlsx, *.html, placings.csv
+python -m sie.dashboard                                              # site/index.html
+sie migrate && sie seed-reference && sie load-capture path/to/ag2026_all_medals.json   # needs DATABASE_URL
+pytest
+```
+The capture is made in the owner's browser (snippet in `docs/SOURCE_DISCOVERY.md`) and is not stored in Git because it holds athlete names.
+
+### Host the dashboard free
+Cloudflare Pages or GitHub Pages: publish the `site/` folder (no build step).

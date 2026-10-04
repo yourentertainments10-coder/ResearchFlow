@@ -183,3 +183,9 @@ The owner ran the crawl snippet: `{DISC}/medals/discipline` and `{DISC}/medals/s
 **Gender rule (found by reconciliation, now in the parser).** The `Gender` field of a medal row is the *athlete's*. For Open events (esports, equestrian, sailing) it can be M or W (23 rows). The official table takes the event's gender from the first letter of the event code and counts Open events under Mixed. Using the row field gave 107 mismatches in ELS, EQU, SWA and TKW; using the event-code letter gave 0. This is the rule in `DOMAIN_MODEL.md` section 4.6 (gender belongs to the event). Reports show Open events inside Mixed, as the official table does.
 
 Still open: the portal's terms of use (gates the live adapter, not manual import), reallocation and withheld-medal behaviour (needs a later capture to compare).
+
+## 12. Terms of use: none found (2026-10-04)
+The owner looked on the results portal for a Terms or Legal link and there is none on the page. No robots.txt either (section 10). Absence of published terms is not permission, so the rules stay conservative:
+- No automated fetching from the portal by the pipeline until the organisers confirm it in writing (`AGENTS.md` rule 9). Data enters through a capture the owner runs in their own browser, which reads the same public URLs the portal's own page reads, with a 2-second gap.
+- The raw capture (athlete names, team members) is kept out of Git. Git carries only `reports/placings.csv` (country, sport, event, gender, medal, slot: no person data) and the reports built from it.
+- Output credits the source ("Official results portal, AG2026") and is for non-commercial analysis.

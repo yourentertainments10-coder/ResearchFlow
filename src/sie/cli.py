@@ -57,6 +57,24 @@ def seed_reference_cmd(
         typer.echo(f"{name:>16}: {count}")
 
 
+@app.command("load-capture")
+def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Load a portal capture (JSON from the browser snippet) into the database. Safe to rerun."""
+    from sie.load import LoadError, load_placings, parse_capture
+
+    engine = make_engine(get_settings())
+    placings, raw = parse_capture(path)
+    try:
+        with engine.begin() as conn:
+            result = load_placings(conn, placings, raw, path.name)
+    except LoadError as exc:
+        typer.echo(f"load error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    typer.echo(
+        f"events: {result.events}  placings: {result.placings}  raw unchanged: {result.raw_unchanged}"
+    )
+
+
 MIN_PASSWORD_LENGTH = 16
 
 
