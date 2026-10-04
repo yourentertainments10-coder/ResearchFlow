@@ -60,5 +60,8 @@ pytest
 ```
 The capture is made in the owner's browser (snippet in `docs/SOURCE_DISCOVERY.md`) and is not stored in Git because it holds athlete names.
 
+### Live dashboard
+https://researchflow.yourentertainments10.workers.dev/ (Cloudflare, redeploys on every push to `main`).
+
 ### Host the dashboard free
 Cloudflare (Workers static assets, config in `wrangler.jsonc`) or Pages: publish the `site/` folder. No build step; the deploy command is `npx wrangler deploy`.
