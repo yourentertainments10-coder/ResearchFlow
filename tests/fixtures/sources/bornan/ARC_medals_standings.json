@@ -1,0 +1,282 @@
+[
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "IND",
+  "Count": {
+   "ME_GOLD": {
+    "M": 1,
+    "W": 3,
+    "X": 1,
+    "total": 5
+   },
+   "ME_SILVER": {
+    "M": 1,
+    "W": 0,
+    "X": 1,
+    "total": 2
+   },
+   "ME_BRONZE": {
+    "M": 2,
+    "W": 0,
+    "X": 0,
+    "total": 2
+   },
+   "total": {
+    "M": 4,
+    "W": 3,
+    "X": 2,
+    "total": 9
+   }
+  },
+  "Rk": "1",
+  "RkEq": false,
+  "RkPo": 1,
+  "RkTotal": "1",
+  "RkEqTotal": false,
+  "RkPoTotal": 1,
+  "id": null,
+  "OrgDesc": "India"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "KOR",
+  "Count": {
+   "ME_GOLD": {
+    "M": 3,
+    "W": 0,
+    "X": 0,
+    "total": 3
+   },
+   "ME_SILVER": {
+    "M": 0,
+    "W": 2,
+    "X": 1,
+    "total": 3
+   },
+   "ME_BRONZE": {
+    "M": 0,
+    "W": 2,
+    "X": 1,
+    "total": 3
+   },
+   "total": {
+    "M": 3,
+    "W": 4,
+    "X": 2,
+    "total": 9
+   }
+  },
+  "Rk": "2",
+  "RkEq": false,
+  "RkPo": 2,
+  "RkTotal": "2",
+  "RkEqTotal": false,
+  "RkPoTotal": 2,
+  "id": null,
+  "OrgDesc": "Republic of Korea"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "CHN",
+  "Count": {
+   "ME_GOLD": {
+    "M": 0,
+    "W": 0,
+    "X": 1,
+    "total": 1
+   },
+   "ME_SILVER": {
+    "M": 1,
+    "W": 1,
+    "X": 0,
+    "total": 2
+   },
+   "ME_BRONZE": {
+    "M": 0,
+    "W": 2,
+    "X": 1,
+    "total": 3
+   },
+   "total": {
+    "M": 1,
+    "W": 3,
+    "X": 2,
+    "total": 6
+   }
+  },
+  "RkPo": 3,
+  "Rk": "3",
+  "RkEq": false,
+  "RkPoTotal": 3,
+  "RkTotal": "3",
+  "RkEqTotal": false,
+  "id": null,
+  "OrgDesc": "People's Republic of China"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "INA",
+  "Count": {
+   "ME_GOLD": {
+    "M": 0,
+    "W": 1,
+    "X": 0,
+    "total": 1
+   },
+   "ME_SILVER": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "ME_BRONZE": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "total": {
+    "M": 0,
+    "W": 1,
+    "X": 0,
+    "total": 1
+   }
+  },
+  "RkPo": 4,
+  "Rk": "4",
+  "RkEq": false,
+  "RkPoTotal": 5,
+  "RkTotal": "5",
+  "RkEqTotal": false,
+  "id": null,
+  "OrgDesc": "Indonesia"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "TPE",
+  "Count": {
+   "ME_GOLD": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "ME_SILVER": {
+    "M": 1,
+    "W": 0,
+    "X": 0,
+    "total": 1
+   },
+   "ME_BRONZE": {
+    "M": 2,
+    "W": 0,
+    "X": 0,
+    "total": 2
+   },
+   "total": {
+    "M": 3,
+    "W": 0,
+    "X": 0,
+    "total": 3
+   }
+  },
+  "RkPo": 5,
+  "Rk": "5",
+  "RkEq": false,
+  "RkPoTotal": 4,
+  "RkTotal": "4",
+  "RkEqTotal": false,
+  "id": null,
+  "OrgDesc": "Chinese Taipei"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "JPN",
+  "Count": {
+   "ME_GOLD": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "ME_SILVER": {
+    "M": 1,
+    "W": 0,
+    "X": 0,
+    "total": 1
+   },
+   "ME_BRONZE": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "total": {
+    "M": 1,
+    "W": 0,
+    "X": 0,
+    "total": 1
+   }
+  },
+  "RkPo": 6,
+  "Rk": "6",
+  "RkEq": true,
+  "RkPoTotal": 6,
+  "RkTotal": "6",
+  "RkEqTotal": true,
+  "id": null,
+  "OrgDesc": "Japan"
+ },
+ {
+  "Enabled": true,
+  "Championship": "AG2026",
+  "Discipline": "ARC",
+  "Org": "PHI",
+  "Count": {
+   "ME_GOLD": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "ME_SILVER": {
+    "M": 0,
+    "W": 1,
+    "X": 0,
+    "total": 1
+   },
+   "ME_BRONZE": {
+    "M": 0,
+    "W": 0,
+    "X": 0,
+    "total": 0
+   },
+   "total": {
+    "M": 0,
+    "W": 1,
+    "X": 0,
+    "total": 1
+   }
+  },
+  "RkPo": 7,
+  "Rk": "6",
+  "RkEq": true,
+  "RkPoTotal": 7,
+  "RkTotal": "6",
+  "RkEqTotal": true,
+  "id": null,
+  "OrgDesc": "Philippines"
+ }
+]

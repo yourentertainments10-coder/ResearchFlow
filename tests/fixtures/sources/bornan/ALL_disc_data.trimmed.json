@@ -1,0 +1,3639 @@
+[
+ {
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Events": [
+   {
+    "EvKey": "M.RINDIVID----------",
+    "Order": 1,
+    "Desc": "Recurve Men's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.RINDIVID----------",
+    "Order": 2,
+    "Desc": "Recurve Women's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.CINDIVID----------",
+    "Order": 3,
+    "Desc": "Compound Men's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.CINDIVID----------",
+    "Order": 4,
+    "Desc": "Compound Women's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.RTEAM-------------",
+    "Order": 5,
+    "Desc": "Recurve Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.RTEAM-------------",
+    "Order": 6,
+    "Desc": "Recurve Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.CTEAM-------------",
+    "Order": 7,
+    "Desc": "Compound Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.CTEAM-------------",
+    "Order": 8,
+    "Desc": "Compound Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.RTEAM2------------",
+    "Order": 9,
+    "Desc": "Recurve Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.CTEAM2------------",
+    "Order": 10,
+    "Desc": "Compound Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "ATH",
+  "DiscDesc": "Athletics",
+  "Events": [
+   {
+    "EvKey": "M.100M--------------",
+    "Order": 1,
+    "Desc": "Men's 100m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200M--------------",
+    "Order": 2,
+    "Desc": "Men's 200m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.400M--------------",
+    "Order": 3,
+    "Desc": "Men's 400m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.800M--------------",
+    "Order": 4,
+    "Desc": "Men's 800m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1500M-------------",
+    "Order": 5,
+    "Desc": "Men's 1500m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.5000M-------------",
+    "Order": 6,
+    "Desc": "Men's 5000m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.10000M------------",
+    "Order": 7,
+    "Desc": "Men's 10,000m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.MARATHON----------",
+    "Order": 8,
+    "Desc": "Men's Marathon",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.3000MST-----------",
+    "Order": 9,
+    "Desc": "Men's 3000m Steeplechase",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.110MHURD----------",
+    "Order": 10,
+    "Desc": "Men's 110m Hurdles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.400MHURD----------",
+    "Order": 11,
+    "Desc": "Men's 400m Hurdles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.HIGHJUMP----------",
+    "Order": 12,
+    "Desc": "Men's High Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.PLEVAULT----------",
+    "Order": 13,
+    "Desc": "Men's Pole Vault",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.LONGJUMP----------",
+    "Order": 14,
+    "Desc": "Men's Long Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TRPLJUMP----------",
+    "Order": 15,
+    "Desc": "Men's Triple Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SHOTPUT-----------",
+    "Order": 16,
+    "Desc": "Men's Shot Put",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DISCUS------------",
+    "Order": 17,
+    "Desc": "Men's Discus Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.HAMMER------------",
+    "Order": 18,
+    "Desc": "Men's Hammer Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.JAVELIN-----------",
+    "Order": 19,
+    "Desc": "Men's Javelin Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DECATH------------",
+    "Order": 20,
+    "Desc": "Men's Decathlon",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.WALKHM------------",
+    "Order": 21,
+    "Desc": "Men's Half Marathon Race Walk",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.WALKM-------------",
+    "Order": 22,
+    "Desc": "Men's Marathon Race Walk",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.4X100M------------",
+    "Order": 23,
+    "Desc": "Men's 4 x 100m Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.4X400M------------",
+    "Order": 24,
+    "Desc": "Men's 4 x 400m Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100M--------------",
+    "Order": 25,
+    "Desc": "Women's 100m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200M--------------",
+    "Order": 26,
+    "Desc": "Women's 200m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.400M--------------",
+    "Order": 27,
+    "Desc": "Women's 400m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.800M--------------",
+    "Order": 28,
+    "Desc": "Women's 800m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1500M-------------",
+    "Order": 29,
+    "Desc": "Women's 1500m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.5000M-------------",
+    "Order": 30,
+    "Desc": "Women's 5000m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.10000M------------",
+    "Order": 31,
+    "Desc": "Women's 10,000m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.MARATHON----------",
+    "Order": 32,
+    "Desc": "Women's Marathon",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.3000MST-----------",
+    "Order": 33,
+    "Desc": "Women's 3000m Steeplechase",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100MHURD----------",
+    "Order": 34,
+    "Desc": "Women's 100m Hurdles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.400MHURD----------",
+    "Order": 35,
+    "Desc": "Women's 400m Hurdles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.HIGHJUMP----------",
+    "Order": 36,
+    "Desc": "Women's High Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.PLEVAULT----------",
+    "Order": 37,
+    "Desc": "Women's Pole Vault",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.LONGJUMP----------",
+    "Order": 38,
+    "Desc": "Women's Long Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TRPLJUMP----------",
+    "Order": 39,
+    "Desc": "Women's Triple Jump",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SHOTPUT-----------",
+    "Order": 40,
+    "Desc": "Women's Shot Put",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DISCUS------------",
+    "Order": 41,
+    "Desc": "Women's Discus Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.HAMMER------------",
+    "Order": 42,
+    "Desc": "Women's Hammer Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.JAVELIN-----------",
+    "Order": 43,
+    "Desc": "Women's Javelin Throw",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.HEPTATH-----------",
+    "Order": 44,
+    "Desc": "Women's Heptathlon",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WALKHM------------",
+    "Order": 45,
+    "Desc": "Women's Half Marathon Race Walk",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WALKM-------------",
+    "Order": 46,
+    "Desc": "Women's Marathon Race Walk",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.4X100M------------",
+    "Order": 47,
+    "Desc": "Women's 4 x 100m Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.4X400M------------",
+    "Order": 48,
+    "Desc": "Women's 4 x 400m Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.4X100M------------",
+    "Order": 49,
+    "Desc": "4 x 100m Relay Mixed",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.4X400M------------",
+    "Order": 49,
+    "Desc": "4 x 400m Relay Mixed",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BBL",
+  "DiscDesc": "Baseball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM9-------------",
+    "Order": 1,
+    "Desc": "Baseball Men",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BDM",
+  "DiscDesc": "Badminton",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DOUBLES-----------",
+    "Order": 3,
+    "Desc": "Men's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DOUBLES-----------",
+    "Order": 4,
+    "Desc": "Women's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 5,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 6,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 7,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BK3",
+  "DiscDesc": "3x3 Basketball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM3-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM3-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BKB",
+  "DiscDesc": "Basketball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM5-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM5-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BKG",
+  "DiscDesc": "Breaking",
+  "Events": [
+   {
+    "EvKey": "M.INDIVID-----------",
+    "Order": 1,
+    "Desc": "B-Boys",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.INDIVID-----------",
+    "Order": 2,
+    "Desc": "B-Girls",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BMF",
+  "DiscDesc": "Cycling BMX Freestyle",
+  "Events": [
+   {
+    "EvKey": "W.INDVFRST----------",
+    "Order": 1,
+    "Desc": "Women's Park",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.INDVFRST----------",
+    "Order": 2,
+    "Desc": "Men's Park",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BMX",
+  "DiscDesc": "Cycling BMX Racing",
+  "Events": [
+   {
+    "EvKey": "M.INDVRACE----------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.INDVRACE----------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "BOX",
+  "DiscDesc": "Boxing",
+  "Events": [
+   {
+    "EvKey": "M.55KG--------------",
+    "Order": 1,
+    "Desc": "Men's 55kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.60KG--------------",
+    "Order": 2,
+    "Desc": "Men's 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.70KG--------------",
+    "Order": 3,
+    "Desc": "Men's 70kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.80KG--------------",
+    "Order": 4,
+    "Desc": "Men's 80kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.90KG--------------",
+    "Order": 5,
+    "Desc": "Men's 90kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O90KG-------------",
+    "Order": 7,
+    "Desc": "Men's +90kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.51KG--------------",
+    "Order": 8,
+    "Desc": "Women's 51kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.54KG--------------",
+    "Order": 9,
+    "Desc": "Women's 54kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.60KG--------------",
+    "Order": 11,
+    "Desc": "Women's 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.65KG--------------",
+    "Order": 12,
+    "Desc": "Women's 65kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.75KG--------------",
+    "Order": 13,
+    "Desc": "Women's 75kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CKT",
+  "DiscDesc": "Cricket",
+  "Events": [
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CLB",
+  "DiscDesc": "Sport Climbing",
+  "Events": [
+   {
+    "EvKey": "W.SPEED4------------",
+    "Order": 1,
+    "Desc": "Women's Speed 4",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SPEED4------------",
+    "Order": 2,
+    "Desc": "Men's Speed 4",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.BOULDER-----------",
+    "Order": 3,
+    "Desc": "Women's Boulder",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.BOULDER-----------",
+    "Order": 4,
+    "Desc": "Men's Boulder",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.LEAD--------------",
+    "Order": 5,
+    "Desc": "Women's Lead",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.LEAD--------------",
+    "Order": 6,
+    "Desc": "Men's Lead",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CRD",
+  "DiscDesc": "Cycling Road",
+  "Events": [
+   {
+    "EvKey": "M.RR----------------",
+    "Order": 1,
+    "Desc": "Men's Road Race",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.RR----------------",
+    "Order": 2,
+    "Desc": "Women's Road Race",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TT----------------",
+    "Order": 3,
+    "Desc": "Men's Individual Time Trial",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TT----------------",
+    "Order": 4,
+    "Desc": "Women's Individual Time Trial",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CSL",
+  "DiscDesc": "Canoe Slalom",
+  "Events": [
+   {
+    "EvKey": "M.K1----------------",
+    "Order": 1,
+    "Desc": "Men's Kayak Single",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.K1----------------",
+    "Order": 2,
+    "Desc": "Women's Kayak Single",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.C1----------------",
+    "Order": 3,
+    "Desc": "Men's Canoe Single",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.C1----------------",
+    "Order": 4,
+    "Desc": "Women's Canoe Single",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.X1----------------",
+    "Order": 5,
+    "Desc": "Men's Kayak Cross",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.X1----------------",
+    "Order": 6,
+    "Desc": "Women's Kayak Cross",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CSP",
+  "DiscDesc": "Canoe Sprint",
+  "Events": [
+   {
+    "EvKey": "M.C1-500M-----------",
+    "Order": 1,
+    "Desc": "Men's Canoe Single 500m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.C2-500M-----------",
+    "Order": 2,
+    "Desc": "Men's Canoe Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.K1-500M-----------",
+    "Order": 3,
+    "Desc": "Men's Kayak Single 500m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.K2-500M-----------",
+    "Order": 4,
+    "Desc": "Men's Kayak Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.K4-500M-----------",
+    "Order": 5,
+    "Desc": "Men's Kayak Four 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.C1-200M-----------",
+    "Order": 6,
+    "Desc": "Women's Canoe Single 200m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.C2-500M-----------",
+    "Order": 7,
+    "Desc": "Women's Canoe Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.K1-500M-----------",
+    "Order": 8,
+    "Desc": "Women's Kayak Single 500m",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.K2-500M-----------",
+    "Order": 9,
+    "Desc": "Women's Kayak Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.K4-500M-----------",
+    "Order": 10,
+    "Desc": "Women's Kayak Four 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.C2-500M-----------",
+    "Order": 11,
+    "Desc": "Mixed Canoe Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.K2-500M-----------",
+    "Order": 12,
+    "Desc": "Mixed Kayak Double 500m",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "CTR",
+  "DiscDesc": "Cycling Track",
+  "Events": [
+   {
+    "EvKey": "M.SPRTEAM3----------",
+    "Order": 1,
+    "Desc": "Men's Team Sprint",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SPRINT------------",
+    "Order": 2,
+    "Desc": "Men's Sprint",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.KEIRIN------------",
+    "Order": 3,
+    "Desc": "Men's Keirin",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.PURTEAM4----------",
+    "Order": 4,
+    "Desc": "Men's Team Pursuit",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.OMNIUM------------",
+    "Order": 5,
+    "Desc": "Men's Omnium",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.MADISON-----------",
+    "Order": 6,
+    "Desc": "Men's Madison",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SPRTEAM3----------",
+    "Order": 7,
+    "Desc": "Women's Team Sprint",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SPRINT------------",
+    "Order": 8,
+    "Desc": "Women's Sprint",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.KEIRIN------------",
+    "Order": 9,
+    "Desc": "Women's Keirin",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.PURTEAM4----------",
+    "Order": 10,
+    "Desc": "Women's Team Pursuit",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.OMNIUM------------",
+    "Order": 11,
+    "Desc": "Women's Omnium",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.MADISON-----------",
+    "Order": 12,
+    "Desc": "Women's Madison",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "DIV",
+  "DiscDesc": "Diving",
+  "Events": [
+   {
+    "EvKey": "W.3M----------------",
+    "Order": 1,
+    "Desc": "Women's 3m Springboard",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.10M---------------",
+    "Order": 2,
+    "Desc": "Women's 10m Platform",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.3MTEAM2-----------",
+    "Order": 3,
+    "Desc": "Women's Synchronised 3m Springboard",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.10MTEAM2----------",
+    "Order": 4,
+    "Desc": "Women's Synchronised 10m Platform",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1M----------------",
+    "Order": 5,
+    "Desc": "Women's 1m Springboard",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.3M----------------",
+    "Order": 6,
+    "Desc": "Men's 3m Springboard",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.10M---------------",
+    "Order": 7,
+    "Desc": "Men's 10m Platform",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.3MTEAM2-----------",
+    "Order": 8,
+    "Desc": "Men's Synchronised 3m Springboard",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.10MTEAM2----------",
+    "Order": 9,
+    "Desc": "Men's Synchronised 10m Platform",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1M----------------",
+    "Order": 10,
+    "Desc": "Men's 1m Springboard",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "ELS",
+  "DiscDesc": "Esports",
+  "Events": [
+   {
+    "EvKey": "O.FTG---------------",
+    "Order": 1,
+    "Desc": "Fighting Games [Street Fighter 6, TEKKEN™ 8, THE KING OF FIGHTERS XV]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.PKU---------------",
+    "Order": 2,
+    "Desc": "MOBA [Pokémon UNITE]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.HOK---------------",
+    "Order": 3,
+    "Desc": "MOBA [Honor of Kings]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.LOL---------------",
+    "Order": 4,
+    "Desc": "MOBA [League of Legends]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.PUBGM-------------",
+    "Order": 5,
+    "Desc": "Battle Royale [PUBG MOBILE - Asian Games Version]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.MLB---------------",
+    "Order": 6,
+    "Desc": "MOBA [Mobile Legends: Bang Bang]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.IDV---------------",
+    "Order": 7,
+    "Desc": "1v4 asymmetrical survival game [Identity V - Asian Games Version]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.NRK---------------",
+    "Order": 8,
+    "Desc": "Action-adventure / Battle Royale [NARAKA : BLADEPOINT]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.GT7---------------",
+    "Order": 9,
+    "Desc": "Auto Racing [Gran Turismo 7]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.EFB---------------",
+    "Order": 10,
+    "Desc": "Football [eFootball™]",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.PYO---------------",
+    "Order": 11,
+    "Desc": "Puzzle [Puyo Puyo Champions]",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "EQU",
+  "DiscDesc": "Equestrian",
+  "Events": [
+   {
+    "EvKey": "O.JUMPINDVCOMA------",
+    "Order": 0,
+    "Desc": "Jumping,Individual Competition A(heights of 1.40-1.50m)",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.JUMPINDVCOMB------",
+    "Order": 0,
+    "Desc": "Jumping,Individual Competition B(heights of up to 1.55m)",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.JUMPTEAM----------",
+    "Order": 0,
+    "Desc": "Jumping Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.EVENTEAM----------",
+    "Order": 1,
+    "Desc": "Eventing Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.EVENINDV----------",
+    "Order": 2,
+    "Desc": "Eventing Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.DRESTEAM----------",
+    "Order": 3,
+    "Desc": "Dressage Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.DRESINDV----------",
+    "Order": 4,
+    "Desc": "Dressage Individual",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "FBL",
+  "DiscDesc": "Football",
+  "Events": [
+   {
+    "EvKey": "M.TEAM11------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM11------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "FEN",
+  "DiscDesc": "Fencing",
+  "Events": [
+   {
+    "EvKey": "W.EPEE--------------",
+    "Order": 1,
+    "Desc": "Women's Épée Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.FOIL--------------",
+    "Order": 2,
+    "Desc": "Women's Foil Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SABRE-------------",
+    "Order": 3,
+    "Desc": "Women's Sabre Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.EPEE--------------",
+    "Order": 4,
+    "Desc": "Men's Épée Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FOIL--------------",
+    "Order": 5,
+    "Desc": "Men's Foil Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SABRE-------------",
+    "Order": 6,
+    "Desc": "Men's Sabre Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAMEPEE----------",
+    "Order": 7,
+    "Desc": "Women's Épée Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAMFOIL----------",
+    "Order": 8,
+    "Desc": "Women's Foil Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAMSABR----------",
+    "Order": 9,
+    "Desc": "Women's Sabre Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAMEPEE----------",
+    "Order": 10,
+    "Desc": "Men's Épée Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAMFOIL----------",
+    "Order": 11,
+    "Desc": "Men's Foil Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAMSABR----------",
+    "Order": 12,
+    "Desc": "Men's Sabre Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "GAR",
+  "DiscDesc": "Artistic Gymnastics",
+  "Events": [
+   {
+    "EvKey": "M.1AA---------------",
+    "Order": 1,
+    "Desc": "Men's All-Around",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APFX-------------",
+    "Order": 2,
+    "Desc": "Men's Floor Exercise",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APPH-------------",
+    "Order": 3,
+    "Desc": "Men's Pommel Horse",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APSR-------------",
+    "Order": 4,
+    "Desc": "Men's Rings",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APVT-------------",
+    "Order": 5,
+    "Desc": "Men's Vault",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APPB-------------",
+    "Order": 6,
+    "Desc": "Men's Parallel Bars",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1APHB-------------",
+    "Order": 7,
+    "Desc": "Men's Horizontal Bar",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 8,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1AA---------------",
+    "Order": 9,
+    "Desc": "Women's All-Around",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1APVT-------------",
+    "Order": 10,
+    "Desc": "Women's Vault",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1APUB-------------",
+    "Order": 11,
+    "Desc": "Women's Uneven Bars",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1APBB-------------",
+    "Order": 12,
+    "Desc": "Women's Balance Beam",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1APFX-------------",
+    "Order": 13,
+    "Desc": "Women's Floor Exercise",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 14,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "GLF",
+  "DiscDesc": "Golf",
+  "Events": [
+   {
+    "EvKey": "M.STROKE------------",
+    "Order": 1,
+    "Desc": "Men's Individual Stroke Play",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.STROKE------------",
+    "Order": 2,
+    "Desc": "Women's Individual Stroke Play",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 3,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 4,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "GRY",
+  "DiscDesc": "Rhythmic Gymnastics",
+  "Events": [
+   {
+    "EvKey": "W.1AA---------------",
+    "Order": 1,
+    "Desc": "Individual All-Around",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.5AA---------------",
+    "Order": 2,
+    "Desc": "Group All-Around",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "GTR",
+  "DiscDesc": "Trampoline Gymnastics",
+  "Events": [
+   {
+    "EvKey": "M.1TRA--------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1TRA--------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "HBL",
+  "DiscDesc": "Handball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM7-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM7-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "HOC",
+  "DiscDesc": "Hockey",
+  "Events": [
+   {
+    "EvKey": "M.TEAM11------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM11------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "JJI",
+  "DiscDesc": "Jiu Jitsu",
+  "Events": [
+   {
+    "EvKey": "W.48KG--------------",
+    "Order": 1,
+    "Desc": "Women -48kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.52KG--------------",
+    "Order": 2,
+    "Desc": "Women -52kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.63KG--------------",
+    "Order": 4,
+    "Desc": "Women -63kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.62KG--------------",
+    "Order": 5,
+    "Desc": "Men -62kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.69KG--------------",
+    "Order": 6,
+    "Desc": "Men -69kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.77KG--------------",
+    "Order": 7,
+    "Desc": "Men -77kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.85KG--------------",
+    "Order": 8,
+    "Desc": "Men -85kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.94KG--------------",
+    "Order": 9,
+    "Desc": "Men -94kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "JUD",
+  "DiscDesc": "Judo",
+  "Events": [
+   {
+    "EvKey": "W.48KG--------------",
+    "Order": 1,
+    "Desc": "Women -48kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.52KG--------------",
+    "Order": 2,
+    "Desc": "Women -52kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.57KG--------------",
+    "Order": 3,
+    "Desc": "Women -57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.63KG--------------",
+    "Order": 4,
+    "Desc": "Women -63kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.70KG--------------",
+    "Order": 5,
+    "Desc": "Women -70kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.78KG--------------",
+    "Order": 6,
+    "Desc": "Women -78kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.O78KG-------------",
+    "Order": 7,
+    "Desc": "Women +78kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.60KG--------------",
+    "Order": 8,
+    "Desc": "Men -60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.66KG--------------",
+    "Order": 9,
+    "Desc": "Men -66kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.73KG--------------",
+    "Order": 10,
+    "Desc": "Men -73kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.81KG--------------",
+    "Order": 11,
+    "Desc": "Men -81kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.90KG--------------",
+    "Order": 12,
+    "Desc": "Men -90kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.100KG-------------",
+    "Order": 13,
+    "Desc": "Men -100kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O100KG------------",
+    "Order": 14,
+    "Desc": "Men +100kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.TEAM6-------------",
+    "Order": 15,
+    "Desc": "Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "KAB",
+  "DiscDesc": "Kabaddi",
+  "Events": [
+   {
+    "EvKey": "M.TEAM7-------------",
+    "Order": 1,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM7-------------",
+    "Order": 2,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "KTE",
+  "DiscDesc": "Karate",
+  "Events": [
+   {
+    "EvKey": "W.KATA--------------",
+    "Order": 1,
+    "Desc": "Women's Individual Kata",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.KATA--------------",
+    "Order": 2,
+    "Desc": "Men's Individual Kata",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.50KG--------------",
+    "Order": 3,
+    "Desc": "Women's Kumite -50kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.55KG--------------",
+    "Order": 4,
+    "Desc": "Women's Kumite -55kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.61KG--------------",
+    "Order": 5,
+    "Desc": "Women's Kumite -61kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.68KG--------------",
+    "Order": 6,
+    "Desc": "Women's Kumite -68kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.O68KG-------------",
+    "Order": 7,
+    "Desc": "Women's Kumite +68kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.60KG--------------",
+    "Order": 8,
+    "Desc": "Men's Kumite -60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.67KG--------------",
+    "Order": 9,
+    "Desc": "Men's Kumite -67kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.75KG--------------",
+    "Order": 10,
+    "Desc": "Men's Kumite -75kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.84KG--------------",
+    "Order": 11,
+    "Desc": "Men's Kumite -84kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O84KG-------------",
+    "Order": 12,
+    "Desc": "Men's Kumite +84kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 13,
+    "Desc": "Women's Team Kata",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 14,
+    "Desc": "Men's Team Kata",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.55KG--------------",
+    "Order": 15,
+    "Desc": "Men's Kumite -55kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "KUR",
+  "DiscDesc": "Kurash",
+  "Events": [
+   {
+    "EvKey": "W.57KG--------------",
+    "Order": 1,
+    "Desc": "Women -57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.78KG--------------",
+    "Order": 2,
+    "Desc": "Women -78kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.O87KG-------------",
+    "Order": 3,
+    "Desc": "Women +87kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.66KG--------------",
+    "Order": 4,
+    "Desc": "Men -66kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.81KG--------------",
+    "Order": 5,
+    "Desc": "Men -81kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O90KG-------------",
+    "Order": 7,
+    "Desc": "Men +90kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "MMA",
+  "DiscDesc": "Mixed Martial Arts",
+  "Events": [
+   {
+    "EvKey": "M.M60KG-------------",
+    "Order": 1,
+    "Desc": "Men's Modern -60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.M71KG-------------",
+    "Order": 2,
+    "Desc": "Men's Modern -71kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.T65KG-------------",
+    "Order": 3,
+    "Desc": "Men's Traditional -65kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.T77KG-------------",
+    "Order": 4,
+    "Desc": "Men's Traditional -77kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.M54KG-------------",
+    "Order": 5,
+    "Desc": "Women's Modern -54kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.T60KG-------------",
+    "Order": 6,
+    "Desc": "Women's Traditional -60kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "MPN",
+  "DiscDesc": "Modern Pentathlon",
+  "Events": [
+   {
+    "EvKey": "W.INDIVID-----------",
+    "Order": 1,
+    "Desc": "Women's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.INDIVID-----------",
+    "Order": 2,
+    "Desc": "Men's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 3,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 4,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "MTB",
+  "DiscDesc": "Cycling Mountain Bike",
+  "Events": [
+   {
+    "EvKey": "M.XCTRY-------------",
+    "Order": 1,
+    "Desc": "Men's Cross-country",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.XCTRY-------------",
+    "Order": 2,
+    "Desc": "Women's Cross-country",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "PDL",
+  "DiscDesc": "Padel",
+  "Events": [
+   {
+    "EvKey": "M.PAIRS-------------",
+    "Order": 1,
+    "Desc": "Men's Pairs",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.PAIRS-------------",
+    "Order": 2,
+    "Desc": "Women's Pairs",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "ROW",
+  "DiscDesc": "Rowing",
+  "Events": [
+   {
+    "EvKey": "W.NOCOX2------------",
+    "Order": 1,
+    "Desc": "Women's Pair",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.NOCOX2------------",
+    "Order": 2,
+    "Desc": "Men's Pair",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SCULL2------------",
+    "Order": 3,
+    "Desc": "Women's Double Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SCULL2------------",
+    "Order": 4,
+    "Desc": "Men's Double Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.NOCOX4------------",
+    "Order": 5,
+    "Desc": "Women's Four",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.NOCOX4------------",
+    "Order": 6,
+    "Desc": "Men's Four",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SCULL1------------",
+    "Order": 7,
+    "Desc": "Women's Single Sculls",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SCULL1------------",
+    "Order": 8,
+    "Desc": "Men's Single Sculls",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SCULL2-L----------",
+    "Order": 9,
+    "Desc": "Lightweight Women's Double Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SCULL2-L----------",
+    "Order": 10,
+    "Desc": "Lightweight Men's Double Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SCULL4------------",
+    "Order": 11,
+    "Desc": "Women's Quadruple Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SCULL4------------",
+    "Order": 12,
+    "Desc": "Men's Quadruple Sculls",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SCULL1-L----------",
+    "Order": 13,
+    "Desc": "Lightweight Men's Single Sculls",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SCULL1-L----------",
+    "Order": 14,
+    "Desc": "Lightweight Women's Single Sculls",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "RU7",
+  "DiscDesc": "Rugby Sevens",
+  "Events": [
+   {
+    "EvKey": "M.TEAM7-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM7-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SAL",
+  "DiscDesc": "Sailing",
+  "Events": [
+   {
+    "EvKey": "M.IQFOIL------------",
+    "Order": 1,
+    "Desc": "Men's Windsurfing",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.IQFOIL------------",
+    "Order": 2,
+    "Desc": "Women's Windsurfing",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.ILCA7-------------",
+    "Order": 3,
+    "Desc": "Men's Dinghy",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.ILCA6-------------",
+    "Order": 4,
+    "Desc": "Women's Dinghy",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.49ER--------------",
+    "Order": 5,
+    "Desc": "Men's Skiff",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.49ERFX------------",
+    "Order": 6,
+    "Desc": "Women's Skiff",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.470---------------",
+    "Order": 7,
+    "Desc": "Mixed Dinghy",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.IQFOIL-Y----------",
+    "Order": 8,
+    "Desc": "Boys' Windsurfing",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.IQFOIL-Y----------",
+    "Order": 9,
+    "Desc": "Girls' Windsurfing",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.ILCA4-------------",
+    "Order": 10,
+    "Desc": "Boys' Dinghy",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.ILCA4-------------",
+    "Order": 11,
+    "Desc": "Girls' Dinghy",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.29ER--------------",
+    "Order": 12,
+    "Desc": "Boys' Skiff",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.29ER--------------",
+    "Order": 13,
+    "Desc": "Girls' Skiff",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.420---------------",
+    "Order": 14,
+    "Desc": "Youth Mixed Dinghy",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SBL",
+  "DiscDesc": "Softball",
+  "Events": [
+   {
+    "EvKey": "W.TEAM9-------------",
+    "Order": 1,
+    "Desc": "Softball Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SHO",
+  "DiscDesc": "Shooting",
+  "Events": [
+   {
+    "EvKey": "M.ARM---------------",
+    "Order": 1,
+    "Desc": "10m Air Rifle Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.R3PM--------------",
+    "Order": 2,
+    "Desc": "50m Rifle 3 Positions Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.APM---------------",
+    "Order": 3,
+    "Desc": "10m Air Pistol Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.RFPM--------------",
+    "Order": 4,
+    "Desc": "25m Rapid Fire Pistol Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TRM---------------",
+    "Order": 5,
+    "Desc": "Trap Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SKM---------------",
+    "Order": 6,
+    "Desc": "Skeet Men Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.ARTM--------------",
+    "Order": 7,
+    "Desc": "10m Air Rifle Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.R3PTM-------------",
+    "Order": 8,
+    "Desc": "50m Rifle 3 Positions Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.APTM--------------",
+    "Order": 9,
+    "Desc": "10m Air Pistol Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.RFPTM-------------",
+    "Order": 10,
+    "Desc": "25m Rapid Fire Pistol Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TRTM--------------",
+    "Order": 11,
+    "Desc": "Trap Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.SKTM--------------",
+    "Order": 12,
+    "Desc": "Skeet Men Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.ARW---------------",
+    "Order": 13,
+    "Desc": "10m Air Rifle Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.R3PW--------------",
+    "Order": 14,
+    "Desc": "50m Rifle 3 Positions Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.APW---------------",
+    "Order": 15,
+    "Desc": "10m Air Pistol Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SPW---------------",
+    "Order": 16,
+    "Desc": "25m Pistol Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TRW---------------",
+    "Order": 17,
+    "Desc": "Trap Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SKW---------------",
+    "Order": 18,
+    "Desc": "Skeet Women Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.ARTW--------------",
+    "Order": 19,
+    "Desc": "10m Air Rifle Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.R3PTW-------------",
+    "Order": 20,
+    "Desc": "50m Rifle 3 Positions Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.APTW--------------",
+    "Order": 21,
+    "Desc": "10m Air Pistol Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SPTW--------------",
+    "Order": 22,
+    "Desc": "25m Pistol Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TRTW--------------",
+    "Order": 23,
+    "Desc": "Trap Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SKTW--------------",
+    "Order": 24,
+    "Desc": "Skeet Women Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.ARMT--------------",
+    "Order": 25,
+    "Desc": "10m Air Rifle Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.APMT--------------",
+    "Order": 26,
+    "Desc": "10m Air Pistol Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.TRMT--------------",
+    "Order": 27,
+    "Desc": "Trap Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.SKMT--------------",
+    "Order": 28,
+    "Desc": "Skeet Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SKB",
+  "DiscDesc": "Skateboarding",
+  "Events": [
+   {
+    "EvKey": "W.STREET------------",
+    "Order": 1,
+    "Desc": "Women's Street",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.STREET------------",
+    "Order": 2,
+    "Desc": "Men's Street",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.PARK--------------",
+    "Order": 3,
+    "Desc": "Women's Park",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.PARK--------------",
+    "Order": 4,
+    "Desc": "Men's Park",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SPK",
+  "DiscDesc": "Sepaktakraw",
+  "Events": [
+   {
+    "EvKey": "M.REGU--------------",
+    "Order": 1,
+    "Desc": "Men's Regu",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DOUBLE------------",
+    "Order": 2,
+    "Desc": "Women's Double",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAMREGU----------",
+    "Order": 3,
+    "Desc": "Men's Team Regu",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAMREGU----------",
+    "Order": 4,
+    "Desc": "Women's Team Regu",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.QUADRANT----------",
+    "Order": 5,
+    "Desc": "Men's Quadrant",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.QUADRANT----------",
+    "Order": 6,
+    "Desc": "Women's Quadrant",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SQU",
+  "DiscDesc": "Squash",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 3,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 4,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 5,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SRF",
+  "DiscDesc": "Surfing",
+  "Events": [
+   {
+    "EvKey": "M.SHORTBRD----------",
+    "Order": 1,
+    "Desc": "Men's Shortboard",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SHORTBRD----------",
+    "Order": 2,
+    "Desc": "Women's Shortboard",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SWA",
+  "DiscDesc": "Artistic Swimming",
+  "Events": [
+   {
+    "EvKey": "W.TEAM2-------------",
+    "Order": 1,
+    "Desc": "Duet",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.TEAM8-------------",
+    "Order": 2,
+    "Desc": "Mixed Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "SWM",
+  "DiscDesc": "Swimming",
+  "Events": [
+   {
+    "EvKey": "W.50MFR-------------",
+    "Order": 1,
+    "Desc": "Women's 50m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.50MBA-------------",
+    "Order": 2,
+    "Desc": "Women's 50m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.50MBF-------------",
+    "Order": 3,
+    "Desc": "Women's 50m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.50MBR-------------",
+    "Order": 4,
+    "Desc": "Women's 50m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100MFR------------",
+    "Order": 5,
+    "Desc": "Women's 100m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200MFR------------",
+    "Order": 6,
+    "Desc": "Women's 200m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.400MFR------------",
+    "Order": 7,
+    "Desc": "Women's 400m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.800MFR------------",
+    "Order": 8,
+    "Desc": "Women's 800m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.1500MFR-----------",
+    "Order": 9,
+    "Desc": "Women's 1500m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100MBA------------",
+    "Order": 10,
+    "Desc": "Women's 100m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200MBA------------",
+    "Order": 11,
+    "Desc": "Women's 200m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100MBR------------",
+    "Order": 12,
+    "Desc": "Women's 100m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200MBR------------",
+    "Order": 13,
+    "Desc": "Women's 200m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.100MBF------------",
+    "Order": 14,
+    "Desc": "Women's 100m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200MBF------------",
+    "Order": 15,
+    "Desc": "Women's 200m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.200MIM------------",
+    "Order": 16,
+    "Desc": "Women's 200m Individual Medley",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.400MIM------------",
+    "Order": 17,
+    "Desc": "Women's 400m Individual Medley",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.4X100MFR----------",
+    "Order": 18,
+    "Desc": "Women's 4 x 100m Freestyle Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.4X200MFR----------",
+    "Order": 19,
+    "Desc": "Women's 4 x 200m Freestyle Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.4X100MMD----------",
+    "Order": 20,
+    "Desc": "Women's 4 x 100m Medley Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.50MFR-------------",
+    "Order": 21,
+    "Desc": "Men's 50m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.50MBA-------------",
+    "Order": 22,
+    "Desc": "Men's 50m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.50MBF-------------",
+    "Order": 23,
+    "Desc": "Men's 50m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.50MBR-------------",
+    "Order": 24,
+    "Desc": "Men's 50m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.100MFR------------",
+    "Order": 25,
+    "Desc": "Men's 100m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200MFR------------",
+    "Order": 26,
+    "Desc": "Men's 200m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.400MFR------------",
+    "Order": 27,
+    "Desc": "Men's 400m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.800MFR------------",
+    "Order": 28,
+    "Desc": "Men's 800m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.1500MFR-----------",
+    "Order": 29,
+    "Desc": "Men's 1500m Freestyle",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.100MBA------------",
+    "Order": 30,
+    "Desc": "Men's 100m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200MBA------------",
+    "Order": 31,
+    "Desc": "Men's 200m Backstroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.100MBR------------",
+    "Order": 32,
+    "Desc": "Men's 100m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200MBR------------",
+    "Order": 33,
+    "Desc": "Men's 200m Breaststroke",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.100MBF------------",
+    "Order": 34,
+    "Desc": "Men's 100m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200MBF------------",
+    "Order": 35,
+    "Desc": "Men's 200m Butterfly",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.200MIM------------",
+    "Order": 36,
+    "Desc": "Men's 200m Individual Medley",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.400MIM------------",
+    "Order": 37,
+    "Desc": "Men's 400m Individual Medley",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.4X100MFR----------",
+    "Order": 38,
+    "Desc": "Men's 4 x 100m Freestyle Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.4X200MFR----------",
+    "Order": 39,
+    "Desc": "Men's 4 x 200m Freestyle Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.4X100MMD----------",
+    "Order": 40,
+    "Desc": "Men's 4 x 100m Medley Relay",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.4X100MMD----------",
+    "Order": 41,
+    "Desc": "Mixed 4 x 100m Medley Relay",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TEN",
+  "DiscDesc": "Tennis",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DOUBLES-----------",
+    "Order": 3,
+    "Desc": "Men's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DOUBLES-----------",
+    "Order": 4,
+    "Desc": "Women's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 5,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TEQ",
+  "DiscDesc": "Teqball",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 3,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DOUBLES-----------",
+    "Order": 4,
+    "Desc": "Men's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DOUBLES-----------",
+    "Order": 5,
+    "Desc": "Women's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TKW",
+  "DiscDesc": "Taekwondo",
+  "Events": [
+   {
+    "EvKey": "M.58KG--------------",
+    "Order": 1,
+    "Desc": "Men -58kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.68KG--------------",
+    "Order": 2,
+    "Desc": "Men -68kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.80KG--------------",
+    "Order": 3,
+    "Desc": "Men -80kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O80KG-------------",
+    "Order": 4,
+    "Desc": "Men +80kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.49KG--------------",
+    "Order": 5,
+    "Desc": "Women -49kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.57KG--------------",
+    "Order": 6,
+    "Desc": "Women -57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.67KG--------------",
+    "Order": 7,
+    "Desc": "Women -67kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.O67KG-------------",
+    "Order": 8,
+    "Desc": "Women +67kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.INDPOOM-----------",
+    "Order": 9,
+    "Desc": "Men Individual Poomsae",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.INDPOOM-----------",
+    "Order": 10,
+    "Desc": "Women Individual Poomsae",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "O.VIRTUAL-----------",
+    "Order": 11,
+    "Desc": "Mixed Individual Virtual Taekwondo",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TRI",
+  "DiscDesc": "Triathlon",
+  "Events": [
+   {
+    "EvKey": "W.OLYMPIC-----------",
+    "Order": 1,
+    "Desc": "Women's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.OLYMPIC-----------",
+    "Order": 2,
+    "Desc": "Men's Individual",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.TEAM4-------------",
+    "Order": 3,
+    "Desc": "Mixed Relay",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TST",
+  "DiscDesc": "Soft Tennis",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 3,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 4,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 5,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "TTE",
+  "DiscDesc": "Table Tennis",
+  "Events": [
+   {
+    "EvKey": "M.SINGLES-----------",
+    "Order": 1,
+    "Desc": "Men's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.SINGLES-----------",
+    "Order": 2,
+    "Desc": "Women's Singles",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "X.DOUBLES-----------",
+    "Order": 3,
+    "Desc": "Mixed Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TEAM--------------",
+    "Order": 4,
+    "Desc": "Men's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM--------------",
+    "Order": 5,
+    "Desc": "Women's Team",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DOUBLES-----------",
+    "Order": 6,
+    "Desc": "Men's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.DOUBLES-----------",
+    "Order": 7,
+    "Desc": "Women's Doubles",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "VBV",
+  "DiscDesc": "Beach Volleyball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM2-------------",
+    "Order": 1,
+    "Desc": "Men's",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM2-------------",
+    "Order": 2,
+    "Desc": "Women's",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "VVO",
+  "DiscDesc": "Volleyball",
+  "Events": [
+   {
+    "EvKey": "M.TEAM6-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM6-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "WLF",
+  "DiscDesc": "Weightlifting",
+  "Events": [
+   {
+    "EvKey": "W.49KG--------------",
+    "Order": 1,
+    "Desc": "Women's 49kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.53KG--------------",
+    "Order": 2,
+    "Desc": "Women's 53kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.57KG--------------",
+    "Order": 3,
+    "Desc": "Women's 57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.61KG--------------",
+    "Order": 4,
+    "Desc": "Women's 61kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.69KG--------------",
+    "Order": 5,
+    "Desc": "Women's 69kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.77KG--------------",
+    "Order": 6,
+    "Desc": "Women's 77kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.86KG--------------",
+    "Order": 7,
+    "Desc": "Women's 86kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.O86KG-------------",
+    "Order": 8,
+    "Desc": "Women's +86kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.60KG--------------",
+    "Order": 9,
+    "Desc": "Men's 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.65KG--------------",
+    "Order": 10,
+    "Desc": "Men's 65kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.70KG--------------",
+    "Order": 11,
+    "Desc": "Men's 70kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.75KG--------------",
+    "Order": 12,
+    "Desc": "Men's 75kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.85KG--------------",
+    "Order": 13,
+    "Desc": "Men's 85kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.95KG--------------",
+    "Order": 14,
+    "Desc": "Men's 95kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.110KG-------------",
+    "Order": 15,
+    "Desc": "Men's 110kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.O110KG------------",
+    "Order": 16,
+    "Desc": "Men's +110kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "WPO",
+  "DiscDesc": "Water Polo",
+  "Events": [
+   {
+    "EvKey": "M.TEAM7-------------",
+    "Order": 1,
+    "Desc": "Men",
+    "IsTeam": true,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TEAM7-------------",
+    "Order": 2,
+    "Desc": "Women",
+    "IsTeam": true,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "WRE",
+  "DiscDesc": "Wrestling",
+  "Events": [
+   {
+    "EvKey": "M.GR60KG------------",
+    "Order": 1,
+    "Desc": "Men's Greco-Roman 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.GR67KG------------",
+    "Order": 2,
+    "Desc": "Men's Greco-Roman 67kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.GR77KG------------",
+    "Order": 3,
+    "Desc": "Men's Greco-Roman 77kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.GR87KG------------",
+    "Order": 4,
+    "Desc": "Men's Greco-Roman 87kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.GR97KG------------",
+    "Order": 5,
+    "Desc": "Men's Greco-Roman 97kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.GR130KG-----------",
+    "Order": 6,
+    "Desc": "Men's Greco-Roman 130kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR50KG------------",
+    "Order": 7,
+    "Desc": "Women's Wrestling 50kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR53KG------------",
+    "Order": 8,
+    "Desc": "Women's Wrestling 53kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR57KG------------",
+    "Order": 9,
+    "Desc": "Women's Wrestling 57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR62KG------------",
+    "Order": 10,
+    "Desc": "Women's Wrestling 62kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR68KG------------",
+    "Order": 11,
+    "Desc": "Women's Wrestling 68kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.WR76KG------------",
+    "Order": 12,
+    "Desc": "Women's Wrestling 76kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS57KG------------",
+    "Order": 13,
+    "Desc": "Men's Freestyle 57kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS65KG------------",
+    "Order": 14,
+    "Desc": "Men's Freestyle 65kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS74KG------------",
+    "Order": 15,
+    "Desc": "Men's Freestyle 74kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS86KG------------",
+    "Order": 16,
+    "Desc": "Men's Freestyle 86kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS97KG------------",
+    "Order": 17,
+    "Desc": "Men's Freestyle 97kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.FS125KG-----------",
+    "Order": 18,
+    "Desc": "Men's Freestyle 125kg",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ },
+ {
+  "Disc": "WSU",
+  "DiscDesc": "Wushu",
+  "Events": [
+   {
+    "EvKey": "W.52KG--------------",
+    "Order": 1,
+    "Desc": "Women's 52kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.60KG--------------",
+    "Order": 2,
+    "Desc": "Women's 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.56KG--------------",
+    "Order": 3,
+    "Desc": "Men's 56kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.60KG--------------",
+    "Order": 4,
+    "Desc": "Men's 60kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.65KG--------------",
+    "Order": 5,
+    "Desc": "Men's 65kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.70KG--------------",
+    "Order": 6,
+    "Desc": "Men's 70kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.75KG--------------",
+    "Order": 7,
+    "Desc": "Men's 75kg",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.CHAN--------------",
+    "Order": 8,
+    "Desc": "Women's Changquan",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.CHAN--------------",
+    "Order": 9,
+    "Desc": "Men's Changquan",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.NANG--------------",
+    "Order": 10,
+    "Desc": "Women's Nanquan & Nandao",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.NANG--------------",
+    "Order": 11,
+    "Desc": "Men's Nanquan & Nangun",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.TAIJ--------------",
+    "Order": 12,
+    "Desc": "Women's Taijiquan & Taijijian",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.TAIJ--------------",
+    "Order": 13,
+    "Desc": "Men's Taijiquan & Taijijian",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "W.JIAN--------------",
+    "Order": 14,
+    "Desc": "Women's Jianshu & Qiangshu",
+    "IsTeam": false,
+    "IsPara": false
+   },
+   {
+    "EvKey": "M.DAOS--------------",
+    "Order": 15,
+    "Desc": "Men's Daoshu & Gunshu",
+    "IsTeam": false,
+    "IsPara": false
+   }
+  ]
+ }
+]

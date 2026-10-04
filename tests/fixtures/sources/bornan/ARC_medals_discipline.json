@@ -1,0 +1,1094 @@
+[
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "10419527",
+  "Type": "A",
+  "DateRaw": "2026-10-01T15:01:00+09:00",
+  "Name": "KIM Jongho",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Men's Individual Finals",
+  "Bib": "8",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "TPE",
+  "OrgDesc": "Chinese Taipei",
+  "Reg": "2036175",
+  "Type": "A",
+  "DateRaw": "2026-10-01T15:01:00+09:00",
+  "Name": "CHANG Cheng-Wei",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Men's Individual Finals",
+  "Bib": "7",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "8772997",
+  "Type": "A",
+  "DateRaw": "2026-10-01T14:44:00+09:00",
+  "Name": "THIRUMURU Ganesh Mani Ratnam",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Men's Individual Finals",
+  "Bib": "14",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCMCTEAM------IND01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T15:50:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Men's Team Finals",
+  "Bib": "3",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "12842746",
+    "Bib": "16",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "DALAL Kushal",
+    "Order": 1
+   },
+   {
+    "Reg": "4887824",
+    "Bib": "5",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "JADHAV Sahil Rajesh",
+    "Order": 2
+   },
+   {
+    "Reg": "8772997",
+    "Bib": "14",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "THIRUMURU Ganesh Mani Ratnam",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "ARCMCTEAM------CHN01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T15:50:00+09:00",
+  "Name": "People's Republic of China",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Men's Team Finals",
+  "Bib": "1",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "10813350",
+    "Bib": "1",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "LIAO Jiahao",
+    "Order": 1
+   },
+   {
+    "Reg": "10813455",
+    "Bib": "2",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "LIU Jinyi",
+    "Order": 2
+   },
+   {
+    "Reg": "10813612",
+    "Bib": "9",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "SHI Jingyu",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "TPE",
+  "OrgDesc": "Chinese Taipei",
+  "Reg": "ARCMCTEAM------TPE01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T15:25:00+09:00",
+  "Name": "Chinese Taipei",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Men's Team Finals",
+  "Bib": "4",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "2036175",
+    "Bib": "7",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "CHANG Cheng-Wei",
+    "Order": 1
+   },
+   {
+    "Reg": "3175093",
+    "Bib": "15",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "CHEN Chieh-Lun",
+    "Order": 2
+   },
+   {
+    "Reg": "5473113",
+    "Bib": "26",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "YEN Tzu-Hsiang",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "10418060",
+  "Type": "A",
+  "DateRaw": "2026-10-03T14:50:00+09:00",
+  "Name": "LEE Wooseok",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Men's Individual Finals",
+  "Bib": "4",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "JPN",
+  "OrgDesc": "Japan",
+  "Reg": "13541069",
+  "Type": "A",
+  "DateRaw": "2026-10-03T14:50:00+09:00",
+  "Name": "NAKANISHI Junya",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Men's Individual Finals",
+  "Bib": "7",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "4895254",
+  "Type": "A",
+  "DateRaw": "2026-10-03T14:35:00+09:00",
+  "Name": "CHAUHAN Neeraj",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Men's Individual Finals",
+  "Bib": "20",
+  "Gender": "M"
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "ARCMRTEAM------KOR01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T15:20:00+09:00",
+  "Name": "Republic of Korea",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Men's Team Finals",
+  "Bib": "1",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "10419379",
+    "Bib": "2",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KIM Je Deok",
+    "Order": 1
+   },
+   {
+    "Reg": "10417469",
+    "Bib": "6",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KIM Woojin",
+    "Order": 2
+   },
+   {
+    "Reg": "10418060",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "LEE Wooseok",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCMRTEAM------IND01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T15:20:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Men's Team Finals",
+  "Bib": "2",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "10548737",
+    "Bib": "25",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BHOGE Yashdeep Sanjay",
+    "Order": 1
+   },
+   {
+    "Reg": "10541644",
+    "Bib": "1",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BOMMADEVARA Dhiraj",
+    "Order": 2
+   },
+   {
+    "Reg": "4895254",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "CHAUHAN Neeraj",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "TPE",
+  "OrgDesc": "Chinese Taipei",
+  "Reg": "ARCMRTEAM------TPE01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T14:55:00+09:00",
+  "Name": "Chinese Taipei",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "M.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Men's Team Finals",
+  "Bib": "4",
+  "Gender": "M",
+  "Members": [
+   {
+    "Reg": "2091847",
+    "Bib": "3",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "TANG Chih-Chun",
+    "Order": 1
+   },
+   {
+    "Reg": "2093480",
+    "Bib": "32",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "LIN Zih-Siang",
+    "Order": 2
+   },
+   {
+    "Reg": "5358471",
+    "Bib": "18",
+    "Org": "TPE",
+    "OrgDesc": "Chinese Taipei",
+    "Name": "CHENG Hsiang-Hui",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "INA",
+  "OrgDesc": "Indonesia",
+  "Reg": "10384183",
+  "Type": "A",
+  "DateRaw": "2026-10-01T11:01:00+09:00",
+  "Name": "ASHRIFAH Nurisa Dian",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Women's Individual Finals",
+  "Bib": "8",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "PHI",
+  "OrgDesc": "Philippines",
+  "Reg": "6086901",
+  "Type": "A",
+  "DateRaw": "2026-10-01T11:01:00+09:00",
+  "Name": "COJUANGCO Amaya Amparo",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Women's Individual Finals",
+  "Bib": "28",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "10419144",
+  "Type": "A",
+  "DateRaw": "2026-10-01T10:44:00+09:00",
+  "Name": "KANG Yeonseo",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CINDIVID----------.FNL-",
+  "EventDesc": "Compound Women's Individual Finals",
+  "Bib": "4",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCWCTEAM------IND01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T10:50:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Women's Team Finals",
+  "Bib": "2",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "10528860",
+    "Bib": "1",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "TANIPARTHI Chikitha",
+    "Order": 1
+   },
+   {
+    "Reg": "4886364",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "PRADEEP Prithika",
+    "Order": 2
+   },
+   {
+    "Reg": "8765533",
+    "Bib": "13",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "VENNAM Jyothi Surekha",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "ARCWCTEAM------CHN01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T10:50:00+09:00",
+  "Name": "People's Republic of China",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Women's Team Finals",
+  "Bib": "1",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "10805895",
+    "Bib": "5",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WUNIER",
+    "Order": 1
+   },
+   {
+    "Reg": "10813907",
+    "Bib": "14",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WANG Yue",
+    "Order": 2
+   },
+   {
+    "Reg": "10814101",
+    "Bib": "10",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WEI Fangyao",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "ARCWCTEAM------KOR01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T10:25:00+09:00",
+  "Name": "Republic of Korea",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.CTEAM-------------.FNL-",
+  "EventDesc": "Compound Women's Team Finals",
+  "Bib": "3",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "10418207",
+    "Bib": "3",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "PARK Jungyoon",
+    "Order": 1
+   },
+   {
+    "Reg": "10419039",
+    "Bib": "24",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "PARK Yerin",
+    "Order": 2
+   },
+   {
+    "Reg": "10419144",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KANG Yeonseo",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "10544514",
+  "Type": "A",
+  "DateRaw": "2026-10-03T10:50:00+09:00",
+  "Name": "MOHOD Kumkum Anil",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Women's Individual Finals",
+  "Bib": "10",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "10418437",
+  "Type": "A",
+  "DateRaw": "2026-10-03T10:50:00+09:00",
+  "Name": "OH Yejin",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Women's Individual Finals",
+  "Bib": "3",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "10804218",
+  "Type": "A",
+  "DateRaw": "2026-10-03T10:35:00+09:00",
+  "Name": "HUANG Yuwei",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RINDIVID----------.FNL-",
+  "EventDesc": "Recurve Women's Individual Finals",
+  "Bib": "11",
+  "Gender": "W"
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCWRTEAM------IND01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T10:20:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Women's Team Finals",
+  "Bib": "6",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "8774255",
+    "Bib": "25",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BHAKAT Ankita",
+    "Order": 1
+   },
+   {
+    "Reg": "8777937",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "KIRTI",
+    "Order": 2
+   },
+   {
+    "Reg": "10544514",
+    "Bib": "10",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "MOHOD Kumkum Anil",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "ARCWRTEAM------KOR01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T10:20:00+09:00",
+  "Name": "Republic of Korea",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Women's Team Finals",
+  "Bib": "1",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "10420541",
+    "Bib": "1",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KANG Chaeyoung",
+    "Order": 1
+   },
+   {
+    "Reg": "10417016",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "LEE Yunji",
+    "Order": 2
+   },
+   {
+    "Reg": "10418437",
+    "Bib": "3",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "OH Yejin",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "ARCWRTEAM------CHN01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T09:55:00+09:00",
+  "Name": "People's Republic of China",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "W.RTEAM-------------.FNL-",
+  "EventDesc": "Recurve Women's Team Finals",
+  "Bib": "2",
+  "Gender": "W",
+  "Members": [
+   {
+    "Reg": "10804218",
+    "Bib": "11",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "HUANG Yuwei",
+    "Order": 1
+   },
+   {
+    "Reg": "10804622",
+    "Bib": "18",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "YU Qi",
+    "Order": 2
+   },
+   {
+    "Reg": "10804876",
+    "Bib": "5",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "ZHU Jingyi",
+    "Order": 3
+   }
+  ]
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCXCTEAM2-----IND01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T12:45:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.CTEAM2------------.FNL-",
+  "EventDesc": "Compound Mixed Team Finals",
+  "Bib": "1",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "12842746",
+    "Bib": "16",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "DALAL Kushal",
+    "Order": 0
+   },
+   {
+    "Reg": "4886364",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "PRADEEP Prithika",
+    "Order": 0
+   },
+   {
+    "Reg": "8765533",
+    "Bib": "13",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "VENNAM Jyothi Surekha",
+    "Order": 0
+   },
+   {
+    "Reg": "8772997",
+    "Bib": "14",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "THIRUMURU Ganesh Mani Ratnam",
+    "Order": 0
+   },
+   {
+    "Reg": "10528860",
+    "Bib": "1",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "TANIPARTHI Chikitha",
+    "Order": 1
+   },
+   {
+    "Reg": "4887824",
+    "Bib": "5",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "JADHAV Sahil Rajesh",
+    "Order": 2
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "ARCXCTEAM2-----KOR01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T12:45:00+09:00",
+  "Name": "Republic of Korea",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.CTEAM2------------.FNL-",
+  "EventDesc": "Compound Mixed Team Finals",
+  "Bib": "3",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "10418670",
+    "Bib": "10",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "CHOI Eun Gyu",
+    "Order": 0
+   },
+   {
+    "Reg": "10419039",
+    "Bib": "24",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "PARK Yerin",
+    "Order": 0
+   },
+   {
+    "Reg": "10419144",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KANG Yeonseo",
+    "Order": 0
+   },
+   {
+    "Reg": "10419527",
+    "Bib": "8",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KIM Jongho",
+    "Order": 0
+   },
+   {
+    "Reg": "10418207",
+    "Bib": "3",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "PARK Jungyoon",
+    "Order": 1
+   },
+   {
+    "Reg": "10418832",
+    "Bib": "3",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "CHOI Yonghee",
+    "Order": 2
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "ARCXCTEAM2-----CHN01",
+  "Type": "T",
+  "DateRaw": "2026-09-30T12:20:00+09:00",
+  "Name": "People's Republic of China",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.CTEAM2------------.FNL-",
+  "EventDesc": "Compound Mixed Team Finals",
+  "Bib": "2",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "10805895",
+    "Bib": "5",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WUNIER",
+    "Order": 0
+   },
+   {
+    "Reg": "10813350",
+    "Bib": "1",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "LIAO Jiahao",
+    "Order": 0
+   },
+   {
+    "Reg": "10813612",
+    "Bib": "9",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "SHI Jingyu",
+    "Order": 0
+   },
+   {
+    "Reg": "10813907",
+    "Bib": "14",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WANG Yue",
+    "Order": 0
+   },
+   {
+    "Reg": "10814101",
+    "Bib": "10",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WEI Fangyao",
+    "Order": 1
+   },
+   {
+    "Reg": "10813455",
+    "Bib": "2",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "LIU Jinyi",
+    "Order": 2
+   }
+  ]
+ },
+ {
+  "Medal": "ME_GOLD",
+  "Order": 1,
+  "Org": "CHN",
+  "OrgDesc": "People's Republic of China",
+  "Reg": "ARCXRTEAM2-----CHN01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T12:45:00+09:00",
+  "Name": "People's Republic of China",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.RTEAM2------------.FNL-",
+  "EventDesc": "Recurve Mixed Team Finals",
+  "Bib": "5",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "10803777",
+    "Bib": "23",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "SUN Jingxuan",
+    "Order": 0
+   },
+   {
+    "Reg": "10803882",
+    "Bib": "24",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "WANG Yan",
+    "Order": 0
+   },
+   {
+    "Reg": "10804218",
+    "Bib": "11",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "HUANG Yuwei",
+    "Order": 0
+   },
+   {
+    "Reg": "10804622",
+    "Bib": "18",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "YU Qi",
+    "Order": 0
+   },
+   {
+    "Reg": "10804876",
+    "Bib": "5",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "ZHU Jingyi",
+    "Order": 1
+   },
+   {
+    "Reg": "10803518",
+    "Bib": "13",
+    "Org": "CHN",
+    "OrgDesc": "China",
+    "Name": "LI Mengqi",
+    "Order": 2
+   }
+  ]
+ },
+ {
+  "Medal": "ME_SILVER",
+  "Order": 1,
+  "Org": "IND",
+  "OrgDesc": "India",
+  "Reg": "ARCXRTEAM2-----IND01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T12:45:00+09:00",
+  "Name": "India",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.RTEAM2------------.FNL-",
+  "EventDesc": "Recurve Mixed Team Finals",
+  "Bib": "2",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "10548737",
+    "Bib": "25",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BHOGE Yashdeep Sanjay",
+    "Order": 0
+   },
+   {
+    "Reg": "4895254",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "CHAUHAN Neeraj",
+    "Order": 0
+   },
+   {
+    "Reg": "8774255",
+    "Bib": "25",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BHAKAT Ankita",
+    "Order": 0
+   },
+   {
+    "Reg": "8777937",
+    "Bib": "20",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "KIRTI",
+    "Order": 0
+   },
+   {
+    "Reg": "10544514",
+    "Bib": "10",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "MOHOD Kumkum Anil",
+    "Order": 1
+   },
+   {
+    "Reg": "10541644",
+    "Bib": "1",
+    "Org": "IND",
+    "OrgDesc": "India",
+    "Name": "BOMMADEVARA Dhiraj",
+    "Order": 2
+   }
+  ]
+ },
+ {
+  "Medal": "ME_BRONZE",
+  "Order": 1,
+  "Org": "KOR",
+  "OrgDesc": "Republic of Korea",
+  "Reg": "ARCXRTEAM2-----KOR01",
+  "Type": "T",
+  "DateRaw": "2026-10-02T12:20:00+09:00",
+  "Name": "Republic of Korea",
+  "Disc": "ARC",
+  "DiscDesc": "Archery",
+  "Event": "X.RTEAM2------------.FNL-",
+  "EventDesc": "Recurve Mixed Team Finals",
+  "Bib": "1",
+  "Gender": "X",
+  "Members": [
+   {
+    "Reg": "10417016",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "LEE Yunji",
+    "Order": 0
+   },
+   {
+    "Reg": "10417469",
+    "Bib": "6",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KIM Woojin",
+    "Order": 0
+   },
+   {
+    "Reg": "10418060",
+    "Bib": "4",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "LEE Wooseok",
+    "Order": 0
+   },
+   {
+    "Reg": "10418437",
+    "Bib": "3",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "OH Yejin",
+    "Order": 0
+   },
+   {
+    "Reg": "10420541",
+    "Bib": "1",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KANG Chaeyoung",
+    "Order": 1
+   },
+   {
+    "Reg": "10419379",
+    "Bib": "2",
+    "Org": "KOR",
+    "OrgDesc": "Korea",
+    "Name": "KIM Je Deok",
+    "Order": 2
+   }
+  ]
+ }
+]

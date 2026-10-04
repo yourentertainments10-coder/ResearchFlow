@@ -105,7 +105,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
-| D1 | Primary source (Phase 0 outcome) | Phase 3. Provisional: official results portal API (`back.results.asiangames2026.org`), decodable without a key; pending the portal's terms and event-level samples (`SOURCE_DISCOVERY.md` section 9) |
+| D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). **Open: the portal's terms of use (owner).** Automated fetching in Phase 3 waits for it; manual CSV import is the fallback |
 | D2 | Where data lives between scheduled runs | Resolved by ADR-016 |
 | D3 | Public or private dashboard | Phase 5 |
 | D4 | Include LLM explainer | Phase 7 |

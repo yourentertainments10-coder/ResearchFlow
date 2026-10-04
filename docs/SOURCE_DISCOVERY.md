@@ -1,6 +1,6 @@
 # Source Discovery (Phase 0)
 
-Status: **mostly complete.** The data API was located and its encoding identified (ordinary zlib compression, section 8). Still open: the portal's own terms of use, and samples of the event-level endpoints.
+Status: **complete except the portal's terms of use.** The data API was located, its encoding identified (ordinary zlib compression, sections 8 and 9), and event-level data was confirmed from an owner capture (section 10). The one open item is the portal's own terms of use, which blocks automated fetching in Phase 3 but nothing before it.
 Checked: 2026-10-04, using page fetches and web search from the Claude workspace. This workspace cannot run a browser, inspect network calls or reach arbitrary sites from its shell, so the checks below are limited to what a page fetch shows.
 
 ## 1. Competition facts
@@ -79,10 +79,11 @@ With those samples I can write the parser and the adapter against real data, tes
 | Not used | Olympics.com and any site whose robots rules or terms forbid automation |
 
 ## 7. Open items for the final Phase 0 sign-off
-- [ ] Owner supplies endpoint samples and the portal's terms text (section 4)
-- [ ] Official total of medal events recorded
-- [ ] robots/terms decision recorded here and in `DECISIONS.md` (D1)
-- [ ] Fixtures saved under `tests/fixtures/sources/<source>/`
+- [x] Owner supplies endpoint samples (sections 8 to 10)
+- [ ] Owner supplies the portal's terms text (section 4, step 1). **Still open; it gates automated fetching in Phase 3**
+- [x] Event total recorded: 469 in the portal's event list (section 10). Loading it into `competitions.official_event_total` is part of Phase 2
+- [ ] robots/terms decision recorded here and in `DECISIONS.md` (D1): robots is recorded (404 on both hosts), the terms part waits for the owner (section 10)
+- [x] Fixtures saved under `tests/fixtures/sources/<source>/`
 - [ ] Whether a `canonical_bytes()` rule is needed for volatile fields (`DATA_PIPELINE.md` section 4)
 
 ## 8. Findings from the owner's network capture (2026-10-04)
@@ -132,4 +133,38 @@ The owner's lossless copy (base64 of the 3167 response bytes) settled section 8.
 - [ ] Portal terms of use text (owner)
 - [ ] Samples, captured the same way, of: `SWM/medals/discipline`, `SWM/disc/data`, one `entries/event/...` URL, `config`, `params`, `latest`, `multi-medallists`, and the unit result `ARCMCTEAM------IND01` (the last four need their full URLs from the Network tab)
 - [ ] Whether events/units carry gold, silver and bronze countries directly (needed for placings), and how team events and double bronze appear
+
+(Sections 8 and 9 are kept as the historical record. Section 10 resolves most of the items above.)
+
+## 10. Event-level capture and Phase 0 outcome (2026-10-04)
+The owner supplied a second capture: one JSON file holding 14 decoded responses, taken 2026-10-04 at 11:47 UTC, on the last day of the Games. Trimmed fixtures are in `tests/fixtures/sources/bornan/` (the README there lists what was dropped).
+
+### Verified from the capture
+| Question | Finding |
+|----------|---------|
+| Official event list | `ALL/disc/data` lists **59 disciplines and 469 events**: Men 221, Women 207, Mixed 21, Open 20. None is marked para. 156 are team events (`IsTeam`). This matches the 469 quoted in the earlier chat, now read from the portal's own list. A programme total does not by itself prove that every event has produced medals |
+| Per-event medal rows | `{DISC}/medals/discipline` returns **one row per placing**: `Medal` (`ME_GOLD`, `ME_SILVER`, `ME_BRONZE`), `Order`, `Org` (3-letter code), `OrgDesc`, `Event`, `EventDesc`, `Gender`, `DateRaw` (with a +09:00 offset), `Name`, `Type`, `Reg`, and `Members` for teams. `ALL/medals/discipline` returned an empty list, so collection needs one request per discipline (59 requests, about two minutes at the 2-second rule) |
+| Slots and ties | `Order` is the slot. A tie shows as `Order` 2 on the tied medal, with the next medal absent. Swimming, Men's 100m Breaststroke: two golds (CHN and JPN), no silver. Swimming, Men's 800m Freestyle: one gold, two silvers (JPN and KOR), no bronze. Nothing is inferred; it is in the rows |
+| Team events | One row per team (`Type` T): `Org` is the country, `Name` is the country name, `Reg` is a team code such as `ARCMCTEAM------IND01`, and `Members` lists the athletes. This matches the counting rule of one placing per team (`DOMAIN_MODEL.md` section 4) |
+| Event codes | The `Event` of a medal row is the event key plus `.` plus a phase code. Seen: `----` (single-phase events) and `FNL-` (archery finals). The first letter of an event key is M, W, X or O (Men, Women, Mixed, Open) and equals the row's `Gender` on all 153 rows |
+| Reconciliation | Counting medal rows by country, medal and gender gives **exactly** the portal's own standings for Swimming (8 countries) and Archery (7 countries): 0 mismatches, ties included. Phase 3 reconciliation will run this same check for every discipline |
+| The 470 and 469 puzzle | Section 9 noted 470 golds against 469 silvers. With 469 events, the two swimming ties give that pattern: the gold tie adds one gold and removes one silver, the double silver adds one silver, so 470 gold and 469 silver. This fits. It is not proof for other disciplines, and bronze (629) was not re-derived |
+
+### Personal data
+The responses carry athlete birth dates, including athletes who are minors, and complete participant lists. Decision: the pipeline never stores birth dates, does not use the `entries/...` endpoints, and the committed fixtures have birth dates removed. Medallist names are public results and are kept (`SECURITY.md` section 1). Every parser for this source must drop birth dates and must not copy `entries` data.
+
+### Not yet verified (a sample is needed for each; do not assume)
+- How double bronze appears in combat sports such as Judo, Taekwondo and Boxing. `Order` 2 on Bronze is expected, but no such sample exists yet.
+- Ties in team events, how pair events and doubles are typed (whether `IsTeam` is true for them), and how Open events (Esports) appear in medal rows.
+- Phase codes other than `----` and `FNL-`.
+- Whether the portal removes or rewrites a row when a medal is reallocated, and how a withheld medal is shown.
+- `config.storage` (2026-10-04T03:19:55+00:00) looks like a data timestamp. This is a hypothesis; it could become `source_updated_at`.
+
+### Decision for D1 (Phase 0 outcome)
+| Item | Decision |
+|------|----------|
+| How event-level data is obtained | Primary: the portal's JSON API, using `ALL/disc/data` (event list), `{DISC}/medals/discipline` (placings), and `ALL/medals/standings` with `{DISC}/medals/standings` (official table, for reconciliation). Fallback: manual CSV import, always available |
+| robots.txt | 404 on both `results.asiangames2026.org` and `back.results.asiangames2026.org`. No crawling rules are published. That is not permission |
+| Terms of use | **Not found.** Not recorded anywhere we can read. Under `AGENTS.md` rule 9 this must be settled by the owner (read the portal's footer or legal link, or ask the organisers or the Olympic Council of Asia in writing) before any automated fetching. Until then, data enters through manual import of owner captures |
+| Effect on the roadmap | Phases 2, 4 and 5 are unaffected. Phase 3 can build the parser, the raw store and the reconciliation on the saved fixtures now. Only the live adapter that fetches from the portal waits for the terms decision |
 

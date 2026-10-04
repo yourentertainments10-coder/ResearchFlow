@@ -2,7 +2,7 @@
 
 Work phase by phase. A phase is finished only when its acceptance criteria are met and evidence is saved. Sizes are relative effort (S, M, L), not promises.
 
-## Phase 0: Source discovery (gate)  [M]  (status: mostly done, 2026-10-04; API found and decodable, still needs the portal's terms and event-level samples, see `SOURCE_DISCOVERY.md` sections 8 and 9)
+## Phase 0: Source discovery (gate)  [M]  (status: done except the portal's terms of use, 2026-10-04; API found, decodable, and event-level data confirmed with 469 events, see `SOURCE_DISCOVERY.md` sections 8 to 10. The terms gate only automated fetching in Phase 3)
 Tasks
 1. Identify the official results site, any API or JSON feed, and the official medal table.
 2. Fill the checklist in `DATA_PIPELINE.md` section 2 for each candidate.
