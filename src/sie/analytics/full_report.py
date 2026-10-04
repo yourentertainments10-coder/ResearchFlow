@@ -109,14 +109,15 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
         "Country": country, "Country x sport": cs, "Sport concentration": sport_c,
         "Country dependence": dep, "Specialisation LQ": spec, "Country x gender": cg,
         "Sport x gender": sg, "Gender totals": gt, "Concentration": pd.DataFrame(list(conc.items()), columns=["metric", "value"]),
-        "Placings": df.drop(columns=["entrant_name", "awarded_at"]),
+        "Placings": df.drop(columns=["entrant_name", "awarded_at"]).assign(date=df["awarded_at"].str[:10]),
     }  # fmt: skip
     with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
         for n, f in sheets.items():
             f.to_excel(w, sheet_name=n[:31], index=False)
-    df.drop(columns=["entrant_name", "awarded_at", "entrant_type"]).to_csv(
-        out_dir / "placings.csv", index=False
+    pub = df.assign(date=df["awarded_at"].str[:10]).drop(
+        columns=["entrant_name", "awarded_at", "entrant_type"]
     )
+    pub.to_csv(out_dir / "placings.csv", index=False)
 
     cards = "".join(
         f"<div class=card><span>{k.replace('_', ' ')}</span><b>{v}</b></div>"

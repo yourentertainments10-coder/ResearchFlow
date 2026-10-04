@@ -70,9 +70,11 @@ def test_dashboard_builds_and_embeds_all_rows(tmp_path):
     from sie.dashboard import build
 
     csv = tmp_path / "p.csv"
-    placings_frame(parse_medal_rows(load("ARC_medals_discipline.json"))).drop(
+    frame = placings_frame(parse_medal_rows(load("ARC_medals_discipline.json")))
+    frame.assign(date=frame["awarded_at"].str[:10]).drop(
         columns=["entrant_name", "awarded_at", "entrant_type"]
     ).to_csv(csv, index=False)
     out = build(csv, "2026-10-04", tmp_path / "i.html", 6)
     text = out.read_text()
     assert text.count('"m":') == len(pd.read_csv(csv)) and "__DATA__" not in text
+    assert "NaN" not in text and "__NODATE__" not in text
