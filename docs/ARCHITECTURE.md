@@ -119,13 +119,16 @@ sie/
 
 ## 6. Adapter and parser interfaces (fetch and parse are separate)
 ```python
-class SourceAdapter(Protocol):          # fetch only: network access, nothing else
+class SourceAdapter(Protocol):  # fetch only: network access, nothing else
     name: str
-    def list_documents(self, since: datetime | None) -> list[DocumentRef]: ...
-    def fetch(self, ref: DocumentRef) -> RawDocument: ...   # bytes + url + headers + fetched_at
 
-class SourceParser(Protocol):           # parse only: pure function over saved bytes
+    def list_documents(self, since: datetime | None) -> list[DocumentRef]: ...
+    def fetch(self, ref: DocumentRef) -> RawDocument: ...  # bytes + url + headers + fetched_at
+
+
+class SourceParser(Protocol):  # parse only: pure function over saved bytes
     source: str
+
     def parse(self, doc: RawDocument) -> list[ParsedResult]: ...
 ```
 Rules:
