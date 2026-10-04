@@ -1,0 +1,55 @@
+# --- secrets and credentials: never commit ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# --- database dumps and backups (can contain every row) ---
+*.dump
+*.sql.gz
+*.sql.bz2
+*.backup
+*.bak
+*.db
+*.sqlite
+*.sqlite3
+
+# --- browser captures (HAR files contain cookies and headers) ---
+*.har
+
+# --- python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# --- editors and OS ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- logs and scratch ---
+*.log
+scratch/
+tmp/
+
+# --- data: raw store, generated exports and locks are never committed (fixtures under tests/ are) ---
+data/raw/
+data/exports/
+data/.pipeline.lock
