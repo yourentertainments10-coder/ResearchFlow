@@ -32,4 +32,7 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - run: ruff format --check .
-      - run: pytest --cov=sie --cov-report=term-missing
+      - run: pytest --cov=sie --cov-report=term-missing --junitxml=pytest-report.xml
+      # Makes failures readable in the check run UI and API even when the raw log is not reachable.
+      - if: failure()
+        run: python .github/scripts/annotate_failures.py pytest-report.xml
