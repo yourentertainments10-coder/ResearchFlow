@@ -1,0 +1,1569 @@
+discipline,discipline_name,event_code,event_name,gender,medal,slot,country_code,country_name,event_key
+ARC,Archery,M.CINDIVID----------.FNL-,Compound Men's Individual Finals,Men,Gold,1,KOR,Republic of Korea,M.CINDIVID----------
+ARC,Archery,M.CINDIVID----------.FNL-,Compound Men's Individual Finals,Men,Silver,1,TPE,Chinese Taipei,M.CINDIVID----------
+ARC,Archery,M.CINDIVID----------.FNL-,Compound Men's Individual Finals,Men,Bronze,1,IND,India,M.CINDIVID----------
+ARC,Archery,M.CTEAM-------------.FNL-,Compound Men's Team Finals,Men,Gold,1,IND,India,M.CTEAM-------------
+ARC,Archery,M.CTEAM-------------.FNL-,Compound Men's Team Finals,Men,Silver,1,CHN,People's Republic of China,M.CTEAM-------------
+ARC,Archery,M.CTEAM-------------.FNL-,Compound Men's Team Finals,Men,Bronze,1,TPE,Chinese Taipei,M.CTEAM-------------
+ARC,Archery,M.RINDIVID----------.FNL-,Recurve Men's Individual Finals,Men,Gold,1,KOR,Republic of Korea,M.RINDIVID----------
+ARC,Archery,M.RINDIVID----------.FNL-,Recurve Men's Individual Finals,Men,Silver,1,JPN,Japan,M.RINDIVID----------
+ARC,Archery,M.RINDIVID----------.FNL-,Recurve Men's Individual Finals,Men,Bronze,1,IND,India,M.RINDIVID----------
+ARC,Archery,M.RTEAM-------------.FNL-,Recurve Men's Team Finals,Men,Gold,1,KOR,Republic of Korea,M.RTEAM-------------
+ARC,Archery,M.RTEAM-------------.FNL-,Recurve Men's Team Finals,Men,Silver,1,IND,India,M.RTEAM-------------
+ARC,Archery,M.RTEAM-------------.FNL-,Recurve Men's Team Finals,Men,Bronze,1,TPE,Chinese Taipei,M.RTEAM-------------
+ARC,Archery,W.CINDIVID----------.FNL-,Compound Women's Individual Finals,Women,Gold,1,INA,Indonesia,W.CINDIVID----------
+ARC,Archery,W.CINDIVID----------.FNL-,Compound Women's Individual Finals,Women,Silver,1,PHI,Philippines,W.CINDIVID----------
+ARC,Archery,W.CINDIVID----------.FNL-,Compound Women's Individual Finals,Women,Bronze,1,KOR,Republic of Korea,W.CINDIVID----------
+ARC,Archery,W.CTEAM-------------.FNL-,Compound Women's Team Finals,Women,Gold,1,IND,India,W.CTEAM-------------
+ARC,Archery,W.CTEAM-------------.FNL-,Compound Women's Team Finals,Women,Silver,1,CHN,People's Republic of China,W.CTEAM-------------
+ARC,Archery,W.CTEAM-------------.FNL-,Compound Women's Team Finals,Women,Bronze,1,KOR,Republic of Korea,W.CTEAM-------------
+ARC,Archery,W.RINDIVID----------.FNL-,Recurve Women's Individual Finals,Women,Gold,1,IND,India,W.RINDIVID----------
+ARC,Archery,W.RINDIVID----------.FNL-,Recurve Women's Individual Finals,Women,Silver,1,KOR,Republic of Korea,W.RINDIVID----------
+ARC,Archery,W.RINDIVID----------.FNL-,Recurve Women's Individual Finals,Women,Bronze,1,CHN,People's Republic of China,W.RINDIVID----------
+ARC,Archery,W.RTEAM-------------.FNL-,Recurve Women's Team Finals,Women,Gold,1,IND,India,W.RTEAM-------------
+ARC,Archery,W.RTEAM-------------.FNL-,Recurve Women's Team Finals,Women,Silver,1,KOR,Republic of Korea,W.RTEAM-------------
+ARC,Archery,W.RTEAM-------------.FNL-,Recurve Women's Team Finals,Women,Bronze,1,CHN,People's Republic of China,W.RTEAM-------------
+ARC,Archery,X.CTEAM2------------.FNL-,Compound Mixed Team Finals,Mixed,Gold,1,IND,India,X.CTEAM2------------
+ARC,Archery,X.CTEAM2------------.FNL-,Compound Mixed Team Finals,Mixed,Silver,1,KOR,Republic of Korea,X.CTEAM2------------
+ARC,Archery,X.CTEAM2------------.FNL-,Compound Mixed Team Finals,Mixed,Bronze,1,CHN,People's Republic of China,X.CTEAM2------------
+ARC,Archery,X.RTEAM2------------.FNL-,Recurve Mixed Team Finals,Mixed,Gold,1,CHN,People's Republic of China,X.RTEAM2------------
+ARC,Archery,X.RTEAM2------------.FNL-,Recurve Mixed Team Finals,Mixed,Silver,1,IND,India,X.RTEAM2------------
+ARC,Archery,X.RTEAM2------------.FNL-,Recurve Mixed Team Finals,Mixed,Bronze,1,KOR,Republic of Korea,X.RTEAM2------------
+ATH,Athletics,M.10000M------------.----,"Men's 10,000m",Men,Gold,1,BRN,Bahrain,M.10000M------------
+ATH,Athletics,M.10000M------------.----,"Men's 10,000m",Men,Silver,1,IND,India,M.10000M------------
+ATH,Athletics,M.10000M------------.----,"Men's 10,000m",Men,Bronze,1,BRN,Bahrain,M.10000M------------
+ATH,Athletics,M.100M--------------.----,Men's 100m,Men,Gold,1,THA,Thailand,M.100M--------------
+ATH,Athletics,M.100M--------------.----,Men's 100m,Men,Silver,1,OMA,Oman,M.100M--------------
+ATH,Athletics,M.100M--------------.----,Men's 100m,Men,Bronze,1,OMA,Oman,M.100M--------------
+ATH,Athletics,M.110MHURD----------.----,Men's 110m Hurdles,Men,Gold,1,CHN,People's Republic of China,M.110MHURD----------
+ATH,Athletics,M.110MHURD----------.----,Men's 110m Hurdles,Men,Silver,1,JPN,Japan,M.110MHURD----------
+ATH,Athletics,M.110MHURD----------.----,Men's 110m Hurdles,Men,Bronze,1,PHI,Philippines,M.110MHURD----------
+ATH,Athletics,M.1500M-------------.----,Men's 1500m,Men,Gold,1,JPN,Japan,M.1500M-------------
+ATH,Athletics,M.1500M-------------.----,Men's 1500m,Men,Silver,1,IND,India,M.1500M-------------
+ATH,Athletics,M.1500M-------------.----,Men's 1500m,Men,Bronze,1,JPN,Japan,M.1500M-------------
+ATH,Athletics,M.200M--------------.----,Men's 200m,Men,Gold,1,THA,Thailand,M.200M--------------
+ATH,Athletics,M.200M--------------.----,Men's 200m,Men,Silver,1,CHN,People's Republic of China,M.200M--------------
+ATH,Athletics,M.200M--------------.----,Men's 200m,Men,Bronze,1,JPN,Japan,M.200M--------------
+ATH,Athletics,M.3000MST-----------.----,Men's 3000m Steeplechase,Men,Gold,1,JPN,Japan,M.3000MST-----------
+ATH,Athletics,M.3000MST-----------.----,Men's 3000m Steeplechase,Men,Silver,1,JPN,Japan,M.3000MST-----------
+ATH,Athletics,M.3000MST-----------.----,Men's 3000m Steeplechase,Men,Bronze,1,QAT,Qatar,M.3000MST-----------
+ATH,Athletics,M.400M--------------.----,Men's 400m,Men,Gold,1,THA,Thailand,M.400M--------------
+ATH,Athletics,M.400M--------------.----,Men's 400m,Men,Silver,1,UAE,United Arab Emirates,M.400M--------------
+ATH,Athletics,M.400M--------------.----,Men's 400m,Men,Bronze,1,JPN,Japan,M.400M--------------
+ATH,Athletics,M.400MHURD----------.----,Men's 400m Hurdles,Men,Gold,1,QAT,Qatar,M.400MHURD----------
+ATH,Athletics,M.400MHURD----------.----,Men's 400m Hurdles,Men,Silver,1,JPN,Japan,M.400MHURD----------
+ATH,Athletics,M.400MHURD----------.----,Men's 400m Hurdles,Men,Bronze,1,TPE,Chinese Taipei,M.400MHURD----------
+ATH,Athletics,M.4X100M------------.----,Men's 4 x 100m Relay,Men,Gold,1,CHN,People's Republic of China,M.4X100M------------
+ATH,Athletics,M.4X100M------------.----,Men's 4 x 100m Relay,Men,Silver,1,TPE,Chinese Taipei,M.4X100M------------
+ATH,Athletics,M.4X100M------------.----,Men's 4 x 100m Relay,Men,Bronze,1,KOR,Republic of Korea,M.4X100M------------
+ATH,Athletics,M.4X400M------------.----,Men's 4 x 400m Relay,Men,Gold,1,JPN,Japan,M.4X400M------------
+ATH,Athletics,M.4X400M------------.----,Men's 4 x 400m Relay,Men,Silver,1,QAT,Qatar,M.4X400M------------
+ATH,Athletics,M.4X400M------------.----,Men's 4 x 400m Relay,Men,Bronze,1,IND,India,M.4X400M------------
+ATH,Athletics,M.5000M-------------.----,Men's 5000m,Men,Gold,1,BRN,Bahrain,M.5000M-------------
+ATH,Athletics,M.5000M-------------.----,Men's 5000m,Men,Silver,1,JPN,Japan,M.5000M-------------
+ATH,Athletics,M.5000M-------------.----,Men's 5000m,Men,Bronze,1,IND,India,M.5000M-------------
+ATH,Athletics,M.800M--------------.----,Men's 800m,Men,Gold,1,JPN,Japan,M.800M--------------
+ATH,Athletics,M.800M--------------.----,Men's 800m,Men,Silver,1,IRI,Islamic Republic of Iran,M.800M--------------
+ATH,Athletics,M.800M--------------.----,Men's 800m,Men,Bronze,1,QAT,Qatar,M.800M--------------
+ATH,Athletics,M.DECATH------------.----,Men's Decathlon,Men,Gold,1,JPN,Japan,M.DECATH------------
+ATH,Athletics,M.DECATH------------.----,Men's Decathlon,Men,Silver,1,CHN,People's Republic of China,M.DECATH------------
+ATH,Athletics,M.DECATH------------.----,Men's Decathlon,Men,Bronze,1,IND,India,M.DECATH------------
+ATH,Athletics,M.DISCUS------------.----,Men's Discus Throw,Men,Gold,1,CHN,People's Republic of China,M.DISCUS------------
+ATH,Athletics,M.DISCUS------------.----,Men's Discus Throw,Men,Silver,1,CHN,People's Republic of China,M.DISCUS------------
+ATH,Athletics,M.DISCUS------------.----,Men's Discus Throw,Men,Bronze,1,IRI,Islamic Republic of Iran,M.DISCUS------------
+ATH,Athletics,M.HAMMER------------.----,Men's Hammer Throw,Men,Gold,1,UZB,Uzbekistan,M.HAMMER------------
+ATH,Athletics,M.HAMMER------------.----,Men's Hammer Throw,Men,Silver,1,JPN,Japan,M.HAMMER------------
+ATH,Athletics,M.HAMMER------------.----,Men's Hammer Throw,Men,Bronze,1,KSA,Saudi Arabia,M.HAMMER------------
+ATH,Athletics,M.HIGHJUMP----------.----,Men's High Jump,Men,Gold,1,TPE,Chinese Taipei,M.HIGHJUMP----------
+ATH,Athletics,M.HIGHJUMP----------.----,Men's High Jump,Men,Silver,1,IND,India,M.HIGHJUMP----------
+ATH,Athletics,M.HIGHJUMP----------.----,Men's High Jump,Men,Bronze,1,KOR,Republic of Korea,M.HIGHJUMP----------
+ATH,Athletics,M.JAVELIN-----------.----,Men's Javelin Throw,Men,Gold,1,SRI,Sri Lanka,M.JAVELIN-----------
+ATH,Athletics,M.JAVELIN-----------.----,Men's Javelin Throw,Men,Silver,1,IND,India,M.JAVELIN-----------
+ATH,Athletics,M.JAVELIN-----------.----,Men's Javelin Throw,Men,Bronze,1,IND,India,M.JAVELIN-----------
+ATH,Athletics,M.LONGJUMP----------.----,Men's Long Jump,Men,Gold,1,CHN,People's Republic of China,M.LONGJUMP----------
+ATH,Athletics,M.LONGJUMP----------.----,Men's Long Jump,Men,Silver,1,IND,India,M.LONGJUMP----------
+ATH,Athletics,M.LONGJUMP----------.----,Men's Long Jump,Men,Bronze,1,UZB,Uzbekistan,M.LONGJUMP----------
+ATH,Athletics,M.MARATHON----------.----,Men's Marathon,Men,Gold,1,JPN,Japan,M.MARATHON----------
+ATH,Athletics,M.MARATHON----------.----,Men's Marathon,Men,Silver,1,IND,India,M.MARATHON----------
+ATH,Athletics,M.MARATHON----------.----,Men's Marathon,Men,Bronze,1,CHN,People's Republic of China,M.MARATHON----------
+ATH,Athletics,M.PLEVAULT----------.----,Men's Pole Vault,Men,Gold,1,PHI,Philippines,M.PLEVAULT----------
+ATH,Athletics,M.PLEVAULT----------.----,Men's Pole Vault,Men,Silver,1,CHN,People's Republic of China,M.PLEVAULT----------
+ATH,Athletics,M.PLEVAULT----------.----,Men's Pole Vault,Men,Bronze,1,CHN,People's Republic of China,M.PLEVAULT----------
+ATH,Athletics,M.SHOTPUT-----------.----,Men's Shot Put,Men,Gold,1,IRI,Islamic Republic of Iran,M.SHOTPUT-----------
+ATH,Athletics,M.SHOTPUT-----------.----,Men's Shot Put,Men,Silver,1,IND,India,M.SHOTPUT-----------
+ATH,Athletics,M.SHOTPUT-----------.----,Men's Shot Put,Men,Bronze,1,KSA,Saudi Arabia,M.SHOTPUT-----------
+ATH,Athletics,M.TRPLJUMP----------.----,Men's Triple Jump,Men,Gold,1,CHN,People's Republic of China,M.TRPLJUMP----------
+ATH,Athletics,M.TRPLJUMP----------.----,Men's Triple Jump,Men,Silver,1,JPN,Japan,M.TRPLJUMP----------
+ATH,Athletics,M.TRPLJUMP----------.----,Men's Triple Jump,Men,Bronze,1,CHN,People's Republic of China,M.TRPLJUMP----------
+ATH,Athletics,M.WALKHM------------.----,Men's Half Marathon Race Walk,Men,Gold,1,CHN,People's Republic of China,M.WALKHM------------
+ATH,Athletics,M.WALKHM------------.----,Men's Half Marathon Race Walk,Men,Silver,1,JPN,Japan,M.WALKHM------------
+ATH,Athletics,M.WALKHM------------.----,Men's Half Marathon Race Walk,Men,Bronze,1,KOR,Republic of Korea,M.WALKHM------------
+ATH,Athletics,M.WALKM-------------.----,Men's Marathon Race Walk,Men,Gold,1,JPN,Japan,M.WALKM-------------
+ATH,Athletics,M.WALKM-------------.----,Men's Marathon Race Walk,Men,Silver,1,CHN,People's Republic of China,M.WALKM-------------
+ATH,Athletics,M.WALKM-------------.----,Men's Marathon Race Walk,Men,Bronze,1,JPN,Japan,M.WALKM-------------
+ATH,Athletics,W.10000M------------.----,"Women's 10,000m",Women,Gold,1,BRN,Bahrain,W.10000M------------
+ATH,Athletics,W.10000M------------.----,"Women's 10,000m",Women,Silver,1,JPN,Japan,W.10000M------------
+ATH,Athletics,W.10000M------------.----,"Women's 10,000m",Women,Bronze,1,IND,India,W.10000M------------
+ATH,Athletics,W.100M--------------.----,Women's 100m,Women,Gold,1,CHN,People's Republic of China,W.100M--------------
+ATH,Athletics,W.100M--------------.----,Women's 100m,Women,Silver,1,SGP,Singapore,W.100M--------------
+ATH,Athletics,W.100M--------------.----,Women's 100m,Women,Bronze,1,BRN,Bahrain,W.100M--------------
+ATH,Athletics,W.100MHURD----------.----,Women's 100m Hurdles,Women,Gold,1,JPN,Japan,W.100MHURD----------
+ATH,Athletics,W.100MHURD----------.----,Women's 100m Hurdles,Women,Silver,1,JPN,Japan,W.100MHURD----------
+ATH,Athletics,W.100MHURD----------.----,Women's 100m Hurdles,Women,Bronze,1,CHN,People's Republic of China,W.100MHURD----------
+ATH,Athletics,W.1500M-------------.----,Women's 1500m,Women,Gold,1,BRN,Bahrain,W.1500M-------------
+ATH,Athletics,W.1500M-------------.----,Women's 1500m,Women,Silver,1,CHN,People's Republic of China,W.1500M-------------
+ATH,Athletics,W.1500M-------------.----,Women's 1500m,Women,Bronze,1,JPN,Japan,W.1500M-------------
+ATH,Athletics,W.200M--------------.----,Women's 200m,Women,Gold,1,SGP,Singapore,W.200M--------------
+ATH,Athletics,W.200M--------------.----,Women's 200m,Women,Silver,1,CHN,People's Republic of China,W.200M--------------
+ATH,Athletics,W.200M--------------.----,Women's 200m,Women,Bronze,1,IND,India,W.200M--------------
+ATH,Athletics,W.3000MST-----------.----,Women's 3000m Steeplechase,Women,Gold,1,BRN,Bahrain,W.3000MST-----------
+ATH,Athletics,W.3000MST-----------.----,Women's 3000m Steeplechase,Women,Silver,1,KAZ,Kazakhstan,W.3000MST-----------
+ATH,Athletics,W.3000MST-----------.----,Women's 3000m Steeplechase,Women,Bronze,1,IND,India,W.3000MST-----------
+ATH,Athletics,W.400M--------------.----,Women's 400m,Women,Gold,1,BRN,Bahrain,W.400M--------------
+ATH,Athletics,W.400M--------------.----,Women's 400m,Women,Silver,1,IRI,Islamic Republic of Iran,W.400M--------------
+ATH,Athletics,W.400M--------------.----,Women's 400m,Women,Bronze,1,IND,India,W.400M--------------
+ATH,Athletics,W.400MHURD----------.----,Women's 400m Hurdles,Women,Gold,1,UAE,United Arab Emirates,W.400MHURD----------
+ATH,Athletics,W.400MHURD----------.----,Women's 400m Hurdles,Women,Silver,1,KAZ,Kazakhstan,W.400MHURD----------
+ATH,Athletics,W.400MHURD----------.----,Women's 400m Hurdles,Women,Bronze,1,IND,India,W.400MHURD----------
+ATH,Athletics,W.4X100M------------.----,Women's 4 x 100m Relay,Women,Gold,1,CHN,People's Republic of China,W.4X100M------------
+ATH,Athletics,W.4X100M------------.----,Women's 4 x 100m Relay,Women,Silver,1,THA,Thailand,W.4X100M------------
+ATH,Athletics,W.4X100M------------.----,Women's 4 x 100m Relay,Women,Bronze,1,JPN,Japan,W.4X100M------------
+ATH,Athletics,W.4X400M------------.----,Women's 4 x 400m Relay,Women,Gold,1,IND,India,W.4X400M------------
+ATH,Athletics,W.4X400M------------.----,Women's 4 x 400m Relay,Women,Silver,1,BRN,Bahrain,W.4X400M------------
+ATH,Athletics,W.4X400M------------.----,Women's 4 x 400m Relay,Women,Bronze,1,CHN,People's Republic of China,W.4X400M------------
+ATH,Athletics,W.5000M-------------.----,Women's 5000m,Women,Gold,1,BRN,Bahrain,W.5000M-------------
+ATH,Athletics,W.5000M-------------.----,Women's 5000m,Women,Silver,1,JPN,Japan,W.5000M-------------
+ATH,Athletics,W.5000M-------------.----,Women's 5000m,Women,Bronze,1,IND,India,W.5000M-------------
+ATH,Athletics,W.800M--------------.----,Women's 800m,Women,Gold,1,CHN,People's Republic of China,W.800M--------------
+ATH,Athletics,W.800M--------------.----,Women's 800m,Women,Silver,1,BRN,Bahrain,W.800M--------------
+ATH,Athletics,W.800M--------------.----,Women's 800m,Women,Bronze,1,PHI,Philippines,W.800M--------------
+ATH,Athletics,W.DISCUS------------.----,Women's Discus Throw,Women,Gold,1,CHN,People's Republic of China,W.DISCUS------------
+ATH,Athletics,W.DISCUS------------.----,Women's Discus Throw,Women,Silver,1,CHN,People's Republic of China,W.DISCUS------------
+ATH,Athletics,W.DISCUS------------.----,Women's Discus Throw,Women,Bronze,1,THA,Thailand,W.DISCUS------------
+ATH,Athletics,W.HAMMER------------.----,Women's Hammer Throw,Women,Gold,1,CHN,People's Republic of China,W.HAMMER------------
+ATH,Athletics,W.HAMMER------------.----,Women's Hammer Throw,Women,Silver,1,CHN,People's Republic of China,W.HAMMER------------
+ATH,Athletics,W.HAMMER------------.----,Women's Hammer Throw,Women,Bronze,1,JPN,Japan,W.HAMMER------------
+ATH,Athletics,W.HEPTATH-----------.----,Women's Heptathlon,Women,Gold,1,JPN,Japan,W.HEPTATH-----------
+ATH,Athletics,W.HEPTATH-----------.----,Women's Heptathlon,Women,Silver,1,JPN,Japan,W.HEPTATH-----------
+ATH,Athletics,W.HEPTATH-----------.----,Women's Heptathlon,Women,Bronze,1,KAZ,Kazakhstan,W.HEPTATH-----------
+ATH,Athletics,W.HIGHJUMP----------.----,Women's High Jump,Women,Gold,1,UZB,Uzbekistan,W.HIGHJUMP----------
+ATH,Athletics,W.HIGHJUMP----------.----,Women's High Jump,Women,Silver,1,KAZ,Kazakhstan,W.HIGHJUMP----------
+ATH,Athletics,W.HIGHJUMP----------.----,Women's High Jump,Women,Bronze,1,IND,India,W.HIGHJUMP----------
+ATH,Athletics,W.JAVELIN-----------.----,Women's Javelin Throw,Women,Gold,1,CHN,People's Republic of China,W.JAVELIN-----------
+ATH,Athletics,W.JAVELIN-----------.----,Women's Javelin Throw,Women,Silver,1,JPN,Japan,W.JAVELIN-----------
+ATH,Athletics,W.JAVELIN-----------.----,Women's Javelin Throw,Women,Bronze,1,JPN,Japan,W.JAVELIN-----------
+ATH,Athletics,W.LONGJUMP----------.----,Women's Long Jump,Women,Gold,1,CHN,People's Republic of China,W.LONGJUMP----------
+ATH,Athletics,W.LONGJUMP----------.----,Women's Long Jump,Women,Silver,1,IND,India,W.LONGJUMP----------
+ATH,Athletics,W.LONGJUMP----------.----,Women's Long Jump,Women,Bronze,1,CHN,People's Republic of China,W.LONGJUMP----------
+ATH,Athletics,W.MARATHON----------.----,Women's Marathon,Women,Gold,1,BRN,Bahrain,W.MARATHON----------
+ATH,Athletics,W.MARATHON----------.----,Women's Marathon,Women,Silver,1,CHN,People's Republic of China,W.MARATHON----------
+ATH,Athletics,W.MARATHON----------.----,Women's Marathon,Women,Bronze,1,JPN,Japan,W.MARATHON----------
+ATH,Athletics,W.PLEVAULT----------.----,Women's Pole Vault,Women,Gold,1,JPN,Japan,W.PLEVAULT----------
+ATH,Athletics,W.PLEVAULT----------.----,Women's Pole Vault,Women,Silver,1,CHN,People's Republic of China,W.PLEVAULT----------
+ATH,Athletics,W.PLEVAULT----------.----,Women's Pole Vault,Women,Bronze,1,IND,India,W.PLEVAULT----------
+ATH,Athletics,W.PLEVAULT----------.----,Women's Pole Vault,Women,Bronze,2,KAZ,Kazakhstan,W.PLEVAULT----------
+ATH,Athletics,W.SHOTPUT-----------.----,Women's Shot Put,Women,Gold,1,CHN,People's Republic of China,W.SHOTPUT-----------
+ATH,Athletics,W.SHOTPUT-----------.----,Women's Shot Put,Women,Silver,1,CHN,People's Republic of China,W.SHOTPUT-----------
+ATH,Athletics,W.SHOTPUT-----------.----,Women's Shot Put,Women,Bronze,1,IND,India,W.SHOTPUT-----------
+ATH,Athletics,W.TRPLJUMP----------.----,Women's Triple Jump,Women,Gold,1,UZB,Uzbekistan,W.TRPLJUMP----------
+ATH,Athletics,W.TRPLJUMP----------.----,Women's Triple Jump,Women,Silver,1,CHN,People's Republic of China,W.TRPLJUMP----------
+ATH,Athletics,W.TRPLJUMP----------.----,Women's Triple Jump,Women,Bronze,1,CHN,People's Republic of China,W.TRPLJUMP----------
+ATH,Athletics,W.WALKHM------------.----,Women's Half Marathon Race Walk,Women,Gold,1,CHN,People's Republic of China,W.WALKHM------------
+ATH,Athletics,W.WALKHM------------.----,Women's Half Marathon Race Walk,Women,Silver,1,KAZ,Kazakhstan,W.WALKHM------------
+ATH,Athletics,W.WALKHM------------.----,Women's Half Marathon Race Walk,Women,Bronze,1,CHN,People's Republic of China,W.WALKHM------------
+ATH,Athletics,W.WALKM-------------.----,Women's Marathon Race Walk,Women,Gold,1,CHN,People's Republic of China,W.WALKM-------------
+ATH,Athletics,W.WALKM-------------.----,Women's Marathon Race Walk,Women,Silver,1,CHN,People's Republic of China,W.WALKM-------------
+ATH,Athletics,W.WALKM-------------.----,Women's Marathon Race Walk,Women,Bronze,1,JPN,Japan,W.WALKM-------------
+ATH,Athletics,X.4X100M------------.----,4 x 100m Relay Mixed,Mixed,Gold,1,CHN,People's Republic of China,X.4X100M------------
+ATH,Athletics,X.4X100M------------.----,4 x 100m Relay Mixed,Mixed,Silver,1,THA,Thailand,X.4X100M------------
+ATH,Athletics,X.4X100M------------.----,4 x 100m Relay Mixed,Mixed,Bronze,1,IND,India,X.4X100M------------
+ATH,Athletics,X.4X400M------------.----,4 x 400m Relay Mixed,Mixed,Gold,1,BRN,Bahrain,X.4X400M------------
+ATH,Athletics,X.4X400M------------.----,4 x 400m Relay Mixed,Mixed,Silver,1,IND,India,X.4X400M------------
+ATH,Athletics,X.4X400M------------.----,4 x 400m Relay Mixed,Mixed,Bronze,1,VIE,Vietnam,X.4X400M------------
+BBL,Baseball,M.TEAM9-------------.FNL-,Men’s Finals,Men,Gold,1,KOR,Republic of Korea,M.TEAM9-------------
+BBL,Baseball,M.TEAM9-------------.FNL-,Men’s Finals,Men,Silver,1,JPN,Japan,M.TEAM9-------------
+BBL,Baseball,M.TEAM9-------------.FNL-,Men’s Finals,Men,Bronze,1,TPE,Chinese Taipei,M.TEAM9-------------
+BDM,Badminton,M.DOUBLES-----------.----,Men's Doubles,Men,Gold,1,INA,Indonesia,M.DOUBLES-----------
+BDM,Badminton,M.DOUBLES-----------.----,Men's Doubles,Men,Silver,1,CHN,People's Republic of China,M.DOUBLES-----------
+BDM,Badminton,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,1,KOR,Republic of Korea,M.DOUBLES-----------
+BDM,Badminton,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,2,INA,Indonesia,M.DOUBLES-----------
+BDM,Badminton,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,THA,Thailand,M.SINGLES-----------
+BDM,Badminton,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,SGP,Singapore,M.SINGLES-----------
+BDM,Badminton,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,INA,Indonesia,M.SINGLES-----------
+BDM,Badminton,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,KOR,Republic of Korea,M.SINGLES-----------
+BDM,Badminton,M.TEAM--------------.----,Men's Team,Men,Gold,1,INA,Indonesia,M.TEAM--------------
+BDM,Badminton,M.TEAM--------------.----,Men's Team,Men,Silver,1,CHN,People's Republic of China,M.TEAM--------------
+BDM,Badminton,M.TEAM--------------.----,Men's Team,Men,Bronze,1,IND,India,M.TEAM--------------
+BDM,Badminton,M.TEAM--------------.----,Men's Team,Men,Bronze,2,THA,Thailand,M.TEAM--------------
+BDM,Badminton,W.DOUBLES-----------.----,Women's Doubles,Women,Gold,1,KOR,Republic of Korea,W.DOUBLES-----------
+BDM,Badminton,W.DOUBLES-----------.----,Women's Doubles,Women,Silver,1,CHN,People's Republic of China,W.DOUBLES-----------
+BDM,Badminton,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,1,JPN,Japan,W.DOUBLES-----------
+BDM,Badminton,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,2,MAS,Malaysia,W.DOUBLES-----------
+BDM,Badminton,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,KOR,Republic of Korea,W.SINGLES-----------
+BDM,Badminton,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,JPN,Japan,W.SINGLES-----------
+BDM,Badminton,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,CHN,People's Republic of China,W.SINGLES-----------
+BDM,Badminton,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,CHN,People's Republic of China,W.SINGLES-----------
+BDM,Badminton,W.TEAM--------------.----,Women's Team,Women,Gold,1,CHN,People's Republic of China,W.TEAM--------------
+BDM,Badminton,W.TEAM--------------.----,Women's Team,Women,Silver,1,JPN,Japan,W.TEAM--------------
+BDM,Badminton,W.TEAM--------------.----,Women's Team,Women,Bronze,1,INA,Indonesia,W.TEAM--------------
+BDM,Badminton,W.TEAM--------------.----,Women's Team,Women,Bronze,2,KOR,Republic of Korea,W.TEAM--------------
+BDM,Badminton,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,CHN,People's Republic of China,X.DOUBLES-----------
+BDM,Badminton,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,INA,Indonesia,X.DOUBLES-----------
+BDM,Badminton,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,TPE,Chinese Taipei,X.DOUBLES-----------
+BDM,Badminton,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,CHN,People's Republic of China,X.DOUBLES-----------
+BK3,3x3 Basketball,M.TEAM3-------------.----,Men,Men,Gold,1,KOR,Republic of Korea,M.TEAM3-------------
+BK3,3x3 Basketball,M.TEAM3-------------.----,Men,Men,Silver,1,QAT,Qatar,M.TEAM3-------------
+BK3,3x3 Basketball,M.TEAM3-------------.----,Men,Men,Bronze,1,IRI,Islamic Republic of Iran,M.TEAM3-------------
+BK3,3x3 Basketball,W.TEAM3-------------.----,Women,Women,Gold,1,JPN,Japan,W.TEAM3-------------
+BK3,3x3 Basketball,W.TEAM3-------------.----,Women,Women,Silver,1,PHI,Philippines,W.TEAM3-------------
+BK3,3x3 Basketball,W.TEAM3-------------.----,Women,Women,Bronze,1,KOR,Republic of Korea,W.TEAM3-------------
+BKB,Basketball,M.TEAM5-------------.----,Men,Men,Gold,1,KOR,Republic of Korea,M.TEAM5-------------
+BKB,Basketball,M.TEAM5-------------.----,Men,Men,Silver,1,JPN,Japan,M.TEAM5-------------
+BKB,Basketball,M.TEAM5-------------.----,Men,Men,Bronze,1,IRI,Islamic Republic of Iran,M.TEAM5-------------
+BKB,Basketball,W.TEAM5-------------.----,Women,Women,Gold,1,KOR,Republic of Korea,W.TEAM5-------------
+BKB,Basketball,W.TEAM5-------------.----,Women,Women,Silver,1,JPN,Japan,W.TEAM5-------------
+BKB,Basketball,W.TEAM5-------------.----,Women,Women,Bronze,1,CHN,People's Republic of China,W.TEAM5-------------
+BKG,Breaking,M.INDIVID-----------.----,B-Boys,Men,Gold,1,JPN,Japan,M.INDIVID-----------
+BKG,Breaking,M.INDIVID-----------.----,B-Boys,Men,Silver,1,KOR,Republic of Korea,M.INDIVID-----------
+BKG,Breaking,M.INDIVID-----------.----,B-Boys,Men,Bronze,1,CHN,People's Republic of China,M.INDIVID-----------
+BKG,Breaking,W.INDIVID-----------.----,B-Girls,Women,Gold,1,CHN,People's Republic of China,W.INDIVID-----------
+BKG,Breaking,W.INDIVID-----------.----,B-Girls,Women,Silver,1,JPN,Japan,W.INDIVID-----------
+BKG,Breaking,W.INDIVID-----------.----,B-Girls,Women,Bronze,1,CHN,People's Republic of China,W.INDIVID-----------
+BMF,Cycling BMX Freestyle,M.INDVFRST----------.----,Men's Park,Men,Gold,1,JPN,Japan,M.INDVFRST----------
+BMF,Cycling BMX Freestyle,M.INDVFRST----------.----,Men's Park,Men,Silver,1,JPN,Japan,M.INDVFRST----------
+BMF,Cycling BMX Freestyle,M.INDVFRST----------.----,Men's Park,Men,Bronze,1,CHN,People's Republic of China,M.INDVFRST----------
+BMF,Cycling BMX Freestyle,W.INDVFRST----------.----,Women's Park,Women,Gold,1,CHN,People's Republic of China,W.INDVFRST----------
+BMF,Cycling BMX Freestyle,W.INDVFRST----------.----,Women's Park,Women,Silver,1,JPN,Japan,W.INDVFRST----------
+BMF,Cycling BMX Freestyle,W.INDVFRST----------.----,Women's Park,Women,Bronze,1,CHN,People's Republic of China,W.INDVFRST----------
+BMX,Cycling BMX Racing,M.INDVRACE----------.----,Men,Men,Gold,1,JPN,Japan,M.INDVRACE----------
+BMX,Cycling BMX Racing,M.INDVRACE----------.----,Men,Men,Silver,1,JPN,Japan,M.INDVRACE----------
+BMX,Cycling BMX Racing,M.INDVRACE----------.----,Men,Men,Bronze,1,CHN,People's Republic of China,M.INDVRACE----------
+BMX,Cycling BMX Racing,W.INDVRACE----------.----,Women,Women,Gold,1,JPN,Japan,W.INDVRACE----------
+BMX,Cycling BMX Racing,W.INDVRACE----------.----,Women,Women,Silver,1,CHN,People's Republic of China,W.INDVRACE----------
+BMX,Cycling BMX Racing,W.INDVRACE----------.----,Women,Women,Bronze,1,INA,Indonesia,W.INDVRACE----------
+BOX,Boxing,M.55KG--------------.----,Men's 55kg,Men,Gold,1,JPN,Japan,M.55KG--------------
+BOX,Boxing,M.55KG--------------.----,Men's 55kg,Men,Silver,1,PHI,Philippines,M.55KG--------------
+BOX,Boxing,M.55KG--------------.----,Men's 55kg,Men,Bronze,1,MGL,Mongolia,M.55KG--------------
+BOX,Boxing,M.55KG--------------.----,Men's 55kg,Men,Bronze,2,KAZ,Kazakhstan,M.55KG--------------
+BOX,Boxing,M.60KG--------------.----,Men's 60kg,Men,Gold,1,UZB,Uzbekistan,M.60KG--------------
+BOX,Boxing,M.60KG--------------.----,Men's 60kg,Men,Silver,1,KOR,Republic of Korea,M.60KG--------------
+BOX,Boxing,M.60KG--------------.----,Men's 60kg,Men,Bronze,1,JPN,Japan,M.60KG--------------
+BOX,Boxing,M.60KG--------------.----,Men's 60kg,Men,Bronze,2,TJK,Tajikistan,M.60KG--------------
+BOX,Boxing,M.70KG--------------.----,Men's 70kg,Men,Gold,1,KAZ,Kazakhstan,M.70KG--------------
+BOX,Boxing,M.70KG--------------.----,Men's 70kg,Men,Silver,1,JOR,Jordan,M.70KG--------------
+BOX,Boxing,M.70KG--------------.----,Men's 70kg,Men,Bronze,1,UZB,Uzbekistan,M.70KG--------------
+BOX,Boxing,M.70KG--------------.----,Men's 70kg,Men,Bronze,2,JPN,Japan,M.70KG--------------
+BOX,Boxing,M.80KG--------------.----,Men's 80kg,Men,Gold,1,IND,India,M.80KG--------------
+BOX,Boxing,M.80KG--------------.----,Men's 80kg,Men,Silver,1,KOR,Republic of Korea,M.80KG--------------
+BOX,Boxing,M.80KG--------------.----,Men's 80kg,Men,Bronze,1,UZB,Uzbekistan,M.80KG--------------
+BOX,Boxing,M.80KG--------------.----,Men's 80kg,Men,Bronze,2,JOR,Jordan,M.80KG--------------
+BOX,Boxing,M.90KG--------------.----,Men's 90kg,Men,Gold,1,UZB,Uzbekistan,M.90KG--------------
+BOX,Boxing,M.90KG--------------.----,Men's 90kg,Men,Silver,1,CHN,People's Republic of China,M.90KG--------------
+BOX,Boxing,M.90KG--------------.----,Men's 90kg,Men,Bronze,1,IND,India,M.90KG--------------
+BOX,Boxing,M.90KG--------------.----,Men's 90kg,Men,Bronze,2,TJK,Tajikistan,M.90KG--------------
+BOX,Boxing,M.O90KG-------------.----,Men's +90kg,Men,Gold,1,KAZ,Kazakhstan,M.O90KG-------------
+BOX,Boxing,M.O90KG-------------.----,Men's +90kg,Men,Silver,1,UZB,Uzbekistan,M.O90KG-------------
+BOX,Boxing,M.O90KG-------------.----,Men's +90kg,Men,Bronze,1,IND,India,M.O90KG-------------
+BOX,Boxing,M.O90KG-------------.----,Men's +90kg,Men,Bronze,2,IRI,Islamic Republic of Iran,M.O90KG-------------
+BOX,Boxing,W.51KG--------------.----,Women's 51kg,Women,Gold,1,CHN,People's Republic of China,W.51KG--------------
+BOX,Boxing,W.51KG--------------.----,Women's 51kg,Women,Silver,1,VIE,Vietnam,W.51KG--------------
+BOX,Boxing,W.51KG--------------.----,Women's 51kg,Women,Bronze,1,UZB,Uzbekistan,W.51KG--------------
+BOX,Boxing,W.51KG--------------.----,Women's 51kg,Women,Bronze,2,KAZ,Kazakhstan,W.51KG--------------
+BOX,Boxing,W.54KG--------------.----,Women's 54kg,Women,Gold,1,THA,Thailand,W.54KG--------------
+BOX,Boxing,W.54KG--------------.----,Women's 54kg,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.54KG--------------
+BOX,Boxing,W.54KG--------------.----,Women's 54kg,Women,Bronze,1,JPN,Japan,W.54KG--------------
+BOX,Boxing,W.54KG--------------.----,Women's 54kg,Women,Bronze,2,CHN,People's Republic of China,W.54KG--------------
+BOX,Boxing,W.60KG--------------.----,Women's 60kg,Women,Gold,1,TPE,Chinese Taipei,W.60KG--------------
+BOX,Boxing,W.60KG--------------.----,Women's 60kg,Women,Silver,1,CHN,People's Republic of China,W.60KG--------------
+BOX,Boxing,W.60KG--------------.----,Women's 60kg,Women,Bronze,1,UZB,Uzbekistan,W.60KG--------------
+BOX,Boxing,W.60KG--------------.----,Women's 60kg,Women,Bronze,2,IND,India,W.60KG--------------
+BOX,Boxing,W.65KG--------------.----,Women's 65kg,Women,Gold,1,IND,India,W.65KG--------------
+BOX,Boxing,W.65KG--------------.----,Women's 65kg,Women,Silver,1,TPE,Chinese Taipei,W.65KG--------------
+BOX,Boxing,W.65KG--------------.----,Women's 65kg,Women,Bronze,1,CHN,People's Republic of China,W.65KG--------------
+BOX,Boxing,W.65KG--------------.----,Women's 65kg,Women,Bronze,2,PRK,Democratic People's Republic of Korea,W.65KG--------------
+BOX,Boxing,W.75KG--------------.----,Women's 75kg,Women,Gold,1,IND,India,W.75KG--------------
+BOX,Boxing,W.75KG--------------.----,Women's 75kg,Women,Silver,1,CHN,People's Republic of China,W.75KG--------------
+BOX,Boxing,W.75KG--------------.----,Women's 75kg,Women,Bronze,1,KAZ,Kazakhstan,W.75KG--------------
+BOX,Boxing,W.75KG--------------.----,Women's 75kg,Women,Bronze,2,VIE,Vietnam,W.75KG--------------
+CKT,Cricket,M.TEAM--------------.----,Men,Men,Gold,1,IND,India,M.TEAM--------------
+CKT,Cricket,M.TEAM--------------.----,Men,Men,Silver,1,PAK,Pakistan,M.TEAM--------------
+CKT,Cricket,M.TEAM--------------.----,Men,Men,Bronze,1,SRI,Sri Lanka,M.TEAM--------------
+CKT,Cricket,W.TEAM--------------.----,Women,Women,Gold,1,IND,India,W.TEAM--------------
+CKT,Cricket,W.TEAM--------------.----,Women,Women,Silver,1,SRI,Sri Lanka,W.TEAM--------------
+CKT,Cricket,W.TEAM--------------.----,Women,Women,Bronze,1,PAK,Pakistan,W.TEAM--------------
+CLB,Sport Climbing,M.BOULDER-----------.FNL-,Men's Boulder Final,Men,Gold,1,JPN,Japan,M.BOULDER-----------
+CLB,Sport Climbing,M.BOULDER-----------.FNL-,Men's Boulder Final,Men,Silver,1,KOR,Republic of Korea,M.BOULDER-----------
+CLB,Sport Climbing,M.BOULDER-----------.FNL-,Men's Boulder Final,Men,Bronze,1,JPN,Japan,M.BOULDER-----------
+CLB,Sport Climbing,M.LEAD--------------.FNL-,Men's Lead Final,Men,Gold,1,JPN,Japan,M.LEAD--------------
+CLB,Sport Climbing,M.LEAD--------------.FNL-,Men's Lead Final,Men,Silver,1,JPN,Japan,M.LEAD--------------
+CLB,Sport Climbing,M.LEAD--------------.FNL-,Men's Lead Final,Men,Bronze,1,KOR,Republic of Korea,M.LEAD--------------
+CLB,Sport Climbing,M.SPEED4------------.FNL-,Men's Speed 4 Final,Men,Gold,1,CHN,People's Republic of China,M.SPEED4------------
+CLB,Sport Climbing,M.SPEED4------------.FNL-,Men's Speed 4 Final,Men,Silver,1,IRI,Islamic Republic of Iran,M.SPEED4------------
+CLB,Sport Climbing,M.SPEED4------------.FNL-,Men's Speed 4 Final,Men,Bronze,1,KAZ,Kazakhstan,M.SPEED4------------
+CLB,Sport Climbing,W.BOULDER-----------.FNL-,Women's Boulder Final,Women,Gold,1,CHN,People's Republic of China,W.BOULDER-----------
+CLB,Sport Climbing,W.BOULDER-----------.FNL-,Women's Boulder Final,Women,Silver,1,JPN,Japan,W.BOULDER-----------
+CLB,Sport Climbing,W.BOULDER-----------.FNL-,Women's Boulder Final,Women,Bronze,1,KOR,Republic of Korea,W.BOULDER-----------
+CLB,Sport Climbing,W.LEAD--------------.FNL-,Women's Lead Final,Women,Gold,1,KOR,Republic of Korea,W.LEAD--------------
+CLB,Sport Climbing,W.LEAD--------------.FNL-,Women's Lead Final,Women,Silver,1,JPN,Japan,W.LEAD--------------
+CLB,Sport Climbing,W.LEAD--------------.FNL-,Women's Lead Final,Women,Bronze,1,CHN,People's Republic of China,W.LEAD--------------
+CLB,Sport Climbing,W.SPEED4------------.FNL-,Women's Speed 4 Final,Women,Gold,1,INA,Indonesia,W.SPEED4------------
+CLB,Sport Climbing,W.SPEED4------------.FNL-,Women's Speed 4 Final,Women,Silver,1,CHN,People's Republic of China,W.SPEED4------------
+CLB,Sport Climbing,W.SPEED4------------.FNL-,Women's Speed 4 Final,Women,Bronze,1,KOR,Republic of Korea,W.SPEED4------------
+CRD,Cycling Road,M.RR----------------.----,Men's Road Race,Men,Gold,1,KAZ,Kazakhstan,M.RR----------------
+CRD,Cycling Road,M.RR----------------.----,Men's Road Race,Men,Silver,1,KAZ,Kazakhstan,M.RR----------------
+CRD,Cycling Road,M.RR----------------.----,Men's Road Race,Men,Bronze,1,JPN,Japan,M.RR----------------
+CRD,Cycling Road,M.TT----------------.----,Men's Individual Time Trial,Men,Gold,1,KAZ,Kazakhstan,M.TT----------------
+CRD,Cycling Road,M.TT----------------.----,Men's Individual Time Trial,Men,Silver,1,JPN,Japan,M.TT----------------
+CRD,Cycling Road,M.TT----------------.----,Men's Individual Time Trial,Men,Bronze,1,MGL,Mongolia,M.TT----------------
+CRD,Cycling Road,W.RR----------------.----,Women's Road Race,Women,Gold,1,CHN,People's Republic of China,W.RR----------------
+CRD,Cycling Road,W.RR----------------.----,Women's Road Race,Women,Silver,1,AFG,Afghanistan,W.RR----------------
+CRD,Cycling Road,W.RR----------------.----,Women's Road Race,Women,Bronze,1,HKG,"Hong Kong, China",W.RR----------------
+CRD,Cycling Road,W.TT----------------.----,Women's Individual Time Trial,Women,Gold,1,KAZ,Kazakhstan,W.TT----------------
+CRD,Cycling Road,W.TT----------------.----,Women's Individual Time Trial,Women,Silver,1,CHN,People's Republic of China,W.TT----------------
+CRD,Cycling Road,W.TT----------------.----,Women's Individual Time Trial,Women,Bronze,1,KOR,Republic of Korea,W.TT----------------
+CSL,Canoe Slalom,M.C1----------------.----,Men's Canoe Single,Men,Gold,1,CHN,People's Republic of China,M.C1----------------
+CSL,Canoe Slalom,M.C1----------------.----,Men's Canoe Single,Men,Silver,1,TPE,Chinese Taipei,M.C1----------------
+CSL,Canoe Slalom,M.C1----------------.----,Men's Canoe Single,Men,Bronze,1,THA,Thailand,M.C1----------------
+CSL,Canoe Slalom,M.K1----------------.----,Men's Kayak Single,Men,Gold,1,CHN,People's Republic of China,M.K1----------------
+CSL,Canoe Slalom,M.K1----------------.----,Men's Kayak Single,Men,Silver,1,JPN,Japan,M.K1----------------
+CSL,Canoe Slalom,M.K1----------------.----,Men's Kayak Single,Men,Bronze,1,KAZ,Kazakhstan,M.K1----------------
+CSL,Canoe Slalom,M.X1----------------.----,Men's Kayak Cross,Men,Gold,1,JPN,Japan,M.X1----------------
+CSL,Canoe Slalom,M.X1----------------.----,Men's Kayak Cross,Men,Silver,1,CHN,People's Republic of China,M.X1----------------
+CSL,Canoe Slalom,M.X1----------------.----,Men's Kayak Cross,Men,Bronze,1,CHN,People's Republic of China,M.X1----------------
+CSL,Canoe Slalom,W.C1----------------.----,Women's Canoe Single,Women,Gold,1,CHN,People's Republic of China,W.C1----------------
+CSL,Canoe Slalom,W.C1----------------.----,Women's Canoe Single,Women,Silver,1,THA,Thailand,W.C1----------------
+CSL,Canoe Slalom,W.C1----------------.----,Women's Canoe Single,Women,Bronze,1,KAZ,Kazakhstan,W.C1----------------
+CSL,Canoe Slalom,W.K1----------------.----,Women's Kayak Single,Women,Gold,1,JPN,Japan,W.K1----------------
+CSL,Canoe Slalom,W.K1----------------.----,Women's Kayak Single,Women,Silver,1,CHN,People's Republic of China,W.K1----------------
+CSL,Canoe Slalom,W.K1----------------.----,Women's Kayak Single,Women,Bronze,1,KAZ,Kazakhstan,W.K1----------------
+CSL,Canoe Slalom,W.X1----------------.----,Women's Kayak Cross,Women,Gold,1,CHN,People's Republic of China,W.X1----------------
+CSL,Canoe Slalom,W.X1----------------.----,Women's Kayak Cross,Women,Silver,1,TPE,Chinese Taipei,W.X1----------------
+CSL,Canoe Slalom,W.X1----------------.----,Women's Kayak Cross,Women,Bronze,1,CHN,People's Republic of China,W.X1----------------
+CSP,Canoe Sprint,M.C1-500M-----------.FNL-,Men's Canoe Single 500m Final,Men,Gold,1,CHN,People's Republic of China,M.C1-500M-----------
+CSP,Canoe Sprint,M.C1-500M-----------.FNL-,Men's Canoe Single 500m Final,Men,Silver,1,UZB,Uzbekistan,M.C1-500M-----------
+CSP,Canoe Sprint,M.C1-500M-----------.FNL-,Men's Canoe Single 500m Final,Men,Bronze,1,TPE,Chinese Taipei,M.C1-500M-----------
+CSP,Canoe Sprint,M.C2-500M-----------.FNL-,Men's Canoe Double 500m Final,Men,Gold,1,CHN,People's Republic of China,M.C2-500M-----------
+CSP,Canoe Sprint,M.C2-500M-----------.FNL-,Men's Canoe Double 500m Final,Men,Silver,1,UZB,Uzbekistan,M.C2-500M-----------
+CSP,Canoe Sprint,M.C2-500M-----------.FNL-,Men's Canoe Double 500m Final,Men,Bronze,1,KAZ,Kazakhstan,M.C2-500M-----------
+CSP,Canoe Sprint,M.K1-500M-----------.FNL-,Men's Kayak Single 500m Finals,Men,Gold,1,UZB,Uzbekistan,M.K1-500M-----------
+CSP,Canoe Sprint,M.K1-500M-----------.FNL-,Men's Kayak Single 500m Finals,Men,Silver,1,KOR,Republic of Korea,M.K1-500M-----------
+CSP,Canoe Sprint,M.K1-500M-----------.FNL-,Men's Kayak Single 500m Finals,Men,Bronze,1,KAZ,Kazakhstan,M.K1-500M-----------
+CSP,Canoe Sprint,M.K2-500M-----------.FNL-,Men's Kayak Double 500m Finals,Men,Gold,1,KOR,Republic of Korea,M.K2-500M-----------
+CSP,Canoe Sprint,M.K2-500M-----------.FNL-,Men's Kayak Double 500m Finals,Men,Silver,1,JPN,Japan,M.K2-500M-----------
+CSP,Canoe Sprint,M.K2-500M-----------.FNL-,Men's Kayak Double 500m Finals,Men,Bronze,1,IRI,Islamic Republic of Iran,M.K2-500M-----------
+CSP,Canoe Sprint,M.K4-500M-----------.FNL-,Men's Kayak Four 500m Final,Men,Gold,1,KOR,Republic of Korea,M.K4-500M-----------
+CSP,Canoe Sprint,M.K4-500M-----------.FNL-,Men's Kayak Four 500m Final,Men,Silver,1,CHN,People's Republic of China,M.K4-500M-----------
+CSP,Canoe Sprint,M.K4-500M-----------.FNL-,Men's Kayak Four 500m Final,Men,Bronze,1,JPN,Japan,M.K4-500M-----------
+CSP,Canoe Sprint,W.C1-200M-----------.FNL-,Women's Canoe Single 200m Final,Women,Gold,1,UZB,Uzbekistan,W.C1-200M-----------
+CSP,Canoe Sprint,W.C1-200M-----------.FNL-,Women's Canoe Single 200m Final,Women,Silver,1,CHN,People's Republic of China,W.C1-200M-----------
+CSP,Canoe Sprint,W.C1-200M-----------.FNL-,Women's Canoe Single 200m Final,Women,Bronze,1,INA,Indonesia,W.C1-200M-----------
+CSP,Canoe Sprint,W.C2-500M-----------.FNL-,Women's Canoe Double 500m Final,Women,Gold,1,CHN,People's Republic of China,W.C2-500M-----------
+CSP,Canoe Sprint,W.C2-500M-----------.FNL-,Women's Canoe Double 500m Final,Women,Silver,1,UZB,Uzbekistan,W.C2-500M-----------
+CSP,Canoe Sprint,W.C2-500M-----------.FNL-,Women's Canoe Double 500m Final,Women,Bronze,1,VIE,Vietnam,W.C2-500M-----------
+CSP,Canoe Sprint,W.K1-500M-----------.FNL-,Women's Kayak Single 500m Final,Women,Gold,1,CHN,People's Republic of China,W.K1-500M-----------
+CSP,Canoe Sprint,W.K1-500M-----------.FNL-,Women's Kayak Single 500m Final,Women,Silver,1,UZB,Uzbekistan,W.K1-500M-----------
+CSP,Canoe Sprint,W.K1-500M-----------.FNL-,Women's Kayak Single 500m Final,Women,Bronze,1,KAZ,Kazakhstan,W.K1-500M-----------
+CSP,Canoe Sprint,W.K2-500M-----------.FNL-,Women's Kayak Double 500m Final,Women,Gold,1,CHN,People's Republic of China,W.K2-500M-----------
+CSP,Canoe Sprint,W.K2-500M-----------.FNL-,Women's Kayak Double 500m Final,Women,Silver,1,KAZ,Kazakhstan,W.K2-500M-----------
+CSP,Canoe Sprint,W.K2-500M-----------.FNL-,Women's Kayak Double 500m Final,Women,Bronze,1,UZB,Uzbekistan,W.K2-500M-----------
+CSP,Canoe Sprint,W.K4-500M-----------.FNL-,Women's Kayak Four 500m Final,Women,Gold,1,CHN,People's Republic of China,W.K4-500M-----------
+CSP,Canoe Sprint,W.K4-500M-----------.FNL-,Women's Kayak Four 500m Final,Women,Silver,1,UZB,Uzbekistan,W.K4-500M-----------
+CSP,Canoe Sprint,W.K4-500M-----------.FNL-,Women's Kayak Four 500m Final,Women,Bronze,1,KAZ,Kazakhstan,W.K4-500M-----------
+CSP,Canoe Sprint,X.C2-500M-----------.FNL-,Mixed Canoe Double 500m Final,Mixed,Gold,1,CHN,People's Republic of China,X.C2-500M-----------
+CSP,Canoe Sprint,X.C2-500M-----------.FNL-,Mixed Canoe Double 500m Final,Mixed,Silver,1,UZB,Uzbekistan,X.C2-500M-----------
+CSP,Canoe Sprint,X.C2-500M-----------.FNL-,Mixed Canoe Double 500m Final,Mixed,Bronze,1,KAZ,Kazakhstan,X.C2-500M-----------
+CSP,Canoe Sprint,X.K2-500M-----------.FNL-,Mixed Kayak Double 500m Final,Mixed,Gold,1,CHN,People's Republic of China,X.K2-500M-----------
+CSP,Canoe Sprint,X.K2-500M-----------.FNL-,Mixed Kayak Double 500m Final,Mixed,Silver,1,KOR,Republic of Korea,X.K2-500M-----------
+CSP,Canoe Sprint,X.K2-500M-----------.FNL-,Mixed Kayak Double 500m Final,Mixed,Bronze,1,JPN,Japan,X.K2-500M-----------
+CTR,Cycling Track,M.KEIRIN------------.----,Men's Keirin,Men,Gold,1,MAS,Malaysia,M.KEIRIN------------
+CTR,Cycling Track,M.KEIRIN------------.----,Men's Keirin,Men,Silver,1,CHN,People's Republic of China,M.KEIRIN------------
+CTR,Cycling Track,M.KEIRIN------------.----,Men's Keirin,Men,Bronze,1,CHN,People's Republic of China,M.KEIRIN------------
+CTR,Cycling Track,M.MADISON-----------.----,Men's Madison,Men,Gold,1,JPN,Japan,M.MADISON-----------
+CTR,Cycling Track,M.MADISON-----------.----,Men's Madison,Men,Silver,1,CHN,People's Republic of China,M.MADISON-----------
+CTR,Cycling Track,M.MADISON-----------.----,Men's Madison,Men,Bronze,1,UZB,Uzbekistan,M.MADISON-----------
+CTR,Cycling Track,M.OMNIUM------------.----,Men's Omnium,Men,Gold,1,JPN,Japan,M.OMNIUM------------
+CTR,Cycling Track,M.OMNIUM------------.----,Men's Omnium,Men,Silver,1,HKG,"Hong Kong, China",M.OMNIUM------------
+CTR,Cycling Track,M.OMNIUM------------.----,Men's Omnium,Men,Bronze,1,CHN,People's Republic of China,M.OMNIUM------------
+CTR,Cycling Track,M.PURTEAM4----------.----,Men's Team Pursuit,Men,Gold,1,CHN,People's Republic of China,M.PURTEAM4----------
+CTR,Cycling Track,M.PURTEAM4----------.----,Men's Team Pursuit,Men,Silver,1,JPN,Japan,M.PURTEAM4----------
+CTR,Cycling Track,M.PURTEAM4----------.----,Men's Team Pursuit,Men,Bronze,1,KOR,Republic of Korea,M.PURTEAM4----------
+CTR,Cycling Track,M.SPRINT------------.----,Men's Sprint,Men,Gold,1,JPN,Japan,M.SPRINT------------
+CTR,Cycling Track,M.SPRINT------------.----,Men's Sprint,Men,Silver,1,CHN,People's Republic of China,M.SPRINT------------
+CTR,Cycling Track,M.SPRINT------------.----,Men's Sprint,Men,Bronze,1,MAS,Malaysia,M.SPRINT------------
+CTR,Cycling Track,M.SPRTEAM3----------.----,Men's Team Sprint,Men,Gold,1,CHN,People's Republic of China,M.SPRTEAM3----------
+CTR,Cycling Track,M.SPRTEAM3----------.----,Men's Team Sprint,Men,Silver,1,JPN,Japan,M.SPRTEAM3----------
+CTR,Cycling Track,M.SPRTEAM3----------.----,Men's Team Sprint,Men,Bronze,1,HKG,"Hong Kong, China",M.SPRTEAM3----------
+CTR,Cycling Track,W.KEIRIN------------.----,Women's Keirin,Women,Gold,1,CHN,People's Republic of China,W.KEIRIN------------
+CTR,Cycling Track,W.KEIRIN------------.----,Women's Keirin,Women,Silver,1,CHN,People's Republic of China,W.KEIRIN------------
+CTR,Cycling Track,W.KEIRIN------------.----,Women's Keirin,Women,Bronze,1,MAS,Malaysia,W.KEIRIN------------
+CTR,Cycling Track,W.MADISON-----------.----,Women's Madison,Women,Gold,1,JPN,Japan,W.MADISON-----------
+CTR,Cycling Track,W.MADISON-----------.----,Women's Madison,Women,Silver,1,HKG,"Hong Kong, China",W.MADISON-----------
+CTR,Cycling Track,W.MADISON-----------.----,Women's Madison,Women,Bronze,1,CHN,People's Republic of China,W.MADISON-----------
+CTR,Cycling Track,W.OMNIUM------------.----,Women's Omnium,Women,Gold,1,JPN,Japan,W.OMNIUM------------
+CTR,Cycling Track,W.OMNIUM------------.----,Women's Omnium,Women,Silver,1,KAZ,Kazakhstan,W.OMNIUM------------
+CTR,Cycling Track,W.OMNIUM------------.----,Women's Omnium,Women,Bronze,1,HKG,"Hong Kong, China",W.OMNIUM------------
+CTR,Cycling Track,W.PURTEAM4----------.----,Women's Team Pursuit,Women,Gold,1,CHN,People's Republic of China,W.PURTEAM4----------
+CTR,Cycling Track,W.PURTEAM4----------.----,Women's Team Pursuit,Women,Silver,1,JPN,Japan,W.PURTEAM4----------
+CTR,Cycling Track,W.PURTEAM4----------.----,Women's Team Pursuit,Women,Bronze,1,KOR,Republic of Korea,W.PURTEAM4----------
+CTR,Cycling Track,W.SPRINT------------.----,Women's Sprint,Women,Gold,1,CHN,People's Republic of China,W.SPRINT------------
+CTR,Cycling Track,W.SPRINT------------.----,Women's Sprint,Women,Silver,1,JPN,Japan,W.SPRINT------------
+CTR,Cycling Track,W.SPRINT------------.----,Women's Sprint,Women,Bronze,1,CHN,People's Republic of China,W.SPRINT------------
+CTR,Cycling Track,W.SPRTEAM3----------.----,Women's Team Sprint,Women,Gold,1,CHN,People's Republic of China,W.SPRTEAM3----------
+CTR,Cycling Track,W.SPRTEAM3----------.----,Women's Team Sprint,Women,Silver,1,MAS,Malaysia,W.SPRTEAM3----------
+CTR,Cycling Track,W.SPRTEAM3----------.----,Women's Team Sprint,Women,Bronze,1,TPE,Chinese Taipei,W.SPRTEAM3----------
+DIV,Diving,M.10M---------------.----,Men's 10m Platform,Men,Gold,1,CHN,People's Republic of China,M.10M---------------
+DIV,Diving,M.10M---------------.----,Men's 10m Platform,Men,Silver,1,JPN,Japan,M.10M---------------
+DIV,Diving,M.10M---------------.----,Men's 10m Platform,Men,Bronze,1,CHN,People's Republic of China,M.10M---------------
+DIV,Diving,M.10MTEAM2----------.----,Men's Synchronised 10m Platform,Men,Gold,1,CHN,People's Republic of China,M.10MTEAM2----------
+DIV,Diving,M.10MTEAM2----------.----,Men's Synchronised 10m Platform,Men,Silver,1,MAS,Malaysia,M.10MTEAM2----------
+DIV,Diving,M.10MTEAM2----------.----,Men's Synchronised 10m Platform,Men,Bronze,1,KOR,Republic of Korea,M.10MTEAM2----------
+DIV,Diving,M.1M----------------.----,Men's 1m Springboard,Men,Gold,1,CHN,People's Republic of China,M.1M----------------
+DIV,Diving,M.1M----------------.----,Men's 1m Springboard,Men,Silver,1,KOR,Republic of Korea,M.1M----------------
+DIV,Diving,M.1M----------------.----,Men's 1m Springboard,Men,Bronze,1,CHN,People's Republic of China,M.1M----------------
+DIV,Diving,M.3M----------------.----,Men's 3m Springboard,Men,Gold,1,CHN,People's Republic of China,M.3M----------------
+DIV,Diving,M.3M----------------.----,Men's 3m Springboard,Men,Silver,1,CHN,People's Republic of China,M.3M----------------
+DIV,Diving,M.3M----------------.----,Men's 3m Springboard,Men,Bronze,1,JPN,Japan,M.3M----------------
+DIV,Diving,M.3MTEAM2-----------.----,Men's Synchronised 3m Springboard,Men,Gold,1,CHN,People's Republic of China,M.3MTEAM2-----------
+DIV,Diving,M.3MTEAM2-----------.----,Men's Synchronised 3m Springboard,Men,Silver,1,JPN,Japan,M.3MTEAM2-----------
+DIV,Diving,M.3MTEAM2-----------.----,Men's Synchronised 3m Springboard,Men,Bronze,1,MAS,Malaysia,M.3MTEAM2-----------
+DIV,Diving,W.10M---------------.----,Women's 10m Platform,Women,Gold,1,CHN,People's Republic of China,W.10M---------------
+DIV,Diving,W.10M---------------.----,Women's 10m Platform,Women,Silver,1,CHN,People's Republic of China,W.10M---------------
+DIV,Diving,W.10M---------------.----,Women's 10m Platform,Women,Bronze,1,PRK,Democratic People's Republic of Korea,W.10M---------------
+DIV,Diving,W.10MTEAM2----------.----,Women's Synchronised 10m Platform,Women,Gold,1,CHN,People's Republic of China,W.10MTEAM2----------
+DIV,Diving,W.10MTEAM2----------.----,Women's Synchronised 10m Platform,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.10MTEAM2----------
+DIV,Diving,W.10MTEAM2----------.----,Women's Synchronised 10m Platform,Women,Bronze,1,KOR,Republic of Korea,W.10MTEAM2----------
+DIV,Diving,W.1M----------------.----,Women's 1m Springboard,Women,Gold,1,CHN,People's Republic of China,W.1M----------------
+DIV,Diving,W.1M----------------.----,Women's 1m Springboard,Women,Silver,1,CHN,People's Republic of China,W.1M----------------
+DIV,Diving,W.1M----------------.----,Women's 1m Springboard,Women,Bronze,1,KOR,Republic of Korea,W.1M----------------
+DIV,Diving,W.3M----------------.----,Women's 3m Springboard,Women,Gold,1,CHN,People's Republic of China,W.3M----------------
+DIV,Diving,W.3M----------------.----,Women's 3m Springboard,Women,Silver,1,CHN,People's Republic of China,W.3M----------------
+DIV,Diving,W.3M----------------.----,Women's 3m Springboard,Women,Bronze,1,JPN,Japan,W.3M----------------
+DIV,Diving,W.3MTEAM2-----------.----,Women's Synchronised 3m Springboard,Women,Gold,1,CHN,People's Republic of China,W.3MTEAM2-----------
+DIV,Diving,W.3MTEAM2-----------.----,Women's Synchronised 3m Springboard,Women,Silver,1,KOR,Republic of Korea,W.3MTEAM2-----------
+DIV,Diving,W.3MTEAM2-----------.----,Women's Synchronised 3m Springboard,Women,Bronze,1,MAS,Malaysia,W.3MTEAM2-----------
+ELS,Esports,O.EFB---------------.FNL-,eFootball™ Finals,Open,Gold,1,IRI,Islamic Republic of Iran,O.EFB---------------
+ELS,Esports,O.EFB---------------.FNL-,eFootball™ Finals,Open,Silver,1,MAS,Malaysia,O.EFB---------------
+ELS,Esports,O.EFB---------------.FNL-,eFootball™ Finals,Open,Bronze,1,JPN,Japan,O.EFB---------------
+ELS,Esports,O.EFB---------------.FNL-,eFootball™ Finals,Open,Bronze,2,UZB,Uzbekistan,O.EFB---------------
+ELS,Esports,O.FTG---------------.FNL-,"Fighting Games [Street Fighter 6, TEKKEN™ 8, THE KING OF FIGHTERS XV] Finals",Open,Gold,1,KOR,Republic of Korea,O.FTG---------------
+ELS,Esports,O.FTG---------------.FNL-,"Fighting Games [Street Fighter 6, TEKKEN™ 8, THE KING OF FIGHTERS XV] Finals",Open,Silver,1,JPN,Japan,O.FTG---------------
+ELS,Esports,O.FTG---------------.FNL-,"Fighting Games [Street Fighter 6, TEKKEN™ 8, THE KING OF FIGHTERS XV] Finals",Open,Bronze,1,HKG,"Hong Kong, China",O.FTG---------------
+ELS,Esports,O.FTG---------------.FNL-,"Fighting Games [Street Fighter 6, TEKKEN™ 8, THE KING OF FIGHTERS XV] Finals",Open,Bronze,2,KSA,Saudi Arabia,O.FTG---------------
+ELS,Esports,O.GT7---------------.FNL-,Gran Turismo 7 Finals,Open,Gold,1,MAS,Malaysia,O.GT7---------------
+ELS,Esports,O.GT7---------------.FNL-,Gran Turismo 7 Finals,Open,Silver,1,KSA,Saudi Arabia,O.GT7---------------
+ELS,Esports,O.GT7---------------.FNL-,Gran Turismo 7 Finals,Open,Bronze,1,KOR,Republic of Korea,O.GT7---------------
+ELS,Esports,O.HOK---------------.FNL-,Honor of Kings Finals,Open,Gold,1,CHN,People's Republic of China,O.HOK---------------
+ELS,Esports,O.HOK---------------.FNL-,Honor of Kings Finals,Open,Silver,1,MAS,Malaysia,O.HOK---------------
+ELS,Esports,O.HOK---------------.FNL-,Honor of Kings Finals,Open,Bronze,1,HKG,"Hong Kong, China",O.HOK---------------
+ELS,Esports,O.HOK---------------.FNL-,Honor of Kings Finals,Open,Bronze,2,PHI,Philippines,O.HOK---------------
+ELS,Esports,O.IDV---------------.FNL-,Identity V - Asian Games Version Finals,Open,Gold,1,CHN,People's Republic of China,O.IDV---------------
+ELS,Esports,O.IDV---------------.FNL-,Identity V - Asian Games Version Finals,Open,Silver,1,JPN,Japan,O.IDV---------------
+ELS,Esports,O.IDV---------------.FNL-,Identity V - Asian Games Version Finals,Open,Bronze,1,MAS,Malaysia,O.IDV---------------
+ELS,Esports,O.IDV---------------.FNL-,Identity V - Asian Games Version Finals,Open,Bronze,2,TPE,Chinese Taipei,O.IDV---------------
+ELS,Esports,O.LOL---------------.FNL-,League of Legends Finals,Open,Gold,1,KOR,Republic of Korea,O.LOL---------------
+ELS,Esports,O.LOL---------------.FNL-,League of Legends Finals,Open,Silver,1,TPE,Chinese Taipei,O.LOL---------------
+ELS,Esports,O.LOL---------------.FNL-,League of Legends Finals,Open,Bronze,1,KSA,Saudi Arabia,O.LOL---------------
+ELS,Esports,O.LOL---------------.FNL-,League of Legends Finals,Open,Bronze,2,VIE,Vietnam,O.LOL---------------
+ELS,Esports,O.MLB---------------.FNL-,Mobile Legends: Bang Bang Finals,Open,Gold,1,MYA,Myanmar,O.MLB---------------
+ELS,Esports,O.MLB---------------.FNL-,Mobile Legends: Bang Bang Finals,Open,Silver,1,INA,Indonesia,O.MLB---------------
+ELS,Esports,O.MLB---------------.FNL-,Mobile Legends: Bang Bang Finals,Open,Bronze,1,MAS,Malaysia,O.MLB---------------
+ELS,Esports,O.MLB---------------.FNL-,Mobile Legends: Bang Bang Finals,Open,Bronze,2,MGL,Mongolia,O.MLB---------------
+ELS,Esports,O.NRK---------------.FNL-,NARAKA : BLADEPOINT Finals,Open,Gold,1,CHN,People's Republic of China,O.NRK---------------
+ELS,Esports,O.NRK---------------.FNL-,NARAKA : BLADEPOINT Finals,Open,Silver,1,THA,Thailand,O.NRK---------------
+ELS,Esports,O.NRK---------------.FNL-,NARAKA : BLADEPOINT Finals,Open,Bronze,1,TPE,Chinese Taipei,O.NRK---------------
+ELS,Esports,O.NRK---------------.FNL-,NARAKA : BLADEPOINT Finals,Open,Bronze,2,VIE,Vietnam,O.NRK---------------
+ELS,Esports,O.PKU---------------.FNL-,Pokemon UNITE Finals,Open,Gold,1,JPN,Japan,O.PKU---------------
+ELS,Esports,O.PKU---------------.FNL-,Pokemon UNITE Finals,Open,Silver,1,INA,Indonesia,O.PKU---------------
+ELS,Esports,O.PKU---------------.FNL-,Pokemon UNITE Finals,Open,Bronze,1,KOR,Republic of Korea,O.PKU---------------
+ELS,Esports,O.PKU---------------.FNL-,Pokemon UNITE Finals,Open,Bronze,2,PHI,Philippines,O.PKU---------------
+ELS,Esports,O.PUBGM-------------.FNL-,PUBG MOBILE - Asian Games Version Finals,Open,Gold,1,THA,Thailand,O.PUBGM-------------
+ELS,Esports,O.PUBGM-------------.FNL-,PUBG MOBILE - Asian Games Version Finals,Open,Silver,1,CHN,People's Republic of China,O.PUBGM-------------
+ELS,Esports,O.PUBGM-------------.FNL-,PUBG MOBILE - Asian Games Version Finals,Open,Bronze,1,PAK,Pakistan,O.PUBGM-------------
+ELS,Esports,O.PYO---------------.FNL-,Puyo Puyo Champions Finals,Open,Gold,1,JPN,Japan,O.PYO---------------
+ELS,Esports,O.PYO---------------.FNL-,Puyo Puyo Champions Finals,Open,Silver,1,KOR,Republic of Korea,O.PYO---------------
+ELS,Esports,O.PYO---------------.FNL-,Puyo Puyo Champions Finals,Open,Bronze,1,TPE,Chinese Taipei,O.PYO---------------
+ELS,Esports,O.PYO---------------.FNL-,Puyo Puyo Champions Finals,Open,Bronze,2,THA,Thailand,O.PYO---------------
+EQU,Equestrian,O.DRESINDV----------.----,Dressage Individual,Open,Gold,1,KOR,Republic of Korea,O.DRESINDV----------
+EQU,Equestrian,O.DRESINDV----------.----,Dressage Individual,Open,Silver,1,CHN,People's Republic of China,O.DRESINDV----------
+EQU,Equestrian,O.DRESINDV----------.----,Dressage Individual,Open,Bronze,1,CHN,People's Republic of China,O.DRESINDV----------
+EQU,Equestrian,O.DRESTEAM----------.----,Dressage Team,Open,Gold,1,CHN,People's Republic of China,O.DRESTEAM----------
+EQU,Equestrian,O.DRESTEAM----------.----,Dressage Team,Open,Silver,1,KOR,Republic of Korea,O.DRESTEAM----------
+EQU,Equestrian,O.DRESTEAM----------.----,Dressage Team,Open,Bronze,1,JPN,Japan,O.DRESTEAM----------
+EQU,Equestrian,O.EVENINDV----------.----,Eventing Individual,Open,Gold,1,CHN,People's Republic of China,O.EVENINDV----------
+EQU,Equestrian,O.EVENINDV----------.----,Eventing Individual,Open,Silver,1,THA,Thailand,O.EVENINDV----------
+EQU,Equestrian,O.EVENINDV----------.----,Eventing Individual,Open,Bronze,1,JPN,Japan,O.EVENINDV----------
+EQU,Equestrian,O.EVENTEAM----------.----,Eventing Team,Open,Gold,1,THA,Thailand,O.EVENTEAM----------
+EQU,Equestrian,O.EVENTEAM----------.----,Eventing Team,Open,Silver,1,JPN,Japan,O.EVENTEAM----------
+EQU,Equestrian,O.EVENTEAM----------.----,Eventing Team,Open,Bronze,1,KOR,Republic of Korea,O.EVENTEAM----------
+EQU,Equestrian,O.JUMPINDVCOMA------.----,"Jumping,Individual Competition A(heights of 1.40-1.50m)",Open,Gold,1,QAT,Qatar,O.JUMPINDVCOMA------
+EQU,Equestrian,O.JUMPINDVCOMA------.----,"Jumping,Individual Competition A(heights of 1.40-1.50m)",Open,Silver,1,UAE,United Arab Emirates,O.JUMPINDVCOMA------
+EQU,Equestrian,O.JUMPINDVCOMA------.----,"Jumping,Individual Competition A(heights of 1.40-1.50m)",Open,Bronze,1,KSA,Saudi Arabia,O.JUMPINDVCOMA------
+EQU,Equestrian,O.JUMPINDVCOMB------.----,"Jumping,Individual Competition B(heights of up to 1.55m)",Open,Gold,1,KSA,Saudi Arabia,O.JUMPINDVCOMB------
+EQU,Equestrian,O.JUMPINDVCOMB------.----,"Jumping,Individual Competition B(heights of up to 1.55m)",Open,Silver,1,KSA,Saudi Arabia,O.JUMPINDVCOMB------
+EQU,Equestrian,O.JUMPINDVCOMB------.----,"Jumping,Individual Competition B(heights of up to 1.55m)",Open,Bronze,1,QAT,Qatar,O.JUMPINDVCOMB------
+EQU,Equestrian,O.JUMPTEAM----------.----,Jumping Team,Open,Gold,1,KSA,Saudi Arabia,O.JUMPTEAM----------
+EQU,Equestrian,O.JUMPTEAM----------.----,Jumping Team,Open,Silver,1,UAE,United Arab Emirates,O.JUMPTEAM----------
+EQU,Equestrian,O.JUMPTEAM----------.----,Jumping Team,Open,Bronze,1,JPN,Japan,O.JUMPTEAM----------
+FBL,Football,M.TEAM11------------.----,Men,Men,Gold,1,KOR,Republic of Korea,M.TEAM11------------
+FBL,Football,M.TEAM11------------.----,Men,Men,Silver,1,JPN,Japan,M.TEAM11------------
+FBL,Football,M.TEAM11------------.----,Men,Men,Bronze,1,CHN,People's Republic of China,M.TEAM11------------
+FBL,Football,W.TEAM11------------.----,Women,Women,Gold,1,JPN,Japan,W.TEAM11------------
+FBL,Football,W.TEAM11------------.----,Women,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.TEAM11------------
+FBL,Football,W.TEAM11------------.----,Women,Women,Bronze,1,KOR,Republic of Korea,W.TEAM11------------
+FEN,Fencing,M.EPEE--------------.----,Men's Épée Individual,Men,Gold,1,JPN,Japan,M.EPEE--------------
+FEN,Fencing,M.EPEE--------------.----,Men's Épée Individual,Men,Silver,1,KAZ,Kazakhstan,M.EPEE--------------
+FEN,Fencing,M.EPEE--------------.----,Men's Épée Individual,Men,Bronze,1,HKG,"Hong Kong, China",M.EPEE--------------
+FEN,Fencing,M.EPEE--------------.----,Men's Épée Individual,Men,Bronze,2,JPN,Japan,M.EPEE--------------
+FEN,Fencing,M.FOIL--------------.----,Men's Foil Individual,Men,Gold,1,JPN,Japan,M.FOIL--------------
+FEN,Fencing,M.FOIL--------------.----,Men's Foil Individual,Men,Silver,1,HKG,"Hong Kong, China",M.FOIL--------------
+FEN,Fencing,M.FOIL--------------.----,Men's Foil Individual,Men,Bronze,1,KOR,Republic of Korea,M.FOIL--------------
+FEN,Fencing,M.FOIL--------------.----,Men's Foil Individual,Men,Bronze,2,JPN,Japan,M.FOIL--------------
+FEN,Fencing,M.SABRE-------------.----,Men's Sabre Individual,Men,Gold,1,KOR,Republic of Korea,M.SABRE-------------
+FEN,Fencing,M.SABRE-------------.----,Men's Sabre Individual,Men,Silver,1,CHN,People's Republic of China,M.SABRE-------------
+FEN,Fencing,M.SABRE-------------.----,Men's Sabre Individual,Men,Bronze,1,IRI,Islamic Republic of Iran,M.SABRE-------------
+FEN,Fencing,M.SABRE-------------.----,Men's Sabre Individual,Men,Bronze,2,KAZ,Kazakhstan,M.SABRE-------------
+FEN,Fencing,M.TEAMEPEE----------.----,Men's Épée Team,Men,Gold,1,KAZ,Kazakhstan,M.TEAMEPEE----------
+FEN,Fencing,M.TEAMEPEE----------.----,Men's Épée Team,Men,Silver,1,KOR,Republic of Korea,M.TEAMEPEE----------
+FEN,Fencing,M.TEAMEPEE----------.----,Men's Épée Team,Men,Bronze,1,HKG,"Hong Kong, China",M.TEAMEPEE----------
+FEN,Fencing,M.TEAMEPEE----------.----,Men's Épée Team,Men,Bronze,2,JPN,Japan,M.TEAMEPEE----------
+FEN,Fencing,M.TEAMFOIL----------.----,Men's Foil Team,Men,Gold,1,JPN,Japan,M.TEAMFOIL----------
+FEN,Fencing,M.TEAMFOIL----------.----,Men's Foil Team,Men,Silver,1,HKG,"Hong Kong, China",M.TEAMFOIL----------
+FEN,Fencing,M.TEAMFOIL----------.----,Men's Foil Team,Men,Bronze,1,CHN,People's Republic of China,M.TEAMFOIL----------
+FEN,Fencing,M.TEAMFOIL----------.----,Men's Foil Team,Men,Bronze,2,KOR,Republic of Korea,M.TEAMFOIL----------
+FEN,Fencing,M.TEAMSABR----------.----,Men's Sabre Team,Men,Gold,1,KOR,Republic of Korea,M.TEAMSABR----------
+FEN,Fencing,M.TEAMSABR----------.----,Men's Sabre Team,Men,Silver,1,JPN,Japan,M.TEAMSABR----------
+FEN,Fencing,M.TEAMSABR----------.----,Men's Sabre Team,Men,Bronze,1,HKG,"Hong Kong, China",M.TEAMSABR----------
+FEN,Fencing,M.TEAMSABR----------.----,Men's Sabre Team,Men,Bronze,2,KAZ,Kazakhstan,M.TEAMSABR----------
+FEN,Fencing,W.EPEE--------------.----,Women's Épée Individual,Women,Gold,1,KOR,Republic of Korea,W.EPEE--------------
+FEN,Fencing,W.EPEE--------------.----,Women's Épée Individual,Women,Silver,1,SGP,Singapore,W.EPEE--------------
+FEN,Fencing,W.EPEE--------------.----,Women's Épée Individual,Women,Bronze,1,JPN,Japan,W.EPEE--------------
+FEN,Fencing,W.EPEE--------------.----,Women's Épée Individual,Women,Bronze,2,CHN,People's Republic of China,W.EPEE--------------
+FEN,Fencing,W.FOIL--------------.----,Women's Foil Individual,Women,Gold,1,JPN,Japan,W.FOIL--------------
+FEN,Fencing,W.FOIL--------------.----,Women's Foil Individual,Women,Silver,1,KOR,Republic of Korea,W.FOIL--------------
+FEN,Fencing,W.FOIL--------------.----,Women's Foil Individual,Women,Bronze,1,UZB,Uzbekistan,W.FOIL--------------
+FEN,Fencing,W.FOIL--------------.----,Women's Foil Individual,Women,Bronze,2,SGP,Singapore,W.FOIL--------------
+FEN,Fencing,W.SABRE-------------.----,Women's Sabre Individual,Women,Gold,1,JPN,Japan,W.SABRE-------------
+FEN,Fencing,W.SABRE-------------.----,Women's Sabre Individual,Women,Silver,1,UZB,Uzbekistan,W.SABRE-------------
+FEN,Fencing,W.SABRE-------------.----,Women's Sabre Individual,Women,Bronze,1,CHN,People's Republic of China,W.SABRE-------------
+FEN,Fencing,W.SABRE-------------.----,Women's Sabre Individual,Women,Bronze,2,CHN,People's Republic of China,W.SABRE-------------
+FEN,Fencing,W.TEAMEPEE----------.----,Women's Épée Team,Women,Gold,1,CHN,People's Republic of China,W.TEAMEPEE----------
+FEN,Fencing,W.TEAMEPEE----------.----,Women's Épée Team,Women,Silver,1,KOR,Republic of Korea,W.TEAMEPEE----------
+FEN,Fencing,W.TEAMEPEE----------.----,Women's Épée Team,Women,Bronze,1,KAZ,Kazakhstan,W.TEAMEPEE----------
+FEN,Fencing,W.TEAMEPEE----------.----,Women's Épée Team,Women,Bronze,2,SGP,Singapore,W.TEAMEPEE----------
+FEN,Fencing,W.TEAMFOIL----------.----,Women's Foil Team,Women,Gold,1,JPN,Japan,W.TEAMFOIL----------
+FEN,Fencing,W.TEAMFOIL----------.----,Women's Foil Team,Women,Silver,1,KOR,Republic of Korea,W.TEAMFOIL----------
+FEN,Fencing,W.TEAMFOIL----------.----,Women's Foil Team,Women,Bronze,1,HKG,"Hong Kong, China",W.TEAMFOIL----------
+FEN,Fencing,W.TEAMFOIL----------.----,Women's Foil Team,Women,Bronze,2,CHN,People's Republic of China,W.TEAMFOIL----------
+FEN,Fencing,W.TEAMSABR----------.----,Women's Sabre Team,Women,Gold,1,KOR,Republic of Korea,W.TEAMSABR----------
+FEN,Fencing,W.TEAMSABR----------.----,Women's Sabre Team,Women,Silver,1,JPN,Japan,W.TEAMSABR----------
+FEN,Fencing,W.TEAMSABR----------.----,Women's Sabre Team,Women,Bronze,1,CHN,People's Republic of China,W.TEAMSABR----------
+FEN,Fencing,W.TEAMSABR----------.----,Women's Sabre Team,Women,Bronze,2,UZB,Uzbekistan,W.TEAMSABR----------
+GAR,Artistic Gymnastics,M.1AA---------------.----,Men's All-Around,Men,Gold,1,CHN,People's Republic of China,M.1AA---------------
+GAR,Artistic Gymnastics,M.1AA---------------.----,Men's All-Around,Men,Silver,1,JPN,Japan,M.1AA---------------
+GAR,Artistic Gymnastics,M.1AA---------------.----,Men's All-Around,Men,Bronze,1,JPN,Japan,M.1AA---------------
+GAR,Artistic Gymnastics,M.1APFX-------------.----,Men's Floor Exercise,Men,Gold,1,PHI,Philippines,M.1APFX-------------
+GAR,Artistic Gymnastics,M.1APFX-------------.----,Men's Floor Exercise,Men,Silver,1,KAZ,Kazakhstan,M.1APFX-------------
+GAR,Artistic Gymnastics,M.1APFX-------------.----,Men's Floor Exercise,Men,Bronze,1,JPN,Japan,M.1APFX-------------
+GAR,Artistic Gymnastics,M.1APHB-------------.----,Men's Horizontal Bar,Men,Gold,1,CHN,People's Republic of China,M.1APHB-------------
+GAR,Artistic Gymnastics,M.1APHB-------------.----,Men's Horizontal Bar,Men,Silver,1,JPN,Japan,M.1APHB-------------
+GAR,Artistic Gymnastics,M.1APHB-------------.----,Men's Horizontal Bar,Men,Bronze,1,PHI,Philippines,M.1APHB-------------
+GAR,Artistic Gymnastics,M.1APPB-------------.----,Men's Parallel Bars,Men,Gold,1,CHN,People's Republic of China,M.1APPB-------------
+GAR,Artistic Gymnastics,M.1APPB-------------.----,Men's Parallel Bars,Men,Silver,1,JPN,Japan,M.1APPB-------------
+GAR,Artistic Gymnastics,M.1APPB-------------.----,Men's Parallel Bars,Men,Bronze,1,UZB,Uzbekistan,M.1APPB-------------
+GAR,Artistic Gymnastics,M.1APPH-------------.----,Men's Pommel Horse,Men,Gold,1,UZB,Uzbekistan,M.1APPH-------------
+GAR,Artistic Gymnastics,M.1APPH-------------.----,Men's Pommel Horse,Men,Silver,1,IRI,Islamic Republic of Iran,M.1APPH-------------
+GAR,Artistic Gymnastics,M.1APPH-------------.----,Men's Pommel Horse,Men,Bronze,1,JPN,Japan,M.1APPH-------------
+GAR,Artistic Gymnastics,M.1APSR-------------.----,Men's Rings,Men,Gold,1,CHN,People's Republic of China,M.1APSR-------------
+GAR,Artistic Gymnastics,M.1APSR-------------.----,Men's Rings,Men,Silver,1,JPN,Japan,M.1APSR-------------
+GAR,Artistic Gymnastics,M.1APSR-------------.----,Men's Rings,Men,Bronze,1,CHN,People's Republic of China,M.1APSR-------------
+GAR,Artistic Gymnastics,M.1APVT-------------.----,Men's Vault,Men,Gold,1,PHI,Philippines,M.1APVT-------------
+GAR,Artistic Gymnastics,M.1APVT-------------.----,Men's Vault,Men,Silver,1,IRI,Islamic Republic of Iran,M.1APVT-------------
+GAR,Artistic Gymnastics,M.1APVT-------------.----,Men's Vault,Men,Bronze,1,HKG,"Hong Kong, China",M.1APVT-------------
+GAR,Artistic Gymnastics,M.TEAM--------------.----,Men's Team,Men,Gold,1,CHN,People's Republic of China,M.TEAM--------------
+GAR,Artistic Gymnastics,M.TEAM--------------.----,Men's Team,Men,Silver,1,JPN,Japan,M.TEAM--------------
+GAR,Artistic Gymnastics,M.TEAM--------------.----,Men's Team,Men,Bronze,1,TPE,Chinese Taipei,M.TEAM--------------
+GAR,Artistic Gymnastics,W.1AA---------------.----,Women's All-Around,Women,Gold,1,JPN,Japan,W.1AA---------------
+GAR,Artistic Gymnastics,W.1AA---------------.----,Women's All-Around,Women,Silver,1,CHN,People's Republic of China,W.1AA---------------
+GAR,Artistic Gymnastics,W.1AA---------------.----,Women's All-Around,Women,Bronze,1,JPN,Japan,W.1AA---------------
+GAR,Artistic Gymnastics,W.1APBB-------------.----,Women's Balance Beam,Women,Gold,1,KOR,Republic of Korea,W.1APBB-------------
+GAR,Artistic Gymnastics,W.1APBB-------------.----,Women's Balance Beam,Women,Silver,1,CHN,People's Republic of China,W.1APBB-------------
+GAR,Artistic Gymnastics,W.1APBB-------------.----,Women's Balance Beam,Women,Bronze,1,JPN,Japan,W.1APBB-------------
+GAR,Artistic Gymnastics,W.1APFX-------------.----,Women's Floor Exercise,Women,Gold,1,JPN,Japan,W.1APFX-------------
+GAR,Artistic Gymnastics,W.1APFX-------------.----,Women's Floor Exercise,Women,Silver,1,JPN,Japan,W.1APFX-------------
+GAR,Artistic Gymnastics,W.1APFX-------------.----,Women's Floor Exercise,Women,Bronze,1,CHN,People's Republic of China,W.1APFX-------------
+GAR,Artistic Gymnastics,W.1APUB-------------.----,Women's Uneven Bars,Women,Gold,1,CHN,People's Republic of China,W.1APUB-------------
+GAR,Artistic Gymnastics,W.1APUB-------------.----,Women's Uneven Bars,Women,Silver,1,JPN,Japan,W.1APUB-------------
+GAR,Artistic Gymnastics,W.1APUB-------------.----,Women's Uneven Bars,Women,Bronze,1,CHN,People's Republic of China,W.1APUB-------------
+GAR,Artistic Gymnastics,W.1APVT-------------.----,Women's Vault,Women,Gold,1,KOR,Republic of Korea,W.1APVT-------------
+GAR,Artistic Gymnastics,W.1APVT-------------.----,Women's Vault,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.1APVT-------------
+GAR,Artistic Gymnastics,W.1APVT-------------.----,Women's Vault,Women,Bronze,1,CHN,People's Republic of China,W.1APVT-------------
+GAR,Artistic Gymnastics,W.TEAM--------------.----,Women's Team,Women,Gold,1,CHN,People's Republic of China,W.TEAM--------------
+GAR,Artistic Gymnastics,W.TEAM--------------.----,Women's Team,Women,Silver,1,JPN,Japan,W.TEAM--------------
+GAR,Artistic Gymnastics,W.TEAM--------------.----,Women's Team,Women,Bronze,1,PRK,Democratic People's Republic of Korea,W.TEAM--------------
+GLF,Golf,M.STROKE------------.FNL-,Men's Individual Stroke Play,Men,Gold,1,KOR,Republic of Korea,M.STROKE------------
+GLF,Golf,M.STROKE------------.FNL-,Men's Individual Stroke Play,Men,Silver,1,JPN,Japan,M.STROKE------------
+GLF,Golf,M.STROKE------------.FNL-,Men's Individual Stroke Play,Men,Bronze,1,THA,Thailand,M.STROKE------------
+GLF,Golf,M.TEAM--------------.FNL-,Men's Team,Men,Gold,1,CHN,People's Republic of China,M.TEAM--------------
+GLF,Golf,M.TEAM--------------.FNL-,Men's Team,Men,Silver,1,KOR,Republic of Korea,M.TEAM--------------
+GLF,Golf,M.TEAM--------------.FNL-,Men's Team,Men,Bronze,1,JPN,Japan,M.TEAM--------------
+GLF,Golf,W.STROKE------------.FNL-,Women's Individual Stroke Play,Women,Gold,1,IND,India,W.STROKE------------
+GLF,Golf,W.STROKE------------.FNL-,Women's Individual Stroke Play,Women,Silver,1,CHN,People's Republic of China,W.STROKE------------
+GLF,Golf,W.STROKE------------.FNL-,Women's Individual Stroke Play,Women,Bronze,1,SGP,Singapore,W.STROKE------------
+GLF,Golf,W.TEAM--------------.FNL-,Women's Team,Women,Gold,1,CHN,People's Republic of China,W.TEAM--------------
+GLF,Golf,W.TEAM--------------.FNL-,Women's Team,Women,Silver,1,IND,India,W.TEAM--------------
+GLF,Golf,W.TEAM--------------.FNL-,Women's Team,Women,Bronze,1,TPE,Chinese Taipei,W.TEAM--------------
+GRY,Rhythmic Gymnastics,W.1AA---------------.FNL-,Individual All-Around Final,Women,Gold,1,UZB,Uzbekistan,W.1AA---------------
+GRY,Rhythmic Gymnastics,W.1AA---------------.FNL-,Individual All-Around Final,Women,Silver,1,CHN,People's Republic of China,W.1AA---------------
+GRY,Rhythmic Gymnastics,W.1AA---------------.FNL-,Individual All-Around Final,Women,Bronze,1,CHN,People's Republic of China,W.1AA---------------
+GRY,Rhythmic Gymnastics,W.5AA---------------.FNL-,Group All-Around Final,Women,Gold,1,CHN,People's Republic of China,W.5AA---------------
+GRY,Rhythmic Gymnastics,W.5AA---------------.FNL-,Group All-Around Final,Women,Silver,1,JPN,Japan,W.5AA---------------
+GRY,Rhythmic Gymnastics,W.5AA---------------.FNL-,Group All-Around Final,Women,Bronze,1,KAZ,Kazakhstan,W.5AA---------------
+GTR,Trampoline Gymnastics,M.1TRA--------------.----,Men,Men,Gold,1,CHN,People's Republic of China,M.1TRA--------------
+GTR,Trampoline Gymnastics,M.1TRA--------------.----,Men,Men,Silver,1,CHN,People's Republic of China,M.1TRA--------------
+GTR,Trampoline Gymnastics,M.1TRA--------------.----,Men,Men,Bronze,1,KAZ,Kazakhstan,M.1TRA--------------
+GTR,Trampoline Gymnastics,W.1TRA--------------.----,Women,Women,Gold,1,JPN,Japan,W.1TRA--------------
+GTR,Trampoline Gymnastics,W.1TRA--------------.----,Women,Women,Silver,1,JPN,Japan,W.1TRA--------------
+GTR,Trampoline Gymnastics,W.1TRA--------------.----,Women,Women,Bronze,1,CHN,People's Republic of China,W.1TRA--------------
+HBL,Handball,M.TEAM7-------------.----,Men,Men,Gold,1,BRN,Bahrain,M.TEAM7-------------
+HBL,Handball,M.TEAM7-------------.----,Men,Men,Silver,1,QAT,Qatar,M.TEAM7-------------
+HBL,Handball,M.TEAM7-------------.----,Men,Men,Bronze,1,JPN,Japan,M.TEAM7-------------
+HBL,Handball,W.TEAM7-------------.----,Women,Women,Gold,1,KOR,Republic of Korea,W.TEAM7-------------
+HBL,Handball,W.TEAM7-------------.----,Women,Women,Silver,1,JPN,Japan,W.TEAM7-------------
+HBL,Handball,W.TEAM7-------------.----,Women,Women,Bronze,1,CHN,People's Republic of China,W.TEAM7-------------
+HOC,Hockey,M.TEAM11------------.----,Men,Men,Gold,1,IND,India,M.TEAM11------------
+HOC,Hockey,M.TEAM11------------.----,Men,Men,Silver,1,MAS,Malaysia,M.TEAM11------------
+HOC,Hockey,M.TEAM11------------.----,Men,Men,Bronze,1,PAK,Pakistan,M.TEAM11------------
+HOC,Hockey,W.TEAM11------------.----,Women,Women,Gold,1,IND,India,W.TEAM11------------
+HOC,Hockey,W.TEAM11------------.----,Women,Women,Silver,1,CHN,People's Republic of China,W.TEAM11------------
+HOC,Hockey,W.TEAM11------------.----,Women,Women,Bronze,1,JPN,Japan,W.TEAM11------------
+JJI,Jiu Jitsu,M.62KG--------------.FNL-,Men -62kg Final - Gold Medal,Men,Gold,1,UAE,United Arab Emirates,M.62KG--------------
+JJI,Jiu Jitsu,M.62KG--------------.FNL-,Men -62kg Final - Gold Medal,Men,Silver,1,UAE,United Arab Emirates,M.62KG--------------
+JJI,Jiu Jitsu,M.62KG--------------.FNL-,Men -62kg Final - Gold Medal,Men,Bronze,1,KSA,Saudi Arabia,M.62KG--------------
+JJI,Jiu Jitsu,M.62KG--------------.FNL-,Men -62kg Final - Gold Medal,Men,Bronze,2,KSA,Saudi Arabia,M.62KG--------------
+JJI,Jiu Jitsu,M.69KG--------------.FNL-,Men -69kg Final - Gold Medal,Men,Gold,1,UAE,United Arab Emirates,M.69KG--------------
+JJI,Jiu Jitsu,M.69KG--------------.FNL-,Men -69kg Final - Gold Medal,Men,Silver,1,KAZ,Kazakhstan,M.69KG--------------
+JJI,Jiu Jitsu,M.69KG--------------.FNL-,Men -69kg Final - Gold Medal,Men,Bronze,1,KSA,Saudi Arabia,M.69KG--------------
+JJI,Jiu Jitsu,M.69KG--------------.FNL-,Men -69kg Final - Gold Medal,Men,Bronze,2,KOR,Republic of Korea,M.69KG--------------
+JJI,Jiu Jitsu,M.77KG--------------.FNL-,Men -77kg Final - Gold Medal,Men,Gold,1,UAE,United Arab Emirates,M.77KG--------------
+JJI,Jiu Jitsu,M.77KG--------------.FNL-,Men -77kg Final - Gold Medal,Men,Silver,1,JOR,Jordan,M.77KG--------------
+JJI,Jiu Jitsu,M.77KG--------------.FNL-,Men -77kg Final - Gold Medal,Men,Bronze,1,KAZ,Kazakhstan,M.77KG--------------
+JJI,Jiu Jitsu,M.77KG--------------.FNL-,Men -77kg Final - Gold Medal,Men,Bronze,2,KOR,Republic of Korea,M.77KG--------------
+JJI,Jiu Jitsu,M.85KG--------------.FNL-,Men -85kg Final - Gold Medal,Men,Gold,1,KSA,Saudi Arabia,M.85KG--------------
+JJI,Jiu Jitsu,M.85KG--------------.FNL-,Men -85kg Final - Gold Medal,Men,Silver,1,KAZ,Kazakhstan,M.85KG--------------
+JJI,Jiu Jitsu,M.85KG--------------.FNL-,Men -85kg Final - Gold Medal,Men,Bronze,1,KOR,Republic of Korea,M.85KG--------------
+JJI,Jiu Jitsu,M.85KG--------------.FNL-,Men -85kg Final - Gold Medal,Men,Bronze,2,KGZ,Kyrgyzstan,M.85KG--------------
+JJI,Jiu Jitsu,M.94KG--------------.FNL-,Men -94kg Final - Gold Medal,Men,Gold,1,KSA,Saudi Arabia,M.94KG--------------
+JJI,Jiu Jitsu,M.94KG--------------.FNL-,Men -94kg Final - Gold Medal,Men,Silver,1,KOR,Republic of Korea,M.94KG--------------
+JJI,Jiu Jitsu,M.94KG--------------.FNL-,Men -94kg Final - Gold Medal,Men,Bronze,1,UAE,United Arab Emirates,M.94KG--------------
+JJI,Jiu Jitsu,M.94KG--------------.FNL-,Men -94kg Final - Gold Medal,Men,Bronze,2,KOR,Republic of Korea,M.94KG--------------
+JJI,Jiu Jitsu,W.48KG--------------.----,Women -48kg,Women,Gold,1,UAE,United Arab Emirates,W.48KG--------------
+JJI,Jiu Jitsu,W.48KG--------------.----,Women -48kg,Women,Silver,1,UAE,United Arab Emirates,W.48KG--------------
+JJI,Jiu Jitsu,W.48KG--------------.----,Women -48kg,Women,Bronze,1,KAZ,Kazakhstan,W.48KG--------------
+JJI,Jiu Jitsu,W.48KG--------------.----,Women -48kg,Women,Bronze,2,THA,Thailand,W.48KG--------------
+JJI,Jiu Jitsu,W.52KG--------------.FNL-,Women -52kg Final - Gold Medal,Women,Gold,1,UAE,United Arab Emirates,W.52KG--------------
+JJI,Jiu Jitsu,W.52KG--------------.FNL-,Women -52kg Final - Gold Medal,Women,Silver,1,KOR,Republic of Korea,W.52KG--------------
+JJI,Jiu Jitsu,W.52KG--------------.FNL-,Women -52kg Final - Gold Medal,Women,Bronze,1,PHI,Philippines,W.52KG--------------
+JJI,Jiu Jitsu,W.52KG--------------.FNL-,Women -52kg Final - Gold Medal,Women,Bronze,2,THA,Thailand,W.52KG--------------
+JJI,Jiu Jitsu,W.63KG--------------.FNL-,Women -63kg Final - Gold Medal,Women,Gold,1,THA,Thailand,W.63KG--------------
+JJI,Jiu Jitsu,W.63KG--------------.FNL-,Women -63kg Final - Gold Medal,Women,Silver,1,PHI,Philippines,W.63KG--------------
+JJI,Jiu Jitsu,W.63KG--------------.FNL-,Women -63kg Final - Gold Medal,Women,Bronze,1,MGL,Mongolia,W.63KG--------------
+JJI,Jiu Jitsu,W.63KG--------------.FNL-,Women -63kg Final - Gold Medal,Women,Bronze,2,KAZ,Kazakhstan,W.63KG--------------
+JUD,Judo,M.100KG-------------.FNL-,Men -100 kg Final,Men,Gold,1,JPN,Japan,M.100KG-------------
+JUD,Judo,M.100KG-------------.FNL-,Men -100 kg Final,Men,Silver,1,TJK,Tajikistan,M.100KG-------------
+JUD,Judo,M.100KG-------------.FNL-,Men -100 kg Final,Men,Bronze,1,KOR,Republic of Korea,M.100KG-------------
+JUD,Judo,M.100KG-------------.FNL-,Men -100 kg Final,Men,Bronze,2,UZB,Uzbekistan,M.100KG-------------
+JUD,Judo,M.60KG--------------.FNL-,Men -60 kg Final,Men,Gold,1,JPN,Japan,M.60KG--------------
+JUD,Judo,M.60KG--------------.FNL-,Men -60 kg Final,Men,Silver,1,KAZ,Kazakhstan,M.60KG--------------
+JUD,Judo,M.60KG--------------.FNL-,Men -60 kg Final,Men,Bronze,1,CHN,People's Republic of China,M.60KG--------------
+JUD,Judo,M.60KG--------------.FNL-,Men -60 kg Final,Men,Bronze,2,UZB,Uzbekistan,M.60KG--------------
+JUD,Judo,M.66KG--------------.FNL-,Men -66 kg Final,Men,Gold,1,MGL,Mongolia,M.66KG--------------
+JUD,Judo,M.66KG--------------.FNL-,Men -66 kg Final,Men,Silver,1,UZB,Uzbekistan,M.66KG--------------
+JUD,Judo,M.66KG--------------.FNL-,Men -66 kg Final,Men,Bronze,1,BRN,Bahrain,M.66KG--------------
+JUD,Judo,M.66KG--------------.FNL-,Men -66 kg Final,Men,Bronze,2,CHN,People's Republic of China,M.66KG--------------
+JUD,Judo,M.73KG--------------.FNL-,Men -73 kg Final,Men,Gold,1,UAE,United Arab Emirates,M.73KG--------------
+JUD,Judo,M.73KG--------------.FNL-,Men -73 kg Final,Men,Silver,1,UZB,Uzbekistan,M.73KG--------------
+JUD,Judo,M.73KG--------------.FNL-,Men -73 kg Final,Men,Bronze,1,JPN,Japan,M.73KG--------------
+JUD,Judo,M.73KG--------------.FNL-,Men -73 kg Final,Men,Bronze,2,TJK,Tajikistan,M.73KG--------------
+JUD,Judo,M.81KG--------------.FNL-,Men -81 kg Final,Men,Gold,1,JPN,Japan,M.81KG--------------
+JUD,Judo,M.81KG--------------.FNL-,Men -81 kg Final,Men,Silver,1,KAZ,Kazakhstan,M.81KG--------------
+JUD,Judo,M.81KG--------------.FNL-,Men -81 kg Final,Men,Bronze,1,TJK,Tajikistan,M.81KG--------------
+JUD,Judo,M.81KG--------------.FNL-,Men -81 kg Final,Men,Bronze,2,KOR,Republic of Korea,M.81KG--------------
+JUD,Judo,M.90KG--------------.FNL-,Men -90 kg Final,Men,Gold,1,JPN,Japan,M.90KG--------------
+JUD,Judo,M.90KG--------------.FNL-,Men -90 kg Final,Men,Silver,1,KGZ,Kyrgyzstan,M.90KG--------------
+JUD,Judo,M.90KG--------------.FNL-,Men -90 kg Final,Men,Bronze,1,CHN,People's Republic of China,M.90KG--------------
+JUD,Judo,M.90KG--------------.FNL-,Men -90 kg Final,Men,Bronze,2,KOR,Republic of Korea,M.90KG--------------
+JUD,Judo,M.O100KG------------.FNL-,Men +100 kg Final,Men,Gold,1,UZB,Uzbekistan,M.O100KG------------
+JUD,Judo,M.O100KG------------.FNL-,Men +100 kg Final,Men,Silver,1,JPN,Japan,M.O100KG------------
+JUD,Judo,M.O100KG------------.FNL-,Men +100 kg Final,Men,Bronze,1,MGL,Mongolia,M.O100KG------------
+JUD,Judo,M.O100KG------------.FNL-,Men +100 kg Final,Men,Bronze,2,KOR,Republic of Korea,M.O100KG------------
+JUD,Judo,W.48KG--------------.FNL-,Women -48 kg Final,Women,Gold,1,JPN,Japan,W.48KG--------------
+JUD,Judo,W.48KG--------------.FNL-,Women -48 kg Final,Women,Silver,1,KAZ,Kazakhstan,W.48KG--------------
+JUD,Judo,W.48KG--------------.FNL-,Women -48 kg Final,Women,Bronze,1,TJK,Tajikistan,W.48KG--------------
+JUD,Judo,W.48KG--------------.FNL-,Women -48 kg Final,Women,Bronze,2,MGL,Mongolia,W.48KG--------------
+JUD,Judo,W.52KG--------------.FNL-,Women -52 kg Final,Women,Gold,1,UZB,Uzbekistan,W.52KG--------------
+JUD,Judo,W.52KG--------------.FNL-,Women -52 kg Final,Women,Silver,1,KOR,Republic of Korea,W.52KG--------------
+JUD,Judo,W.52KG--------------.FNL-,Women -52 kg Final,Women,Bronze,1,CHN,People's Republic of China,W.52KG--------------
+JUD,Judo,W.52KG--------------.FNL-,Women -52 kg Final,Women,Bronze,2,JPN,Japan,W.52KG--------------
+JUD,Judo,W.57KG--------------.FNL-,Women -57 kg Final,Women,Gold,1,KOR,Republic of Korea,W.57KG--------------
+JUD,Judo,W.57KG--------------.FNL-,Women -57 kg Final,Women,Silver,1,MGL,Mongolia,W.57KG--------------
+JUD,Judo,W.57KG--------------.FNL-,Women -57 kg Final,Women,Bronze,1,JPN,Japan,W.57KG--------------
+JUD,Judo,W.57KG--------------.FNL-,Women -57 kg Final,Women,Bronze,2,PRK,Democratic People's Republic of Korea,W.57KG--------------
+JUD,Judo,W.63KG--------------.FNL-,Women -63 kg Final,Women,Gold,1,JPN,Japan,W.63KG--------------
+JUD,Judo,W.63KG--------------.FNL-,Women -63 kg Final,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.63KG--------------
+JUD,Judo,W.63KG--------------.FNL-,Women -63 kg Final,Women,Bronze,1,KAZ,Kazakhstan,W.63KG--------------
+JUD,Judo,W.63KG--------------.FNL-,Women -63 kg Final,Women,Bronze,2,MGL,Mongolia,W.63KG--------------
+JUD,Judo,W.70KG--------------.FNL-,Women -70 kg Final,Women,Gold,1,JPN,Japan,W.70KG--------------
+JUD,Judo,W.70KG--------------.FNL-,Women -70 kg Final,Women,Silver,1,KAZ,Kazakhstan,W.70KG--------------
+JUD,Judo,W.70KG--------------.FNL-,Women -70 kg Final,Women,Bronze,1,MGL,Mongolia,W.70KG--------------
+JUD,Judo,W.70KG--------------.FNL-,Women -70 kg Final,Women,Bronze,2,PRK,Democratic People's Republic of Korea,W.70KG--------------
+JUD,Judo,W.78KG--------------.FNL-,Women -78 kg Final,Women,Gold,1,JPN,Japan,W.78KG--------------
+JUD,Judo,W.78KG--------------.FNL-,Women -78 kg Final,Women,Silver,1,KOR,Republic of Korea,W.78KG--------------
+JUD,Judo,W.78KG--------------.FNL-,Women -78 kg Final,Women,Bronze,1,LBN,Lebanon,W.78KG--------------
+JUD,Judo,W.78KG--------------.FNL-,Women -78 kg Final,Women,Bronze,2,KAZ,Kazakhstan,W.78KG--------------
+JUD,Judo,W.O78KG-------------.FNL-,Women +78 kg Final,Women,Gold,1,CHN,People's Republic of China,W.O78KG-------------
+JUD,Judo,W.O78KG-------------.FNL-,Women +78 kg Final,Women,Silver,1,KOR,Republic of Korea,W.O78KG-------------
+JUD,Judo,W.O78KG-------------.FNL-,Women +78 kg Final,Women,Bronze,1,MGL,Mongolia,W.O78KG-------------
+JUD,Judo,W.O78KG-------------.FNL-,Women +78 kg Final,Women,Bronze,2,JPN,Japan,W.O78KG-------------
+JUD,Judo,X.TEAM6-------------.FNL-,Mixed Team Final,Mixed,Gold,1,JPN,Japan,X.TEAM6-------------
+JUD,Judo,X.TEAM6-------------.FNL-,Mixed Team Final,Mixed,Silver,1,KAZ,Kazakhstan,X.TEAM6-------------
+JUD,Judo,X.TEAM6-------------.FNL-,Mixed Team Final,Mixed,Bronze,1,CHN,People's Republic of China,X.TEAM6-------------
+JUD,Judo,X.TEAM6-------------.FNL-,Mixed Team Final,Mixed,Bronze,2,UZB,Uzbekistan,X.TEAM6-------------
+KAB,Kabaddi,M.TEAM7-------------.FNL-,Men's Team Final,Men,Gold,1,IND,India,M.TEAM7-------------
+KAB,Kabaddi,M.TEAM7-------------.FNL-,Men's Team Final,Men,Silver,1,IRI,Islamic Republic of Iran,M.TEAM7-------------
+KAB,Kabaddi,M.TEAM7-------------.FNL-,Men's Team Final,Men,Bronze,1,THA,Thailand,M.TEAM7-------------
+KAB,Kabaddi,M.TEAM7-------------.FNL-,Men's Team Final,Men,Bronze,2,TPE,Chinese Taipei,M.TEAM7-------------
+KAB,Kabaddi,W.TEAM7-------------.FNL-,Women's Team Final,Women,Gold,1,IND,India,W.TEAM7-------------
+KAB,Kabaddi,W.TEAM7-------------.FNL-,Women's Team Final,Women,Silver,1,IRI,Islamic Republic of Iran,W.TEAM7-------------
+KAB,Kabaddi,W.TEAM7-------------.FNL-,Women's Team Final,Women,Bronze,1,NEP,Nepal,W.TEAM7-------------
+KAB,Kabaddi,W.TEAM7-------------.FNL-,Women's Team Final,Women,Bronze,2,TPE,Chinese Taipei,W.TEAM7-------------
+KTE,Karate,M.55KG--------------.FNL-,Men's Kumite -55kg Final,Men,Gold,1,KAZ,Kazakhstan,M.55KG--------------
+KTE,Karate,M.55KG--------------.FNL-,Men's Kumite -55kg Final,Men,Silver,1,UZB,Uzbekistan,M.55KG--------------
+KTE,Karate,M.55KG--------------.FNL-,Men's Kumite -55kg Final,Men,Bronze,1,MAS,Malaysia,M.55KG--------------
+KTE,Karate,M.55KG--------------.FNL-,Men's Kumite -55kg Final,Men,Bronze,2,TJK,Tajikistan,M.55KG--------------
+KTE,Karate,M.60KG--------------.FNL-,Men's Kumite -60kg Final,Men,Gold,1,KUW,Kuwait,M.60KG--------------
+KTE,Karate,M.60KG--------------.FNL-,Men's Kumite -60kg Final,Men,Silver,1,QAT,Qatar,M.60KG--------------
+KTE,Karate,M.60KG--------------.FNL-,Men's Kumite -60kg Final,Men,Bronze,1,KSA,Saudi Arabia,M.60KG--------------
+KTE,Karate,M.60KG--------------.FNL-,Men's Kumite -60kg Final,Men,Bronze,2,MAS,Malaysia,M.60KG--------------
+KTE,Karate,M.67KG--------------.FNL-,Men's Kumite -67kg Final,Men,Gold,1,UZB,Uzbekistan,M.67KG--------------
+KTE,Karate,M.67KG--------------.FNL-,Men's Kumite -67kg Final,Men,Silver,1,JPN,Japan,M.67KG--------------
+KTE,Karate,M.67KG--------------.FNL-,Men's Kumite -67kg Final,Men,Bronze,1,JOR,Jordan,M.67KG--------------
+KTE,Karate,M.67KG--------------.FNL-,Men's Kumite -67kg Final,Men,Bronze,2,TPE,Chinese Taipei,M.67KG--------------
+KTE,Karate,M.75KG--------------.FNL-,Men's Kumite -75kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.75KG--------------
+KTE,Karate,M.75KG--------------.FNL-,Men's Kumite -75kg Final,Men,Silver,1,TKM,Turkmenistan,M.75KG--------------
+KTE,Karate,M.75KG--------------.FNL-,Men's Kumite -75kg Final,Men,Bronze,1,KAZ,Kazakhstan,M.75KG--------------
+KTE,Karate,M.75KG--------------.FNL-,Men's Kumite -75kg Final,Men,Bronze,2,SYR,Syrian Arab Republic,M.75KG--------------
+KTE,Karate,M.84KG--------------.FNL-,Men's Kumite -84kg Final,Men,Gold,1,JOR,Jordan,M.84KG--------------
+KTE,Karate,M.84KG--------------.FNL-,Men's Kumite -84kg Final,Men,Silver,1,IRI,Islamic Republic of Iran,M.84KG--------------
+KTE,Karate,M.84KG--------------.FNL-,Men's Kumite -84kg Final,Men,Bronze,1,QAT,Qatar,M.84KG--------------
+KTE,Karate,M.84KG--------------.FNL-,Men's Kumite -84kg Final,Men,Bronze,2,TPE,Chinese Taipei,M.84KG--------------
+KTE,Karate,M.KATA--------------.FNL-,Men's Individual Kata Final,Men,Gold,1,JPN,Japan,M.KATA--------------
+KTE,Karate,M.KATA--------------.FNL-,Men's Individual Kata Final,Men,Silver,1,MAC,"Macao, China",M.KATA--------------
+KTE,Karate,M.KATA--------------.FNL-,Men's Individual Kata Final,Men,Bronze,1,KUW,Kuwait,M.KATA--------------
+KTE,Karate,M.KATA--------------.FNL-,Men's Individual Kata Final,Men,Bronze,2,HKG,"Hong Kong, China",M.KATA--------------
+KTE,Karate,M.O84KG-------------.FNL-,Men's Kumite +84kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.O84KG-------------
+KTE,Karate,M.O84KG-------------.FNL-,Men's Kumite +84kg Final,Men,Silver,1,KSA,Saudi Arabia,M.O84KG-------------
+KTE,Karate,M.O84KG-------------.FNL-,Men's Kumite +84kg Final,Men,Bronze,1,THA,Thailand,M.O84KG-------------
+KTE,Karate,M.O84KG-------------.FNL-,Men's Kumite +84kg Final,Men,Bronze,2,NEP,Nepal,M.O84KG-------------
+KTE,Karate,M.TEAM--------------.FNL-,Men's Team Kata Final,Men,Gold,1,KUW,Kuwait,M.TEAM--------------
+KTE,Karate,M.TEAM--------------.FNL-,Men's Team Kata Final,Men,Silver,1,MAC,"Macao, China",M.TEAM--------------
+KTE,Karate,M.TEAM--------------.FNL-,Men's Team Kata Final,Men,Bronze,1,HKG,"Hong Kong, China",M.TEAM--------------
+KTE,Karate,M.TEAM--------------.FNL-,Men's Team Kata Final,Men,Bronze,2,MAS,Malaysia,M.TEAM--------------
+KTE,Karate,W.50KG--------------.FNL-,Women's Kumite -50kg Final,Women,Gold,1,MAS,Malaysia,W.50KG--------------
+KTE,Karate,W.50KG--------------.FNL-,Women's Kumite -50kg Final,Women,Silver,1,HKG,"Hong Kong, China",W.50KG--------------
+KTE,Karate,W.50KG--------------.FNL-,Women's Kumite -50kg Final,Women,Bronze,1,PHI,Philippines,W.50KG--------------
+KTE,Karate,W.50KG--------------.FNL-,Women's Kumite -50kg Final,Women,Bronze,2,MAC,"Macao, China",W.50KG--------------
+KTE,Karate,W.55KG--------------.FNL-,Women's Kumite -55kg Final,Women,Gold,1,MAS,Malaysia,W.55KG--------------
+KTE,Karate,W.55KG--------------.FNL-,Women's Kumite -55kg Final,Women,Silver,1,IRI,Islamic Republic of Iran,W.55KG--------------
+KTE,Karate,W.55KG--------------.FNL-,Women's Kumite -55kg Final,Women,Bronze,1,KAZ,Kazakhstan,W.55KG--------------
+KTE,Karate,W.55KG--------------.FNL-,Women's Kumite -55kg Final,Women,Bronze,2,INA,Indonesia,W.55KG--------------
+KTE,Karate,W.61KG--------------.FNL-,Women's Kumite -61kg Final,Women,Gold,1,CHN,People's Republic of China,W.61KG--------------
+KTE,Karate,W.61KG--------------.FNL-,Women's Kumite -61kg Final,Women,Silver,1,KAZ,Kazakhstan,W.61KG--------------
+KTE,Karate,W.61KG--------------.FNL-,Women's Kumite -61kg Final,Women,Bronze,1,JPN,Japan,W.61KG--------------
+KTE,Karate,W.61KG--------------.FNL-,Women's Kumite -61kg Final,Women,Bronze,2,CAM,Cambodia,W.61KG--------------
+KTE,Karate,W.68KG--------------.FNL-,Women's Kumite -68kg Final,Women,Gold,1,CHN,People's Republic of China,W.68KG--------------
+KTE,Karate,W.68KG--------------.FNL-,Women's Kumite -68kg Final,Women,Silver,1,JOR,Jordan,W.68KG--------------
+KTE,Karate,W.68KG--------------.FNL-,Women's Kumite -68kg Final,Women,Bronze,1,VIE,Vietnam,W.68KG--------------
+KTE,Karate,W.68KG--------------.FNL-,Women's Kumite -68kg Final,Women,Bronze,2,HKG,"Hong Kong, China",W.68KG--------------
+KTE,Karate,W.KATA--------------.FNL-,Women's Individual Kata Final,Women,Gold,1,JPN,Japan,W.KATA--------------
+KTE,Karate,W.KATA--------------.FNL-,Women's Individual Kata Final,Women,Silver,1,HKG,"Hong Kong, China",W.KATA--------------
+KTE,Karate,W.KATA--------------.FNL-,Women's Individual Kata Final,Women,Bronze,1,VIE,Vietnam,W.KATA--------------
+KTE,Karate,W.KATA--------------.FNL-,Women's Individual Kata Final,Women,Bronze,2,TPE,Chinese Taipei,W.KATA--------------
+KTE,Karate,W.O68KG-------------.FNL-,Women's Kumite +68kg Final,Women,Gold,1,KAZ,Kazakhstan,W.O68KG-------------
+KTE,Karate,W.O68KG-------------.FNL-,Women's Kumite +68kg Final,Women,Silver,1,THA,Thailand,W.O68KG-------------
+KTE,Karate,W.O68KG-------------.FNL-,Women's Kumite +68kg Final,Women,Bronze,1,INA,Indonesia,W.O68KG-------------
+KTE,Karate,W.O68KG-------------.FNL-,Women's Kumite +68kg Final,Women,Bronze,2,KSA,Saudi Arabia,W.O68KG-------------
+KTE,Karate,W.TEAM--------------.FNL-,Women's Team Kata Final,Women,Gold,1,VIE,Vietnam,W.TEAM--------------
+KTE,Karate,W.TEAM--------------.FNL-,Women's Team Kata Final,Women,Silver,1,IRI,Islamic Republic of Iran,W.TEAM--------------
+KTE,Karate,W.TEAM--------------.FNL-,Women's Team Kata Final,Women,Bronze,1,PHI,Philippines,W.TEAM--------------
+KTE,Karate,W.TEAM--------------.FNL-,Women's Team Kata Final,Women,Bronze,2,TPE,Chinese Taipei,W.TEAM--------------
+KUR,Kurash,M.66KG--------------.FNL-,Men -66kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.66KG--------------
+KUR,Kurash,M.66KG--------------.FNL-,Men -66kg Final,Men,Silver,1,TJK,Tajikistan,M.66KG--------------
+KUR,Kurash,M.66KG--------------.FNL-,Men -66kg Final,Men,Bronze,1,TJK,Tajikistan,M.66KG--------------
+KUR,Kurash,M.66KG--------------.FNL-,Men -66kg Final,Men,Bronze,2,KGZ,Kyrgyzstan,M.66KG--------------
+KUR,Kurash,M.81KG--------------.FNL-,Men -81kg Final,Men,Gold,1,UZB,Uzbekistan,M.81KG--------------
+KUR,Kurash,M.81KG--------------.FNL-,Men -81kg Final,Men,Silver,1,IRI,Islamic Republic of Iran,M.81KG--------------
+KUR,Kurash,M.81KG--------------.FNL-,Men -81kg Final,Men,Bronze,1,KAZ,Kazakhstan,M.81KG--------------
+KUR,Kurash,M.81KG--------------.FNL-,Men -81kg Final,Men,Bronze,2,JPN,Japan,M.81KG--------------
+KUR,Kurash,M.O90KG-------------.FNL-,Men +90kg Final,Men,Gold,1,UZB,Uzbekistan,M.O90KG-------------
+KUR,Kurash,M.O90KG-------------.FNL-,Men +90kg Final,Men,Silver,1,TJK,Tajikistan,M.O90KG-------------
+KUR,Kurash,M.O90KG-------------.FNL-,Men +90kg Final,Men,Bronze,1,UZB,Uzbekistan,M.O90KG-------------
+KUR,Kurash,M.O90KG-------------.FNL-,Men +90kg Final,Men,Bronze,2,THA,Thailand,M.O90KG-------------
+KUR,Kurash,W.57KG--------------.FNL-,Women -57kg Final,Women,Gold,1,UZB,Uzbekistan,W.57KG--------------
+KUR,Kurash,W.57KG--------------.FNL-,Women -57kg Final,Women,Silver,1,TPE,Chinese Taipei,W.57KG--------------
+KUR,Kurash,W.57KG--------------.FNL-,Women -57kg Final,Women,Bronze,1,JPN,Japan,W.57KG--------------
+KUR,Kurash,W.57KG--------------.FNL-,Women -57kg Final,Women,Bronze,2,TPE,Chinese Taipei,W.57KG--------------
+KUR,Kurash,W.78KG--------------.FNL-,Women -78kg Final,Women,Gold,1,UZB,Uzbekistan,W.78KG--------------
+KUR,Kurash,W.78KG--------------.FNL-,Women -78kg Final,Women,Silver,1,KOR,Republic of Korea,W.78KG--------------
+KUR,Kurash,W.78KG--------------.FNL-,Women -78kg Final,Women,Bronze,1,IND,India,W.78KG--------------
+KUR,Kurash,W.78KG--------------.FNL-,Women -78kg Final,Women,Bronze,2,UZB,Uzbekistan,W.78KG--------------
+KUR,Kurash,W.O87KG-------------.FNL-,Women +87kg Final,Women,Gold,1,KOR,Republic of Korea,W.O87KG-------------
+KUR,Kurash,W.O87KG-------------.FNL-,Women +87kg Final,Women,Silver,1,TPE,Chinese Taipei,W.O87KG-------------
+KUR,Kurash,W.O87KG-------------.FNL-,Women +87kg Final,Women,Bronze,1,IRI,Islamic Republic of Iran,W.O87KG-------------
+KUR,Kurash,W.O87KG-------------.FNL-,Women +87kg Final,Women,Bronze,2,KAZ,Kazakhstan,W.O87KG-------------
+MMA,Mixed Martial Arts,M.M60KG-------------.FNL-,Men's Modern -60kg Final,Men,Gold,1,TJK,Tajikistan,M.M60KG-------------
+MMA,Mixed Martial Arts,M.M60KG-------------.FNL-,Men's Modern -60kg Final,Men,Silver,1,UZB,Uzbekistan,M.M60KG-------------
+MMA,Mixed Martial Arts,M.M60KG-------------.FNL-,Men's Modern -60kg Final,Men,Bronze,1,KGZ,Kyrgyzstan,M.M60KG-------------
+MMA,Mixed Martial Arts,M.M60KG-------------.FNL-,Men's Modern -60kg Final,Men,Bronze,2,PAK,Pakistan,M.M60KG-------------
+MMA,Mixed Martial Arts,M.M71KG-------------.FNL-,Men's Modern -71kg Final,Men,Gold,1,KAZ,Kazakhstan,M.M71KG-------------
+MMA,Mixed Martial Arts,M.M71KG-------------.FNL-,Men's Modern -71kg Final,Men,Silver,1,TJK,Tajikistan,M.M71KG-------------
+MMA,Mixed Martial Arts,M.M71KG-------------.FNL-,Men's Modern -71kg Final,Men,Bronze,1,KGZ,Kyrgyzstan,M.M71KG-------------
+MMA,Mixed Martial Arts,M.M71KG-------------.FNL-,Men's Modern -71kg Final,Men,Bronze,2,UZB,Uzbekistan,M.M71KG-------------
+MMA,Mixed Martial Arts,M.T65KG-------------.FNL-,Men's Traditional  -65kg Final,Men,Gold,1,TJK,Tajikistan,M.T65KG-------------
+MMA,Mixed Martial Arts,M.T65KG-------------.FNL-,Men's Traditional  -65kg Final,Men,Silver,1,PHI,Philippines,M.T65KG-------------
+MMA,Mixed Martial Arts,M.T65KG-------------.FNL-,Men's Traditional  -65kg Final,Men,Bronze,1,KAZ,Kazakhstan,M.T65KG-------------
+MMA,Mixed Martial Arts,M.T65KG-------------.FNL-,Men's Traditional  -65kg Final,Men,Bronze,2,JPN,Japan,M.T65KG-------------
+MMA,Mixed Martial Arts,M.T77KG-------------.FNL-,Men's Traditional  -77kg Final,Men,Gold,1,KAZ,Kazakhstan,M.T77KG-------------
+MMA,Mixed Martial Arts,M.T77KG-------------.FNL-,Men's Traditional  -77kg Final,Men,Silver,1,BRN,Bahrain,M.T77KG-------------
+MMA,Mixed Martial Arts,M.T77KG-------------.FNL-,Men's Traditional  -77kg Final,Men,Bronze,1,PHI,Philippines,M.T77KG-------------
+MMA,Mixed Martial Arts,M.T77KG-------------.FNL-,Men's Traditional  -77kg Final,Men,Bronze,2,KGZ,Kyrgyzstan,M.T77KG-------------
+MMA,Mixed Martial Arts,W.M54KG-------------.FNL-,Women's Modern -54kg Final,Women,Gold,1,THA,Thailand,W.M54KG-------------
+MMA,Mixed Martial Arts,W.M54KG-------------.FNL-,Women's Modern -54kg Final,Women,Silver,1,BRN,Bahrain,W.M54KG-------------
+MMA,Mixed Martial Arts,W.M54KG-------------.FNL-,Women's Modern -54kg Final,Women,Bronze,1,INA,Indonesia,W.M54KG-------------
+MMA,Mixed Martial Arts,W.M54KG-------------.FNL-,Women's Modern -54kg Final,Women,Bronze,2,KOR,Republic of Korea,W.M54KG-------------
+MMA,Mixed Martial Arts,W.T60KG-------------.FNL-,Women's Traditional -60kg Final,Women,Gold,1,SGP,Singapore,W.T60KG-------------
+MMA,Mixed Martial Arts,W.T60KG-------------.FNL-,Women's Traditional -60kg Final,Women,Silver,1,UZB,Uzbekistan,W.T60KG-------------
+MMA,Mixed Martial Arts,W.T60KG-------------.FNL-,Women's Traditional -60kg Final,Women,Bronze,1,CAM,Cambodia,W.T60KG-------------
+MMA,Mixed Martial Arts,W.T60KG-------------.FNL-,Women's Traditional -60kg Final,Women,Bronze,2,IND,India,W.T60KG-------------
+MPN,Modern Pentathlon,M.INDIVID-----------.----,Men's Individual,Men,Gold,1,CHN,People's Republic of China,M.INDIVID-----------
+MPN,Modern Pentathlon,M.INDIVID-----------.----,Men's Individual,Men,Silver,1,KOR,Republic of Korea,M.INDIVID-----------
+MPN,Modern Pentathlon,M.INDIVID-----------.----,Men's Individual,Men,Bronze,1,KOR,Republic of Korea,M.INDIVID-----------
+MPN,Modern Pentathlon,M.TEAM--------------.----,Men's Team,Men,Gold,1,KOR,Republic of Korea,M.TEAM--------------
+MPN,Modern Pentathlon,M.TEAM--------------.----,Men's Team,Men,Silver,1,CHN,People's Republic of China,M.TEAM--------------
+MPN,Modern Pentathlon,M.TEAM--------------.----,Men's Team,Men,Bronze,1,KAZ,Kazakhstan,M.TEAM--------------
+MPN,Modern Pentathlon,W.INDIVID-----------.----,Women's Individual,Women,Gold,1,KOR,Republic of Korea,W.INDIVID-----------
+MPN,Modern Pentathlon,W.INDIVID-----------.----,Women's Individual,Women,Silver,1,CHN,People's Republic of China,W.INDIVID-----------
+MPN,Modern Pentathlon,W.INDIVID-----------.----,Women's Individual,Women,Bronze,1,CHN,People's Republic of China,W.INDIVID-----------
+MPN,Modern Pentathlon,W.TEAM--------------.----,Women's Team,Women,Gold,1,CHN,People's Republic of China,W.TEAM--------------
+MPN,Modern Pentathlon,W.TEAM--------------.----,Women's Team,Women,Silver,1,KOR,Republic of Korea,W.TEAM--------------
+MPN,Modern Pentathlon,W.TEAM--------------.----,Women's Team,Women,Bronze,1,JPN,Japan,W.TEAM--------------
+MTB,Cycling Mountain Bike,M.XCTRY-------------.----,Men's Cross-country,Men,Gold,1,CHN,People's Republic of China,M.XCTRY-------------
+MTB,Cycling Mountain Bike,M.XCTRY-------------.----,Men's Cross-country,Men,Silver,1,JPN,Japan,M.XCTRY-------------
+MTB,Cycling Mountain Bike,M.XCTRY-------------.----,Men's Cross-country,Men,Bronze,1,INA,Indonesia,M.XCTRY-------------
+MTB,Cycling Mountain Bike,W.XCTRY-------------.----,Women's Cross-country,Women,Gold,1,CHN,People's Republic of China,W.XCTRY-------------
+MTB,Cycling Mountain Bike,W.XCTRY-------------.----,Women's Cross-country,Women,Silver,1,CHN,People's Republic of China,W.XCTRY-------------
+MTB,Cycling Mountain Bike,W.XCTRY-------------.----,Women's Cross-country,Women,Bronze,1,INA,Indonesia,W.XCTRY-------------
+PDL,Padel,M.PAIRS-------------.----,Men's Pairs,Men,Gold,1,QAT,Qatar,M.PAIRS-------------
+PDL,Padel,M.PAIRS-------------.----,Men's Pairs,Men,Silver,1,MAS,Malaysia,M.PAIRS-------------
+PDL,Padel,M.PAIRS-------------.----,Men's Pairs,Men,Bronze,1,IRI,Islamic Republic of Iran,M.PAIRS-------------
+PDL,Padel,W.PAIRS-------------.----,Women's Pairs,Women,Gold,1,JPN,Japan,W.PAIRS-------------
+PDL,Padel,W.PAIRS-------------.----,Women's Pairs,Women,Silver,1,INA,Indonesia,W.PAIRS-------------
+PDL,Padel,W.PAIRS-------------.----,Women's Pairs,Women,Bronze,1,INA,Indonesia,W.PAIRS-------------
+ROW,Rowing,M.NOCOX2------------.FNL-,Men's Pair Finals,Men,Gold,1,KAZ,Kazakhstan,M.NOCOX2------------
+ROW,Rowing,M.NOCOX2------------.FNL-,Men's Pair Finals,Men,Silver,1,CHN,People's Republic of China,M.NOCOX2------------
+ROW,Rowing,M.NOCOX2------------.FNL-,Men's Pair Finals,Men,Bronze,1,UZB,Uzbekistan,M.NOCOX2------------
+ROW,Rowing,M.NOCOX4------------.FNL-,Men's Four Finals,Men,Gold,1,CHN,People's Republic of China,M.NOCOX4------------
+ROW,Rowing,M.NOCOX4------------.FNL-,Men's Four Finals,Men,Silver,1,UZB,Uzbekistan,M.NOCOX4------------
+ROW,Rowing,M.NOCOX4------------.FNL-,Men's Four Finals,Men,Bronze,1,VIE,Vietnam,M.NOCOX4------------
+ROW,Rowing,M.SCULL1------------.FNL-,Men's Single Sculls Finals,Men,Gold,1,CHN,People's Republic of China,M.SCULL1------------
+ROW,Rowing,M.SCULL1------------.FNL-,Men's Single Sculls Finals,Men,Silver,1,UZB,Uzbekistan,M.SCULL1------------
+ROW,Rowing,M.SCULL1------------.FNL-,Men's Single Sculls Finals,Men,Bronze,1,JPN,Japan,M.SCULL1------------
+ROW,Rowing,M.SCULL1-L----------.FNL-,Lightweight Men's Single Sculls Finals,Men,Gold,1,HKG,"Hong Kong, China",M.SCULL1-L----------
+ROW,Rowing,M.SCULL1-L----------.FNL-,Lightweight Men's Single Sculls Finals,Men,Silver,1,IRI,Islamic Republic of Iran,M.SCULL1-L----------
+ROW,Rowing,M.SCULL1-L----------.FNL-,Lightweight Men's Single Sculls Finals,Men,Bronze,1,KOR,Republic of Korea,M.SCULL1-L----------
+ROW,Rowing,M.SCULL2------------.FNL-,Men's Double Sculls Finals,Men,Gold,1,CHN,People's Republic of China,M.SCULL2------------
+ROW,Rowing,M.SCULL2------------.FNL-,Men's Double Sculls Finals,Men,Silver,1,UZB,Uzbekistan,M.SCULL2------------
+ROW,Rowing,M.SCULL2------------.FNL-,Men's Double Sculls Finals,Men,Bronze,1,IND,India,M.SCULL2------------
+ROW,Rowing,M.SCULL2-L----------.FNL-,Lightweight Men's Double Sculls Finals,Men,Gold,1,UZB,Uzbekistan,M.SCULL2-L----------
+ROW,Rowing,M.SCULL2-L----------.FNL-,Lightweight Men's Double Sculls Finals,Men,Silver,1,INA,Indonesia,M.SCULL2-L----------
+ROW,Rowing,M.SCULL2-L----------.FNL-,Lightweight Men's Double Sculls Finals,Men,Bronze,1,HKG,"Hong Kong, China",M.SCULL2-L----------
+ROW,Rowing,M.SCULL4------------.FNL-,Men's Quadruple Sculls Finals,Men,Gold,1,CHN,People's Republic of China,M.SCULL4------------
+ROW,Rowing,M.SCULL4------------.FNL-,Men's Quadruple Sculls Finals,Men,Silver,1,INA,Indonesia,M.SCULL4------------
+ROW,Rowing,M.SCULL4------------.FNL-,Men's Quadruple Sculls Finals,Men,Bronze,1,UZB,Uzbekistan,M.SCULL4------------
+ROW,Rowing,W.NOCOX2------------.FNL-,Women's Pair Finals,Women,Gold,1,CHN,People's Republic of China,W.NOCOX2------------
+ROW,Rowing,W.NOCOX2------------.FNL-,Women's Pair Finals,Women,Silver,1,UZB,Uzbekistan,W.NOCOX2------------
+ROW,Rowing,W.NOCOX2------------.FNL-,Women's Pair Finals,Women,Bronze,1,VIE,Vietnam,W.NOCOX2------------
+ROW,Rowing,W.NOCOX4------------.FNL-,Women's Four Finals,Women,Gold,1,CHN,People's Republic of China,W.NOCOX4------------
+ROW,Rowing,W.NOCOX4------------.FNL-,Women's Four Finals,Women,Silver,1,UZB,Uzbekistan,W.NOCOX4------------
+ROW,Rowing,W.NOCOX4------------.FNL-,Women's Four Finals,Women,Bronze,1,VIE,Vietnam,W.NOCOX4------------
+ROW,Rowing,W.SCULL1------------.FNL-,Women's Single Sculls Finals,Women,Gold,1,CHN,People's Republic of China,W.SCULL1------------
+ROW,Rowing,W.SCULL1------------.FNL-,Women's Single Sculls Finals,Women,Silver,1,UZB,Uzbekistan,W.SCULL1------------
+ROW,Rowing,W.SCULL1------------.FNL-,Women's Single Sculls Finals,Women,Bronze,1,IRI,Islamic Republic of Iran,W.SCULL1------------
+ROW,Rowing,W.SCULL1-L----------.FNL-,Lightweight Women's Single Sculls Finals,Women,Gold,1,IRI,Islamic Republic of Iran,W.SCULL1-L----------
+ROW,Rowing,W.SCULL1-L----------.FNL-,Lightweight Women's Single Sculls Finals,Women,Silver,1,HKG,"Hong Kong, China",W.SCULL1-L----------
+ROW,Rowing,W.SCULL1-L----------.FNL-,Lightweight Women's Single Sculls Finals,Women,Bronze,1,THA,Thailand,W.SCULL1-L----------
+ROW,Rowing,W.SCULL2------------.FNL-,Women's Double Sculls Finals,Women,Gold,1,CHN,People's Republic of China,W.SCULL2------------
+ROW,Rowing,W.SCULL2------------.FNL-,Women's Double Sculls Finals,Women,Silver,1,IRI,Islamic Republic of Iran,W.SCULL2------------
+ROW,Rowing,W.SCULL2------------.FNL-,Women's Double Sculls Finals,Women,Bronze,1,VIE,Vietnam,W.SCULL2------------
+ROW,Rowing,W.SCULL2-L----------.FNL-,Lightweight Women's Double Sculls Finals,Women,Gold,1,IRI,Islamic Republic of Iran,W.SCULL2-L----------
+ROW,Rowing,W.SCULL2-L----------.FNL-,Lightweight Women's Double Sculls Finals,Women,Silver,1,HKG,"Hong Kong, China",W.SCULL2-L----------
+ROW,Rowing,W.SCULL2-L----------.FNL-,Lightweight Women's Double Sculls Finals,Women,Bronze,1,JPN,Japan,W.SCULL2-L----------
+ROW,Rowing,W.SCULL4------------.FNL-,Women's Quadruple Sculls Finals,Women,Gold,1,CHN,People's Republic of China,W.SCULL4------------
+ROW,Rowing,W.SCULL4------------.FNL-,Women's Quadruple Sculls Finals,Women,Silver,1,IRI,Islamic Republic of Iran,W.SCULL4------------
+ROW,Rowing,W.SCULL4------------.FNL-,Women's Quadruple Sculls Finals,Women,Bronze,1,JPN,Japan,W.SCULL4------------
+RU7,Rugby Sevens,M.TEAM7-------------.----,Men,Men,Gold,1,HKG,"Hong Kong, China",M.TEAM7-------------
+RU7,Rugby Sevens,M.TEAM7-------------.----,Men,Men,Silver,1,CHN,People's Republic of China,M.TEAM7-------------
+RU7,Rugby Sevens,M.TEAM7-------------.----,Men,Men,Bronze,1,JPN,Japan,M.TEAM7-------------
+RU7,Rugby Sevens,W.TEAM7-------------.----,Women,Women,Gold,1,JPN,Japan,W.TEAM7-------------
+RU7,Rugby Sevens,W.TEAM7-------------.----,Women,Women,Silver,1,CHN,People's Republic of China,W.TEAM7-------------
+RU7,Rugby Sevens,W.TEAM7-------------.----,Women,Women,Bronze,1,HKG,"Hong Kong, China",W.TEAM7-------------
+SAL,Sailing,M.29ER--------------.----,Boys' Skiff,Men,Gold,1,HKG,"Hong Kong, China",M.29ER--------------
+SAL,Sailing,M.29ER--------------.----,Boys' Skiff,Men,Silver,1,SGP,Singapore,M.29ER--------------
+SAL,Sailing,M.29ER--------------.----,Boys' Skiff,Men,Bronze,1,MAS,Malaysia,M.29ER--------------
+SAL,Sailing,M.49ER--------------.----,Men's Skiff,Men,Gold,1,CHN,People's Republic of China,M.49ER--------------
+SAL,Sailing,M.49ER--------------.----,Men's Skiff,Men,Silver,1,IND,India,M.49ER--------------
+SAL,Sailing,M.49ER--------------.----,Men's Skiff,Men,Bronze,1,HKG,"Hong Kong, China",M.49ER--------------
+SAL,Sailing,M.ILCA4-------------.----,Boys' Dinghy,Men,Gold,1,KOR,Republic of Korea,M.ILCA4-------------
+SAL,Sailing,M.ILCA4-------------.----,Boys' Dinghy,Men,Silver,1,SGP,Singapore,M.ILCA4-------------
+SAL,Sailing,M.ILCA4-------------.----,Boys' Dinghy,Men,Bronze,1,HKG,"Hong Kong, China",M.ILCA4-------------
+SAL,Sailing,M.ILCA7-------------.----,Men's Dinghy,Men,Gold,1,KOR,Republic of Korea,M.ILCA7-------------
+SAL,Sailing,M.ILCA7-------------.----,Men's Dinghy,Men,Silver,1,HKG,"Hong Kong, China",M.ILCA7-------------
+SAL,Sailing,M.ILCA7-------------.----,Men's Dinghy,Men,Bronze,1,MAS,Malaysia,M.ILCA7-------------
+SAL,Sailing,M.IQFOIL------------.----,Men's Windsurfing,Men,Gold,1,CHN,People's Republic of China,M.IQFOIL------------
+SAL,Sailing,M.IQFOIL------------.----,Men's Windsurfing,Men,Silver,1,KOR,Republic of Korea,M.IQFOIL------------
+SAL,Sailing,M.IQFOIL------------.----,Men's Windsurfing,Men,Bronze,1,THA,Thailand,M.IQFOIL------------
+SAL,Sailing,M.IQFOIL-Y----------.----,Boys' Windsurfing,Men,Gold,1,HKG,"Hong Kong, China",M.IQFOIL-Y----------
+SAL,Sailing,M.IQFOIL-Y----------.----,Boys' Windsurfing,Men,Silver,1,JPN,Japan,M.IQFOIL-Y----------
+SAL,Sailing,M.IQFOIL-Y----------.----,Boys' Windsurfing,Men,Bronze,1,SGP,Singapore,M.IQFOIL-Y----------
+SAL,Sailing,W.29ER--------------.----,Girls' Skiff,Women,Gold,1,HKG,"Hong Kong, China",W.29ER--------------
+SAL,Sailing,W.29ER--------------.----,Girls' Skiff,Women,Silver,1,JPN,Japan,W.29ER--------------
+SAL,Sailing,W.29ER--------------.----,Girls' Skiff,Women,Bronze,1,MAS,Malaysia,W.29ER--------------
+SAL,Sailing,W.49ERFX------------.----,Women's Skiff,Women,Gold,1,JPN,Japan,W.49ERFX------------
+SAL,Sailing,W.49ERFX------------.----,Women's Skiff,Women,Silver,1,HKG,"Hong Kong, China",W.49ERFX------------
+SAL,Sailing,W.49ERFX------------.----,Women's Skiff,Women,Bronze,1,IND,India,W.49ERFX------------
+SAL,Sailing,W.ILCA4-------------.----,Girls' Dinghy,Women,Gold,1,THA,Thailand,W.ILCA4-------------
+SAL,Sailing,W.ILCA4-------------.----,Girls' Dinghy,Women,Silver,1,HKG,"Hong Kong, China",W.ILCA4-------------
+SAL,Sailing,W.ILCA4-------------.----,Girls' Dinghy,Women,Bronze,1,KOR,Republic of Korea,W.ILCA4-------------
+SAL,Sailing,W.ILCA6-------------.----,Women's Dinghy,Women,Gold,1,THA,Thailand,W.ILCA6-------------
+SAL,Sailing,W.ILCA6-------------.----,Women's Dinghy,Women,Silver,1,SGP,Singapore,W.ILCA6-------------
+SAL,Sailing,W.ILCA6-------------.----,Women's Dinghy,Women,Bronze,1,IND,India,W.ILCA6-------------
+SAL,Sailing,W.IQFOIL------------.----,Women's Windsurfing,Women,Gold,1,CHN,People's Republic of China,W.IQFOIL------------
+SAL,Sailing,W.IQFOIL------------.----,Women's Windsurfing,Women,Silver,1,HKG,"Hong Kong, China",W.IQFOIL------------
+SAL,Sailing,W.IQFOIL------------.----,Women's Windsurfing,Women,Bronze,1,JPN,Japan,W.IQFOIL------------
+SAL,Sailing,W.IQFOIL-Y----------.----,Girls' Windsurfing,Women,Gold,1,HKG,"Hong Kong, China",W.IQFOIL-Y----------
+SAL,Sailing,W.IQFOIL-Y----------.----,Girls' Windsurfing,Women,Silver,1,JPN,Japan,W.IQFOIL-Y----------
+SAL,Sailing,W.IQFOIL-Y----------.----,Girls' Windsurfing,Women,Bronze,1,THA,Thailand,W.IQFOIL-Y----------
+SAL,Sailing,X.420---------------.----,Youth Mixed Dinghy,Mixed,Gold,1,JPN,Japan,X.420---------------
+SAL,Sailing,X.420---------------.----,Youth Mixed Dinghy,Mixed,Silver,1,THA,Thailand,X.420---------------
+SAL,Sailing,X.420---------------.----,Youth Mixed Dinghy,Mixed,Bronze,1,KOR,Republic of Korea,X.420---------------
+SAL,Sailing,X.470---------------.----,Mixed Dinghy,Mixed,Gold,1,JPN,Japan,X.470---------------
+SAL,Sailing,X.470---------------.----,Mixed Dinghy,Mixed,Silver,1,KOR,Republic of Korea,X.470---------------
+SAL,Sailing,X.470---------------.----,Mixed Dinghy,Mixed,Bronze,1,CHN,People's Republic of China,X.470---------------
+SBL,Softball,W.TEAM9-------------.FNL-,Women’s Finals,Women,Gold,1,JPN,Japan,W.TEAM9-------------
+SBL,Softball,W.TEAM9-------------.FNL-,Women’s Finals,Women,Silver,1,CHN,People's Republic of China,W.TEAM9-------------
+SBL,Softball,W.TEAM9-------------.FNL-,Women’s Finals,Women,Bronze,1,TPE,Chinese Taipei,W.TEAM9-------------
+SHO,Shooting,M.APM---------------.----,10m Air Pistol Men Individual,Men,Gold,1,UZB,Uzbekistan,M.APM---------------
+SHO,Shooting,M.APM---------------.----,10m Air Pistol Men Individual,Men,Silver,1,CHN,People's Republic of China,M.APM---------------
+SHO,Shooting,M.APM---------------.----,10m Air Pistol Men Individual,Men,Bronze,1,CHN,People's Republic of China,M.APM---------------
+SHO,Shooting,M.APTM--------------.----,10m Air Pistol Men Team,Men,Gold,1,CHN,People's Republic of China,M.APTM--------------
+SHO,Shooting,M.APTM--------------.----,10m Air Pistol Men Team,Men,Silver,1,INA,Indonesia,M.APTM--------------
+SHO,Shooting,M.APTM--------------.----,10m Air Pistol Men Team,Men,Bronze,1,JPN,Japan,M.APTM--------------
+SHO,Shooting,M.ARM---------------.----,10m Air Rifle Men Individual,Men,Gold,1,CHN,People's Republic of China,M.ARM---------------
+SHO,Shooting,M.ARM---------------.----,10m Air Rifle Men Individual,Men,Silver,1,IND,India,M.ARM---------------
+SHO,Shooting,M.ARM---------------.----,10m Air Rifle Men Individual,Men,Bronze,1,IND,India,M.ARM---------------
+SHO,Shooting,M.ARTM--------------.----,10m Air Rifle Men Team,Men,Gold,1,CHN,People's Republic of China,M.ARTM--------------
+SHO,Shooting,M.ARTM--------------.----,10m Air Rifle Men Team,Men,Silver,1,IND,India,M.ARTM--------------
+SHO,Shooting,M.ARTM--------------.----,10m Air Rifle Men Team,Men,Bronze,1,KOR,Republic of Korea,M.ARTM--------------
+SHO,Shooting,M.R3PM--------------.----,50m Rifle 3 Positions Men Individual,Men,Gold,1,CHN,People's Republic of China,M.R3PM--------------
+SHO,Shooting,M.R3PM--------------.----,50m Rifle 3 Positions Men Individual,Men,Silver,1,CHN,People's Republic of China,M.R3PM--------------
+SHO,Shooting,M.R3PM--------------.----,50m Rifle 3 Positions Men Individual,Men,Bronze,1,KAZ,Kazakhstan,M.R3PM--------------
+SHO,Shooting,M.R3PTM-------------.----,50m Rifle 3 Positions Men Team,Men,Gold,1,CHN,People's Republic of China,M.R3PTM-------------
+SHO,Shooting,M.R3PTM-------------.----,50m Rifle 3 Positions Men Team,Men,Silver,1,IND,India,M.R3PTM-------------
+SHO,Shooting,M.R3PTM-------------.----,50m Rifle 3 Positions Men Team,Men,Bronze,1,KOR,Republic of Korea,M.R3PTM-------------
+SHO,Shooting,M.RFPM--------------.----,25m Rapid Fire Pistol Men Individual,Men,Gold,1,KOR,Republic of Korea,M.RFPM--------------
+SHO,Shooting,M.RFPM--------------.----,25m Rapid Fire Pistol Men Individual,Men,Silver,1,CHN,People's Republic of China,M.RFPM--------------
+SHO,Shooting,M.RFPM--------------.----,25m Rapid Fire Pistol Men Individual,Men,Bronze,1,PAK,Pakistan,M.RFPM--------------
+SHO,Shooting,M.RFPTM-------------.----,25m Rapid Fire Pistol Men Team,Men,Gold,1,KOR,Republic of Korea,M.RFPTM-------------
+SHO,Shooting,M.RFPTM-------------.----,25m Rapid Fire Pistol Men Team,Men,Silver,1,CHN,People's Republic of China,M.RFPTM-------------
+SHO,Shooting,M.RFPTM-------------.----,25m Rapid Fire Pistol Men Team,Men,Bronze,1,INA,Indonesia,M.RFPTM-------------
+SHO,Shooting,M.SKM---------------.----,Skeet Men Individual,Men,Gold,1,QAT,Qatar,M.SKM---------------
+SHO,Shooting,M.SKM---------------.----,Skeet Men Individual,Men,Silver,1,CHN,People's Republic of China,M.SKM---------------
+SHO,Shooting,M.SKM---------------.----,Skeet Men Individual,Men,Bronze,1,TPE,Chinese Taipei,M.SKM---------------
+SHO,Shooting,M.SKTM--------------.----,Skeet Men Team,Men,Gold,1,QAT,Qatar,M.SKTM--------------
+SHO,Shooting,M.SKTM--------------.----,Skeet Men Team,Men,Silver,1,KUW,Kuwait,M.SKTM--------------
+SHO,Shooting,M.SKTM--------------.----,Skeet Men Team,Men,Bronze,1,IND,India,M.SKTM--------------
+SHO,Shooting,M.TRM---------------.----,Trap Men Individual,Men,Gold,1,KUW,Kuwait,M.TRM---------------
+SHO,Shooting,M.TRM---------------.----,Trap Men Individual,Men,Silver,1,TPE,Chinese Taipei,M.TRM---------------
+SHO,Shooting,M.TRM---------------.----,Trap Men Individual,Men,Bronze,1,CHN,People's Republic of China,M.TRM---------------
+SHO,Shooting,M.TRTM--------------.----,Trap Men Team,Men,Gold,1,KUW,Kuwait,M.TRTM--------------
+SHO,Shooting,M.TRTM--------------.----,Trap Men Team,Men,Silver,1,QAT,Qatar,M.TRTM--------------
+SHO,Shooting,M.TRTM--------------.----,Trap Men Team,Men,Bronze,1,KAZ,Kazakhstan,M.TRTM--------------
+SHO,Shooting,W.APTW--------------.----,10m Air Pistol Women Team,Women,Gold,1,CHN,People's Republic of China,W.APTW--------------
+SHO,Shooting,W.APTW--------------.----,10m Air Pistol Women Team,Women,Silver,1,KOR,Republic of Korea,W.APTW--------------
+SHO,Shooting,W.APTW--------------.----,10m Air Pistol Women Team,Women,Bronze,1,VIE,Vietnam,W.APTW--------------
+SHO,Shooting,W.APW---------------.----,10m Air Pistol Women Individual,Women,Gold,1,KOR,Republic of Korea,W.APW---------------
+SHO,Shooting,W.APW---------------.----,10m Air Pistol Women Individual,Women,Silver,1,CHN,People's Republic of China,W.APW---------------
+SHO,Shooting,W.APW---------------.----,10m Air Pistol Women Individual,Women,Bronze,1,CHN,People's Republic of China,W.APW---------------
+SHO,Shooting,W.ARTW--------------.----,10m Air Rifle Women Team,Women,Gold,1,CHN,People's Republic of China,W.ARTW--------------
+SHO,Shooting,W.ARTW--------------.----,10m Air Rifle Women Team,Women,Silver,1,IND,India,W.ARTW--------------
+SHO,Shooting,W.ARTW--------------.----,10m Air Rifle Women Team,Women,Bronze,1,JPN,Japan,W.ARTW--------------
+SHO,Shooting,W.ARW---------------.----,10m Air Rifle Women Individual,Women,Gold,1,JPN,Japan,W.ARW---------------
+SHO,Shooting,W.ARW---------------.----,10m Air Rifle Women Individual,Women,Silver,1,IND,India,W.ARW---------------
+SHO,Shooting,W.ARW---------------.----,10m Air Rifle Women Individual,Women,Bronze,1,KOR,Republic of Korea,W.ARW---------------
+SHO,Shooting,W.R3PTW-------------.----,50m Rifle 3 Positions Women Team,Women,Gold,1,CHN,People's Republic of China,W.R3PTW-------------
+SHO,Shooting,W.R3PTW-------------.----,50m Rifle 3 Positions Women Team,Women,Silver,1,IND,India,W.R3PTW-------------
+SHO,Shooting,W.R3PTW-------------.----,50m Rifle 3 Positions Women Team,Women,Bronze,1,KAZ,Kazakhstan,W.R3PTW-------------
+SHO,Shooting,W.R3PW--------------.----,50m Rifle 3 Positions Women Individual,Women,Gold,1,CHN,People's Republic of China,W.R3PW--------------
+SHO,Shooting,W.R3PW--------------.----,50m Rifle 3 Positions Women Individual,Women,Silver,1,CHN,People's Republic of China,W.R3PW--------------
+SHO,Shooting,W.R3PW--------------.----,50m Rifle 3 Positions Women Individual,Women,Bronze,1,KOR,Republic of Korea,W.R3PW--------------
+SHO,Shooting,W.SKTW--------------.----,Skeet Women Team,Women,Gold,1,CHN,People's Republic of China,W.SKTW--------------
+SHO,Shooting,W.SKTW--------------.----,Skeet Women Team,Women,Silver,1,KAZ,Kazakhstan,W.SKTW--------------
+SHO,Shooting,W.SKTW--------------.----,Skeet Women Team,Women,Bronze,1,IND,India,W.SKTW--------------
+SHO,Shooting,W.SKW---------------.----,Skeet Women Individual,Women,Gold,1,CHN,People's Republic of China,W.SKW---------------
+SHO,Shooting,W.SKW---------------.----,Skeet Women Individual,Women,Silver,1,THA,Thailand,W.SKW---------------
+SHO,Shooting,W.SKW---------------.----,Skeet Women Individual,Women,Bronze,1,KAZ,Kazakhstan,W.SKW---------------
+SHO,Shooting,W.SPTW--------------.----,25m Pistol Women Team,Women,Gold,1,CHN,People's Republic of China,W.SPTW--------------
+SHO,Shooting,W.SPTW--------------.----,25m Pistol Women Team,Women,Silver,1,KOR,Republic of Korea,W.SPTW--------------
+SHO,Shooting,W.SPTW--------------.----,25m Pistol Women Team,Women,Bronze,1,TPE,Chinese Taipei,W.SPTW--------------
+SHO,Shooting,W.SPW---------------.----,25m Pistol Women Individual,Women,Gold,1,CHN,People's Republic of China,W.SPW---------------
+SHO,Shooting,W.SPW---------------.----,25m Pistol Women Individual,Women,Silver,1,IND,India,W.SPW---------------
+SHO,Shooting,W.SPW---------------.----,25m Pistol Women Individual,Women,Bronze,1,PRK,Democratic People's Republic of Korea,W.SPW---------------
+SHO,Shooting,W.TRTW--------------.----,Trap Women Team,Women,Gold,1,CHN,People's Republic of China,W.TRTW--------------
+SHO,Shooting,W.TRTW--------------.----,Trap Women Team,Women,Silver,1,IND,India,W.TRTW--------------
+SHO,Shooting,W.TRTW--------------.----,Trap Women Team,Women,Bronze,1,KUW,Kuwait,W.TRTW--------------
+SHO,Shooting,W.TRW---------------.----,Trap Women Individual,Women,Gold,1,IND,India,W.TRW---------------
+SHO,Shooting,W.TRW---------------.----,Trap Women Individual,Women,Silver,1,CHN,People's Republic of China,W.TRW---------------
+SHO,Shooting,W.TRW---------------.----,Trap Women Individual,Women,Bronze,1,KUW,Kuwait,W.TRW---------------
+SHO,Shooting,X.APMT--------------.----,10m Air Pistol Mixed Team,Mixed,Gold,1,IND,India,X.APMT--------------
+SHO,Shooting,X.APMT--------------.----,10m Air Pistol Mixed Team,Mixed,Silver,1,KOR,Republic of Korea,X.APMT--------------
+SHO,Shooting,X.APMT--------------.----,10m Air Pistol Mixed Team,Mixed,Bronze,1,IRI,Islamic Republic of Iran,X.APMT--------------
+SHO,Shooting,X.ARMT--------------.----,10m Air Rifle Mixed Team,Mixed,Gold,1,CHN,People's Republic of China,X.ARMT--------------
+SHO,Shooting,X.ARMT--------------.----,10m Air Rifle Mixed Team,Mixed,Silver,1,KOR,Republic of Korea,X.ARMT--------------
+SHO,Shooting,X.ARMT--------------.----,10m Air Rifle Mixed Team,Mixed,Bronze,1,JPN,Japan,X.ARMT--------------
+SHO,Shooting,X.SKMT--------------.----,Skeet Mixed Team,Mixed,Gold,1,CHN,People's Republic of China,X.SKMT--------------
+SHO,Shooting,X.SKMT--------------.----,Skeet Mixed Team,Mixed,Silver,1,KOR,Republic of Korea,X.SKMT--------------
+SHO,Shooting,X.SKMT--------------.----,Skeet Mixed Team,Mixed,Bronze,1,IND,India,X.SKMT--------------
+SHO,Shooting,X.TRMT--------------.----,Trap Mixed Team,Mixed,Gold,1,IND,India,X.TRMT--------------
+SHO,Shooting,X.TRMT--------------.----,Trap Mixed Team,Mixed,Silver,1,QAT,Qatar,X.TRMT--------------
+SHO,Shooting,X.TRMT--------------.----,Trap Mixed Team,Mixed,Bronze,1,CHN,People's Republic of China,X.TRMT--------------
+SKB,Skateboarding,M.PARK--------------.----,Men's Park,Men,Gold,1,JPN,Japan,M.PARK--------------
+SKB,Skateboarding,M.PARK--------------.----,Men's Park,Men,Silver,1,TPE,Chinese Taipei,M.PARK--------------
+SKB,Skateboarding,M.PARK--------------.----,Men's Park,Men,Bronze,1,JPN,Japan,M.PARK--------------
+SKB,Skateboarding,M.STREET------------.----,Men's Street,Men,Gold,1,KOR,Republic of Korea,M.STREET------------
+SKB,Skateboarding,M.STREET------------.----,Men's Street,Men,Silver,1,JPN,Japan,M.STREET------------
+SKB,Skateboarding,M.STREET------------.----,Men's Street,Men,Bronze,1,JPN,Japan,M.STREET------------
+SKB,Skateboarding,W.PARK--------------.----,Women's Park,Women,Gold,1,JPN,Japan,W.PARK--------------
+SKB,Skateboarding,W.PARK--------------.----,Women's Park,Women,Silver,1,TPE,Chinese Taipei,W.PARK--------------
+SKB,Skateboarding,W.PARK--------------.----,Women's Park,Women,Bronze,1,JPN,Japan,W.PARK--------------
+SKB,Skateboarding,W.STREET------------.----,Women's Street,Women,Gold,1,CHN,People's Republic of China,W.STREET------------
+SKB,Skateboarding,W.STREET------------.----,Women's Street,Women,Silver,1,JPN,Japan,W.STREET------------
+SKB,Skateboarding,W.STREET------------.----,Women's Street,Women,Bronze,1,CHN,People's Republic of China,W.STREET------------
+SPK,Sepaktakraw,M.QUADRANT----------.FNL-,Men's Quadrant Final,Men,Gold,1,JPN,Japan,M.QUADRANT----------
+SPK,Sepaktakraw,M.QUADRANT----------.FNL-,Men's Quadrant Final,Men,Silver,1,INA,Indonesia,M.QUADRANT----------
+SPK,Sepaktakraw,M.QUADRANT----------.FNL-,Men's Quadrant Final,Men,Bronze,1,IND,India,M.QUADRANT----------
+SPK,Sepaktakraw,M.QUADRANT----------.FNL-,Men's Quadrant Final,Men,Bronze,2,MYA,Myanmar,M.QUADRANT----------
+SPK,Sepaktakraw,M.REGU--------------.FNL-,Men's Regu Final,Men,Gold,1,THA,Thailand,M.REGU--------------
+SPK,Sepaktakraw,M.REGU--------------.FNL-,Men's Regu Final,Men,Silver,1,MAS,Malaysia,M.REGU--------------
+SPK,Sepaktakraw,M.REGU--------------.FNL-,Men's Regu Final,Men,Bronze,1,PHI,Philippines,M.REGU--------------
+SPK,Sepaktakraw,M.REGU--------------.FNL-,Men's Regu Final,Men,Bronze,2,VIE,Vietnam,M.REGU--------------
+SPK,Sepaktakraw,M.TEAMREGU----------.FNL-,Men's Team Regu Finals,Men,Gold,1,MAS,Malaysia,M.TEAMREGU----------
+SPK,Sepaktakraw,M.TEAMREGU----------.FNL-,Men's Team Regu Finals,Men,Silver,1,THA,Thailand,M.TEAMREGU----------
+SPK,Sepaktakraw,M.TEAMREGU----------.FNL-,Men's Team Regu Finals,Men,Bronze,1,INA,Indonesia,M.TEAMREGU----------
+SPK,Sepaktakraw,M.TEAMREGU----------.FNL-,Men's Team Regu Finals,Men,Bronze,2,JPN,Japan,M.TEAMREGU----------
+SPK,Sepaktakraw,W.DOUBLE------------.FNL-,Women's Double Final,Women,Gold,1,VIE,Vietnam,W.DOUBLE------------
+SPK,Sepaktakraw,W.DOUBLE------------.FNL-,Women's Double Final,Women,Silver,1,PHI,Philippines,W.DOUBLE------------
+SPK,Sepaktakraw,W.DOUBLE------------.FNL-,Women's Double Final,Women,Bronze,1,KOR,Republic of Korea,W.DOUBLE------------
+SPK,Sepaktakraw,W.DOUBLE------------.FNL-,Women's Double Final,Women,Bronze,2,LAO,Lao People's Democratic Republic,W.DOUBLE------------
+SPK,Sepaktakraw,W.QUADRANT----------.FNL-,Women's Quadrant Final,Women,Gold,1,VIE,Vietnam,W.QUADRANT----------
+SPK,Sepaktakraw,W.QUADRANT----------.FNL-,Women's Quadrant Final,Women,Silver,1,THA,Thailand,W.QUADRANT----------
+SPK,Sepaktakraw,W.QUADRANT----------.FNL-,Women's Quadrant Final,Women,Bronze,1,INA,Indonesia,W.QUADRANT----------
+SPK,Sepaktakraw,W.QUADRANT----------.FNL-,Women's Quadrant Final,Women,Bronze,2,JPN,Japan,W.QUADRANT----------
+SPK,Sepaktakraw,W.TEAMREGU----------.FNL-,Women's Team Regu Finals,Women,Gold,1,THA,Thailand,W.TEAMREGU----------
+SPK,Sepaktakraw,W.TEAMREGU----------.FNL-,Women's Team Regu Finals,Women,Silver,1,KOR,Republic of Korea,W.TEAMREGU----------
+SPK,Sepaktakraw,W.TEAMREGU----------.FNL-,Women's Team Regu Finals,Women,Bronze,1,INA,Indonesia,W.TEAMREGU----------
+SQU,Squash,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,MAS,Malaysia,M.SINGLES-----------
+SQU,Squash,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,IND,India,M.SINGLES-----------
+SQU,Squash,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,PAK,Pakistan,M.SINGLES-----------
+SQU,Squash,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,PAK,Pakistan,M.SINGLES-----------
+SQU,Squash,M.TEAM--------------.----,Men's Team,Men,Gold,1,MAS,Malaysia,M.TEAM--------------
+SQU,Squash,M.TEAM--------------.----,Men's Team,Men,Silver,1,PAK,Pakistan,M.TEAM--------------
+SQU,Squash,M.TEAM--------------.----,Men's Team,Men,Bronze,1,IND,India,M.TEAM--------------
+SQU,Squash,M.TEAM--------------.----,Men's Team,Men,Bronze,2,HKG,"Hong Kong, China",M.TEAM--------------
+SQU,Squash,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,MAS,Malaysia,W.SINGLES-----------
+SQU,Squash,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,IND,India,W.SINGLES-----------
+SQU,Squash,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,JPN,Japan,W.SINGLES-----------
+SQU,Squash,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,HKG,"Hong Kong, China",W.SINGLES-----------
+SQU,Squash,W.TEAM--------------.----,Women's Team,Women,Gold,1,MAS,Malaysia,W.TEAM--------------
+SQU,Squash,W.TEAM--------------.----,Women's Team,Women,Silver,1,HKG,"Hong Kong, China",W.TEAM--------------
+SQU,Squash,W.TEAM--------------.----,Women's Team,Women,Bronze,1,JPN,Japan,W.TEAM--------------
+SQU,Squash,W.TEAM--------------.----,Women's Team,Women,Bronze,2,IND,India,W.TEAM--------------
+SQU,Squash,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,HKG,"Hong Kong, China",X.DOUBLES-----------
+SQU,Squash,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,HKG,"Hong Kong, China",X.DOUBLES-----------
+SQU,Squash,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,IND,India,X.DOUBLES-----------
+SQU,Squash,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,MAS,Malaysia,X.DOUBLES-----------
+SRF,Surfing,M.SHORTBRD----------.FNL-,Men's Shortboard Finals,Men,Gold,1,JPN,Japan,M.SHORTBRD----------
+SRF,Surfing,M.SHORTBRD----------.FNL-,Men's Shortboard Finals,Men,Silver,1,INA,Indonesia,M.SHORTBRD----------
+SRF,Surfing,M.SHORTBRD----------.FNL-,Men's Shortboard Finals,Men,Bronze,1,PHI,Philippines,M.SHORTBRD----------
+SRF,Surfing,W.SHORTBRD----------.FNL-,Women's Shortboard Finals,Women,Gold,1,JPN,Japan,W.SHORTBRD----------
+SRF,Surfing,W.SHORTBRD----------.FNL-,Women's Shortboard Finals,Women,Silver,1,CHN,People's Republic of China,W.SHORTBRD----------
+SRF,Surfing,W.SHORTBRD----------.FNL-,Women's Shortboard Finals,Women,Bronze,1,JPN,Japan,W.SHORTBRD----------
+SWA,Artistic Swimming,O.TEAM8-------------.----,Mixed Team,Open,Gold,1,CHN,People's Republic of China,O.TEAM8-------------
+SWA,Artistic Swimming,O.TEAM8-------------.----,Mixed Team,Open,Silver,1,JPN,Japan,O.TEAM8-------------
+SWA,Artistic Swimming,O.TEAM8-------------.----,Mixed Team,Open,Bronze,1,KAZ,Kazakhstan,O.TEAM8-------------
+SWA,Artistic Swimming,W.TEAM2-------------.----,Duet,Women,Gold,1,CHN,People's Republic of China,W.TEAM2-------------
+SWA,Artistic Swimming,W.TEAM2-------------.----,Duet,Women,Silver,1,JPN,Japan,W.TEAM2-------------
+SWA,Artistic Swimming,W.TEAM2-------------.----,Duet,Women,Bronze,1,KAZ,Kazakhstan,W.TEAM2-------------
+SWM,Swimming,M.100MBA------------.----,Men's 100m Backstroke,Men,Gold,1,CHN,People's Republic of China,M.100MBA------------
+SWM,Swimming,M.100MBA------------.----,Men's 100m Backstroke,Men,Silver,1,JPN,Japan,M.100MBA------------
+SWM,Swimming,M.100MBA------------.----,Men's 100m Backstroke,Men,Bronze,1,KOR,Republic of Korea,M.100MBA------------
+SWM,Swimming,M.100MBF------------.----,Men's 100m Butterfly,Men,Gold,1,JPN,Japan,M.100MBF------------
+SWM,Swimming,M.100MBF------------.----,Men's 100m Butterfly,Men,Silver,1,CHN,People's Republic of China,M.100MBF------------
+SWM,Swimming,M.100MBF------------.----,Men's 100m Butterfly,Men,Bronze,1,JPN,Japan,M.100MBF------------
+SWM,Swimming,M.100MBR------------.----,Men's 100m Breaststroke,Men,Gold,1,CHN,People's Republic of China,M.100MBR------------
+SWM,Swimming,M.100MBR------------.----,Men's 100m Breaststroke,Men,Gold,2,JPN,Japan,M.100MBR------------
+SWM,Swimming,M.100MBR------------.----,Men's 100m Breaststroke,Men,Bronze,1,CHN,People's Republic of China,M.100MBR------------
+SWM,Swimming,M.100MFR------------.----,Men's 100m Freestyle,Men,Gold,1,CHN,People's Republic of China,M.100MFR------------
+SWM,Swimming,M.100MFR------------.----,Men's 100m Freestyle,Men,Silver,1,KOR,Republic of Korea,M.100MFR------------
+SWM,Swimming,M.100MFR------------.----,Men's 100m Freestyle,Men,Bronze,1,KOR,Republic of Korea,M.100MFR------------
+SWM,Swimming,M.1500MFR-----------.----,Men's 1500m Freestyle,Men,Gold,1,CHN,People's Republic of China,M.1500MFR-----------
+SWM,Swimming,M.1500MFR-----------.----,Men's 1500m Freestyle,Men,Silver,1,JPN,Japan,M.1500MFR-----------
+SWM,Swimming,M.1500MFR-----------.----,Men's 1500m Freestyle,Men,Bronze,1,JPN,Japan,M.1500MFR-----------
+SWM,Swimming,M.200MBA------------.----,Men's 200m Backstroke,Men,Gold,1,JPN,Japan,M.200MBA------------
+SWM,Swimming,M.200MBA------------.----,Men's 200m Backstroke,Men,Silver,1,KOR,Republic of Korea,M.200MBA------------
+SWM,Swimming,M.200MBA------------.----,Men's 200m Backstroke,Men,Bronze,1,CHN,People's Republic of China,M.200MBA------------
+SWM,Swimming,M.200MBF------------.----,Men's 200m Butterfly,Men,Gold,1,TPE,Chinese Taipei,M.200MBF------------
+SWM,Swimming,M.200MBF------------.----,Men's 200m Butterfly,Men,Silver,1,CHN,People's Republic of China,M.200MBF------------
+SWM,Swimming,M.200MBF------------.----,Men's 200m Butterfly,Men,Bronze,1,KOR,Republic of Korea,M.200MBF------------
+SWM,Swimming,M.200MBR------------.----,Men's 200m Breaststroke,Men,Gold,1,JPN,Japan,M.200MBR------------
+SWM,Swimming,M.200MBR------------.----,Men's 200m Breaststroke,Men,Silver,1,KGZ,Kyrgyzstan,M.200MBR------------
+SWM,Swimming,M.200MBR------------.----,Men's 200m Breaststroke,Men,Bronze,1,KOR,Republic of Korea,M.200MBR------------
+SWM,Swimming,M.200MFR------------.----,Men's 200m Freestyle,Men,Gold,1,CHN,People's Republic of China,M.200MFR------------
+SWM,Swimming,M.200MFR------------.----,Men's 200m Freestyle,Men,Silver,1,KOR,Republic of Korea,M.200MFR------------
+SWM,Swimming,M.200MFR------------.----,Men's 200m Freestyle,Men,Bronze,1,JPN,Japan,M.200MFR------------
+SWM,Swimming,M.200MIM------------.----,Men's 200m Individual Medley,Men,Gold,1,JPN,Japan,M.200MIM------------
+SWM,Swimming,M.200MIM------------.----,Men's 200m Individual Medley,Men,Silver,1,JPN,Japan,M.200MIM------------
+SWM,Swimming,M.200MIM------------.----,Men's 200m Individual Medley,Men,Bronze,1,CHN,People's Republic of China,M.200MIM------------
+SWM,Swimming,M.400MFR------------.----,Men's 400m Freestyle,Men,Gold,1,CHN,People's Republic of China,M.400MFR------------
+SWM,Swimming,M.400MFR------------.----,Men's 400m Freestyle,Men,Silver,1,JPN,Japan,M.400MFR------------
+SWM,Swimming,M.400MFR------------.----,Men's 400m Freestyle,Men,Bronze,1,CHN,People's Republic of China,M.400MFR------------
+SWM,Swimming,M.400MIM------------.----,Men's 400m Individual Medley,Men,Gold,1,JPN,Japan,M.400MIM------------
+SWM,Swimming,M.400MIM------------.----,Men's 400m Individual Medley,Men,Silver,1,JPN,Japan,M.400MIM------------
+SWM,Swimming,M.400MIM------------.----,Men's 400m Individual Medley,Men,Bronze,1,CHN,People's Republic of China,M.400MIM------------
+SWM,Swimming,M.4X100MFR----------.----,Men's 4 x 100m Freestyle Relay,Men,Gold,1,CHN,People's Republic of China,M.4X100MFR----------
+SWM,Swimming,M.4X100MFR----------.----,Men's 4 x 100m Freestyle Relay,Men,Silver,1,KOR,Republic of Korea,M.4X100MFR----------
+SWM,Swimming,M.4X100MFR----------.----,Men's 4 x 100m Freestyle Relay,Men,Bronze,1,JPN,Japan,M.4X100MFR----------
+SWM,Swimming,M.4X100MMD----------.----,Men's 4 x 100m Medley Relay,Men,Gold,1,CHN,People's Republic of China,M.4X100MMD----------
+SWM,Swimming,M.4X100MMD----------.----,Men's 4 x 100m Medley Relay,Men,Silver,1,JPN,Japan,M.4X100MMD----------
+SWM,Swimming,M.4X100MMD----------.----,Men's 4 x 100m Medley Relay,Men,Bronze,1,KOR,Republic of Korea,M.4X100MMD----------
+SWM,Swimming,M.4X200MFR----------.----,Men's 4 x 200m Freestyle Relay,Men,Gold,1,CHN,People's Republic of China,M.4X200MFR----------
+SWM,Swimming,M.4X200MFR----------.----,Men's 4 x 200m Freestyle Relay,Men,Silver,1,JPN,Japan,M.4X200MFR----------
+SWM,Swimming,M.4X200MFR----------.----,Men's 4 x 200m Freestyle Relay,Men,Bronze,1,KOR,Republic of Korea,M.4X200MFR----------
+SWM,Swimming,M.50MBA-------------.----,Men's 50m Backstroke,Men,Gold,1,CHN,People's Republic of China,M.50MBA-------------
+SWM,Swimming,M.50MBA-------------.----,Men's 50m Backstroke,Men,Silver,1,CHN,People's Republic of China,M.50MBA-------------
+SWM,Swimming,M.50MBA-------------.----,Men's 50m Backstroke,Men,Bronze,1,KOR,Republic of Korea,M.50MBA-------------
+SWM,Swimming,M.50MBF-------------.----,Men's 50m Butterfly,Men,Gold,1,BRN,Bahrain,M.50MBF-------------
+SWM,Swimming,M.50MBF-------------.----,Men's 50m Butterfly,Men,Silver,1,JPN,Japan,M.50MBF-------------
+SWM,Swimming,M.50MBF-------------.----,Men's 50m Butterfly,Men,Bronze,1,CHN,People's Republic of China,M.50MBF-------------
+SWM,Swimming,M.50MBR-------------.----,Men's 50m Breaststroke,Men,Gold,1,CHN,People's Republic of China,M.50MBR-------------
+SWM,Swimming,M.50MBR-------------.----,Men's 50m Breaststroke,Men,Silver,1,CHN,People's Republic of China,M.50MBR-------------
+SWM,Swimming,M.50MBR-------------.----,Men's 50m Breaststroke,Men,Bronze,1,JPN,Japan,M.50MBR-------------
+SWM,Swimming,M.50MFR-------------.----,Men's 50m Freestyle,Men,Gold,1,KOR,Republic of Korea,M.50MFR-------------
+SWM,Swimming,M.50MFR-------------.----,Men's 50m Freestyle,Men,Silver,1,HKG,"Hong Kong, China",M.50MFR-------------
+SWM,Swimming,M.50MFR-------------.----,Men's 50m Freestyle,Men,Bronze,1,KOR,Republic of Korea,M.50MFR-------------
+SWM,Swimming,M.800MFR------------.----,Men's 800m Freestyle,Men,Gold,1,CHN,People's Republic of China,M.800MFR------------
+SWM,Swimming,M.800MFR------------.----,Men's 800m Freestyle,Men,Silver,1,JPN,Japan,M.800MFR------------
+SWM,Swimming,M.800MFR------------.----,Men's 800m Freestyle,Men,Silver,2,KOR,Republic of Korea,M.800MFR------------
+SWM,Swimming,W.100MBA------------.----,Women's 100m Backstroke,Women,Gold,1,CHN,People's Republic of China,W.100MBA------------
+SWM,Swimming,W.100MBA------------.----,Women's 100m Backstroke,Women,Silver,1,JPN,Japan,W.100MBA------------
+SWM,Swimming,W.100MBA------------.----,Women's 100m Backstroke,Women,Bronze,1,KOR,Republic of Korea,W.100MBA------------
+SWM,Swimming,W.100MBF------------.----,Women's 100m Butterfly,Women,Gold,1,CHN,People's Republic of China,W.100MBF------------
+SWM,Swimming,W.100MBF------------.----,Women's 100m Butterfly,Women,Silver,1,CHN,People's Republic of China,W.100MBF------------
+SWM,Swimming,W.100MBF------------.----,Women's 100m Butterfly,Women,Bronze,1,HKG,"Hong Kong, China",W.100MBF------------
+SWM,Swimming,W.100MBR------------.----,Women's 100m Breaststroke,Women,Gold,1,CHN,People's Republic of China,W.100MBR------------
+SWM,Swimming,W.100MBR------------.----,Women's 100m Breaststroke,Women,Silver,1,JPN,Japan,W.100MBR------------
+SWM,Swimming,W.100MBR------------.----,Women's 100m Breaststroke,Women,Bronze,1,JPN,Japan,W.100MBR------------
+SWM,Swimming,W.100MFR------------.----,Women's 100m Freestyle,Women,Gold,1,HKG,"Hong Kong, China",W.100MFR------------
+SWM,Swimming,W.100MFR------------.----,Women's 100m Freestyle,Women,Silver,1,CHN,People's Republic of China,W.100MFR------------
+SWM,Swimming,W.100MFR------------.----,Women's 100m Freestyle,Women,Bronze,1,CHN,People's Republic of China,W.100MFR------------
+SWM,Swimming,W.1500MFR-----------.----,Women's 1500m Freestyle,Women,Gold,1,CHN,People's Republic of China,W.1500MFR-----------
+SWM,Swimming,W.1500MFR-----------.----,Women's 1500m Freestyle,Women,Silver,1,SGP,Singapore,W.1500MFR-----------
+SWM,Swimming,W.1500MFR-----------.----,Women's 1500m Freestyle,Women,Bronze,1,JPN,Japan,W.1500MFR-----------
+SWM,Swimming,W.200MBA------------.----,Women's 200m Backstroke,Women,Gold,1,CHN,People's Republic of China,W.200MBA------------
+SWM,Swimming,W.200MBA------------.----,Women's 200m Backstroke,Women,Silver,1,CHN,People's Republic of China,W.200MBA------------
+SWM,Swimming,W.200MBA------------.----,Women's 200m Backstroke,Women,Bronze,1,JPN,Japan,W.200MBA------------
+SWM,Swimming,W.200MBF------------.----,Women's 200m Butterfly,Women,Gold,1,CHN,People's Republic of China,W.200MBF------------
+SWM,Swimming,W.200MBF------------.----,Women's 200m Butterfly,Women,Silver,1,CHN,People's Republic of China,W.200MBF------------
+SWM,Swimming,W.200MBF------------.----,Women's 200m Butterfly,Women,Bronze,1,JPN,Japan,W.200MBF------------
+SWM,Swimming,W.200MBR------------.----,Women's 200m Breaststroke,Women,Gold,1,JPN,Japan,W.200MBR------------
+SWM,Swimming,W.200MBR------------.----,Women's 200m Breaststroke,Women,Silver,1,KOR,Republic of Korea,W.200MBR------------
+SWM,Swimming,W.200MBR------------.----,Women's 200m Breaststroke,Women,Bronze,1,CHN,People's Republic of China,W.200MBR------------
+SWM,Swimming,W.200MFR------------.----,Women's 200m Freestyle,Women,Gold,1,HKG,"Hong Kong, China",W.200MFR------------
+SWM,Swimming,W.200MFR------------.----,Women's 200m Freestyle,Women,Silver,1,CHN,People's Republic of China,W.200MFR------------
+SWM,Swimming,W.200MFR------------.----,Women's 200m Freestyle,Women,Bronze,1,CHN,People's Republic of China,W.200MFR------------
+SWM,Swimming,W.200MIM------------.----,Women's 200m Individual Medley,Women,Gold,1,CHN,People's Republic of China,W.200MIM------------
+SWM,Swimming,W.200MIM------------.----,Women's 200m Individual Medley,Women,Silver,1,CHN,People's Republic of China,W.200MIM------------
+SWM,Swimming,W.200MIM------------.----,Women's 200m Individual Medley,Women,Bronze,1,JPN,Japan,W.200MIM------------
+SWM,Swimming,W.400MFR------------.----,Women's 400m Freestyle,Women,Gold,1,CHN,People's Republic of China,W.400MFR------------
+SWM,Swimming,W.400MFR------------.----,Women's 400m Freestyle,Women,Silver,1,SGP,Singapore,W.400MFR------------
+SWM,Swimming,W.400MFR------------.----,Women's 400m Freestyle,Women,Bronze,1,JPN,Japan,W.400MFR------------
+SWM,Swimming,W.400MIM------------.----,Women's 400m Individual Medley,Women,Gold,1,CHN,People's Republic of China,W.400MIM------------
+SWM,Swimming,W.400MIM------------.----,Women's 400m Individual Medley,Women,Silver,1,CHN,People's Republic of China,W.400MIM------------
+SWM,Swimming,W.400MIM------------.----,Women's 400m Individual Medley,Women,Bronze,1,JPN,Japan,W.400MIM------------
+SWM,Swimming,W.4X100MFR----------.----,Women's 4 x 100m Freestyle Relay,Women,Gold,1,CHN,People's Republic of China,W.4X100MFR----------
+SWM,Swimming,W.4X100MFR----------.----,Women's 4 x 100m Freestyle Relay,Women,Silver,1,HKG,"Hong Kong, China",W.4X100MFR----------
+SWM,Swimming,W.4X100MFR----------.----,Women's 4 x 100m Freestyle Relay,Women,Bronze,1,JPN,Japan,W.4X100MFR----------
+SWM,Swimming,W.4X100MMD----------.----,Women's 4 x 100m Medley Relay,Women,Gold,1,CHN,People's Republic of China,W.4X100MMD----------
+SWM,Swimming,W.4X100MMD----------.----,Women's 4 x 100m Medley Relay,Women,Silver,1,JPN,Japan,W.4X100MMD----------
+SWM,Swimming,W.4X100MMD----------.----,Women's 4 x 100m Medley Relay,Women,Bronze,1,KOR,Republic of Korea,W.4X100MMD----------
+SWM,Swimming,W.4X200MFR----------.----,Women's 4 x 200m Freestyle Relay,Women,Gold,1,CHN,People's Republic of China,W.4X200MFR----------
+SWM,Swimming,W.4X200MFR----------.----,Women's 4 x 200m Freestyle Relay,Women,Silver,1,JPN,Japan,W.4X200MFR----------
+SWM,Swimming,W.4X200MFR----------.----,Women's 4 x 200m Freestyle Relay,Women,Bronze,1,KOR,Republic of Korea,W.4X200MFR----------
+SWM,Swimming,W.50MBA-------------.----,Women's 50m Backstroke,Women,Gold,1,CHN,People's Republic of China,W.50MBA-------------
+SWM,Swimming,W.50MBA-------------.----,Women's 50m Backstroke,Women,Silver,1,CHN,People's Republic of China,W.50MBA-------------
+SWM,Swimming,W.50MBA-------------.----,Women's 50m Backstroke,Women,Bronze,1,KOR,Republic of Korea,W.50MBA-------------
+SWM,Swimming,W.50MBF-------------.----,Women's 50m Butterfly,Women,Gold,1,CHN,People's Republic of China,W.50MBF-------------
+SWM,Swimming,W.50MBF-------------.----,Women's 50m Butterfly,Women,Silver,1,CHN,People's Republic of China,W.50MBF-------------
+SWM,Swimming,W.50MBF-------------.----,Women's 50m Butterfly,Women,Bronze,1,JPN,Japan,W.50MBF-------------
+SWM,Swimming,W.50MBR-------------.----,Women's 50m Breaststroke,Women,Gold,1,CHN,People's Republic of China,W.50MBR-------------
+SWM,Swimming,W.50MBR-------------.----,Women's 50m Breaststroke,Women,Silver,1,JPN,Japan,W.50MBR-------------
+SWM,Swimming,W.50MBR-------------.----,Women's 50m Breaststroke,Women,Bronze,1,CHN,People's Republic of China,W.50MBR-------------
+SWM,Swimming,W.50MFR-------------.----,Women's 50m Freestyle,Women,Gold,1,CHN,People's Republic of China,W.50MFR-------------
+SWM,Swimming,W.50MFR-------------.----,Women's 50m Freestyle,Women,Silver,1,HKG,"Hong Kong, China",W.50MFR-------------
+SWM,Swimming,W.50MFR-------------.----,Women's 50m Freestyle,Women,Bronze,1,CHN,People's Republic of China,W.50MFR-------------
+SWM,Swimming,W.800MFR------------.----,Women's 800m Freestyle,Women,Gold,1,CHN,People's Republic of China,W.800MFR------------
+SWM,Swimming,W.800MFR------------.----,Women's 800m Freestyle,Women,Silver,1,SGP,Singapore,W.800MFR------------
+SWM,Swimming,W.800MFR------------.----,Women's 800m Freestyle,Women,Bronze,1,JPN,Japan,W.800MFR------------
+SWM,Swimming,X.4X100MMD----------.----,Mixed 4 x 100m Medley Relay,Mixed,Gold,1,CHN,People's Republic of China,X.4X100MMD----------
+SWM,Swimming,X.4X100MMD----------.----,Mixed 4 x 100m Medley Relay,Mixed,Silver,1,JPN,Japan,X.4X100MMD----------
+SWM,Swimming,X.4X100MMD----------.----,Mixed 4 x 100m Medley Relay,Mixed,Bronze,1,KOR,Republic of Korea,X.4X100MMD----------
+TEN,Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Gold,1,JPN,Japan,M.DOUBLES-----------
+TEN,Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Silver,1,KOR,Republic of Korea,M.DOUBLES-----------
+TEN,Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,1,CHN,People's Republic of China,M.DOUBLES-----------
+TEN,Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,2,TPE,Chinese Taipei,M.DOUBLES-----------
+TEN,Tennis,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,HKG,"Hong Kong, China",M.SINGLES-----------
+TEN,Tennis,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,CHN,People's Republic of China,M.SINGLES-----------
+TEN,Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,UZB,Uzbekistan,M.SINGLES-----------
+TEN,Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,JPN,Japan,M.SINGLES-----------
+TEN,Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Gold,1,TPE,Chinese Taipei,W.DOUBLES-----------
+TEN,Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Silver,1,TPE,Chinese Taipei,W.DOUBLES-----------
+TEN,Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,1,HKG,"Hong Kong, China",W.DOUBLES-----------
+TEN,Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,2,KAZ,Kazakhstan,W.DOUBLES-----------
+TEN,Tennis,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,CHN,People's Republic of China,W.SINGLES-----------
+TEN,Tennis,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,CHN,People's Republic of China,W.SINGLES-----------
+TEN,Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,KAZ,Kazakhstan,W.SINGLES-----------
+TEN,Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,PHI,Philippines,W.SINGLES-----------
+TEN,Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,JPN,Japan,X.DOUBLES-----------
+TEN,Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,JPN,Japan,X.DOUBLES-----------
+TEN,Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,CHN,People's Republic of China,X.DOUBLES-----------
+TEN,Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,TPE,Chinese Taipei,X.DOUBLES-----------
+TEQ,Teqball,M.DOUBLES-----------.----,Men's Doubles,Men,Gold,1,THA,Thailand,M.DOUBLES-----------
+TEQ,Teqball,M.DOUBLES-----------.----,Men's Doubles,Men,Silver,1,LBN,Lebanon,M.DOUBLES-----------
+TEQ,Teqball,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,1,IRQ,Iraq,M.DOUBLES-----------
+TEQ,Teqball,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,2,KUW,Kuwait,M.DOUBLES-----------
+TEQ,Teqball,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,KOR,Republic of Korea,M.SINGLES-----------
+TEQ,Teqball,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,IRQ,Iraq,M.SINGLES-----------
+TEQ,Teqball,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,MYA,Myanmar,M.SINGLES-----------
+TEQ,Teqball,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,INA,Indonesia,M.SINGLES-----------
+TEQ,Teqball,W.DOUBLES-----------.----,Women's Doubles,Women,Gold,1,THA,Thailand,W.DOUBLES-----------
+TEQ,Teqball,W.DOUBLES-----------.----,Women's Doubles,Women,Silver,1,MYA,Myanmar,W.DOUBLES-----------
+TEQ,Teqball,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,1,LBN,Lebanon,W.DOUBLES-----------
+TEQ,Teqball,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,2,CAM,Cambodia,W.DOUBLES-----------
+TEQ,Teqball,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,MYA,Myanmar,W.SINGLES-----------
+TEQ,Teqball,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,INA,Indonesia,W.SINGLES-----------
+TEQ,Teqball,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,CAM,Cambodia,W.SINGLES-----------
+TEQ,Teqball,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,JPN,Japan,W.SINGLES-----------
+TEQ,Teqball,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,THA,Thailand,X.DOUBLES-----------
+TEQ,Teqball,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,JPN,Japan,X.DOUBLES-----------
+TEQ,Teqball,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,VIE,Vietnam,X.DOUBLES-----------
+TEQ,Teqball,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,IRQ,Iraq,X.DOUBLES-----------
+TKW,Taekwondo,M.58KG--------------.FNL-,Men -58kg Gold Medal Contest,Men,Gold,1,KAZ,Kazakhstan,M.58KG--------------
+TKW,Taekwondo,M.58KG--------------.FNL-,Men -58kg Gold Medal Contest,Men,Silver,1,PHI,Philippines,M.58KG--------------
+TKW,Taekwondo,M.58KG--------------.FNL-,Men -58kg Gold Medal Contest,Men,Bronze,1,JOR,Jordan,M.58KG--------------
+TKW,Taekwondo,M.58KG--------------.FNL-,Men -58kg Gold Medal Contest,Men,Bronze,2,KOR,Republic of Korea,M.58KG--------------
+TKW,Taekwondo,M.68KG--------------.FNL-,Men -68kg Gold Medal Contest,Men,Gold,1,THA,Thailand,M.68KG--------------
+TKW,Taekwondo,M.68KG--------------.FNL-,Men -68kg Gold Medal Contest,Men,Silver,1,IRI,Islamic Republic of Iran,M.68KG--------------
+TKW,Taekwondo,M.68KG--------------.FNL-,Men -68kg Gold Medal Contest,Men,Bronze,1,JOR,Jordan,M.68KG--------------
+TKW,Taekwondo,M.68KG--------------.FNL-,Men -68kg Gold Medal Contest,Men,Bronze,2,KOR,Republic of Korea,M.68KG--------------
+TKW,Taekwondo,M.80KG--------------.FNL-,Men -80kg Gold Medal Contest,Men,Gold,1,UZB,Uzbekistan,M.80KG--------------
+TKW,Taekwondo,M.80KG--------------.FNL-,Men -80kg Gold Medal Contest,Men,Silver,1,TPE,Chinese Taipei,M.80KG--------------
+TKW,Taekwondo,M.80KG--------------.FNL-,Men -80kg Gold Medal Contest,Men,Bronze,1,JOR,Jordan,M.80KG--------------
+TKW,Taekwondo,M.80KG--------------.FNL-,Men -80kg Gold Medal Contest,Men,Bronze,2,KAZ,Kazakhstan,M.80KG--------------
+TKW,Taekwondo,M.INDPOOM-----------.FNL-,Men Individual Poomsae Gold Medal Contest,Men,Gold,1,KOR,Republic of Korea,M.INDPOOM-----------
+TKW,Taekwondo,M.INDPOOM-----------.FNL-,Men Individual Poomsae Gold Medal Contest,Men,Silver,1,THA,Thailand,M.INDPOOM-----------
+TKW,Taekwondo,M.INDPOOM-----------.FNL-,Men Individual Poomsae Gold Medal Contest,Men,Bronze,1,PHI,Philippines,M.INDPOOM-----------
+TKW,Taekwondo,M.INDPOOM-----------.FNL-,Men Individual Poomsae Gold Medal Contest,Men,Bronze,2,SGP,Singapore,M.INDPOOM-----------
+TKW,Taekwondo,M.O80KG-------------.FNL-,Men +80kg Gold Medal Contest,Men,Gold,1,IRI,Islamic Republic of Iran,M.O80KG-------------
+TKW,Taekwondo,M.O80KG-------------.FNL-,Men +80kg Gold Medal Contest,Men,Silver,1,UZB,Uzbekistan,M.O80KG-------------
+TKW,Taekwondo,M.O80KG-------------.FNL-,Men +80kg Gold Medal Contest,Men,Bronze,1,JOR,Jordan,M.O80KG-------------
+TKW,Taekwondo,M.O80KG-------------.FNL-,Men +80kg Gold Medal Contest,Men,Bronze,2,KOR,Republic of Korea,M.O80KG-------------
+TKW,Taekwondo,O.VIRTUAL-----------.FNL-,Mixed Individual Virtual Taekwondo Gold Medal Contest,Open,Gold,1,PHI,Philippines,O.VIRTUAL-----------
+TKW,Taekwondo,O.VIRTUAL-----------.FNL-,Mixed Individual Virtual Taekwondo Gold Medal Contest,Open,Silver,1,VIE,Vietnam,O.VIRTUAL-----------
+TKW,Taekwondo,O.VIRTUAL-----------.FNL-,Mixed Individual Virtual Taekwondo Gold Medal Contest,Open,Bronze,1,KAZ,Kazakhstan,O.VIRTUAL-----------
+TKW,Taekwondo,O.VIRTUAL-----------.FNL-,Mixed Individual Virtual Taekwondo Gold Medal Contest,Open,Bronze,2,SGP,Singapore,O.VIRTUAL-----------
+TKW,Taekwondo,W.49KG--------------.FNL-,Women -49kg Gold Medal Contest,Women,Gold,1,CHN,People's Republic of China,W.49KG--------------
+TKW,Taekwondo,W.49KG--------------.FNL-,Women -49kg Gold Medal Contest,Women,Silver,1,PHI,Philippines,W.49KG--------------
+TKW,Taekwondo,W.49KG--------------.FNL-,Women -49kg Gold Medal Contest,Women,Bronze,1,JPN,Japan,W.49KG--------------
+TKW,Taekwondo,W.49KG--------------.FNL-,Women -49kg Gold Medal Contest,Women,Bronze,2,THA,Thailand,W.49KG--------------
+TKW,Taekwondo,W.57KG--------------.FNL-,Women -57kg Gold Medal Contest,Women,Gold,1,JOR,Jordan,W.57KG--------------
+TKW,Taekwondo,W.57KG--------------.FNL-,Women -57kg Gold Medal Contest,Women,Silver,1,CHN,People's Republic of China,W.57KG--------------
+TKW,Taekwondo,W.57KG--------------.FNL-,Women -57kg Gold Medal Contest,Women,Bronze,1,TPE,Chinese Taipei,W.57KG--------------
+TKW,Taekwondo,W.57KG--------------.FNL-,Women -57kg Gold Medal Contest,Women,Bronze,2,THA,Thailand,W.57KG--------------
+TKW,Taekwondo,W.67KG--------------.FNL-,Women -67kg Gold Medal Contest,Women,Gold,1,IRI,Islamic Republic of Iran,W.67KG--------------
+TKW,Taekwondo,W.67KG--------------.FNL-,Women -67kg Gold Medal Contest,Women,Silver,1,UZB,Uzbekistan,W.67KG--------------
+TKW,Taekwondo,W.67KG--------------.FNL-,Women -67kg Gold Medal Contest,Women,Bronze,1,KOR,Republic of Korea,W.67KG--------------
+TKW,Taekwondo,W.67KG--------------.FNL-,Women -67kg Gold Medal Contest,Women,Bronze,2,TPE,Chinese Taipei,W.67KG--------------
+TKW,Taekwondo,W.INDPOOM-----------.FNL-,Women Individual Poomsae Gold Medal Contest,Women,Gold,1,KOR,Republic of Korea,W.INDPOOM-----------
+TKW,Taekwondo,W.INDPOOM-----------.FNL-,Women Individual Poomsae Gold Medal Contest,Women,Silver,1,PHI,Philippines,W.INDPOOM-----------
+TKW,Taekwondo,W.INDPOOM-----------.FNL-,Women Individual Poomsae Gold Medal Contest,Women,Bronze,1,THA,Thailand,W.INDPOOM-----------
+TKW,Taekwondo,W.INDPOOM-----------.FNL-,Women Individual Poomsae Gold Medal Contest,Women,Bronze,2,JPN,Japan,W.INDPOOM-----------
+TKW,Taekwondo,W.O67KG-------------.FNL-,Women +67kg Gold Medal Contest,Women,Gold,1,KOR,Republic of Korea,W.O67KG-------------
+TKW,Taekwondo,W.O67KG-------------.FNL-,Women +67kg Gold Medal Contest,Women,Silver,1,CHN,People's Republic of China,W.O67KG-------------
+TKW,Taekwondo,W.O67KG-------------.FNL-,Women +67kg Gold Medal Contest,Women,Bronze,1,IRI,Islamic Republic of Iran,W.O67KG-------------
+TKW,Taekwondo,W.O67KG-------------.FNL-,Women +67kg Gold Medal Contest,Women,Bronze,2,UZB,Uzbekistan,W.O67KG-------------
+TRI,Triathlon,M.OLYMPIC-----------.----,Men's Individual,Men,Gold,1,JPN,Japan,M.OLYMPIC-----------
+TRI,Triathlon,M.OLYMPIC-----------.----,Men's Individual,Men,Silver,1,CHN,People's Republic of China,M.OLYMPIC-----------
+TRI,Triathlon,M.OLYMPIC-----------.----,Men's Individual,Men,Bronze,1,KAZ,Kazakhstan,M.OLYMPIC-----------
+TRI,Triathlon,W.OLYMPIC-----------.----,Women's Individual,Women,Gold,1,CHN,People's Republic of China,W.OLYMPIC-----------
+TRI,Triathlon,W.OLYMPIC-----------.----,Women's Individual,Women,Silver,1,CHN,People's Republic of China,W.OLYMPIC-----------
+TRI,Triathlon,W.OLYMPIC-----------.----,Women's Individual,Women,Bronze,1,JPN,Japan,W.OLYMPIC-----------
+TRI,Triathlon,X.TEAM4-------------.----,Mixed Relay,Mixed,Gold,1,CHN,People's Republic of China,X.TEAM4-------------
+TRI,Triathlon,X.TEAM4-------------.----,Mixed Relay,Mixed,Silver,1,JPN,Japan,X.TEAM4-------------
+TRI,Triathlon,X.TEAM4-------------.----,Mixed Relay,Mixed,Bronze,1,HKG,"Hong Kong, China",X.TEAM4-------------
+TST,Soft Tennis,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,JPN,Japan,M.SINGLES-----------
+TST,Soft Tennis,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,JPN,Japan,M.SINGLES-----------
+TST,Soft Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,TPE,Chinese Taipei,M.SINGLES-----------
+TST,Soft Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,IND,India,M.SINGLES-----------
+TST,Soft Tennis,M.TEAM--------------.----,Men's Team,Men,Gold,1,JPN,Japan,M.TEAM--------------
+TST,Soft Tennis,M.TEAM--------------.----,Men's Team,Men,Silver,1,TPE,Chinese Taipei,M.TEAM--------------
+TST,Soft Tennis,M.TEAM--------------.----,Men's Team,Men,Bronze,1,INA,Indonesia,M.TEAM--------------
+TST,Soft Tennis,M.TEAM--------------.----,Men's Team,Men,Bronze,2,KOR,Republic of Korea,M.TEAM--------------
+TST,Soft Tennis,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,JPN,Japan,W.SINGLES-----------
+TST,Soft Tennis,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.SINGLES-----------
+TST,Soft Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,PRK,Democratic People's Republic of Korea,W.SINGLES-----------
+TST,Soft Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,JPN,Japan,W.SINGLES-----------
+TST,Soft Tennis,W.TEAM--------------.----,Women's Team,Women,Gold,1,JPN,Japan,W.TEAM--------------
+TST,Soft Tennis,W.TEAM--------------.----,Women's Team,Women,Silver,1,TPE,Chinese Taipei,W.TEAM--------------
+TST,Soft Tennis,W.TEAM--------------.----,Women's Team,Women,Bronze,1,PHI,Philippines,W.TEAM--------------
+TST,Soft Tennis,W.TEAM--------------.----,Women's Team,Women,Bronze,2,KOR,Republic of Korea,W.TEAM--------------
+TST,Soft Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,TPE,Chinese Taipei,X.DOUBLES-----------
+TST,Soft Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,JPN,Japan,X.DOUBLES-----------
+TST,Soft Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,JPN,Japan,X.DOUBLES-----------
+TST,Soft Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,KOR,Republic of Korea,X.DOUBLES-----------
+TTE,Table Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Gold,1,CHN,People's Republic of China,M.DOUBLES-----------
+TTE,Table Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Silver,1,JPN,Japan,M.DOUBLES-----------
+TTE,Table Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,1,CHN,People's Republic of China,M.DOUBLES-----------
+TTE,Table Tennis,M.DOUBLES-----------.----,Men's Doubles,Men,Bronze,2,JPN,Japan,M.DOUBLES-----------
+TTE,Table Tennis,M.SINGLES-----------.----,Men's Singles,Men,Gold,1,CHN,People's Republic of China,M.SINGLES-----------
+TTE,Table Tennis,M.SINGLES-----------.----,Men's Singles,Men,Silver,1,CHN,People's Republic of China,M.SINGLES-----------
+TTE,Table Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,1,IRI,Islamic Republic of Iran,M.SINGLES-----------
+TTE,Table Tennis,M.SINGLES-----------.----,Men's Singles,Men,Bronze,2,TPE,Chinese Taipei,M.SINGLES-----------
+TTE,Table Tennis,M.TEAM--------------.----,Men's Team,Men,Gold,1,JPN,Japan,M.TEAM--------------
+TTE,Table Tennis,M.TEAM--------------.----,Men's Team,Men,Silver,1,CHN,People's Republic of China,M.TEAM--------------
+TTE,Table Tennis,M.TEAM--------------.----,Men's Team,Men,Bronze,1,KOR,Republic of Korea,M.TEAM--------------
+TTE,Table Tennis,M.TEAM--------------.----,Men's Team,Men,Bronze,2,TPE,Chinese Taipei,M.TEAM--------------
+TTE,Table Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Gold,1,CHN,People's Republic of China,W.DOUBLES-----------
+TTE,Table Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Silver,1,JPN,Japan,W.DOUBLES-----------
+TTE,Table Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,1,HKG,"Hong Kong, China",W.DOUBLES-----------
+TTE,Table Tennis,W.DOUBLES-----------.----,Women's Doubles,Women,Bronze,2,THA,Thailand,W.DOUBLES-----------
+TTE,Table Tennis,W.SINGLES-----------.----,Women's Singles,Women,Gold,1,CHN,People's Republic of China,W.SINGLES-----------
+TTE,Table Tennis,W.SINGLES-----------.----,Women's Singles,Women,Silver,1,CHN,People's Republic of China,W.SINGLES-----------
+TTE,Table Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,1,JPN,Japan,W.SINGLES-----------
+TTE,Table Tennis,W.SINGLES-----------.----,Women's Singles,Women,Bronze,2,JPN,Japan,W.SINGLES-----------
+TTE,Table Tennis,W.TEAM--------------.----,Women's Team,Women,Gold,1,CHN,People's Republic of China,W.TEAM--------------
+TTE,Table Tennis,W.TEAM--------------.----,Women's Team,Women,Silver,1,JPN,Japan,W.TEAM--------------
+TTE,Table Tennis,W.TEAM--------------.----,Women's Team,Women,Bronze,1,PRK,Democratic People's Republic of Korea,W.TEAM--------------
+TTE,Table Tennis,W.TEAM--------------.----,Women's Team,Women,Bronze,2,KOR,Republic of Korea,W.TEAM--------------
+TTE,Table Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Gold,1,CHN,People's Republic of China,X.DOUBLES-----------
+TTE,Table Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Silver,1,CHN,People's Republic of China,X.DOUBLES-----------
+TTE,Table Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,1,IND,India,X.DOUBLES-----------
+TTE,Table Tennis,X.DOUBLES-----------.----,Mixed Doubles,Mixed,Bronze,2,KOR,Republic of Korea,X.DOUBLES-----------
+VBV,Beach Volleyball,M.TEAM2-------------.FNL-,Men's Finals,Men,Gold,1,QAT,Qatar,M.TEAM2-------------
+VBV,Beach Volleyball,M.TEAM2-------------.FNL-,Men's Finals,Men,Silver,1,INA,Indonesia,M.TEAM2-------------
+VBV,Beach Volleyball,M.TEAM2-------------.FNL-,Men's Finals,Men,Bronze,1,JPN,Japan,M.TEAM2-------------
+VBV,Beach Volleyball,W.TEAM2-------------.FNL-,Women's Finals,Women,Gold,1,THA,Thailand,W.TEAM2-------------
+VBV,Beach Volleyball,W.TEAM2-------------.FNL-,Women's Finals,Women,Silver,1,CHN,People's Republic of China,W.TEAM2-------------
+VBV,Beach Volleyball,W.TEAM2-------------.FNL-,Women's Finals,Women,Bronze,1,PHI,Philippines,W.TEAM2-------------
+VVO,Volleyball,M.TEAM6-------------.FNL-,Men's Finals,Men,Gold,1,IRI,Islamic Republic of Iran,M.TEAM6-------------
+VVO,Volleyball,M.TEAM6-------------.FNL-,Men's Finals,Men,Silver,1,JPN,Japan,M.TEAM6-------------
+VVO,Volleyball,M.TEAM6-------------.FNL-,Men's Finals,Men,Bronze,1,PAK,Pakistan,M.TEAM6-------------
+VVO,Volleyball,W.TEAM6-------------.FNL-,Women's Finals,Women,Gold,1,CHN,People's Republic of China,W.TEAM6-------------
+VVO,Volleyball,W.TEAM6-------------.FNL-,Women's Finals,Women,Silver,1,JPN,Japan,W.TEAM6-------------
+VVO,Volleyball,W.TEAM6-------------.FNL-,Women's Finals,Women,Bronze,1,THA,Thailand,W.TEAM6-------------
+WLF,Weightlifting,M.110KG-------------.FNL-,Men's 110kg All Groups,Men,Gold,1,UZB,Uzbekistan,M.110KG-------------
+WLF,Weightlifting,M.110KG-------------.FNL-,Men's 110kg All Groups,Men,Silver,1,TKM,Turkmenistan,M.110KG-------------
+WLF,Weightlifting,M.110KG-------------.FNL-,Men's 110kg All Groups,Men,Bronze,1,CHN,People's Republic of China,M.110KG-------------
+WLF,Weightlifting,M.60KG--------------.FNL-,Men's 60kg All Groups,Men,Gold,1,CHN,People's Republic of China,M.60KG--------------
+WLF,Weightlifting,M.60KG--------------.FNL-,Men's 60kg All Groups,Men,Silver,1,PRK,Democratic People's Republic of Korea,M.60KG--------------
+WLF,Weightlifting,M.60KG--------------.FNL-,Men's 60kg All Groups,Men,Bronze,1,THA,Thailand,M.60KG--------------
+WLF,Weightlifting,M.65KG--------------.FNL-,Men's 65kg All Groups,Men,Gold,1,PRK,Democratic People's Republic of Korea,M.65KG--------------
+WLF,Weightlifting,M.65KG--------------.FNL-,Men's 65kg All Groups,Men,Silver,1,CHN,People's Republic of China,M.65KG--------------
+WLF,Weightlifting,M.65KG--------------.FNL-,Men's 65kg All Groups,Men,Bronze,1,VIE,Vietnam,M.65KG--------------
+WLF,Weightlifting,M.70KG--------------.FNL-,Men's 70kg All Groups,Men,Gold,1,PRK,Democratic People's Republic of Korea,M.70KG--------------
+WLF,Weightlifting,M.70KG--------------.FNL-,Men's 70kg All Groups,Men,Silver,1,JPN,Japan,M.70KG--------------
+WLF,Weightlifting,M.70KG--------------.FNL-,Men's 70kg All Groups,Men,Bronze,1,PHI,Philippines,M.70KG--------------
+WLF,Weightlifting,M.75KG--------------.FNL-,Men's 75kg All Groups,Men,Gold,1,INA,Indonesia,M.75KG--------------
+WLF,Weightlifting,M.75KG--------------.FNL-,Men's 75kg All Groups,Men,Silver,1,THA,Thailand,M.75KG--------------
+WLF,Weightlifting,M.75KG--------------.FNL-,Men's 75kg All Groups,Men,Bronze,1,PRK,Democratic People's Republic of Korea,M.75KG--------------
+WLF,Weightlifting,M.85KG--------------.FNL-,Men's 85kg All Groups,Men,Gold,1,PRK,Democratic People's Republic of Korea,M.85KG--------------
+WLF,Weightlifting,M.85KG--------------.FNL-,Men's 85kg All Groups,Men,Silver,1,KAZ,Kazakhstan,M.85KG--------------
+WLF,Weightlifting,M.85KG--------------.FNL-,Men's 85kg All Groups,Men,Bronze,1,CHN,People's Republic of China,M.85KG--------------
+WLF,Weightlifting,M.95KG--------------.FNL-,Men's 95kg All Groups,Men,Gold,1,IRI,Islamic Republic of Iran,M.95KG--------------
+WLF,Weightlifting,M.95KG--------------.FNL-,Men's 95kg All Groups,Men,Silver,1,KAZ,Kazakhstan,M.95KG--------------
+WLF,Weightlifting,M.95KG--------------.FNL-,Men's 95kg All Groups,Men,Bronze,1,CHN,People's Republic of China,M.95KG--------------
+WLF,Weightlifting,M.O110KG------------.FNL-,Men's +110kg All Groups,Men,Gold,1,IRI,Islamic Republic of Iran,M.O110KG------------
+WLF,Weightlifting,M.O110KG------------.FNL-,Men's +110kg All Groups,Men,Silver,1,IRQ,Iraq,M.O110KG------------
+WLF,Weightlifting,M.O110KG------------.FNL-,Men's +110kg All Groups,Men,Bronze,1,BRN,Bahrain,M.O110KG------------
+WLF,Weightlifting,W.49KG--------------.FNL-,Women's 49kg All Groups,Women,Gold,1,PRK,Democratic People's Republic of Korea,W.49KG--------------
+WLF,Weightlifting,W.49KG--------------.FNL-,Women's 49kg All Groups,Women,Silver,1,IND,India,W.49KG--------------
+WLF,Weightlifting,W.49KG--------------.FNL-,Women's 49kg All Groups,Women,Bronze,1,INA,Indonesia,W.49KG--------------
+WLF,Weightlifting,W.53KG--------------.FNL-,Women's 53kg All Groups,Women,Gold,1,PRK,Democratic People's Republic of Korea,W.53KG--------------
+WLF,Weightlifting,W.53KG--------------.FNL-,Women's 53kg All Groups,Women,Silver,1,CHN,People's Republic of China,W.53KG--------------
+WLF,Weightlifting,W.53KG--------------.FNL-,Women's 53kg All Groups,Women,Bronze,1,THA,Thailand,W.53KG--------------
+WLF,Weightlifting,W.57KG--------------.FNL-,Women's 57kg All Groups,Women,Gold,1,PRK,Democratic People's Republic of Korea,W.57KG--------------
+WLF,Weightlifting,W.57KG--------------.FNL-,Women's 57kg All Groups,Women,Silver,1,THA,Thailand,W.57KG--------------
+WLF,Weightlifting,W.57KG--------------.FNL-,Women's 57kg All Groups,Women,Bronze,1,TPE,Chinese Taipei,W.57KG--------------
+WLF,Weightlifting,W.61KG--------------.FNL-,Women's 61kg All Groups,Women,Gold,1,CHN,People's Republic of China,W.61KG--------------
+WLF,Weightlifting,W.61KG--------------.FNL-,Women's 61kg All Groups,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.61KG--------------
+WLF,Weightlifting,W.61KG--------------.FNL-,Women's 61kg All Groups,Women,Bronze,1,TPE,Chinese Taipei,W.61KG--------------
+WLF,Weightlifting,W.69KG--------------.FNL-,Women's 69kg All Groups,Women,Gold,1,PRK,Democratic People's Republic of Korea,W.69KG--------------
+WLF,Weightlifting,W.69KG--------------.FNL-,Women's 69kg All Groups,Women,Silver,1,TPE,Chinese Taipei,W.69KG--------------
+WLF,Weightlifting,W.69KG--------------.FNL-,Women's 69kg All Groups,Women,Bronze,1,BRN,Bahrain,W.69KG--------------
+WLF,Weightlifting,W.77KG--------------.FNL-,Women's 77kg All Groups,Women,Gold,1,CHN,People's Republic of China,W.77KG--------------
+WLF,Weightlifting,W.77KG--------------.FNL-,Women's 77kg All Groups,Women,Silver,1,KAZ,Kazakhstan,W.77KG--------------
+WLF,Weightlifting,W.77KG--------------.FNL-,Women's 77kg All Groups,Women,Bronze,1,IRI,Islamic Republic of Iran,W.77KG--------------
+WLF,Weightlifting,W.86KG--------------.FNL-,Women's 86kg All Groups,Women,Gold,1,CHN,People's Republic of China,W.86KG--------------
+WLF,Weightlifting,W.86KG--------------.FNL-,Women's 86kg All Groups,Women,Silver,1,BRN,Bahrain,W.86KG--------------
+WLF,Weightlifting,W.86KG--------------.FNL-,Women's 86kg All Groups,Women,Bronze,1,IRI,Islamic Republic of Iran,W.86KG--------------
+WLF,Weightlifting,W.O86KG-------------.FNL-,Women's +86kg All Groups,Women,Gold,1,CHN,People's Republic of China,W.O86KG-------------
+WLF,Weightlifting,W.O86KG-------------.FNL-,Women's +86kg All Groups,Women,Silver,1,KOR,Republic of Korea,W.O86KG-------------
+WLF,Weightlifting,W.O86KG-------------.FNL-,Women's +86kg All Groups,Women,Bronze,1,QAT,Qatar,W.O86KG-------------
+WPO,Water Polo,M.TEAM7-------------.----,Men,Men,Gold,1,JPN,Japan,M.TEAM7-------------
+WPO,Water Polo,M.TEAM7-------------.----,Men,Men,Silver,1,KAZ,Kazakhstan,M.TEAM7-------------
+WPO,Water Polo,M.TEAM7-------------.----,Men,Men,Bronze,1,CHN,People's Republic of China,M.TEAM7-------------
+WPO,Water Polo,W.TEAM7-------------.----,Women,Women,Gold,1,CHN,People's Republic of China,W.TEAM7-------------
+WPO,Water Polo,W.TEAM7-------------.----,Women,Women,Silver,1,JPN,Japan,W.TEAM7-------------
+WPO,Water Polo,W.TEAM7-------------.----,Women,Women,Bronze,1,THA,Thailand,W.TEAM7-------------
+WRE,Wrestling,M.FS125KG-----------.FNL-,Men's Freestyle 125kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.FS125KG-----------
+WRE,Wrestling,M.FS125KG-----------.FNL-,Men's Freestyle 125kg Final,Men,Silver,1,CHN,People's Republic of China,M.FS125KG-----------
+WRE,Wrestling,M.FS125KG-----------.FNL-,Men's Freestyle 125kg Final,Men,Bronze,1,BRN,Bahrain,M.FS125KG-----------
+WRE,Wrestling,M.FS125KG-----------.FNL-,Men's Freestyle 125kg Final,Men,Bronze,2,KAZ,Kazakhstan,M.FS125KG-----------
+WRE,Wrestling,M.FS57KG------------.FNL-,Men's Freestyle 57kg Final,Men,Gold,1,IND,India,M.FS57KG------------
+WRE,Wrestling,M.FS57KG------------.FNL-,Men's Freestyle 57kg Final,Men,Silver,1,PRK,Democratic People's Republic of Korea,M.FS57KG------------
+WRE,Wrestling,M.FS57KG------------.FNL-,Men's Freestyle 57kg Final,Men,Bronze,1,CHN,People's Republic of China,M.FS57KG------------
+WRE,Wrestling,M.FS57KG------------.FNL-,Men's Freestyle 57kg Final,Men,Bronze,2,TJK,Tajikistan,M.FS57KG------------
+WRE,Wrestling,M.FS65KG------------.FNL-,Men's Freestyle 65kg Final,Men,Gold,1,IND,India,M.FS65KG------------
+WRE,Wrestling,M.FS65KG------------.FNL-,Men's Freestyle 65kg Final,Men,Silver,1,TJK,Tajikistan,M.FS65KG------------
+WRE,Wrestling,M.FS65KG------------.FNL-,Men's Freestyle 65kg Final,Men,Bronze,1,JPN,Japan,M.FS65KG------------
+WRE,Wrestling,M.FS65KG------------.FNL-,Men's Freestyle 65kg Final,Men,Bronze,2,KAZ,Kazakhstan,M.FS65KG------------
+WRE,Wrestling,M.FS74KG------------.FNL-,Men's Freestyle 74kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.FS74KG------------
+WRE,Wrestling,M.FS74KG------------.FNL-,Men's Freestyle 74kg Final,Men,Silver,1,JPN,Japan,M.FS74KG------------
+WRE,Wrestling,M.FS74KG------------.FNL-,Men's Freestyle 74kg Final,Men,Bronze,1,TJK,Tajikistan,M.FS74KG------------
+WRE,Wrestling,M.FS74KG------------.FNL-,Men's Freestyle 74kg Final,Men,Bronze,2,KAZ,Kazakhstan,M.FS74KG------------
+WRE,Wrestling,M.FS86KG------------.FNL-,Men's Freestyle 86kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.FS86KG------------
+WRE,Wrestling,M.FS86KG------------.FNL-,Men's Freestyle 86kg Final,Men,Silver,1,JPN,Japan,M.FS86KG------------
+WRE,Wrestling,M.FS86KG------------.FNL-,Men's Freestyle 86kg Final,Men,Bronze,1,KGZ,Kyrgyzstan,M.FS86KG------------
+WRE,Wrestling,M.FS86KG------------.FNL-,Men's Freestyle 86kg Final,Men,Bronze,2,MGL,Mongolia,M.FS86KG------------
+WRE,Wrestling,M.FS97KG------------.FNL-,Men's Freestyle 97kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.FS97KG------------
+WRE,Wrestling,M.FS97KG------------.FNL-,Men's Freestyle 97kg Final,Men,Silver,1,UZB,Uzbekistan,M.FS97KG------------
+WRE,Wrestling,M.FS97KG------------.FNL-,Men's Freestyle 97kg Final,Men,Bronze,1,IND,India,M.FS97KG------------
+WRE,Wrestling,M.FS97KG------------.FNL-,Men's Freestyle 97kg Final,Men,Bronze,2,JPN,Japan,M.FS97KG------------
+WRE,Wrestling,M.GR130KG-----------.FNL-,Men's Greco-Roman 130kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.GR130KG-----------
+WRE,Wrestling,M.GR130KG-----------.FNL-,Men's Greco-Roman 130kg Final,Men,Silver,1,UZB,Uzbekistan,M.GR130KG-----------
+WRE,Wrestling,M.GR130KG-----------.FNL-,Men's Greco-Roman 130kg Final,Men,Bronze,1,CHN,People's Republic of China,M.GR130KG-----------
+WRE,Wrestling,M.GR130KG-----------.FNL-,Men's Greco-Roman 130kg Final,Men,Bronze,2,KOR,Republic of Korea,M.GR130KG-----------
+WRE,Wrestling,M.GR60KG------------.FNL-,Men's Greco-Roman 60kg Final,Men,Gold,1,KGZ,Kyrgyzstan,M.GR60KG------------
+WRE,Wrestling,M.GR60KG------------.FNL-,Men's Greco-Roman 60kg Final,Men,Silver,1,UZB,Uzbekistan,M.GR60KG------------
+WRE,Wrestling,M.GR60KG------------.FNL-,Men's Greco-Roman 60kg Final,Men,Bronze,1,IRQ,Iraq,M.GR60KG------------
+WRE,Wrestling,M.GR60KG------------.FNL-,Men's Greco-Roman 60kg Final,Men,Bronze,2,JPN,Japan,M.GR60KG------------
+WRE,Wrestling,M.GR67KG------------.FNL-,Men's Greco-Roman 67kg Final,Men,Gold,1,UZB,Uzbekistan,M.GR67KG------------
+WRE,Wrestling,M.GR67KG------------.FNL-,Men's Greco-Roman 67kg Final,Men,Silver,1,JPN,Japan,M.GR67KG------------
+WRE,Wrestling,M.GR67KG------------.FNL-,Men's Greco-Roman 67kg Final,Men,Bronze,1,KGZ,Kyrgyzstan,M.GR67KG------------
+WRE,Wrestling,M.GR67KG------------.FNL-,Men's Greco-Roman 67kg Final,Men,Bronze,2,KAZ,Kazakhstan,M.GR67KG------------
+WRE,Wrestling,M.GR77KG------------.FNL-,Men's Greco-Roman 77kg Final,Men,Gold,1,IRI,Islamic Republic of Iran,M.GR77KG------------
+WRE,Wrestling,M.GR77KG------------.FNL-,Men's Greco-Roman 77kg Final,Men,Silver,1,JPN,Japan,M.GR77KG------------
+WRE,Wrestling,M.GR77KG------------.FNL-,Men's Greco-Roman 77kg Final,Men,Bronze,1,KGZ,Kyrgyzstan,M.GR77KG------------
+WRE,Wrestling,M.GR77KG------------.FNL-,Men's Greco-Roman 77kg Final,Men,Bronze,2,QAT,Qatar,M.GR77KG------------
+WRE,Wrestling,M.GR87KG------------.FNL-,Men's Greco-Roman 87kg Final,Men,Gold,1,JPN,Japan,M.GR87KG------------
+WRE,Wrestling,M.GR87KG------------.FNL-,Men's Greco-Roman 87kg Final,Men,Silver,1,KGZ,Kyrgyzstan,M.GR87KG------------
+WRE,Wrestling,M.GR87KG------------.FNL-,Men's Greco-Roman 87kg Final,Men,Bronze,1,UZB,Uzbekistan,M.GR87KG------------
+WRE,Wrestling,M.GR87KG------------.FNL-,Men's Greco-Roman 87kg Final,Men,Bronze,2,IND,India,M.GR87KG------------
+WRE,Wrestling,M.GR97KG------------.FNL-,Men's Greco-Roman 97kg Final,Men,Gold,1,JPN,Japan,M.GR97KG------------
+WRE,Wrestling,M.GR97KG------------.FNL-,Men's Greco-Roman 97kg Final,Men,Silver,1,IND,India,M.GR97KG------------
+WRE,Wrestling,M.GR97KG------------.FNL-,Men's Greco-Roman 97kg Final,Men,Bronze,1,MGL,Mongolia,M.GR97KG------------
+WRE,Wrestling,M.GR97KG------------.FNL-,Men's Greco-Roman 97kg Final,Men,Bronze,2,IRI,Islamic Republic of Iran,M.GR97KG------------
+WRE,Wrestling,W.WR50KG------------.FNL-,Women's Wrestling 50kg Final,Women,Gold,1,JPN,Japan,W.WR50KG------------
+WRE,Wrestling,W.WR50KG------------.FNL-,Women's Wrestling 50kg Final,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.WR50KG------------
+WRE,Wrestling,W.WR50KG------------.FNL-,Women's Wrestling 50kg Final,Women,Bronze,1,CHN,People's Republic of China,W.WR50KG------------
+WRE,Wrestling,W.WR50KG------------.FNL-,Women's Wrestling 50kg Final,Women,Bronze,2,KAZ,Kazakhstan,W.WR50KG------------
+WRE,Wrestling,W.WR53KG------------.FNL-,Women's Wrestling 53kg Final,Women,Gold,1,JPN,Japan,W.WR53KG------------
+WRE,Wrestling,W.WR53KG------------.FNL-,Women's Wrestling 53kg Final,Women,Silver,1,IND,India,W.WR53KG------------
+WRE,Wrestling,W.WR53KG------------.FNL-,Women's Wrestling 53kg Final,Women,Bronze,1,CHN,People's Republic of China,W.WR53KG------------
+WRE,Wrestling,W.WR53KG------------.FNL-,Women's Wrestling 53kg Final,Women,Bronze,2,MGL,Mongolia,W.WR53KG------------
+WRE,Wrestling,W.WR57KG------------.FNL-,Women's Wrestling 57kg Final,Women,Gold,1,CHN,People's Republic of China,W.WR57KG------------
+WRE,Wrestling,W.WR57KG------------.FNL-,Women's Wrestling 57kg Final,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.WR57KG------------
+WRE,Wrestling,W.WR57KG------------.FNL-,Women's Wrestling 57kg Final,Women,Bronze,1,KAZ,Kazakhstan,W.WR57KG------------
+WRE,Wrestling,W.WR57KG------------.FNL-,Women's Wrestling 57kg Final,Women,Bronze,2,JPN,Japan,W.WR57KG------------
+WRE,Wrestling,W.WR62KG------------.FNL-,Women's Wrestling 62kg Final,Women,Gold,1,JPN,Japan,W.WR62KG------------
+WRE,Wrestling,W.WR62KG------------.FNL-,Women's Wrestling 62kg Final,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.WR62KG------------
+WRE,Wrestling,W.WR62KG------------.FNL-,Women's Wrestling 62kg Final,Women,Bronze,1,MGL,Mongolia,W.WR62KG------------
+WRE,Wrestling,W.WR62KG------------.FNL-,Women's Wrestling 62kg Final,Women,Bronze,2,CHN,People's Republic of China,W.WR62KG------------
+WRE,Wrestling,W.WR68KG------------.FNL-,Women's Wrestling 68kg Final,Women,Gold,1,JPN,Japan,W.WR68KG------------
+WRE,Wrestling,W.WR68KG------------.FNL-,Women's Wrestling 68kg Final,Women,Silver,1,PRK,Democratic People's Republic of Korea,W.WR68KG------------
+WRE,Wrestling,W.WR68KG------------.FNL-,Women's Wrestling 68kg Final,Women,Bronze,1,KGZ,Kyrgyzstan,W.WR68KG------------
+WRE,Wrestling,W.WR68KG------------.FNL-,Women's Wrestling 68kg Final,Women,Bronze,2,CHN,People's Republic of China,W.WR68KG------------
+WRE,Wrestling,W.WR76KG------------.FNL-,Women's Wrestling 76kg Final,Women,Gold,1,JPN,Japan,W.WR76KG------------
+WRE,Wrestling,W.WR76KG------------.FNL-,Women's Wrestling 76kg Final,Women,Silver,1,KAZ,Kazakhstan,W.WR76KG------------
+WRE,Wrestling,W.WR76KG------------.FNL-,Women's Wrestling 76kg Final,Women,Bronze,1,KGZ,Kyrgyzstan,W.WR76KG------------
+WRE,Wrestling,W.WR76KG------------.FNL-,Women's Wrestling 76kg Final,Women,Bronze,2,CHN,People's Republic of China,W.WR76KG------------
+WSU,Wushu,M.56KG--------------.----,Men's 56kg,Men,Gold,1,CHN,People's Republic of China,M.56KG--------------
+WSU,Wushu,M.56KG--------------.----,Men's 56kg,Men,Silver,1,VIE,Vietnam,M.56KG--------------
+WSU,Wushu,M.56KG--------------.----,Men's 56kg,Men,Bronze,1,UZB,Uzbekistan,M.56KG--------------
+WSU,Wushu,M.56KG--------------.----,Men's 56kg,Men,Bronze,2,INA,Indonesia,M.56KG--------------
+WSU,Wushu,M.60KG--------------.----,Men's 60kg,Men,Gold,1,CHN,People's Republic of China,M.60KG--------------
+WSU,Wushu,M.60KG--------------.----,Men's 60kg,Men,Silver,1,HKG,"Hong Kong, China",M.60KG--------------
+WSU,Wushu,M.60KG--------------.----,Men's 60kg,Men,Bronze,1,INA,Indonesia,M.60KG--------------
+WSU,Wushu,M.60KG--------------.----,Men's 60kg,Men,Bronze,2,VIE,Vietnam,M.60KG--------------
+WSU,Wushu,M.65KG--------------.----,Men's 65kg,Men,Gold,1,CHN,People's Republic of China,M.65KG--------------
+WSU,Wushu,M.65KG--------------.----,Men's 65kg,Men,Silver,1,IRI,Islamic Republic of Iran,M.65KG--------------
+WSU,Wushu,M.65KG--------------.----,Men's 65kg,Men,Bronze,1,VIE,Vietnam,M.65KG--------------
+WSU,Wushu,M.65KG--------------.----,Men's 65kg,Men,Bronze,2,AFG,Afghanistan,M.65KG--------------
+WSU,Wushu,M.70KG--------------.----,Men's 70kg,Men,Gold,1,CHN,People's Republic of China,M.70KG--------------
+WSU,Wushu,M.70KG--------------.----,Men's 70kg,Men,Silver,1,IRI,Islamic Republic of Iran,M.70KG--------------
+WSU,Wushu,M.70KG--------------.----,Men's 70kg,Men,Bronze,1,AFG,Afghanistan,M.70KG--------------
+WSU,Wushu,M.70KG--------------.----,Men's 70kg,Men,Bronze,2,KAZ,Kazakhstan,M.70KG--------------
+WSU,Wushu,M.75KG--------------.----,Men's 75kg,Men,Gold,1,IRI,Islamic Republic of Iran,M.75KG--------------
+WSU,Wushu,M.75KG--------------.----,Men's 75kg,Men,Silver,1,KAZ,Kazakhstan,M.75KG--------------
+WSU,Wushu,M.75KG--------------.----,Men's 75kg,Men,Bronze,1,UZB,Uzbekistan,M.75KG--------------
+WSU,Wushu,M.75KG--------------.----,Men's 75kg,Men,Bronze,2,TPE,Chinese Taipei,M.75KG--------------
+WSU,Wushu,M.CHAN--------------.FNL-,Men's Changquan,Men,Gold,1,MAC,"Macao, China",M.CHAN--------------
+WSU,Wushu,M.CHAN--------------.FNL-,Men's Changquan,Men,Silver,1,MAC,"Macao, China",M.CHAN--------------
+WSU,Wushu,M.CHAN--------------.FNL-,Men's Changquan,Men,Bronze,1,INA,Indonesia,M.CHAN--------------
+WSU,Wushu,M.DAOS--------------.FNL-,Men's Daoshu & Gunshu,Men,Gold,1,CHN,People's Republic of China,M.DAOS--------------
+WSU,Wushu,M.DAOS--------------.FNL-,Men's Daoshu & Gunshu,Men,Silver,1,KOR,Republic of Korea,M.DAOS--------------
+WSU,Wushu,M.DAOS--------------.FNL-,Men's Daoshu & Gunshu,Men,Bronze,1,MAS,Malaysia,M.DAOS--------------
+WSU,Wushu,M.NANG--------------.FNL-,Men's Nanquan & Nangun,Men,Gold,1,CHN,People's Republic of China,M.NANG--------------
+WSU,Wushu,M.NANG--------------.FNL-,Men's Nanquan & Nangun,Men,Silver,1,HKG,"Hong Kong, China",M.NANG--------------
+WSU,Wushu,M.NANG--------------.FNL-,Men's Nanquan & Nangun,Men,Bronze,1,TPE,Chinese Taipei,M.NANG--------------
+WSU,Wushu,M.TAIJ--------------.FNL-,Men's Taijiquan & Taijijian,Men,Gold,1,CHN,People's Republic of China,M.TAIJ--------------
+WSU,Wushu,M.TAIJ--------------.FNL-,Men's Taijiquan & Taijijian,Men,Silver,1,TPE,Chinese Taipei,M.TAIJ--------------
+WSU,Wushu,M.TAIJ--------------.FNL-,Men's Taijiquan & Taijijian,Men,Bronze,1,KOR,Republic of Korea,M.TAIJ--------------
+WSU,Wushu,W.52KG--------------.----,Women's 52kg,Women,Gold,1,CHN,People's Republic of China,W.52KG--------------
+WSU,Wushu,W.52KG--------------.----,Women's 52kg,Women,Silver,1,IRI,Islamic Republic of Iran,W.52KG--------------
+WSU,Wushu,W.52KG--------------.----,Women's 52kg,Women,Bronze,1,BAN,Bangladesh,W.52KG--------------
+WSU,Wushu,W.52KG--------------.----,Women's 52kg,Women,Bronze,2,HKG,"Hong Kong, China",W.52KG--------------
+WSU,Wushu,W.60KG--------------.----,Women's 60kg,Women,Gold,1,CHN,People's Republic of China,W.60KG--------------
+WSU,Wushu,W.60KG--------------.----,Women's 60kg,Women,Silver,1,IND,India,W.60KG--------------
+WSU,Wushu,W.60KG--------------.----,Women's 60kg,Women,Bronze,1,VIE,Vietnam,W.60KG--------------
+WSU,Wushu,W.60KG--------------.----,Women's 60kg,Women,Bronze,2,INA,Indonesia,W.60KG--------------
+WSU,Wushu,W.CHAN--------------.FNL-,Women's Changquan,Women,Gold,1,HKG,"Hong Kong, China",W.CHAN--------------
+WSU,Wushu,W.CHAN--------------.FNL-,Women's Changquan,Women,Silver,1,MAC,"Macao, China",W.CHAN--------------
+WSU,Wushu,W.CHAN--------------.FNL-,Women's Changquan,Women,Bronze,1,INA,Indonesia,W.CHAN--------------
+WSU,Wushu,W.JIAN--------------.FNL-,Women's Jianshu & Qiangshu,Women,Gold,1,CHN,People's Republic of China,W.JIAN--------------
+WSU,Wushu,W.JIAN--------------.FNL-,Women's Jianshu & Qiangshu,Women,Silver,1,JPN,Japan,W.JIAN--------------
+WSU,Wushu,W.JIAN--------------.FNL-,Women's Jianshu & Qiangshu,Women,Bronze,1,VIE,Vietnam,W.JIAN--------------
+WSU,Wushu,W.NANG--------------.FNL-,Women's Nanquan & Nandao,Women,Gold,1,CHN,People's Republic of China,W.NANG--------------
+WSU,Wushu,W.NANG--------------.FNL-,Women's Nanquan & Nandao,Women,Silver,1,UZB,Uzbekistan,W.NANG--------------
+WSU,Wushu,W.NANG--------------.FNL-,Women's Nanquan & Nandao,Women,Bronze,1,MAS,Malaysia,W.NANG--------------
+WSU,Wushu,W.TAIJ--------------.FNL-,Women's Taijiquan & Taijijian,Women,Gold,1,CHN,People's Republic of China,W.TAIJ--------------
+WSU,Wushu,W.TAIJ--------------.FNL-,Women's Taijiquan & Taijijian,Women,Silver,1,JPN,Japan,W.TAIJ--------------
+WSU,Wushu,W.TAIJ--------------.FNL-,Women's Taijiquan & Taijijian,Women,Bronze,1,BRU,Brunei Darussalam,W.TAIJ--------------
+WSU,Wushu,W.TAIJ--------------.FNL-,Women's Taijiquan & Taijijian,Women,Bronze,2,SGP,Singapore,W.TAIJ--------------

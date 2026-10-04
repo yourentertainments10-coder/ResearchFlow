@@ -38,7 +38,10 @@ def parse_medal_rows(rows: list[dict[str, Any]]) -> list[ParsedPlacing]:
     for r in rows:
         try:
             medal = MEDALS[r["Medal"]]
-            gender = GENDERS[r["Gender"]]
+            # Event gender comes from the event code, never from the athlete's own Gender field: in
+            # Open events (esports, equestrian, sailing) the row field is the athlete's. Verified on
+            # all 1568 rows against the official standings (docs/SOURCE_DISCOVERY.md section 11).
+            gender = GENDERS[r["Event"][0]]
             out.append(
                 ParsedPlacing(
                     r["Disc"], r["DiscDesc"], r["Event"], r["EventDesc"], gender, medal,

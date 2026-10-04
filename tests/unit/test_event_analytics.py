@@ -53,3 +53,12 @@ def test_sport_and_country_views(df):
     assert sport_concentration(cs)["medals"].sum() == len(df)
     assert country_dependence(cs)["medals"].sum() == len(df)
     assert (specialisation(cs)["LQ"] > 0).all()
+
+
+def test_open_event_gender_comes_from_event_code_not_athlete():
+    row = {
+        "Medal": "ME_GOLD", "Order": 1, "Org": "JPN", "OrgDesc": "Japan", "Reg": "1", "Type": "A",
+        "DateRaw": "2026-10-01T10:00:00+09:00", "Name": "X", "Disc": "ELS", "DiscDesc": "Esports",
+        "Event": "O.GT7---------------.FNL-", "EventDesc": "Gran Turismo 7 Finals", "Bib": "1", "Gender": "M",
+    }  # fmt: skip
+    assert parse_medal_rows([row])[0].gender == "Open"

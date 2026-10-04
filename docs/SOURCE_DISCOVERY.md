@@ -168,3 +168,18 @@ The responses carry athlete birth dates, including athletes who are minors, and 
 | Terms of use | **Not found.** Not recorded anywhere we can read. Under `AGENTS.md` rule 9 this must be settled by the owner (read the portal's footer or legal link, or ask the organisers or the Olympic Council of Asia in writing) before any automated fetching. Until then, data enters through manual import of owner captures |
 | Effect on the roadmap | Phases 2, 4 and 5 are unaffected. Phase 3 can build the parser, the raw store and the reconciliation on the saved fixtures now. Only the live adapter that fetches from the portal waits for the terms decision |
 
+
+## 11. Full capture and reconciliation (2026-10-04, 16:21 UTC)
+The owner ran the crawl snippet: `{DISC}/medals/discipline` and `{DISC}/medals/standings` for all 59 disciplines (2-second gap between requests).
+
+| Check | Result |
+|-------|--------|
+| Medal rows | **1568**, equal to the official `ALL/medals/standings` total. By medal: 470 gold, 469 silver, 629 bronze, all equal to the official table |
+| Events | **469** distinct events with medal rows, equal to the 469 events of `ALL/disc/data`; every event has a gold. 0 event keys outside the official list |
+| Country totals | 40 countries, 0 differences against the official table |
+| Per-discipline, country, medal and gender | 0 mismatches over 59 disciplines, once the gender rule below is applied |
+| Ties and double bronze | Seen in 22 disciplines (`Order` 2). Combat sports show two bronzes (`Order` 1 and 2). Swimming has the one gold tie and one double silver |
+
+**Gender rule (found by reconciliation, now in the parser).** The `Gender` field of a medal row is the *athlete's*. For Open events (esports, equestrian, sailing) it can be M or W (23 rows). The official table takes the event's gender from the first letter of the event code and counts Open events under Mixed. Using the row field gave 107 mismatches in ELS, EQU, SWA and TKW; using the event-code letter gave 0. This is the rule in `DOMAIN_MODEL.md` section 4.6 (gender belongs to the event). Reports show Open events inside Mixed, as the official table does.
+
+Still open: the portal's terms of use (gates the live adapter, not manual import), reallocation and withheld-medal behaviour (needs a later capture to compare).

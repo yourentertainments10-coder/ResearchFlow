@@ -22,7 +22,9 @@ def placings_frame(placings: list[ParsedPlacing]) -> pd.DataFrame:
 def reconcile(df: pd.DataFrame, standings: dict[str, list[dict[str, Any]]]) -> pd.DataFrame:
     """Medal rows vs official per-discipline standings. Returns mismatches (empty = reconciled)."""
     medal_key = {"Gold": "ME_GOLD", "Silver": "ME_SILVER", "Bronze": "ME_BRONZE"}
-    gender_key = {"Men": "M", "Women": "W", "Mixed": "X", "Open": "O"}
+    # The official table counts Open events under Mixed (verified, SOURCE_DISCOVERY section 11).
+    gender_key = {"Men": "M", "Women": "W", "Mixed": "X"}
+    df = df.assign(gender=df["gender"].replace({"Open": "Mixed"}))
     mine = df.groupby(["discipline", "country_code", "medal", "gender"]).size()
     bad = []
     for disc, recs in standings.items():
