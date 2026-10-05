@@ -114,6 +114,12 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
     with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
         for n, f in sheets.items():
             f.to_excel(w, sheet_name=n[:31], index=False)
+    (out_dir / "meta.json").write_text(
+        json.dumps(
+            {"captured_at": data["captured"], "checks": {k: int(v) for k, v in checks.items()}},
+            indent=2,
+        )
+    )
     pub = df.assign(date=df["awarded_at"].str[:10]).drop(
         columns=["entrant_name", "awarded_at", "entrant_type"]
     )

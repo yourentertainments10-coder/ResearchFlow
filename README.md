@@ -54,7 +54,7 @@ Working end to end for the Asian Games 2026 (Aichi-Nagoya) medal data: 469 event
 ```bash
 pip install -e ".[dev]"
 python -m sie.analytics.full_report path/to/ag2026_all_medals.json   # reports/*.xlsx, *.html, placings.csv
-python -m sie.dashboard                                              # site/index.html
+python -m sie.dashboard                                              # site/index.html (template: src/sie/web/dashboard.html)
 sie migrate && sie seed-reference && sie load-capture path/to/ag2026_all_medals.json   # needs DATABASE_URL
 pytest
 ```
