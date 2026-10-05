@@ -58,6 +58,28 @@ def _tbl(frame: pd.DataFrame, limit: int | None = None) -> str:
     return f"<div class=wrap><table><tr>{head}</tr>{body}</table></div>"
 
 
+GENDER_CATEGORIES = ("Men", "Women", "Mixed", "Open")
+
+
+def gender_tables(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Medals by country x gender and by sport x gender. Open stays its own category (ADR-019);
+    only the reconciliation against the official table folds it into that table's Mixed bucket."""
+
+    def table(keys: list[str]) -> pd.DataFrame:
+        t = df.groupby([*keys, "gender"]).size().unstack(fill_value=0)
+        for g in GENDER_CATEGORIES:
+            if g not in t:
+                t[g] = 0
+        t = t[[*GENDER_CATEGORIES]]
+        t["Total"] = t.sum(axis=1)
+        t["Women_%"] = (t["Women"] / t["Total"] * 100).round(1)
+        return t.sort_values("Total", ascending=False).reset_index()
+
+    cg = table(["country_code"])
+    sg = table(["discipline_name"]).rename(columns={"discipline_name": "sport"})
+    return cg, sg
+
+
 def build(data: dict, out_dir: Path) -> dict[str, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     df, checks = data["df"], data["checks"]
@@ -73,22 +95,7 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
     names = dict(zip(df["country_code"], df["country_name"], strict=True))
     for f in (dep, spec_top, cs):
         f.insert(1, "name", f.iloc[:, 0].map(names)) if "name" not in f else None
-    df2 = df.assign(gender=df["gender"].replace({"Open": "Mixed"}))
-    cg = df2.groupby(["country_code", "gender"]).size().unstack(fill_value=0)
-    cg["Total"] = cg.sum(axis=1)
-    cg["Women_%"] = (cg["Women"] / cg["Total"] * 100).round(1)
-    cg = cg.sort_values("Total", ascending=False).reset_index()
-    sg = df2.groupby(["discipline_name", "gender"]).size().unstack(fill_value=0)
-    for g in ("Men", "Women", "Mixed"):
-        if g not in sg:
-            sg[g] = 0
-    sg["Total"] = sg.sum(axis=1)
-    sg["Women_%"] = (sg["Women"] / sg["Total"] * 100).round(1)
-    sg = (
-        sg.sort_values("Total", ascending=False)
-        .reset_index()
-        .rename(columns={"discipline_name": "sport"})
-    )
+    cg, sg = gender_tables(df)
     events_by_sport = (
         df.groupby("discipline_name")["event_code"]
         .nunique()
@@ -147,7 +154,7 @@ table{{border-collapse:collapse;width:100%;font-size:13px}}th,td{{padding:4px 8p
 <h2>How dependent is each country on a few sports? (top 20 by medals)</h2><small>HHI across sports (10000 = all medals in one sport).</small>{_tbl(dep, 20)}
 <h2>Where each country over-performs (location quotient, at least 5 medals)</h2><small>LQ above 1: the sport weighs more in the country's haul than in the Games overall.</small>{_tbl(spec_top)}
 <h2>Sport concentration: who dominates each sport</h2>{_tbl(sport_c)}
-<h2>Women's, men's and mixed medals by country</h2><small>Gender is the event's gender; Open events (esports, equestrian, sailing) count as Mixed, as the official table does.</small>{_tbl(cg, 25)}
+<h2>Women's, men's, mixed and open medals by country</h2><small>Gender is the event's gender; Open events (esports, equestrian, sailing) are kept separate. The official table counts them under Mixed.</small>{_tbl(cg, 25)}
 <h2>Women's share by sport</h2>{_tbl(sg)}
 <h2>Countries with most events where they took two or more podium places</h2>{_tbl(sweeps)}
 </html>"""  # noqa: E501

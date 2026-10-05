@@ -80,7 +80,7 @@ const h=(t,c,...k)=>{let tag=t,ta='';const ti=t.indexOf('" ');if(ti>0){tag=t.sli
  const e=document.createElement(tag);if(ta)attrs(e,ta);
  if(c){const parts=c.split('" ');e.className=parts[0];parts.slice(1).forEach(p=>attrs(e,p))}
  k.flat().forEach(x=>{if(x==null||x===false)return;e.append(x.nodeType?x:document.createTextNode(String(x)))});return e};
-const gOf=r=>r.g==='Open'?'Mixed':r.g;
+const gOf=r=>r.g;
 const SHORT={"People's Republic of China":'China','Republic of Korea':'Korea','Islamic Republic of Iran':'Iran',"Democratic People's Republic of Korea":'North Korea','Hong Kong, China':'Hong Kong',"Lao People's Democratic Republic":'Laos'};
 const sn=n=>SHORT[n]||n;
 const pct=(a,b)=>b?Math.round(a/b*1000)/10:0;
@@ -96,7 +96,7 @@ const CMAP=Object.fromEntries(COUNTRIES.map(x=>[x.c,x]));
 const SPORTS=Object.keys(bySport).sort();
 function sportsOf(c){return Object.entries(group(byCountry[c],'s')).map(([s,r])=>({s,...tally(r)})).sort((a,b)=>b.T-a.T||rankCmp(a,b))}
 function hhi(list,k){const t=list.reduce((a,x)=>a+x[k],0);return Math.round(list.reduce((a,x)=>a+(x[k]/t)**2,0)*10000)}
-function genderOf(rows){const n={Men:0,Women:0,Mixed:0};rows.forEach(r=>n[gOf(r)]++);return n}
+function genderOf(rows){const n={Men:0,Women:0,Mixed:0,Open:0};rows.forEach(r=>n[gOf(r)]++);return n}
 function profile(c){const sp=sportsOf(c),T=CMAP[c].T,g=genderOf(byCountry[c]);return{sp,top1:pct(sp[0].T,T),top3:pct(sp.slice(0,3).reduce((a,x)=>a+x.T,0),T),hhi:hhi(sp,'T'),g,women:pct(g.Women,T)}}
 const DATES=[...new Set(D.map(r=>r.d).filter(Boolean))].sort();
 // ---- tooltip ----
@@ -161,8 +161,8 @@ V.overview=()=>{const r=h('div');
  const mt=h('section','blk',h('div','head',h('div','',h('div','eyebrow','Medal table'),h('h2','','Who won what'))),h('div','card',medalTable(COUNTRIES,10,x=>{S.country=x.c;go('#/countries')}),h('div','sm mut" style="margin-top:8px','Top 10 of '+COUNTRIES.length+'. Click a row to open the country.')));
  r.append(mt);
  const mx=COUNTRIES[0].T,chart=h('div','card',h('h3','','Medal mix, top 10'),mpLegend(),...COUNTRIES.slice(0,10).map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;go('#/countries')})));
- const g=genderOf(D),gm=Math.max(g.Men,g.Women,g.Mixed),gc=h('div','card',h('h3','','Men, women and mixed events'),h('div','sm mut" style="margin-bottom:8px','Share of all '+D.length+' medals. Open events (esports, equestrian, sailing) count as Mixed, as the official table does.'),
-  ...[['Men','--c1'],['Women','--c2'],['Mixed','--c3']].map(([k,v])=>barRow(k,simpleBar(g[k]/gm,'var('+v+')',[{t:k+' events',b:g[k]+' medals ('+pct(g[k],D.length)+'%)'}]),pct(g[k],D.length)+'%',()=>go('#/gender'))));
+ const g=genderOf(D),gm=Math.max(g.Men,g.Women,g.Mixed,g.Open),gc=h('div','card',h('h3','','Men, women, mixed and open events'),h('div','sm mut" style="margin-bottom:8px','Share of all '+D.length+' medals. Open events (esports, equestrian, sailing) are shown separately; the official table counts them under Mixed.'),
+  ...[['Men','--c1'],['Women','--c2'],['Mixed','--c3'],['Open','--c4']].map(([k,v])=>barRow(k,simpleBar(g[k]/gm,'var('+v+')',[{t:k+' events',b:g[k]+' medals ('+pct(g[k],D.length)+'%)'}]),pct(g[k],D.length)+'%',()=>go('#/gender'))));
  r.append(h('section','blk',h('div','grid2',chart,gc)));
  r.append(h('section','blk',h('div','head',h('div','',h('div','eyebrow','Where medals come from'),h('h2','','Country × sport'))),h('div','card',heatmap(D,10,12))));
  r.append(h('section','blk',h('div','head',h('div','',h('div','eyebrow','Trend'),h('h2','','Medals won over time')),h('a','sm" href="#/timeline','Customise →')),h('div','card',lineChart(COUNTRIES.slice(0,5).map(x=>x.c),Object.fromEntries(COUNTRIES.slice(0,5).map((x,i)=>[x.c,'var(--c'+(i+1)+')']))),h('div','sm mut" style="margin-top:6px',META.nodate+' medals have no date in the feed and are left out of time charts only.'))));
@@ -177,8 +177,8 @@ V.countries=()=>{const r=h('div');const c=S.country,x=CMAP[c],p=profile(c);
   h('h3','','Medal profile'),mpLegend(),...['G','S','B'].map(k=>barRow(MEDN[k],simpleBar(x[k]/Math.max(x.G,x.S,x.B,1),MEDC[k],[{t:MEDN[k],b:x[k]}]),x[k]))));
  const sp=h('div','card',h('h3','',x.n+"'s strongest sports"),h('div','sm mut" style="margin-bottom:6px','Click a sport for the explanation.'),...p.sp.slice(0,10).map(z=>barRow(z.s,medalBar(z,p.sp[0].T,z.s),z.T,()=>{S.whySport=z.s;render()})));
  sp.append(why(c,S.whySport&&p.sp.some(z=>z.s===S.whySport)?S.whySport:p.sp[0].s));
- const gmx=Math.max(p.g.Men,p.g.Women,p.g.Mixed);
- const gp=h('div','card',h('h3','','Gender profile'),...[['Men','--c1'],['Women','--c2'],['Mixed','--c3']].map(([k,v])=>barRow(k,simpleBar(p.g[k]/gmx,'var('+v+')',[{t:k+' events',b:p.g[k]}]),pct(p.g[k],x.T)+'%')),
+ const gmx=Math.max(p.g.Men,p.g.Women,p.g.Mixed,p.g.Open);
+ const gp=h('div','card',h('h3','','Gender profile'),...[['Men','--c1'],['Women','--c2'],['Mixed','--c3'],['Open','--c4']].map(([k,v])=>barRow(k,simpleBar(p.g[k]/gmx,'var('+v+')',[{t:k+' events',b:p.g[k]}]),pct(p.g[k],x.T)+'%')),
   h('h3" style="margin-top:16px','','Concentration'),h('div','stat',h('div','',h('b','',p.top1+'%'),h('span','','Top sport')),h('div','',h('b','',p.top3+'%'),h('span','','Top 3 sports')),h('div','',h('b','',p.hhi),h('span','','HHI across sports'))),h('div','sm mut','HHI runs 0–10,000; higher means medals sit in fewer sports.'));
  r.append(h('div','grid2" style="margin-top:14px',sp,gp));
  // comparison
@@ -196,12 +196,12 @@ V.sports=()=>{const r=h('div'),s=S.sport,rows=bySport[s],t=tally(rows),by=Object
  r.append(h('div','card',h('div','stat',h('div','',h('b','',ev),h('span','','Events')),h('div','',h('b','',t.T),h('span','','Medals')),h('div','',h('b','',by.length),h('span','','Countries with a medal')),h('div','',h('b','',pct(by[0].T,t.T)+'%'),h('span','','Leader: '+by[0].n)),h('div','',h('b','',hhi(by,'T')),h('span','','HHI')))));
  const mx=by[0].T;
  r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h3','','Countries winning medals in '+s),mpLegend(),...by.slice(0,15).map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;go('#/countries')}))),
-  h('div','card',h('h3','','Men, women and mixed events'),...[['Men','--c1'],['Women','--c2'],['Mixed','--c3']].map(([k,v])=>barRow(k,simpleBar(g[k]/Math.max(g.Men,g.Women,g.Mixed,1),'var('+v+')',[{t:k+' events',b:g[k]}]),g[k])),
-   h('h3" style="margin-top:16px','','Leaders by gender'),...['Men','Women','Mixed'].filter(k=>g[k]).map(k=>{const l=Object.entries(group(rows.filter(z=>gOf(z)===k),'c')).map(([c,rr])=>({c,...tally(rr)})).sort((a,b)=>b.T-a.T)[0];return h('div','brow',h('span','nm',k),h('span','',sn(names[l.c])+' · '+l.T+' medals'),h('span'))}))));
+  h('div','card',h('h3','','Men, women, mixed and open events'),...[['Men','--c1'],['Women','--c2'],['Mixed','--c3'],['Open','--c4']].map(([k,v])=>barRow(k,simpleBar(g[k]/Math.max(g.Men,g.Women,g.Mixed,g.Open,1),'var('+v+')',[{t:k+' events',b:g[k]}]),g[k])),
+   h('h3" style="margin-top:16px','','Leaders by gender'),...['Men','Women','Mixed','Open'].filter(k=>g[k]).map(k=>{const l=Object.entries(group(rows.filter(z=>gOf(z)===k),'c')).map(([c,rr])=>({c,...tally(rr)})).sort((a,b)=>b.T-a.T)[0];return h('div','brow',h('span','nm',k),h('span','',sn(names[l.c])+' · '+l.T+' medals'),h('span'))}))));
  return r};
 
 V.gender=()=>{const r=h('div'),W=D.filter(z=>gOf(z)==='Women'),M=D.filter(z=>gOf(z)==='Men'),X=D.filter(z=>gOf(z)==='Mixed');
- r.append(h('div','hero" style="padding:28px 0 6px',h('div','eyebrow','Gender'),h('h1" style="font-size:clamp(28px,5vw,40px)','','Where are women driving medal success?'),h('div','lead','Gender is the event\'s gender, never the athlete\'s. Open events count as Mixed, as the official table does.')));
+ r.append(h('div','hero" style="padding:28px 0 6px',h('div','eyebrow','Gender'),h('h1" style="font-size:clamp(28px,5vw,40px)','','Where are women driving medal success?'),h('div','lead','Gender is the event\'s gender, never the athlete\'s. Open events are shown separately; the official table counts them under Mixed.')));
  const lead=(rows,n)=>Object.entries(group(rows,'c')).map(([c,rr])=>({c,n:sn(names[c]),...tally(rr)})).sort((a,b)=>b.T-a.T||rankCmp(a,b)).slice(0,n);
  const lw=lead(W,10),lm=lead(M,10);const card=(title,list)=>h('div','card',h('h3','',title),mpLegend(),...list.map(x=>barRow(x.n,medalBar(x,list[0].T,x.n),x.T,()=>{S.gcountry=x.c;render()})));
  r.append(h('div','grid2',card("Women's medal leaders",lw),card("Men's medal leaders",lm)));
@@ -209,7 +209,7 @@ V.gender=()=>{const r=h('div'),W=D.filter(z=>gOf(z)==='Women'),M=D.filter(z=>gOf
  r.append(h('section','blk',h('div','head',h('div','',h('div','eyebrow','Country view'),h('h2','',"A country's women's medals"))),h('div','ctl',sel('Country',COUNTRIES.map(z=>({v:z.c,l:z.n})),gc,v=>{S.gcountry=v;render()})),
   gsp.length?h('div','card',h('h3','',CMAP[gc].n+": women's strongest sports ("+gsp.reduce((a,z)=>a+z.T,0)+' medals)'),mpLegend(),...gsp.slice(0,10).map(z=>barRow(z.s,medalBar(z,gsp[0].T,z.s),z.T))):empty('No medals found for this combination.','This country has no medals in women\'s events.')));
  const sg=SPORTS.map(s=>{const g=genderOf(bySport[s]),T=bySport[s].length;return{s,T,...g,w:pct(g.Women,T)}}).sort((a,b)=>b.T-a.T);
- const t=h('table'),hd=h('tr');['Sport','Men','Women','Mixed','Total',"Women's share"].forEach((x,i)=>hd.append(h('th',i===0?'l':'',x)));t.append(hd);sg.forEach(z=>{const tr=h('tr','click',h('td','l',z.s),h('td','',z.Men),h('td','',z.Women),h('td','',z.Mixed),h('td','',h('b','',z.T)),h('td','',z.Men+z.Women===0?'Open events':z.w+'%'));tr.onclick=()=>{S.sport=z.s;go('#/sports')};t.append(tr)});
+ const t=h('table'),hd=h('tr');['Sport','Men','Women','Mixed','Open','Total',"Women's share"].forEach((x,i)=>hd.append(h('th',i===0?'l':'',x)));t.append(hd);sg.forEach(z=>{const tr=h('tr','click',h('td','l',z.s),h('td','',z.Men),h('td','',z.Women),h('td','',z.Mixed),h('td','',z.Open),h('td','',h('b','',z.T)),h('td','',z.Men+z.Women===0?'No men/women events':z.w+'%'));tr.onclick=()=>{S.sport=z.s;go('#/sports')};t.append(tr)});
  r.append(h('section','blk',h('div','head',h('div','',h('div','eyebrow','By sport'),h('h2','',"Women's share of medals, by sport"))),h('div','card',h('div','scroll',t))));return r};
 
 V.timeline=()=>{const r=h('div');r.append(h('div','hero" style="padding:28px 0 6px',h('div','eyebrow','Timeline'),h('h1" style="font-size:clamp(28px,5vw,40px)','','How did the medal race unfold?')));
@@ -221,7 +221,7 @@ V.timeline=()=>{const r=h('div');r.append(h('div','hero" style="padding:28px 0 6
 
 V.explorer=()=>{const r=h('div'),E=S.ex;r.append(h('div','hero" style="padding:28px 0 6px',h('div','eyebrow','Data explorer'),h('h1" style="font-size:clamp(28px,5vw,40px)','','Every medal, filterable'),h('div','lead','One row per medal. Filter, then download exactly what you see.')));
  const ctl=h('div','ctl'),q=h('input');q.type='search';q.placeholder='Country or event';q.value=E.q;q.oninput=()=>{E.q=q.value;E.n=100;draw()};
- ctl.append(h('label','','Search',q),sel('Sport',[{v:'',l:'All'},...SPORTS],E.s,v=>{E.s=v;E.n=100;draw()}),sel('Gender',[{v:'',l:'All'},'Men','Women','Mixed'],E.g,v=>{E.g=v;E.n=100;draw()}),sel('Medal',[{v:'',l:'All'},'Gold','Silver','Bronze'],E.m,v=>{E.m=v;E.n=100;draw()}),sel('Date',[{v:'',l:'All'},...DATES],E.d,v=>{E.d=v;E.n=100;draw()}));
+ ctl.append(h('label','','Search',q),sel('Sport',[{v:'',l:'All'},...SPORTS],E.s,v=>{E.s=v;E.n=100;draw()}),sel('Gender',[{v:'',l:'All'},'Men','Women','Mixed','Open'],E.g,v=>{E.g=v;E.n=100;draw()}),sel('Medal',[{v:'',l:'All'},'Gold','Silver','Bronze'],E.m,v=>{E.m=v;E.n=100;draw()}),sel('Date',[{v:'',l:'All'},...DATES],E.d,v=>{E.d=v;E.n=100;draw()}));
  const out=h('div');r.append(ctl,out);
  function rows(){const ql=E.q.toLowerCase();return D.filter(z=>(!ql||z.cn.toLowerCase().includes(ql)||z.c.toLowerCase()===ql||z.en.toLowerCase().includes(ql))&&(!E.s||z.s===E.s)&&(!E.g||gOf(z)===E.g)&&(!E.m||z.m===E.m)&&(!E.d||z.d===E.d))}
  function csv(rs){const q=v=>'"'+String(v).replace(/"/g,'""')+'"';return ['date,event,sport,gender,country_code,country,medal',...rs.map(z=>[z.d,z.en,z.s,gOf(z),z.c,z.cn,z.m].map(q).join(','))].join('\n')}
@@ -240,7 +240,7 @@ V.method=()=>{const r=h('div');r.append(h('div','hero" style="padding:28px 0 6px
  const st=[['Source','Official results portal, medal rows per sport'],['Collection','One request per sport, 2 s apart, run by the owner'],['Decoding','Compressed JSON decoded; unknown shapes fail loudly'],['Normalisation','Event gender from the event code; personal data dropped'],['Validation','Rows compared with the official standings per sport'],['Aggregation','Country × sport × gender × medal'],['Analytics','Shares, concentration (HHI), specialisation']];
  const flow=h('div','flow');st.forEach((s,i)=>{if(i)flow.append(h('span','ar','→'));flow.append(h('div','st',h('b','',s[0]),h('span','',s[1])))});
  r.append(h('div','card',flow,h('div','stat" style="margin-top:12px',h('div','',h('b','',META.events),h('span','','events')),h('div','',h('b','',D.length.toLocaleString('en')),h('span','','medals')),h('div','',h('b','','0'),h('span','','mismatches')),h('div','',h('b','',COUNTRIES.length),h('span','','countries')))));
- r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h3','','Rules that matter'),h('ul','sm',h('li','','A medal is one placing credited to one country. A team or pair is one medal.'),h('li','','Gender is the event\'s gender (from the event code). In Open events the athlete\'s own gender is ignored, and the official table counts them as Mixed.'),h('li','','Ties and double bronze are kept as the source gives them (Swimming has one gold tie and one double silver).'),h('li','','Ranking is gold, then silver, then bronze, as in the official table.'))),
+ r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h3','','Rules that matter'),h('ul','sm',h('li','','A medal is one placing credited to one country. A team or pair is one medal.'),h('li','','Gender is the event\'s gender (from the event code). In Open events the athlete\'s own gender is ignored, and the official table counts them under Mixed.'),h('li','','Ties and double bronze are kept as the source gives them (Swimming has one gold tie and one double silver).'),h('li','','Ranking is gold, then silver, then bronze, as in the official table.'))),
   h('div','card',h('h3','','Freshness and limits'),h('ul','sm',h('li','','This is a verified snapshot taken '+META.label+', not live polling.'),h('li','',META.nodate+' medals have no date in the feed; they count everywhere except date-based charts.'),h('li','','No terms of use are published on the portal. Data comes from a capture the owner ran in a browser, and the site credits the source.'),h('li','','Reallocations after the Games (for example doping cases) are not yet in this snapshot.')))));
  r.append(h('div','card" style="margin-top:14px',h('h3','','Reproduce it'),h('p','sm','Code, tests and the validation rules are open: '),h('a','" href="https://github.com/yourentertainments10-coder/ResearchFlow" rel=noopener','github.com/yourentertainments10-coder/ResearchFlow')));return r};
 

@@ -111,6 +111,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** a slim ingestion install stays possible. If analytics later moves entirely to SQL views, this extra can shrink.
 - **Status:** Accepted
 
+## ADR-019: Open events stay Open; only reconciliation folds them into Mixed
+
+- **Context:** The official table counts the 20 Open events (esports, equestrian, sailing) under its Mixed bucket. `docs/ANALYTICS_SPEC.md` says Mixed and Open are reported separately. The reports and dashboard had collapsed Open into Mixed.
+- **Decision:** Gender categories are Men, Women, Mixed and Open everywhere internally and in reports and the dashboard. Reconciliation against the official table compares Mixed + Open with the official Mixed bucket, so the 0-mismatch check is unchanged. Country tables that come straight from the official standings feed (`analytics/standings.py`) cannot split Open out and stay M / W / X.
+- **Why:** No information is lost, and questions such as "in how many Open events did India win a medal" can be answered. Folding is a view of the data, not a property of it.
+- **Decided by:** the owner, 2026-10-05.
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
