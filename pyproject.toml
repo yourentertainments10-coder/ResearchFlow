@@ -14,6 +14,8 @@ dependencies = [
   "pydantic>=2.5",
   "pydantic-settings>=2.2",
   "typer>=0.12",
+  "pandas>=2.2",     # analytics and reports
+  "openpyxl>=3.1",   # Excel export
 ]
 
 [project.optional-dependencies]
@@ -28,6 +30,7 @@ dev = [
   "ruff>=0.5",
   "pgserver>=0.1",   # embedded PostgreSQL for local tests when no TEST_DATABASE_URL is set
 ]
+browser = ["playwright>=1.45"]   # optional: renders every dashboard page in tests/unit/test_dashboard_pages.py
 
 [project.scripts]
 sie = "sie.cli:app"
@@ -37,6 +40,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "sie.db" = ["sql/*.sql"]
+"sie.web" = ["*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
