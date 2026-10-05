@@ -22,6 +22,7 @@ PIPELINE = "sie_pipeline"
 APPEND_ONLY = (
     "placing_history",
     "raw_versions",
+    "raw_blobs",
     "raw_fetches",
     "source_observations",
     "analytics_snapshots",

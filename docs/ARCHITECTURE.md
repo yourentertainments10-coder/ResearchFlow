@@ -77,7 +77,8 @@ sie/
 |   |-- sources/               (base.py: SourceAdapter and SourceParser protocols)
 |   |   `-- <source_name>/     (adapter.py = fetch only, parser.py = parse only)
 |   |-- pipeline/
-|   |   |-- fetch.py  parse.py  normalise.py  validate.py  load.py  reconcile.py
+|   |   |-- raw.py  normalise.py  validate.py  load.py     (built; load.py is the only writer of placings)
+|   |   |-- fetch.py  reconcile.py                          (Phase 3)
 |   |   `-- runner.py          (orchestrates one run, writes ingest_runs)
 |   |-- analytics/
 |   |   |-- metrics.py         (pure functions; one per metric)
@@ -149,7 +150,7 @@ Rules:
 9. **Data quality**: reconciliation, quarantine, source freshness, run history.
 
 ## 8. Configuration
-Environment variables, loaded by `config.py`: `DATABASE_URL` (provider URLs such as `postgres://...?sslmode=require` are accepted), `DATA_DIR`, `COMPETITION_ID`, `HTTP_USER_AGENT`, `HTTP_MIN_INTERVAL_SECONDS`, `SOURCE_PRIORITY` (tie-break input only), `FRESHNESS_THRESHOLD_MINUTES` (default 30 while the competition runs; see `DATA_PIPELINE.md` section 7), `LOG_LEVEL`, optional `LLM_API_KEY`, `NOTIFY_WEBHOOK_URL`. Phase 3 adds `RAW_STORE` (`local` or `s3`), `S3_ENDPOINT_URL`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`.
+Environment variables, loaded by `config.py`: `DATABASE_URL` (provider URLs such as `postgres://...?sslmode=require` are accepted), `DATA_DIR`, `COMPETITION_ID`, `HTTP_USER_AGENT`, `HTTP_MIN_INTERVAL_SECONDS`, `SOURCE_PRIORITY` (tie-break input only), `FRESHNESS_THRESHOLD_MINUTES` (default 30 while the competition runs; see `DATA_PIPELINE.md` section 7), `LOG_LEVEL`, optional `LLM_API_KEY`, `NOTIFY_WEBHOOK_URL`. `RAW_STORE_BACKEND` (`fs` or `db`), `MANUAL_CSV_MAX_ROWS`, `MANUAL_CSV_MAX_CELL_CHARS`. Phase 3 adds the `s3` backend with `S3_ENDPOINT_URL`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`.
 
 ## 9. Failure handling
 | Failure | Behaviour |

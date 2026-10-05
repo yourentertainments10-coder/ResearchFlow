@@ -39,12 +39,14 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 4. Phase 0 (source discovery) is a gate. Nothing else starts until it is done.
 
 ## Status
-Working end to end for the Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 sports, 1568 medals, reconciled with the official table (0 mismatches).
+Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 sports, 1568 medals, reconciled with the official table (0 mismatches) by the report code. The ingestion foundation (Phase 2) is built for placings; analytics and the dashboard still read the capture file, not the database, so the project is **not** end to end yet.
 
 | Part | State |
 |------|-------|
 | PostgreSQL schema, roles, migrations | done (Phase 1) |
-| Loader into PostgreSQL (`sie load-capture`) | done, idempotent, reallocation-aware |
+| One ingestion path (`sie load-capture`, `sie import-csv`): raw store, quarantine, validator, `ingest_runs` | done, idempotent, reallocation-aware (ADR-021) |
+| Entrants (names) stored | not built; the portal parser drops names on purpose |
+| Analytics read `v_medal_facts` | not yet: they compute from the capture file (ADR-021) |
 | Analytics (country, sport, gender, concentration, specialisation) | done |
 | Static dashboard (`site/index.html`) and Excel/HTML reports (`reports/`) | done |
 | Live fetching from the portal | not built: no terms of use published, needs organisers' OK (`docs/SOURCE_DISCOVERY.md` section 12) |
@@ -52,10 +54,11 @@ Working end to end for the Asian Games 2026 (Aichi-Nagoya) medal data: 469 event
 
 ### Run it
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev,reports]"
 python -m sie.analytics.full_report path/to/ag2026_all_medals.json   # reports/*.xlsx, *.html, placings.csv
 python -m sie.dashboard                                              # site/index.html (template: src/sie/web/dashboard.html)
 sie migrate && sie seed-reference && sie load-capture path/to/ag2026_all_medals.json   # needs DATABASE_URL
+sie import-csv data/manual/results.csv                                                  # manual results (docs/DATA_PIPELINE.md s9)
 pytest
 ```
 The capture is made in the owner's browser (snippet in `docs/SOURCE_DISCOVERY.md`) and is not stored in Git because it holds athlete names.

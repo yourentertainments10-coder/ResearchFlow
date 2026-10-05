@@ -111,6 +111,40 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** a slim ingestion install stays possible. If analytics later moves entirely to SQL views, this extra can shrink.
 - **Status:** Accepted
 
+## ADR-019: Open events stay Open; only reconciliation folds them into Mixed
+
+- **Context:** The official table counts the 20 Open events (esports, equestrian, sailing) under its Mixed bucket. `docs/ANALYTICS_SPEC.md` says Mixed and Open are reported separately. The reports and dashboard had collapsed Open into Mixed.
+- **Decision:** Gender categories are Men, Women, Mixed and Open everywhere internally and in reports and the dashboard. Reconciliation against the official table compares Mixed + Open with the official Mixed bucket, so the 0-mismatch check is unchanged. Country tables that come straight from the official standings feed (`analytics/standings.py`) cannot split Open out and stay M / W / X.
+- **Why:** No information is lost, and questions such as "in how many Open events did India win a medal" can be answered. Folding is a view of the data, not a property of it.
+- **Decided by:** the owner, 2026-10-05.
+
+## ADR-020: Official sports group the portal's 59 disciplines
+
+- **Context:** The first loader created one sport per portal discipline (59). The schema models sport > discipline, and `DOMAIN_MODEL.md` and `ANALYTICS_SPEC.md` analyse country x sport with the official sports (Aquatics contains Swimming, Diving, Artistic Swimming and Water Polo; Cycling, Gymnastics and Canoe also group disciplines).
+- **Decision:** `data/reference/{sports,disciplines,sport_aliases}.csv` carry the grouping: 49 sports, 59 disciplines, `double_bronze` set per sport from the official data. The loader never creates sports or disciplines; a name that is not in the reference is quarantined. The portal's discipline is kept as the event's discipline, the sport is derived from reference data.
+- **Why:** Country x sport analysis needs the official grouping, and the original source discipline is preserved.
+- **Decided by:** the owner (2026-10-04). Analytics that still group by `discipline_name` and call it "sport" are a known gap (see ADR-021, consequences).
+
+## ADR-021: One canonical ingestion path
+
+- **Context:** `sie/load.py` (portal captures) and the Phase 2 import code (CSV) were two loaders with different rules.
+- **Decision:** Every source supplies bytes and a pure parse function to `pipeline/runner.run_ingest`. The raw bytes are stored and committed first; then parse, normalise, validate, quarantine and load run in one transaction; the run is closed as `success` or `failed` in `ingest_runs`. `sie/load.py` is removed. `sie load-capture` and `sie import-csv` are thin commands over the same code; `sources/bornan/to_parsed.py` and `sources/manual/parser.py` are the only source-specific parts.
+- **Behaviour that changed:** unknown country, sport or gender no longer fail the whole load: the row goes to `quarantine` with a reason and the valid rows load (`DATA_PIPELINE.md` section 6). Unchanged raw content is still re-processed (cheap and idempotent), so adding an alias and re-running resolves quarantined rows; the earlier quarantine rows of that raw version are marked `resolved`.
+- **Not yet built:** entrants (names are not stored; the portal adapter drops them on purpose), the conflict policy, `reconciliation_results`, and the analytics read path (analytics still compute from the capture file instead of `v_medal_facts`, which `ANALYTICS_SPEC.md` requires).
+
+## ADR-022: Raw bytes in the database or on disk (migration 003)
+
+- **Context:** `DATABASE.md` documented `raw_blobs`, `raw_versions.storage_backend` and `placings.source_note`, but migration 001 and 002 did not have them, and the first loader recorded a path without saving any file.
+- **Decision:** Option A: implement what the document says. Migration 003 adds them, plus `ingest_runs.source`. `RAW_STORE_BACKEND` selects `fs` (default, `DATA_DIR/raw/<source>/<date>/<time>_<sha12>.<ext>`, write-once) or `db` (gzip in `raw_blobs`). `s3` is accepted by the schema and built in Phase 3. The column that holds the file path or object key is named `path` (the document said `storage_key`; the document was corrected, no rename).
+- **Why:** Hosted runs have no persistent disk (ADR-016), and a placing must always trace to bytes that still exist.
+
+## ADR-023: Static HTML dashboard instead of Streamlit
+
+- **Context:** ADR-007 chose Streamlit. The delivered dashboard is a static page (`src/sie/dashboard.py` writes `site/index.html`) served by Cloudflare.
+- **Decision:** Keep the static dashboard for v1. It reads an exported file, not the database, and contains no metric logic beyond display.
+- **Open:** whether the dashboard stays public is still D3 (owner).
+- **Consequence:** the dashboard is not yet fed from `reporting.medal_facts` (see ADR-021).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

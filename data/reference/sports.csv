@@ -1,18 +1,50 @@
 name,double_bronze
+3x3 Basketball,false
 Aquatics,false
 Archery,false
 Athletics,false
-Badminton,false
+Badminton,true
+Baseball,false
+Basketball,false
+Beach Volleyball,false
 Boxing,true
+Breaking,false
 Canoe,false
 Cricket,false
-Fencing,false
+Cycling,false
+Equestrian,false
+Esports,true
+Fencing,true
+Football,false
+Golf,false
 Gymnastics,false
-Kabaddi,false
+Handball,false
+Hockey,false
+Jiu Jitsu,true
+Judo,true
+Kabaddi,true
+Karate,true
+Kurash,true
+Mixed Martial Arts,true
 Modern Pentathlon,false
+Padel,false
 Rowing,false
+Rugby Sevens,false
+Sailing,false
+Sepaktakraw,true
 Shooting,false
-Squash,false
-Table Tennis,false
+Skateboarding,false
+Soft Tennis,true
+Softball,false
+Sport Climbing,false
+Squash,true
+Surfing,false
+Table Tennis,true
+Taekwondo,true
+Tennis,true
+Teqball,true
+Triathlon,false
+Volleyball,false
 Weightlifting,false
-Wushu,false
+Wrestling,true
+Wushu,true

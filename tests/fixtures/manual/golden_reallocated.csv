@@ -1,0 +1,14 @@
+competition,sport,discipline,event,gender,medal,country,athlete_or_team,date,source_url,source_note,is_tie
+asiad-2026,Archery,,Recurve Men's Individual,Men,Gold,CHN,,2026-09-30,https://example.org/archery,final,
+asiad-2026,Archery,,Recurve Men's Individual,Men,Silver,KOR,,2026-09-30,https://example.org/archery,final,
+asiad-2026,Archery,,Recurve Men's Individual,Men,Bronze,CHN,,2026-09-30,https://example.org/archery,final,
+asiad-2026,Archery,,Compound Women's Team,Women,Gold,IND,,2026-09-30,,,
+asiad-2026,Archery,,Compound Women's Team,Women,Silver,KOR,,2026-09-30,,,
+asiad-2026,Archery,,Compound Women's Team,Women,Bronze,CHN,,2026-09-30,,,
+asiad-2026,Boxing,,Men's 57kg,Men,Gold,CHN,,2026-10-02,,,
+asiad-2026,Boxing,,Men's 57kg,Men,Silver,IND,,2026-10-02,,,
+asiad-2026,Boxing,,Men's 57kg,Men,Bronze,KOR,,2026-10-02,,,
+asiad-2026,Boxing,,Men's 57kg,Men,Bronze,JPN,,2026-10-02,,,
+asiad-2026,Athletics,,Men's 100m,Men,Gold,JPN,,2026-10-01,,,yes
+asiad-2026,Athletics,,Men's 100m,Men,Gold,KOR,,2026-10-01,,,yes
+asiad-2026,Athletics,,Men's 100m,Men,Bronze,IND,,2026-10-01,,,
