@@ -70,7 +70,7 @@ def seeded(engine, settings):
 
 def _verified_rows() -> list[ParsedResult]:
     rows = list(csv.DictReader((EXPECTED / "placings_verified.csv").open(encoding="utf-8")))
-    per = Counter((r["event_code"], r["medal"]) for r in rows)
+    per = Counter((r["discipline"], r["event_code"], r["medal"]) for r in rows)
     return [
         ParsedResult(
             row_number=i,
@@ -82,7 +82,7 @@ def _verified_rows() -> list[ParsedResult]:
             country=r["country_code"],
             participation="Individual",  # the frozen file does not say; not used by any metric
             slot=r["slot"],
-            is_tie="yes" if per[(r["event_code"], r["medal"])] > 1 else "no",
+            is_tie="yes" if per[(r["discipline"], r["event_code"], r["medal"])] > 1 else "no",
             date=r["date"],
             external_key=r["event_code"],
         )
@@ -129,6 +129,29 @@ def test_facts_hold_every_verified_medal(verified):
     assert len(verified) == 1568 and verified["event_id"].nunique() == 469
     assert verified["discipline_name"].nunique() == 59 and verified["sport"].nunique() == 49
     assert verified.groupby("country_code").size().sum() == 1568
+
+
+def test_only_the_real_ties_are_stored_as_ties(verified, seeded):
+    """Swimming's gold tie, its double silver and the Women's Pole Vault bronze tie: 6 rows, no more.
+
+    Portal event codes repeat across disciplines, so a tie must be judged inside one discipline.
+    """
+    from sqlalchemy import text
+
+    with seeded.connect() as c:
+        by_medal = dict(
+            c.execute(
+                text("SELECT medal, count(*) FROM placings WHERE is_tie GROUP BY medal")
+            ).all()
+        )
+        pole_vault = c.execute(
+            text(
+                """SELECT count(*) FROM placings p JOIN events e ON e.id = p.event_id
+                   WHERE e.name = 'Women''s Pole Vault' AND p.medal = 'Bronze' AND p.is_tie"""
+            )
+        ).scalar_one()
+    assert by_medal == {"Gold": 2, "Silver": 2, "Bronze": 2}
+    assert pole_vault == 2
 
 
 def test_country_table_matches_the_verified_country_sheet(verified):

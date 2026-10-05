@@ -55,3 +55,31 @@ def test_event_code_date_and_gender_are_kept_for_the_loader():
     assert row.external_key and len(row.date) == 10
     assert row.gender in {"Men", "Women", "Mixed", "Open"}
     assert row.slot.isdigit()
+
+
+def _row(disc: str, event: str, medal: str, order: int, org: str, kind: str = "A") -> dict:
+    return {
+        "Medal": medal, "Order": order, "Org": org, "OrgDesc": org, "Reg": "1", "Type": kind,
+        "DateRaw": "2026-10-01T10:00:00+09:00", "Name": "X", "Disc": disc, "DiscDesc": disc.title(),
+        "Event": event, "EventDesc": "Final", "Bib": "1", "Gender": "M",
+    }  # fmt: skip
+
+
+def test_the_same_event_code_in_two_disciplines_is_two_events():
+    """Portal event codes repeat across disciplines: a tie or a team event in one must not leak."""
+    code = "M.INDIVID----------.FNL-"
+    medals = {
+        "AAA": [
+            _row("AAA", code, "ME_GOLD", 1, "IND"),
+            _row("AAA", code, "ME_GOLD", 2, "KOR", "T"),
+        ],
+        "BBB": [_row("BBB", code, "ME_GOLD", 1, "CHN"), _row("BBB", code, "ME_SILVER", 1, "JPN")],
+    }
+    rows = capture_to_parsed(json.dumps({"medals": medals}).encode(), "asiad-2026")
+    by_disc = {}
+    for r in rows:
+        by_disc.setdefault(r.sport, []).append(r)
+    assert {r.is_tie for r in by_disc["Aaa"]} == {"yes"}
+    assert {r.participation for r in by_disc["Aaa"]} == {"Team"}
+    assert {r.is_tie for r in by_disc["Bbb"]} == {"no"}
+    assert {r.participation for r in by_disc["Bbb"]} == {"Individual"}

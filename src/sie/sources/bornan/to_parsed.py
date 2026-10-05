@@ -23,8 +23,8 @@ def capture_to_parsed(raw: bytes, competition: str) -> list[ParsedResult]:
 
 
 def placings_to_parsed(placings: list[ParsedPlacing], competition: str) -> list[ParsedResult]:
-    per_medal = Counter((p.event_code, p.medal) for p in placings)
-    team_events = {p.event_code for p in placings if p.entrant_type == "T"}
+    per_medal = Counter((p.discipline, p.event_code, p.medal) for p in placings)
+    team_events = {(p.discipline, p.event_code) for p in placings if p.entrant_type == "T"}
     return [
         ParsedResult(
             row_number=number,
@@ -34,11 +34,11 @@ def placings_to_parsed(placings: list[ParsedPlacing], competition: str) -> list[
             gender=p.gender,
             medal=p.medal,
             country=p.country_code,
-            participation="Team" if p.event_code in team_events else "Individual",
+            participation="Team" if (p.discipline, p.event_code) in team_events else "Individual",
             slot=str(p.slot),
             # Two placings of one medal are marked as a tie. The validator decides what a second
             # bronze means: a normal outcome in a double-bronze sport, a tie (Pole Vault) elsewhere.
-            is_tie="yes" if per_medal[(p.event_code, p.medal)] > 1 else "no",
+            is_tie="yes" if per_medal[(p.discipline, p.event_code, p.medal)] > 1 else "no",
             date=p.awarded_at[:10],
             external_key=p.event_code,
         )
