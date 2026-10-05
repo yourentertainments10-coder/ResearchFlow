@@ -24,7 +24,7 @@ def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path
     df = pd.read_csv(placings_csv).fillna({"date": ""})
     data = [
         {
-            "c": r.country_code, "cn": r.country_name, "s": r.discipline_name, "e": r.event_code,
+            "c": r.country_code, "cn": r.country_name, "s": r.discipline_name, "e": r.event_id,
             "en": r.event_name, "g": r.gender, "m": r.medal, "d": r.date,
         }
         for r in df.itertuples()
@@ -47,7 +47,7 @@ def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
     df = pd.read_csv(root / "reports/placings.csv")
-    events = df.groupby(["discipline", "event_code"]).ngroups
+    events = int(df["event_id"].nunique())
     site = root / "site"
     path = build(root / "reports/placings.csv", CAPTURED_ISO, site / "index.html", events)
     shutil.copy(

@@ -31,11 +31,14 @@ def test_no_athlete_name_is_copied():
     assert all(r.entrant == "" for r in capture_to_parsed(capture(), "asiad-2026"))
 
 
-def test_two_golds_or_silvers_are_marked_as_a_tie_but_bronzes_are_not():
+def test_two_placings_of_one_medal_are_marked_as_a_tie_and_single_ones_are_not():
     rows = capture_to_parsed(capture(), "asiad-2026")
-    tied = [r for r in rows if r.is_tie == "yes"]
-    assert len(tied) >= 2 and all(r.medal in {"Gold", "Silver"} for r in tied)
-    assert all(r.is_tie == "no" for r in rows if r.medal == "Bronze")
+    counts: dict[tuple[str, str], int] = {}
+    for r in rows:
+        counts[(r.external_key, r.medal)] = counts.get((r.external_key, r.medal), 0) + 1
+    assert any(n > 1 for n in counts.values())
+    for r in rows:
+        assert (r.is_tie == "yes") == (counts[(r.external_key, r.medal)] > 1)
 
 
 def test_team_events_are_marked_team_for_every_row_of_the_event():

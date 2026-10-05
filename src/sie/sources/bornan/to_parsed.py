@@ -36,10 +36,9 @@ def placings_to_parsed(placings: list[ParsedPlacing], competition: str) -> list[
             country=p.country_code,
             participation="Team" if p.event_code in team_events else "Individual",
             slot=str(p.slot),
-            # Two golds or two silvers are a tie; two bronzes are decided by the sport's own rule.
-            is_tie="yes"
-            if p.medal != "Bronze" and per_medal[(p.event_code, p.medal)] > 1
-            else "no",
+            # Two placings of one medal are marked as a tie. The validator decides what a second
+            # bronze means: a normal outcome in a double-bronze sport, a tie (Pole Vault) elsewhere.
+            is_tie="yes" if per_medal[(p.event_code, p.medal)] > 1 else "no",
             date=p.awarded_at[:10],
             external_key=p.event_code,
         )
