@@ -2,6 +2,12 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Dashboard P0-P3 review fixes
+- Trend lines end at the table totals (341/150): 3 undated medals shown as a labelled last point.
+- Open vs Mixed toggle (4 gender buckets), corrected Open-events wording.
+- Methodology: source link, 3-step pipeline, per-sport validation table (59/59).
+- New sports leaderboard, all-country overview, gender page, richer timeline (gold toggle, rank over time, peak days), explorer filters, searchable dropdowns, route aliases, not-found state, nav/KPI/disclaimer cleanup.
+
 ## [Unreleased]
 - One canonical ingestion path (ADR-021): `pipeline/raw.py` (versioned raw store, `fs` or `db`), `pipeline/load.py`, `pipeline/runner.py`; `sie load-capture` and the new `sie import-csv` share it. `sie/load.py` removed. Unknown country, sport or gender now quarantine the row instead of failing the load; `ingest_runs` records source, counts and errors. Migration 003 (ADR-022) adds `raw_blobs`, `storage_backend`, `placings.source_note`, `ingest_runs.source`. Golden CSVs in `tests/fixtures/manual/`. `COMPETITION` is now the `COMPETITION_ID` setting. ADR-020 (sport grouping) and ADR-023 (static dashboard) recorded.
 - Open events are now a separate gender category in the event-level reports (`gender_tables`) and the dashboard instead of being folded into Mixed (ADR-019). Reconciliation still folds Open into the official Mixed bucket. The committed `site/index.html` and `reports/` were not regenerated in this change.

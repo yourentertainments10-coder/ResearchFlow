@@ -45,7 +45,13 @@ def load(capture: Path, disc_list: Path, all_standings: Path) -> dict:
     checks["country_total_diffs"] = sum(
         1 for k in set(off) | set(mine) if off.get(k, 0) != mine.get(k, 0)
     )
-    return {"df": df, "captured": cap["at"], "checks": checks, "all_records": all_rec}
+    return {
+        "df": df,
+        "captured": cap["at"],
+        "checks": checks,
+        "all_records": all_rec,
+        "standings": cap["standings"],
+    }
 
 
 def _tbl(frame: pd.DataFrame, limit: int | None = None) -> str:
@@ -121,12 +127,23 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
     with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
         for n, f in sheets.items():
             f.to_excel(w, sheet_name=n[:31], index=False)
-    (out_dir / "meta.json").write_text(
-        json.dumps(
-            {"captured_at": data["captured"], "checks": {k: int(v) for k, v in checks.items()}},
-            indent=2,
-        )
-    )
+    names = df.drop_duplicates("discipline").set_index("discipline")["discipline_name"].to_dict()
+    ours = df.groupby("discipline").size().to_dict()
+    validation = [
+        {
+            "code": code,
+            "sport": names[code],
+            "ours": int(ours[code]),
+            "official": int(sum(r["Count"]["total"]["total"] for r in recs)),
+        }
+        for code, recs in sorted(data["standings"].items(), key=lambda kv: names[kv[0]])
+    ]
+    meta = {
+        "captured_at": data["captured"],
+        "checks": {k: int(v) for k, v in checks.items()},
+        "validation": validation,
+    }
+    (out_dir / "meta.json").write_text(json.dumps(meta, indent=2))
     pub = df.assign(date=df["awarded_at"].str[:10]).drop(
         columns=["entrant_name", "awarded_at", "entrant_type"]
     )
@@ -154,7 +171,7 @@ table{{border-collapse:collapse;width:100%;font-size:13px}}th,td{{padding:4px 8p
 <h2>How dependent is each country on a few sports? (top 20 by medals)</h2><small>HHI across sports (10000 = all medals in one sport).</small>{_tbl(dep, 20)}
 <h2>Where each country over-performs (location quotient, at least 5 medals)</h2><small>LQ above 1: the sport weighs more in the country's haul than in the Games overall.</small>{_tbl(spec_top)}
 <h2>Sport concentration: who dominates each sport</h2>{_tbl(sport_c)}
-<h2>Women's, men's, mixed and open medals by country</h2><small>Gender is the event's gender; Open events (esports, equestrian, sailing) are kept separate. The official table counts them under Mixed.</small>{_tbl(cg, 25)}
+<h2>Women's, men's and mixed medals by country</h2><small>Gender is the event's gender; Open events (esports, equestrian, one artistic swimming and one taekwondo event) count as Mixed, as the official table does.</small>{_tbl(cg, 25)}
 <h2>Women's share by sport</h2>{_tbl(sg)}
 <h2>Countries with most events where they took two or more podium places</h2>{_tbl(sweeps)}
 </html>"""  # noqa: E501

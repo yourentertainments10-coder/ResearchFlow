@@ -37,3 +37,20 @@ def test_every_page_renders_without_errors(page_file):
             assert "Couldn’t draw" not in page.inner_text("#app"), route
         browser.close()
     assert errors == []
+
+
+def test_aliases_and_unknown_route(page_file):
+    sync_api = pytest.importorskip("playwright.sync_api")
+    with sync_api.sync_playwright() as p:
+        try:
+            browser = p.chromium.launch()
+        except Exception as exc:  # noqa: BLE001
+            pytest.skip(f"no Chromium available: {exc}")
+        page = browser.new_page()
+        page.goto(f"{page_file.as_uri()}#/methodology")
+        page.wait_for_timeout(150)
+        assert "How these numbers are made" in page.inner_text("#app")
+        page.goto(f"{page_file.as_uri()}#/nonsense")
+        page.wait_for_timeout(150)
+        assert "Page not found" in page.inner_text("#app")
+        browser.close()

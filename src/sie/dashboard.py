@@ -33,7 +33,20 @@ def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path
         ZoneInfo("Asia/Kolkata")
     )
     label = f"{local.day} {local:%b %Y} · {local:%H:%M} IST"
-    meta = {"label": label, "events": events, "nodate": int((df["date"] == "").sum())}
+    meta = {
+        "label": label,
+        "events": events,
+        "nodate": int((df["date"] == "").sum()),
+        "validation": [],
+        "checks": {},
+    }
+    meta_file = placings_csv.with_name("meta.json")
+    if (
+        meta_file.exists()
+    ):  # written by the report build: per-sport evidence that rows equal the official table
+        saved = json.loads(meta_file.read_text())
+        meta["validation"] = saved.get("validation", [])
+        meta["checks"] = saved.get("checks", {})
     html = (
         TEMPLATE.replace("__DATA__", json.dumps(data, separators=(",", ":")))
         .replace("__META__", json.dumps(meta))

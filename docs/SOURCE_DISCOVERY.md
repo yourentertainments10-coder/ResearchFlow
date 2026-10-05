@@ -180,7 +180,7 @@ The owner ran the crawl snippet: `{DISC}/medals/discipline` and `{DISC}/medals/s
 | Per-discipline, country, medal and gender | 0 mismatches over 59 disciplines, once the gender rule below is applied |
 | Ties and double bronze | Seen in 22 disciplines (`Order` 2). Combat sports show two bronzes (`Order` 1 and 2). Swimming has the one gold tie and one double silver |
 
-**Gender rule (found by reconciliation, now in the parser).** The `Gender` field of a medal row is the *athlete's*. For Open events (esports, equestrian, sailing) it can be M or W (23 rows). The official table takes the event's gender from the first letter of the event code and counts Open events under Mixed. Using the row field gave 107 mismatches in ELS, EQU, SWA and TKW; using the event-code letter gave 0. This is the rule in `DOMAIN_MODEL.md` section 4.6 (gender belongs to the event). Reports show Open events inside Mixed, as the official table does.
+**Gender rule (found by reconciliation, now in the parser).** The `Gender` field of a medal row is the *athlete's*. For Open events (20 of them: all 11 Esports and 7 Equestrian events, one of two Artistic Swimming events, one of 11 Taekwondo events) it can be M or W (23 rows). The official table takes the event's gender from the first letter of the event code and counts Open events under Mixed. Using the row field gave 107 mismatches in ELS, EQU, SWA and TKW; using the event-code letter gave 0. This is the rule in `DOMAIN_MODEL.md` section 4.6 (gender belongs to the event). Reports show Open events inside Mixed, as the official table does.
 
 Still open: the portal's terms of use (gates the live adapter, not manual import), reallocation and withheld-medal behaviour (needs a later capture to compare).
 

@@ -7,5 +7,361 @@
     "events_official": 469,
     "event_keys_unmatched": 0,
     "country_total_diffs": 0
-  }
+  },
+  "validation": [
+    {
+      "code": "BK3",
+      "sport": "3x3 Basketball",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "ARC",
+      "sport": "Archery",
+      "ours": 30,
+      "official": 30
+    },
+    {
+      "code": "GAR",
+      "sport": "Artistic Gymnastics",
+      "ours": 42,
+      "official": 42
+    },
+    {
+      "code": "SWA",
+      "sport": "Artistic Swimming",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "ATH",
+      "sport": "Athletics",
+      "ours": 151,
+      "official": 151
+    },
+    {
+      "code": "BDM",
+      "sport": "Badminton",
+      "ours": 28,
+      "official": 28
+    },
+    {
+      "code": "BBL",
+      "sport": "Baseball",
+      "ours": 3,
+      "official": 3
+    },
+    {
+      "code": "BKB",
+      "sport": "Basketball",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "VBV",
+      "sport": "Beach Volleyball",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "BOX",
+      "sport": "Boxing",
+      "ours": 44,
+      "official": 44
+    },
+    {
+      "code": "BKG",
+      "sport": "Breaking",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "CSL",
+      "sport": "Canoe Slalom",
+      "ours": 18,
+      "official": 18
+    },
+    {
+      "code": "CSP",
+      "sport": "Canoe Sprint",
+      "ours": 36,
+      "official": 36
+    },
+    {
+      "code": "CKT",
+      "sport": "Cricket",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "BMF",
+      "sport": "Cycling BMX Freestyle",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "BMX",
+      "sport": "Cycling BMX Racing",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "MTB",
+      "sport": "Cycling Mountain Bike",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "CRD",
+      "sport": "Cycling Road",
+      "ours": 12,
+      "official": 12
+    },
+    {
+      "code": "CTR",
+      "sport": "Cycling Track",
+      "ours": 36,
+      "official": 36
+    },
+    {
+      "code": "DIV",
+      "sport": "Diving",
+      "ours": 30,
+      "official": 30
+    },
+    {
+      "code": "EQU",
+      "sport": "Equestrian",
+      "ours": 21,
+      "official": 21
+    },
+    {
+      "code": "ELS",
+      "sport": "Esports",
+      "ours": 42,
+      "official": 42
+    },
+    {
+      "code": "FEN",
+      "sport": "Fencing",
+      "ours": 48,
+      "official": 48
+    },
+    {
+      "code": "FBL",
+      "sport": "Football",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "GLF",
+      "sport": "Golf",
+      "ours": 12,
+      "official": 12
+    },
+    {
+      "code": "HBL",
+      "sport": "Handball",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "HOC",
+      "sport": "Hockey",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "JJI",
+      "sport": "Jiu Jitsu",
+      "ours": 32,
+      "official": 32
+    },
+    {
+      "code": "JUD",
+      "sport": "Judo",
+      "ours": 60,
+      "official": 60
+    },
+    {
+      "code": "KAB",
+      "sport": "Kabaddi",
+      "ours": 8,
+      "official": 8
+    },
+    {
+      "code": "KTE",
+      "sport": "Karate",
+      "ours": 60,
+      "official": 60
+    },
+    {
+      "code": "KUR",
+      "sport": "Kurash",
+      "ours": 24,
+      "official": 24
+    },
+    {
+      "code": "MMA",
+      "sport": "Mixed Martial Arts",
+      "ours": 24,
+      "official": 24
+    },
+    {
+      "code": "MPN",
+      "sport": "Modern Pentathlon",
+      "ours": 12,
+      "official": 12
+    },
+    {
+      "code": "PDL",
+      "sport": "Padel",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "GRY",
+      "sport": "Rhythmic Gymnastics",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "ROW",
+      "sport": "Rowing",
+      "ours": 42,
+      "official": 42
+    },
+    {
+      "code": "RU7",
+      "sport": "Rugby Sevens",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "SAL",
+      "sport": "Sailing",
+      "ours": 42,
+      "official": 42
+    },
+    {
+      "code": "SPK",
+      "sport": "Sepaktakraw",
+      "ours": 23,
+      "official": 23
+    },
+    {
+      "code": "SHO",
+      "sport": "Shooting",
+      "ours": 84,
+      "official": 84
+    },
+    {
+      "code": "SKB",
+      "sport": "Skateboarding",
+      "ours": 12,
+      "official": 12
+    },
+    {
+      "code": "TST",
+      "sport": "Soft Tennis",
+      "ours": 20,
+      "official": 20
+    },
+    {
+      "code": "SBL",
+      "sport": "Softball",
+      "ours": 3,
+      "official": 3
+    },
+    {
+      "code": "CLB",
+      "sport": "Sport Climbing",
+      "ours": 18,
+      "official": 18
+    },
+    {
+      "code": "SQU",
+      "sport": "Squash",
+      "ours": 20,
+      "official": 20
+    },
+    {
+      "code": "SRF",
+      "sport": "Surfing",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "SWM",
+      "sport": "Swimming",
+      "ours": 123,
+      "official": 123
+    },
+    {
+      "code": "TTE",
+      "sport": "Table Tennis",
+      "ours": 28,
+      "official": 28
+    },
+    {
+      "code": "TKW",
+      "sport": "Taekwondo",
+      "ours": 44,
+      "official": 44
+    },
+    {
+      "code": "TEN",
+      "sport": "Tennis",
+      "ours": 20,
+      "official": 20
+    },
+    {
+      "code": "TEQ",
+      "sport": "Teqball",
+      "ours": 20,
+      "official": 20
+    },
+    {
+      "code": "GTR",
+      "sport": "Trampoline Gymnastics",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "TRI",
+      "sport": "Triathlon",
+      "ours": 9,
+      "official": 9
+    },
+    {
+      "code": "VVO",
+      "sport": "Volleyball",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "WPO",
+      "sport": "Water Polo",
+      "ours": 6,
+      "official": 6
+    },
+    {
+      "code": "WLF",
+      "sport": "Weightlifting",
+      "ours": 48,
+      "official": 48
+    },
+    {
+      "code": "WRE",
+      "sport": "Wrestling",
+      "ours": 72,
+      "official": 72
+    },
+    {
+      "code": "WSU",
+      "sport": "Wushu",
+      "ours": 53,
+      "official": 53
+    }
+  ]
 }
