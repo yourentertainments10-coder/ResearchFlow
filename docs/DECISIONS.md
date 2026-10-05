@@ -102,6 +102,15 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** A dashboard bug or leaked dashboard credential cannot modify data or read operational tables. Role grants are tested against the catalogue (`has_table_privilege`) and by attempted writes. Adding a competition needs no schema change.
 - **Status:** Accepted
 
+## ADR-018: pandas and openpyxl as the optional `reports` extra
+- **Context:** The analytics, report and dashboard modules (`src/sie/analytics/`, `src/sie/dashboard.py`) import `pandas`, and the xlsx reports use pandas' `openpyxl` writer. Neither was declared, so `pytest` failed at collection in CI (exit code 2) on every commit that added them. `AGENTS.md` rule 11 requires a justification for new dependencies.
+- **Decision:** Declare both in a new optional extra `reports` in `pyproject.toml`; CI and developers install `.[dev,reports]`. The ingestion pipeline (`sie.db`, parsers, load) does not import them.
+- **Why needed:** pandas is the aggregation and pivot tool already named in ADR-001 and `ARCHITECTURE.md`; openpyxl is the only writer pandas needs for `.xlsx`. The standard library has neither a dataframe nor an xlsx writer.
+- **Maintenance and licence:** both are actively maintained; pandas is BSD-3-Clause, openpyxl is MIT. Lower bounds are the versions the tests were run with (pandas 3.0, openpyxl 3.1).
+- **Alternatives:** write CSV only and drop xlsx (loses a delivered report format); compute everything in SQL (a larger change, to be decided with the analytics-source question).
+- **Consequences:** a slim ingestion install stays possible. If analytics later moves entirely to SQL views, this extra can shrink.
+- **Status:** Accepted
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
