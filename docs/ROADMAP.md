@@ -25,7 +25,7 @@ Tasks: repository, `pyproject.toml`, ruff, pytest, pre-commit, CI workflow, sett
 Delivered: migrations 001 and 002 (explicit SQL), `reporting` schema and least-privilege roles (`sie db-roles`), `sie migrate`, `sie seed-reference`, tests on real PostgreSQL, CI workflow, Docker Compose database.
 Acceptance: `alembic upgrade head` creates the schema; `pytest` and `ruff` pass; `sie seed-reference` loads countries and aliases (sports and disciplines are confirmed in Phase 0).
 
-## Phase 2: Manual import and loader  [M]
+## Phase 2: Manual import and loader  [M]  (status: done for placings, 2026-10-05: acceptance demonstrated by `tests/integration/test_ingest.py`; entrants, conflict policy and the analytics read path are not built, see ADR-021)
 Tasks: define `ParsedResult`, normaliser, validator with quarantine, idempotent loader, `sie import-csv`, `ingest_runs` logging.
 Acceptance: the golden CSV loads; the same file loaded twice changes nothing; bad rows appear in quarantine with reasons; a reallocation in the golden data produces the closed and new placing versions plus one history row.
 Why first: it lets analytics and the dashboard be built even before automation of collection works.

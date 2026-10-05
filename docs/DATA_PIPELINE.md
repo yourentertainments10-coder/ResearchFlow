@@ -125,6 +125,9 @@ competition,sport,discipline,event,gender,medal,country,athlete_or_team,date,sou
 - The CSV file itself is stored as a raw document (source `manual`, url `file://<name>`) and versioned by hash, so every placing has a raw version.
 - Command: `sie import-csv data/manual/file.csv`.
 - Use this path to fill gaps, or when a source does not permit automation.
+- Optional columns also accepted: `participation` (Individual / Team / Pair), `slot`, `is_tie` (yes / no). A second gold or silver needs `is_tie` yes on both rows; a second bronze is accepted only in sports flagged `double_bronze`.
+- Re-running the same file changes nothing. If rows were quarantined and the owner then adds an alias, re-running the same file loads them and marks their quarantine rows `resolved`; quarantine rows are never deleted.
+- A structural problem (unknown or missing column, ragged row, oversized cell, too many rows, invalid UTF-8) refuses the whole file, but the file is still kept in the raw store and the run is recorded as `failed`.
 
 ## 10. Politeness and legality
 - Honest `User-Agent` including a contact address.

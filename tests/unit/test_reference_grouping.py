@@ -1,4 +1,4 @@
-"""The reference data carries the sport > discipline grouping (docs/DOMAIN_MODEL.md, ADR-019).
+"""The reference data carries the sport > discipline grouping (docs/DOMAIN_MODEL.md, ADR-020).
 
 Pure file checks: no database. The portal fixture is the verified list of 59 disciplines.
 """

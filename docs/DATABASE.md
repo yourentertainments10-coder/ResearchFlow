@@ -132,7 +132,8 @@ CREATE TABLE ingest_runs (
   started_at TIMESTAMPTZ NOT NULL, finished_at TIMESTAMPTZ,
   status TEXT NOT NULL CHECK (status IN ('running','success','failed')),
   docs_fetched INT, docs_changed INT, rows_loaded INT,
-  rows_quarantined INT, error_summary TEXT
+  rows_quarantined INT, error_summary TEXT,
+  source TEXT                                -- what was run: 'official', 'manual', ...
 );
 
 CREATE TABLE raw_documents (                 -- one logical page or feed
@@ -148,8 +149,8 @@ CREATE TABLE raw_versions (                  -- one distinct content of a docume
   version_no INTEGER NOT NULL,
   sha256 TEXT NOT NULL,
   storage_backend TEXT NOT NULL CHECK (storage_backend IN ('db','fs','s3')),
-  storage_key TEXT,                          -- path or object key for fs / s3; NULL for db
-  size_bytes INTEGER, content_type TEXT,
+  path TEXT,                                 -- file path (fs) or object key (s3); NULL for db
+  size_bytes BIGINT, content_type TEXT,
   first_fetched_at TIMESTAMPTZ NOT NULL,
   UNIQUE (document_id, sha256),
   UNIQUE (document_id, version_no)
