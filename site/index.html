@@ -13,67 +13,69 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 Inter,Geist,Manrope,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
-:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:18px;min-height:56px}
 .brand{font-weight:800;letter-spacing:.14em;font-size:13px;color:var(--fg)}.brand i{font-style:normal;color:var(--brand)}
 nav{display:flex;gap:2px;overflow-x:auto;flex:1;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
-nav a{padding:7px 12px;border-radius:8px;color:var(--mut);font-weight:500;white-space:nowrap;font-size:14px}nav a:hover{text-decoration:none;color:var(--fg)}nav a.on{background:var(--soft);color:var(--brand)}
+nav a{padding:6px 12px;border:1px solid transparent;border-radius:10px;color:var(--mut);font-weight:500;white-space:nowrap;font-size:14px}nav a:hover{text-decoration:none;color:var(--fg)}
 @media(max-width:900px){.bar{flex-wrap:wrap;gap:0 12px;padding-top:6px}.brand{order:1;flex:1}.theme{order:2}nav{order:3;flex:0 0 100%;padding:4px 0 6px;-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}}
-.theme{background:var(--card);border:1px solid var(--line);color:var(--fg);border-radius:8px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
-.eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+.theme{background:var(--card);border:1px solid var(--line);color:var(--fg);border-radius:10px;width:34px;height:34px;cursor:pointer;display:grid;place-items:center}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.01em;color:var(--brand)}
 h1{font-size:clamp(30px,5vw,44px);line-height:1.08;margin:4px 0 4px;font-weight:800;letter-spacing:-.02em}
-h2{font-size:20px;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}h3{font-size:15px;margin:0 0 6px;font-weight:650}
+h2{font-size:20px;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}h2.ct{font-size:15px;margin:0 0 6px;font-weight:650;letter-spacing:0}h2.cn{font-size:16px;font-weight:700;margin:6px 0 10px}
 .lead{font-size:16px;color:var(--mut);max-width:640px;margin:6px 0 14px}.mut{color:var(--mut)}.sm{font-size:13px}
 .hero{padding:26px 0 10px}.hero .meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--mut)}.chip b{color:var(--fg);font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 10px;font-size:13px;color:var(--mut)}.chip b{color:var(--fg);font-weight:600}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
-.btn{display:inline-block;border-radius:9px;padding:8px 14px;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;font-family:inherit}.btn:hover{text-decoration:none;border-color:var(--mut)}
-.btn.p{background:var(--brand);border-color:var(--brand);color:#fff}.btn.on{background:var(--soft);border-color:var(--brand);color:var(--brand)}.btn[disabled]{opacity:.45;cursor:default}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:10px;padding:8px 14px;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer;font-family:inherit}.btn:hover{text-decoration:none;border-color:var(--mut)}
+.btn.pill{border-radius:999px;padding:5px 12px;font-weight:500;font-size:14px}.btn.pill i{width:9px;height:9px;border-radius:50%;background:var(--line)}.btn.on,nav a.on{background:var(--soft);border-color:var(--brand);color:var(--brand)}.btn.pill.on{font-weight:600}.btn[disabled]{opacity:.45;cursor:default}
 .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);margin:6px 0 4px;overflow:hidden}
 .strip>div{padding:12px 16px;border-left:1px solid var(--line);min-width:0}.strip>div:first-child{border-left:0}
-.strip b{display:block;font-size:26px;line-height:1.15;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.strip span{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}.strip .ok b{color:var(--ok)}
-@media(max-width:640px){.strip{grid-template-columns:repeat(2,1fr)}.strip>div:nth-child(3){border-left:0}.strip>div:nth-child(n+3){border-top:1px solid var(--line)}.strip b{font-size:21px}.strip>div{padding:9px 12px}}
+.strip b{display:block;font-size:24px;line-height:1.15;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.strip span{font-size:13px;font-weight:500;color:var(--mut)}.strip .ok b{color:var(--ok)}
+@media(max-width:640px){.strip{grid-template-columns:repeat(2,1fr)}.strip>div:nth-child(3){border-left:0}.strip>div:nth-child(n+3){border-top:1px solid var(--line)}.strip b{font-size:20px}.strip>div{padding:9px 12px}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--sh);min-width:0}
-section.blk{margin:28px 0}.head{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:10px}.head p{margin:0;color:var(--mut);font-size:13.5px}
+section.blk{margin:28px 0}.head{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap;margin-bottom:10px}.head p{margin:0;color:var(--mut);font-size:14px}
 .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
-@media(max-width:560px){table.mt th:last-child,table.mt td:last-child,table.mt th:first-child,table.mt td:first-child,table.mt td:nth-child(2) span{display:none}table.mt th,table.mt td{padding-left:5px;padding-right:5px}table.mt th{font-size:10.5px;letter-spacing:.03em}}
+@media(max-width:560px){table.mt th:last-child,table.mt td:last-child,table.mt th:first-child,table.mt td:first-child,table.mt td:nth-child(2) span{display:none}table.mt th,table.mt td{padding-left:5px;padding-right:5px}table.mt th{font-size:12px}}
 .scroll{overflow-x:auto}.tall{max-height:420px;overflow:auto}
-table{border-collapse:collapse;width:100%;font-size:14px}th{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--card);position:sticky;top:0}
+table{border-collapse:collapse;width:100%;font-size:14px}th{font-size:12px;font-weight:600;color:var(--mut);text-align:right;padding:8px 8px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--card);position:sticky;top:0}
 td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 th.l,td.l{text-align:left}tr.click{cursor:pointer}tr.click:hover td{background:var(--soft)}tr.sel td{background:var(--soft)}
 th.sortable{cursor:pointer;user-select:none}th.sortable:hover{color:var(--fg)}th.sortable.on{color:var(--brand)}
 td.rk{color:var(--mut);width:36px;text-align:left}
 .mp{display:inline-flex;align-items:center;gap:5px}.mp i{width:9px;height:9px;border-radius:50%;display:inline-block}
-.tag{font-size:11px;font-weight:600;border-radius:999px;padding:1px 8px;background:var(--soft);color:var(--brand);margin-left:6px}
+.tag{font-size:12px;font-weight:600;border-radius:999px;padding:1px 8px;background:var(--soft);color:var(--brand);margin-left:6px}
 .lab-Diversified{color:var(--ok)}.lab-Concentrated{color:var(--c2)}
-.stk{display:flex;gap:2px;height:14px;min-width:50px}.stk i{display:block;height:14px;min-width:0}.stk i:first-child{border-radius:4px 0 0 4px}.stk i:last-child{border-radius:0 4px 4px 0}.stk i:only-child{border-radius:4px}.stk i:hover{filter:brightness(1.12);outline:1px solid var(--fg)}
-.brow{display:grid;grid-template-columns:110px 1fr 44px;gap:10px;align-items:center;min-height:26px;font-size:13px}.brow .nm{color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brow .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-.brow.link{cursor:pointer;border-radius:8px}.brow.link:hover{background:var(--soft)}.brow.link:hover .nm{color:var(--brand)}.brow.cur{background:var(--soft)}.brow.cur .nm{color:var(--fg);font-weight:600}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin:4px 0 10px}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.legend i.ln{height:2px;width:14px;vertical-align:3px}
-.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}.ctl label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
-select,input[type=search],input[type=text],input[type=date],input:not([type]){background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font:inherit;font-size:14px;text-transform:none;letter-spacing:0;font-weight:500;min-width:0;width:100%;max-width:100%}
+.stk{display:flex;gap:2px;height:14px;min-width:50px}.stk i{display:block;height:14px;min-width:0}.stk i:first-child{border-radius:6px 0 0 6px}.stk i:last-child{border-radius:0 6px 6px 0}.stk i:only-child{border-radius:6px}.stk i:hover{filter:brightness(1.12);outline:1px solid var(--fg)}
+.brow{display:grid;grid-template-columns:150px 1fr 44px;gap:10px;align-items:center;min-height:26px;font-size:13px}.brow .nm{color:var(--mut);line-height:1.25;overflow-wrap:anywhere}.brow .v{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.brow.link{cursor:pointer;border-radius:10px}.brow.link:hover{background:var(--soft)}.brow.link:hover .nm{color:var(--brand)}.brow.cur{background:var(--soft)}.brow.cur .nm{color:var(--fg);font-weight:600}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mut);margin:4px 0 10px}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}.legend i.ln{height:2px;width:14px;vertical-align:3px}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:12px}.ctl label.wide{max-width:340px;flex:1 1 280px}.ctl label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--fg)}
+input.cb{padding-right:32px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%239CA3AF' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 11px center}input.cb::-webkit-calendar-picker-indicator{opacity:0;width:30px;height:100%;margin-right:-10px;cursor:pointer}
+select,input[type=search],input[type=text],input[type=date],input:not([type]){background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font:inherit;font-size:14px;font-weight:500;min-width:0;width:100%;max-width:100%}
+input[list]{padding-right:32px;background-repeat:no-repeat;background-position:right 11px center;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%239CA3AF' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+input[list]::-webkit-calendar-picker-indicator{opacity:0;width:30px;cursor:pointer}
 .ctl label{min-width:130px;flex:1 1 130px;max-width:210px}.ctl.nowrapx{flex-wrap:nowrap}
-.insight{border-left:3px solid var(--brand);padding:2px 0 2px 14px}.insight p{margin:2px 0 6px;font-size:16.5px;font-weight:550;letter-spacing:-.01em}
-.stat{display:flex;gap:6px 26px;flex-wrap:wrap;margin:4px 0 12px}.stat div b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2}.stat div span{font-size:11.5px;color:var(--mut);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.insight{border-left:3px solid var(--brand);padding:2px 0 2px 14px}.insight p{margin:2px 0 6px;font-size:16px;font-weight:550;letter-spacing:-.01em}
+.stat{display:flex;gap:6px 26px;flex-wrap:wrap;margin:4px 0 12px}.stat div b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.2}.stat div span{font-size:13px;color:var(--mut);font-weight:500}
 .empty,.err{border:1px dashed var(--line);border-radius:14px;padding:34px 18px;text-align:center;color:var(--mut)}.empty b,.err b{display:block;color:var(--fg);font-size:16px;margin-bottom:4px}
 .skel{height:84px;border-radius:14px;background:linear-gradient(90deg,var(--line),var(--card),var(--line));background-size:200% 100%;animation:sh 1.2s infinite}@keyframes sh{to{background-position:-200% 0}}
-table.hm{border-collapse:separate;border-spacing:2px;font-size:11px;table-layout:fixed;min-width:560px}table.hm th{font-weight:400;letter-spacing:0;text-transform:none;color:var(--mut);padding:0;border:0;position:static}
+table.hm{border-collapse:separate;border-spacing:2px;font-size:12px;table-layout:fixed;min-width:560px}table.hm th{font-weight:400;letter-spacing:0;text-transform:none;color:var(--mut);padding:0;border:0;position:static}
 table.hm th.c{height:86px;vertical-align:bottom;text-align:left}table.hm th.c div{transform:rotate(-55deg);transform-origin:left bottom;white-space:nowrap;width:12px;margin-left:12px}
-table.hm th.r{text-align:left;width:70px}table.hm td{height:24px;text-align:center;border-radius:3px;border:0;padding:0}
-svg text{fill:var(--mut);font:11px Inter,system-ui,sans-serif}svg .grid{stroke:var(--line);stroke-width:1}svg .hit{fill:transparent}
-#tip{position:fixed;pointer-events:none;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.18);display:none;z-index:50;max-width:280px}
+table.hm th.r{text-align:left;width:70px}table.hm td{height:24px;text-align:center;border-radius:6px;border:0;padding:0}
+svg text{fill:var(--mut);font:12px Inter,system-ui,sans-serif}svg .grid{stroke:var(--line);stroke-width:1}svg .hit{fill:transparent}
+#tip{position:fixed;pointer-events:none;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.18);display:none;z-index:50;max-width:280px}
 #tip .t{color:var(--mut)}#tip .k{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:6px;vertical-align:3px}
-.info{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;border:1px solid var(--mut);color:var(--mut);font-size:10px;font-weight:700;margin-left:6px;cursor:help;vertical-align:middle;font-style:normal}
-.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;font-family:inherit}.chips button i{width:9px;height:9px;border-radius:50%;background:var(--line)}
-.chips button.on{border-width:2px;padding:3px 10px;background:var(--soft)}
-.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0}.flow .st{flex:1 1 180px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 12px}.flow .st b{display:block;font-size:13.5px}.flow .st span{font-size:12.5px;color:var(--mut)}.flow .ar{align-self:center;color:var(--mut);font-size:18px}
+.info{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--mut);color:var(--mut);font-size:12px;line-height:1;font-weight:700;margin-left:6px;cursor:help;vertical-align:middle;font-style:normal}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.pick{font-size:14px;margin:2px 0 10px}.pick b{font-weight:650}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:6px 0}.flow .st{flex:1 1 180px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 12px}.flow .st b{display:block;font-size:14px}.flow .st span{font-size:13px;color:var(--mut)}.flow .ar{align-self:center;color:var(--mut);font-size:18px}
 @media(max-width:640px){.flow .ar{display:none}}
-.why{background:var(--soft);border-radius:12px;padding:12px 14px;margin-top:12px}
+.why{background:var(--soft);border-radius:10px;padding:16px 18px;margin-top:20px}.why p{margin:6px 0 0}
 footer{border-top:1px solid var(--line);margin-top:44px;padding:20px 0 36px;color:var(--mut);font-size:13px}
-.cmpbar{height:6px;border-radius:3px;background:var(--brand);margin-top:3px;min-width:2px}
+.cmpcell{width:150px;margin-left:auto;text-align:right}.cmpbar{height:6px;border-radius:6px;background:var(--brand);margin:4px 0 0 auto;min-width:2px}.dotted{border-bottom:1px dotted var(--mut);cursor:help}
 .ok-t{color:var(--ok);font-weight:700}
 </style>
 <header class=top><div class="wrap bar"><span class=brand>RESEARCH<i>FLOW</i></span>
@@ -133,11 +135,11 @@ const info=text=>{const i=h('i','info','i');i.setAttribute('aria-label',text);ho
 // ---- components ----
 function medalBar(t,max,label){const s=h('div','stk');s.style.width=Math.max(2,t.T/max*100)+'%';['G','S','B'].forEach(k=>{if(!t[k])return;const i=h('i');i.style.width=(t[k]/t.T*100)+'%';i.style.background=MEDC[k];hover(i,[{t:(label?label+' · ':'')+MEDN[k],b:t[k]},{t:'Total',b:t.T}]);s.append(i)});return s}
 function barRow(name,node,val,onclick,cur){const r=h('div','brow'+(onclick?' link':'')+(cur?' cur':''),h('span','nm',name),h('div','',node),h('span','v',val));if(onclick){r.onclick=onclick;r.tabIndex=0;r.onkeydown=e=>{if(e.key==='Enter')onclick()}}return r}
-function simpleBar(frac,color,lines){const b=h('div','stk');const i=h('i');i.style.width=Math.max(1.5,frac*100)+'%';i.style.background=color;i.style.borderRadius='4px';b.append(i);if(lines)hover(i,lines);return b}
+function simpleBar(frac,color,lines){const b=h('div','stk');const i=h('i');i.style.width=Math.max(1.5,frac*100)+'%';i.style.background=color;i.style.borderRadius='6px';b.append(i);if(lines)hover(i,lines);return b}
 function mpLegend(){return h('div','legend',...['G','S','B'].map(k=>{const s=h('span');const i=h('i');i.style.background=MEDC[k];s.append(i,MEDN[k]);return s}))}
 function sel(label,options,value,onchange){const s=h('select');options.forEach(o=>{const v=typeof o==='string'?{v:o,l:o}:o;const op=h('option','',v.l);op.value=v.v;if(v.v===value)op.selected=true;s.append(op)});s.onchange=()=>onchange(s.value);return h('label','',label,s)}
 // searchable select: type to filter, pick from the list (native datalist, keyboard friendly)
-function combo(label,options,value,onchange,allLabel){const id='dl'+Math.random().toString(36).slice(2,8),cur=options.find(o=>o.v===value),inp=h('input');inp.setAttribute('list',id);inp.placeholder=allLabel||'Type to search';inp.value=cur?cur.l:'';inp.autocomplete='off';
+function combo(label,options,value,onchange,allLabel){const id='dl'+Math.random().toString(36).slice(2,8),cur=options.find(o=>o.v===value),inp=h('input');inp.className='cb';inp.setAttribute('list',id);inp.placeholder=allLabel||'Search or choose…';inp.value=cur?cur.l:'';inp.autocomplete='off';
  const dl=h('datalist');dl.id=id;options.forEach(o=>{const op=h('option');op.value=o.l;dl.append(op)});
  inp.onfocus=()=>inp.select();
  inp.onchange=()=>{const t=inp.value.trim().toLowerCase(),m=options.find(o=>o.l.toLowerCase()===t);if(m)onchange(m.v);else if(!t&&allLabel!==undefined)onchange('');else inp.value=cur?cur.l:''};
@@ -148,7 +150,7 @@ const stat=(v,l)=>h('div','',h('b','',v),h('span','',l));
 function go(hash){location.hash=hash}
 function jump(id){setTimeout(()=>{const e=$(id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},30)}
 function sortable(rows,cols,state,render){ // cols: [{k,label,left,get,fmt}]
- const t=h('table'),hd=h('tr');cols.forEach(c=>{const th=h('th','sortable'+(c.left?' l':'')+(state.k===c.k?' on':''),c.label+(state.k===c.k?(state.dir<0?' ↓':' ↑'):''));th.onclick=()=>{state.dir=state.k===c.k?-state.dir:(c.left?1:-1);state.k=c.k;render()};hd.append(th)});t.append(hd);return t}
+ const t=h('table'),hd=h('tr');cols.forEach(c=>{const th=h('th','sortable'+(c.left?' l':'')+(state.k===c.k?' on':''),c.label+(state.k===c.k?(state.dir<0?' ↓':' ↑'):''),c.info?info(c.info):null);th.onclick=()=>{state.dir=state.k===c.k?-state.dir:(c.left?1:-1);state.k=c.k;render()};hd.append(th)});t.append(hd);return t}
 // ---- charts ----
 function heatmap(rows,nC,nS){const cs=COUNTRIES.filter(x=>rows.some(r=>r.c===x.c)).slice(0,nC).map(x=>x.c);const sub=rows.filter(r=>cs.includes(r.c));
  const sp=Object.entries(group(sub,'s')).map(([s,r])=>[s,r.length]).sort((a,b)=>b[1]-a[1]).slice(0,nS).map(x=>x[0]);const cnt={};sub.forEach(r=>{const k=r.c+'|'+r.s;cnt[k]=(cnt[k]||0)+1});
@@ -181,7 +183,7 @@ const lineChart=(codes,colors,mode,legend)=>lineSvg({series:codes.map(c=>({key:c
 function medalTable(list,limit,onRow){const t=h('table','mt'),hd=h('tr');['#','Country','Gold','Silver','Bronze','Total','Share'].forEach((x,i)=>hd.append(h('th',i===1?'l':'',x)));t.append(hd);
  const tot=D.length;list.slice(0,limit).forEach(x=>{const tr=h('tr',onRow?'click':'');tr.append(h('td','rk',x.rank),h('td','l',x.n+' ',h('span','mut sm',x.c)));
  ['G','S','B'].forEach(k=>tr.append(h('td','',x[k])));tr.append(h('td','',h('b','',x.T)),h('td','mut',pct(x.T,tot)+'%'));if(onRow)tr.onclick=()=>onRow(x);t.append(tr)});return h('div','scroll',t)}
-const concCell=(label,v)=>{const td=h('td','l'),s=h('span','lab-'+label,label);td.append(s,info('HHI '+fmt(v)+' on a 0–10,000 scale; higher means medals sit in fewer places'));return td};
+const concCell=(label,v)=>{const td=h('td','l'),sp=h('span','lab-'+label+' dotted',label);hover(sp,[{t:'HHI '+fmt(v)+' on a 0–10,000 scale; higher means medals sit in fewer places'}]);td.append(sp);return td};
 // ---- insights (deterministic text built from the numbers) ----
 function insights(){const out=[],top=COUNTRIES[0];out.push({p:`${top.n} leads with ${top.T} medals (${pct(top.T,D.length)}% of all) and ${top.G} golds, ${top.G-COUNTRIES[1].G} more than ${COUNTRIES[1].n}.`,link:['Explore '+top.n+' →',()=>{S.country=top.c;S.whySport=null;go('#/countries');jump('detail')}]});
  const big=COUNTRIES.filter(x=>x.T>=50).map(x=>({x,p:profile(x.c)})),cc=[...big].sort((a,b)=>b.p.top1-a.p.top1)[0];
@@ -189,9 +191,9 @@ function insights(){const out=[],top=COUNTRIES[0];out.push({p:`${top.n} leads wi
  const w=[...big].sort((a,b)=>b.p.women-a.p.women)[0],all=genderOf(D);out.push({p:`Women's events produced ${pct(all.Women,D.length)}% of all medals. ${w.x.n} has the highest women's share (${w.p.women}%) among countries with 50+ medals.`,link:['See the gender view →',()=>{S.gcountry=w.x.c;go('#/gender')}]});return out}
 function why(c,s){const rows=byCountry[c].filter(r=>r.s===s),t=tally(rows),T=CMAP[c].T,sh=pct(t.T,T),gs=pct(t.G,t.T);
  const style=gs>=40?'gold-heavy':gs<=20?'silver/bronze-heavy':'balanced across medal colours';const ev=nEvents(rows);
- return h('div','why',h('div','eyebrow','Why this sport matters'),h('h3','',CMAP[c].n+' · '+s),h('p','',`${t.T} medals in ${ev} event${ev>1?'s':''}: ${t.G} gold, ${t.S} silver, ${t.B} bronze. ${s} contributes ${sh}% of ${CMAP[c].n}'s total of ${T} medals. The sport's medal mix is ${style} (${gs}% gold).`))}
+ return h('div','why',h('div','eyebrow','Why this sport matters'),h('h2','ct',CMAP[c].n+' · '+s),h('p','',`${t.T} medals in ${ev} event${ev>1?'s':''}: ${t.G} gold, ${t.S} silver, ${t.B} bronze. ${s} contributes ${sh}% of ${CMAP[c].n}'s total of ${T} medals. The sport's medal mix is ${style} (${gs}% gold).`))}
 // ---- state ----
-const S={country:'IND',cmp:['IND','CHN','JPN'],sport:'Athletics',gcountry:'IND',whySport:null,tl:COUNTRIES.slice(0,5).map(x=>x.c),tlMode:'T',gAll:false,
+const S={country:'IND',cmp:['IND','CHN','JPN'],sport:'Athletics',gcountry:'IND',gsel:'Women',cq:'',sq:'',whySport:null,tl:COUNTRIES.slice(0,5).map(x=>x.c),tlMode:'T',gAll:false,
  cSort:{k:'rank',dir:1},sSort:{k:'T',dir:-1},ex:{q:'',s:'',g:'',m:'',c:'',from:'',to:'',n:100}};
 const ex0=JSON.stringify(S.ex);
 const head1=(eyebrow,title,lead)=>h('div','hero',h('div','eyebrow',eyebrow),h('h1','',title),lead?h('div','lead',lead):null);
@@ -202,8 +204,8 @@ V.overview=()=>{const r=h('div');
  r.append(h('div','strip',stat(COUNTRIES.length,'Countries'),stat(META.events,'Events'),stat(fmt(D.length),'Medals'),h('div','ok',h('b','','✓ 0'),h('span','','Mismatches vs official'))));
  r.append(h('section','blk',h('div','head',h('h2','','Medal table')),h('div','card',medalTable(COUNTRIES,10,x=>{S.country=x.c;S.whySport=null;go('#/countries');jump('detail')}),h('div','sm mut" style="margin-top:8px','Top 10 of '+COUNTRIES.length+', in official order (gold, silver, bronze). Click a row to open the country.'))));
  const byT=[...COUNTRIES].sort((a,b)=>b.T-a.T||rankCmp(a,b)).slice(0,10),mx=byT[0].T;
- const chart=h('div','card',h('h3','','Medal mix · top 10 by total medals'),mpLegend(),...byT.map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;S.whySport=null;go('#/countries');jump('detail')})));
- const g=genderOf(D),gm=Math.max(...GB().map(k=>g[k])),gc=h('div','card',h('h3','','Men, women and mixed events',info('Open events count as Mixed here, as in the official table. Switch on the Gender page.')),h('div','sm mut" style="margin-bottom:8px','Share of all '+fmt(D.length)+' medals'),
+ const chart=h('div','card',h('h2','ct','Medal mix · top 10 by total medals'),mpLegend(),...byT.map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;S.whySport=null;go('#/countries');jump('detail')})));
+ const g=genderOf(D),gm=Math.max(...GB().map(k=>g[k])),gc=h('div','card',h('h2','ct','Men, women and mixed events',info('Open events count as Mixed here, as in the official table. Switch on the Gender page.')),h('div','sm mut" style="margin-bottom:8px','Share of all '+fmt(D.length)+' medals'),
   ...GB().map(k=>barRow(k,simpleBar(g[k]/gm,'var('+GCOL[k]+')',[{t:k+' events',b:g[k]+' medals ('+pct(g[k],D.length)+'%)'}]),pct(g[k],D.length)+'%',()=>go('#/gender'))));
  r.append(h('section','blk',h('div','grid2',chart,gc)));
  r.append(h('section','blk',h('div','head',h('h2','','Where medals come from'),h('p','','Country × sport, top 10 countries and their 12 biggest sports')),h('div','card',heatmap(D,10,12))));
@@ -214,68 +216,76 @@ V.overview=()=>{const r=h('div');
 
 V.countries=()=>{const r=h('div');const c=S.country,x=CMAP[c],p=profile(c),tab=COUNTRIES.map(z=>{const pp=profile(z.c),lq=topLQ(z.c);return{c:z.c,n:z.n,rank:z.rank,T:z.T,G:z.G,sports:pp.sp.length,top:pp.sp[0].s,topShare:pp.top1,lq,hhi:pp.hhi,label:pp.label}});
  r.append(head1('Country explorer','Which countries are strong where?','All medal-winning countries first; pick one for the detail below.'));
- const cols=[{k:'rank',label:'#',left:true},{k:'n',label:'Country',left:true},{k:'T',label:'Medals'},{k:'G',label:'Gold'},{k:'sports',label:'Sports'},{k:'top',label:'Top sport',left:true},{k:'topShare',label:'Share'},{k:'lq',label:'Most over-indexed',left:true},{k:'hhi',label:'Profile',left:true}];
+ const cols=[{k:'rank',label:'#',left:true},{k:'n',label:'Country',left:true},{k:'T',label:'Medals'},{k:'G',label:'Gold'},{k:'sports',label:'Sports'},{k:'top',label:'Top sport',left:true},{k:'topShare',label:'Share'},{k:'lq',label:'Most over-indexed',left:true,info:'A country\'s biggest sport relative to that sport\'s weight in the Games (location quotient, shown as ×, at least 3 medals)'},{k:'hhi',label:'Profile',left:true,info:'How spread a country\'s medals are across sports (HHI). Diversified means many sports; Concentrated means a few.'}];
  const val=(z,k)=>k==='lq'?(z.lq?z.lq.lq:-1):z[k];
+ const fz=z=>!S.cq||(z.n+' '+z.c).toLowerCase().includes(S.cq.toLowerCase());
  const draw=()=>{const s=S.cSort;tab.sort((a,b)=>{const u=val(a,s.k),v=val(b,s.k);return(typeof u==='string'?u.localeCompare(v):u-v)*s.dir});
   const t=sortable(tab,cols,s,()=>{const sc=window.scrollY;V_all.replaceChildren(draw());scrollTo(0,sc)});
-  tab.forEach(z=>{const tr=h('tr','click'+(z.c===c?' sel':''),h('td','rk l',z.rank),h('td','l',z.n+' ',h('span','mut sm',z.c)),h('td','',h('b','',z.T)),h('td','',z.G),h('td','',z.sports),h('td','l',z.top),h('td','',z.topShare+'%'),
+  const rowsF=tab.filter(fz);if(!rowsF.length)return empty('No country matches "'+S.cq+'".','Try a shorter name or its 3-letter code.');
+  rowsF.forEach(z=>{const tr=h('tr','click'+(z.c===c?' sel':''),h('td','rk l',z.rank),h('td','l',z.n+' ',h('span','mut sm',z.c)),h('td','',h('b','',z.T)),h('td','',z.G),h('td','',z.sports),h('td','l',z.top),h('td','',z.topShare+'%'),
    h('td','l',z.lq?h('span','',z.lq.s,h('span','tag','×'+z.lq.lq.toFixed(1))):'–'),concCell(z.label,z.hhi));tr.onclick=()=>{S.country=z.c;S.whySport=null;render();jump('detail')};t.append(tr)});
   return h('div','scroll tall',t)};
  const V_all=h('div','card');V_all.append(draw());
- r.append(h('div','sm mut" style="margin:0 0 8px','Profile = how spread a country\'s medals are across sports. Over-indexed = its biggest sport relative to that sport\'s weight in the Games (×, at least 3 medals). Click a column to sort.'),V_all);
- r.append(h('div','" id=detail style="height:1px;margin-top:26px'));
- r.append(h('div','ctl',combo('Country detail',cOpts(),c,v=>{S.country=v;S.whySport=null;render();jump('detail')})));
- r.append(h('h2" style="margin:2px 0 10px','',x.full));
+ const fq=h('input');fq.type='search';fq.placeholder='Type a country name or code';fq.value=S.cq;fq.setAttribute('aria-label','Filter countries');fq.oninput=()=>{S.cq=fq.value;V_all.replaceChildren(draw())};
+ r.append(h('div','ctl',h('label','wide','Filter the table',fq),h('span','sm mut" style="align-self:end;padding-bottom:9px','Click a column to sort, a row to open the country.')),V_all);
+ r.append(h('div','" id=detail style="height:1px;margin-top:40px'));
+ r.append(h('h2','','Country detail'),h('div','ctl',combo('Choose a country',cOpts(),c,v=>{S.country=v;S.whySport=null;render();jump('detail')})));
+ r.append(h('h2','ct cn',x.full));
  r.append(h('div','card',h('div','stat',stat('#'+x.rank,'Global rank'),stat(x.T,'Total medals'),stat(x.G,'Gold'),stat(p.sp.length,'Sports with a medal'),stat(p.sp[0].s+' · '+p.top1+'%','Top sport')),
-  h('h3','','Medal profile'),mpLegend(),...['G','S','B'].map(k=>barRow(MEDN[k],simpleBar(x[k]/Math.max(x.G,x.S,x.B,1),MEDC[k],[{t:MEDN[k],b:x[k]}]),x[k]))));
- const sp=h('div','card',h('h3','',x.n+"'s strongest sports"),...p.sp.slice(0,10).map(z=>barRow(z.s,medalBar(z,p.sp[0].T,z.s),z.T,()=>{S.whySport=z.s;render()},z.s===(S.whySport||p.sp[0].s))));
+  h('h2','ct','Medal profile'),mpLegend(),...['G','S','B'].map(k=>barRow(MEDN[k],simpleBar(x[k]/Math.max(x.G,x.S,x.B,1),MEDC[k],[{t:MEDN[k],b:x[k]}]),x[k]))));
+ const sp=h('div','card',h('h2','ct',x.n+"'s strongest sports"),...p.sp.slice(0,10).map(z=>barRow(z.s,medalBar(z,p.sp[0].T,z.s),z.T,()=>{S.whySport=z.s;render()},z.s===(S.whySport||p.sp[0].s))));
  sp.append(why(c,S.whySport&&p.sp.some(z=>z.s===S.whySport)?S.whySport:p.sp[0].s));
  const gmx=Math.max(...GB().map(k=>p.g[k]));
- const gp=h('div','card',h('h3','','Gender profile'),...GB().map(k=>barRow(k,simpleBar(p.g[k]/gmx,'var('+GCOL[k]+')',[{t:k+' events',b:p.g[k]}]),pct(p.g[k],x.T)+'%')),
-  h('h3" style="margin-top:16px','','Concentration'),h('div','stat',stat(p.sp[0].s+' · '+p.top1+'%','Top sport'),stat(p.top3+'%','Top 3 sports'),h('div','',h('b','lab-'+p.label,p.label,info('HHI '+fmt(p.hhi)+' on a 0–10,000 scale; higher means medals sit in fewer sports')),h('span','','Profile'))));
+ const gp=h('div','card',h('h2','ct','Gender profile'),...GB().map(k=>barRow(k,simpleBar(p.g[k]/gmx,'var('+GCOL[k]+')',[{t:k+' events',b:p.g[k]}]),pct(p.g[k],x.T)+'%')),
+  h('h2" style="margin-top:16px','ct','Concentration'),h('div','stat',stat(p.sp[0].s+' · '+p.top1+'%','Top sport'),stat(p.top3+'%','Top 3 sports'),h('div','',h('b','lab-'+p.label,p.label,info('HHI '+fmt(p.hhi)+' on a 0–10,000 scale; higher means medals sit in fewer sports')),h('span','','Profile'))));
  r.append(h('div','grid2" style="margin-top:14px',sp,gp));
  const cmp=h('section','blk',h('div','head',h('h2','','Compare countries')),
   h('div','ctl',...[0,1,2].map(i=>combo('Country '+(i+1),cOpts(),S.cmp[i],v=>{S.cmp[i]=v;render()}))));
  const rows3=S.cmp.map(z=>({z,x:CMAP[z],p:profile(z)}));
  const metrics=[['Total medals',o=>o.x.T],['Gold',o=>o.x.G],['Sports with medals',o=>o.p.sp.length],['Top sport',o=>o.p.sp[0].s,true],['Women\'s share',o=>o.p.women,false,'%'],['Top sport share',o=>o.p.top1,false,'%'],['Profile',o=>o.p.label,true]];
  const t=h('table'),hd=h('tr');hd.append(h('th','l',''));rows3.forEach(o=>hd.append(h('th','',o.x.n)));t.append(hd);
- metrics.forEach(([l,f,txt,u])=>{const tr=h('tr');tr.append(h('td','l mut',l));const vals=rows3.map(f),mx=txt?1:Math.max(...vals,1);rows3.forEach((o,i)=>{const td=h('td','',h('b','',vals[i]+(u||'')));if(!txt){const b=h('div','cmpbar');b.style.width=(vals[i]/mx*100)+'%';b.style.marginLeft='auto';td.append(b)}tr.append(td)});t.append(tr)});
+ metrics.forEach(([l,f,txt,u])=>{const tr=h('tr');tr.append(h('td','l mut',l));const vals=rows3.map(f),mx=txt?1:Math.max(...vals,1);rows3.forEach((o,i)=>{const cell=h('div','cmpcell',h('b','',vals[i]+(u||''))),td=h('td','',cell);if(!txt){const b=h('div','cmpbar');b.style.width=(vals[i]/mx*100)+'%';cell.append(b)}tr.append(td)});t.append(tr)});
  cmp.append(h('div','card',h('div','scroll',t)));r.append(cmp);return r};
 
 V.sports=()=>{const r=h('div');
  const rowsAll=SPORTS.map(s=>{const rows=bySport[s],by=Object.entries(group(rows,'c')).map(([c,rr])=>({c,n:sn(names[c]),...tally(rr)})).sort((a,b)=>b.T-a.T||rankCmp(a,b)),hv=hhi(by,'T');
   return{s,T:rows.length,ev:nEvents(rows),cn:by.length,lead:by[0].n,leadc:by[0].c,share:pct(by[0].T,rows.length),hhi:hv,label:conc(hv)}});
  r.append(head1('Sport explorer','Which sports drive the medal distribution?','All sports first; pick one for the detail below.'));
- const cols=[{k:'s',label:'Sport',left:true},{k:'T',label:'Medals'},{k:'ev',label:'Events'},{k:'cn',label:'Countries'},{k:'lead',label:'Leader',left:true},{k:'share',label:'Leader share'},{k:'hhi',label:'Concentration',left:true}];
+ const cols=[{k:'s',label:'Sport',left:true},{k:'T',label:'Medals'},{k:'ev',label:'Events'},{k:'cn',label:'Countries'},{k:'lead',label:'Leader',left:true},{k:'share',label:'Leader share'},{k:'hhi',label:'Concentration',left:true,info:'How much one or two countries dominate the sport (HHI). Concentrated means a few countries take most medals.'}];
+ const sz=z=>!S.sq||z.s.toLowerCase().includes(S.sq.toLowerCase());
  const board=h('div','card'),draw=()=>{const s=S.sSort;rowsAll.sort((a,b)=>{const u=a[s.k],v=b[s.k];return(typeof u==='string'?u.localeCompare(v):u-v)*s.dir});
   const t=sortable(rowsAll,cols,s,()=>{const sc=window.scrollY;board.replaceChildren(draw());scrollTo(0,sc)});
-  rowsAll.forEach(z=>{const tr=h('tr','click'+(z.s===S.sport?' sel':''),h('td','l',z.s),h('td','',h('b','',z.T)),h('td','',z.ev),h('td','',z.cn),h('td','l',z.lead),h('td','',z.share+'%'),concCell(z.label,z.hhi));tr.onclick=()=>{S.sport=z.s;render();jump('detail')};t.append(tr)});return h('div','scroll tall',t)};
- board.append(draw());r.append(h('div','sm mut" style="margin:0 0 8px','Concentration = how much one or two countries dominate the sport. Click a column to sort, a row to open the sport.'),board);
- r.append(h('div','" id=detail style="height:1px;margin-top:26px'));
+  const rowsF=rowsAll.filter(sz);if(!rowsF.length)return empty('No sport matches "'+S.sq+'".','Try a shorter name.');
+  rowsF.forEach(z=>{const tr=h('tr','click'+(z.s===S.sport?' sel':''),h('td','l',z.s),h('td','',h('b','',z.T)),h('td','',z.ev),h('td','',z.cn),h('td','l',z.lead),h('td','',z.share+'%'),concCell(z.label,z.hhi));tr.onclick=()=>{S.sport=z.s;render();jump('detail')};t.append(tr)});return h('div','scroll tall',t)};
+ board.append(draw());const fq=h('input');fq.type='search';fq.placeholder='Type a sport name';fq.value=S.sq;fq.setAttribute('aria-label','Filter sports');fq.oninput=()=>{S.sq=fq.value;board.replaceChildren(draw())};
+ r.append(h('div','ctl',h('label','wide','Filter the table',fq),h('span','sm mut" style="align-self:end;padding-bottom:9px','Click a column to sort, a row to open the sport.')),board);
+ r.append(h('div','" id=detail style="height:1px;margin-top:40px'));
  const s=S.sport,rows=bySport[s],t=tally(rows),by=Object.entries(group(rows,'c')).map(([c,rr])=>({c,n:sn(names[c]),...tally(rr)})).sort((a,b)=>b.T-a.T||rankCmp(a,b)),g=genderOf(rows),hv=hhi(by,'T');
- r.append(h('div','ctl',combo('Sport detail',SPORTS.map(z=>({v:z,l:z})),s,v=>{S.sport=v;render();jump('detail')})));
- r.append(h('h2" style="margin:2px 0 10px','',s));
+ r.append(h('h2','','Sport detail'),h('div','ctl',combo('Choose a sport',SPORTS.map(z=>({v:z,l:z})),s,v=>{S.sport=v;render();jump('detail')})));
+ r.append(h('h2','ct cn',s));
  r.append(h('div','card',h('div','stat',stat(nEvents(rows),'Events'),stat(t.T,'Medals'),stat(by.length,'Countries with a medal'),stat(by[0].n+' · '+pct(by[0].T,t.T)+'%','Leader'),h('div','',h('b','lab-'+conc(hv),conc(hv),info('HHI '+fmt(hv)+' on a 0–10,000 scale; higher means fewer countries share the medals')),h('span','','Concentration')))));
  const mx=by[0].T,gmx=Math.max(1,...GB().map(k=>g[k]));
- r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h3','','Countries winning medals in '+s),mpLegend(),...by.slice(0,15).map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;S.whySport=null;go('#/countries');jump('detail')}))),
-  h('div','card',h('h3','','Men, women and mixed events'),...GB().map(k=>barRow(k,simpleBar(g[k]/gmx,'var('+GCOL[k]+')',[{t:k+' events',b:g[k]}]),g[k])),
-   h('h3" style="margin-top:16px','','Leaders by gender'),...GB().filter(k=>g[k]).map(k=>{const l=Object.entries(group(rows.filter(z=>gOf(z)===k),'c')).map(([c,rr])=>({c,...tally(rr)})).sort((a,b)=>b.T-a.T)[0];return h('div','brow',h('span','nm',k),h('span','',sn(names[l.c])+' · '+l.T+' medals'),h('span'))}))));
+ r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h2','ct','Countries winning medals in '+s),mpLegend(),...by.slice(0,15).map(x=>barRow(x.n,medalBar(x,mx,x.n),x.T,()=>{S.country=x.c;S.whySport=null;go('#/countries');jump('detail')}))),
+  h('div','card',h('h2','ct','Men, women and mixed events'),...GB().map(k=>barRow(k,simpleBar(g[k]/gmx,'var('+GCOL[k]+')',[{t:k+' events',b:g[k]}]),g[k])),
+   h('h2" style="margin-top:16px','ct','Leaders by gender'),...GB().filter(k=>g[k]).map(k=>{const l=Object.entries(group(rows.filter(z=>gOf(z)===k),'c')).map(([c,rr])=>({c,...tally(rr)})).sort((a,b)=>b.T-a.T)[0];return h('div','brow',h('span','nm',k),h('span','',sn(names[l.c])+' · '+l.T+' medals'),h('span'))}))));
  return r};
 
 V.gender=()=>{const r=h('div');
- r.append(head1('Gender','Where are women driving medal success?',null));
+ r.append(head1('Gender','Who wins where: men, women and mixed events',null));
  const tg=h('div','ctl',h('span','sm mut" style="align-self:center','Open events:'),(()=>{const b=h('button','btn'+(OPEN.asMixed?' on':''),'Count as Mixed (official table)');b.onclick=()=>{OPEN.asMixed=true;render()};return b})(),(()=>{const b=h('button','btn'+(!OPEN.asMixed?' on':''),'Show separately');b.onclick=()=>{OPEN.asMixed=false;render()};return b})(),info('Gender is the event\'s gender, never the athlete\'s. '+openText()+'.'));
  r.append(tg);
  const g=genderOf(D),ev={};GB().forEach(k=>ev[k]=nEvents(D.filter(z=>gOf(z)===k)));const gmx=Math.max(...GB().map(k=>g[k]));
- r.append(h('div','card',h('h3','','Medals and events by gender'),...GB().map(k=>barRow(k,simpleBar(g[k]/gmx,'var('+GCOL[k]+')',[{t:k,b:g[k]+' medals in '+ev[k]+' events'}]),g[k]+'',null)),h('div','sm mut" style="margin-top:6px',GB().map(k=>ev[k]+' '+k.toLowerCase()+' events').join(' · '))));
+ r.append(h('div','card',h('h2','ct','Medals and events by gender'),...GB().map(k=>barRow(k,simpleBar(g[k]/gmx,'var('+GCOL[k]+')',[{t:k,b:g[k]+' medals in '+ev[k]+' events'}]),g[k]+'',null)),h('div','sm mut" style="margin-top:6px',GB().map(k=>ev[k]+' '+k.toLowerCase()+' events').join(' · '))));
  const lead=(rows,n)=>Object.entries(group(rows,'c')).map(([c,rr])=>({c,n:sn(names[c]),...tally(rr)})).sort((a,b)=>b.T-a.T||rankCmp(a,b)).slice(0,n);
- const card=(title,list)=>h('div','card',h('h3','',title),mpLegend(),...list.map(x=>barRow(x.n,medalBar(x,list[0].T,x.n),x.T,()=>{S.gcountry=x.c;render();jump('gc')})));
+ const card=(title,list)=>h('div','card',h('h2','ct',title),mpLegend(),...list.map(x=>barRow(x.n,medalBar(x,list[0].T,x.n),x.T,()=>{S.gcountry=x.c;render();jump('gc')})));
  const lists=[["Women's medal leaders",D.filter(z=>gOf(z)==='Women')],["Men's medal leaders",D.filter(z=>gOf(z)==='Men')],[(OPEN.asMixed?'Mixed':'Mixed')+' medal leaders',D.filter(z=>gOf(z)==='Mixed')]];
  if(!OPEN.asMixed)lists.push(['Open medal leaders',D.filter(z=>gOf(z)==='Open')]);
  r.append(h('div','grid2" style="margin-top:14px',...lists.map(([t,rows])=>card(t,lead(rows,8)))));
- const gc=S.gcountry,gsp=Object.entries(group(byCountry[gc].filter(z=>gOf(z)==='Women'),'s')).map(([s,rr])=>({s,...tally(rr)})).sort((a,b)=>b.T-a.T);
- r.append(h('section" id=gc','blk',h('div','head',h('h2','',"A country's women's medals")),h('div','ctl',combo('Country',cOpts(),gc,v=>{S.gcountry=v;render()})),
-  gsp.length?h('div','card',h('h3','',CMAP[gc].n+": women's strongest sports ("+gsp.reduce((a,z)=>a+z.T,0)+' medals)'),mpLegend(),...gsp.slice(0,10).map(z=>barRow(z.s,medalBar(z,gsp[0].T,z.s),z.T))):empty('No medals found for this combination.',CMAP[gc].n+' has no medals in women\'s events.')));
+ if(!GB().includes(S.gsel))S.gsel='Women';
+ const gc=S.gcountry,gk=S.gsel,gl=gk.toLowerCase(),gsp=Object.entries(group(byCountry[gc].filter(z=>gOf(z)===gk),'s')).map(([s,rr])=>({s,...tally(rr)})).sort((a,b)=>b.T-a.T||rankCmp(a,b)),gtot=gsp.reduce((a,z)=>a+z.T,0),
+  seg=h('div','ctl',...GB().map(k=>{const b=h('button','btn'+(k===gk?' on':''),k);b.setAttribute('aria-pressed',String(k===gk));b.onclick=()=>{S.gsel=k;render();jump('gc')};return b}));
+ r.append(h('section" id=gc','blk',h('div','head',h('h2','',"A country's medals by event gender")),h('div','ctl',combo('Country',cOpts(),gc,v=>{S.gcountry=v;render();jump('gc')})),seg,
+  gsp.length?h('div','card',h('h2','ct',CMAP[gc].n+': strongest sports in '+gl+' events ('+gtot+' medals)'),mpLegend(),...gsp.slice(0,10).map(z=>barRow(z.s,medalBar(z,gsp[0].T,z.s),z.T))):empty('No medals in '+gl+' events.',CMAP[gc].n+' has no '+gl+' medals.')));
  const sg=SPORTS.map(s=>{const gg=genderOf(bySport[s]),T=bySport[s].length,mw=gg.Men+gg.Women,w=mw?pct(gg.Women,mw):null;return{s,T,gg,mw,w}}).sort((a,b)=>b.T-a.T);
  const notable=sg.filter(z=>z.w===null||Math.abs(z.w-50)>=5),show=S.gAll?sg:notable;
  const t=h('table'),hd=h('tr');['Sport','Men','Women',OPEN.asMixed?'Mixed':'Mixed','Total','Women % of men+women'].forEach((x,i)=>hd.append(h('th',i===0?'l':'',x)));if(!OPEN.asMixed)hd.insertBefore(h('th','','Open'),hd.children[4]);t.append(hd);
@@ -284,18 +294,19 @@ V.gender=()=>{const r=h('div');
  r.append(h('section','blk',h('div','head',h('h2','',"Where women's share departs from 50%"),h('p','',S.gAll?'All sports':notable.length+' of '+sg.length+' sports where women are under 45% or over 55% of men+women medals, or that have only Open events')),h('div','card',h('div','scroll tall',t)),h('div','" style="margin-top:10px',tgl)));return r};
 
 V.timeline=()=>{const r=h('div');r.append(head1('Timeline','How did the medal race unfold?',null));
- const pool=COUNTRIES.slice(0,10),colors={};S.tl.forEach((c,i)=>colors[c]='var(--c'+(i+1)+')');
- const chips=h('div','chips');pool.forEach(x=>{const on=S.tl.includes(x.c),b=h('button',on?'on':'',h('i'),x.n);if(on){b.style.borderColor=colors[x.c];b.firstChild.style.background=colors[x.c]}b.onclick=()=>{if(on){if(S.tl.length>1)S.tl=S.tl.filter(z=>z!==x.c)}else if(S.tl.length<5)S.tl=[...S.tl,x.c];render()};chips.append(b)});
- const mode=h('div','ctl',...[['T','All medals'],['G','Gold only']].map(([k,l])=>{const b=h('button','btn'+(S.tlMode===k?' on':''),l);b.onclick=()=>{S.tlMode=k;render()};return b}),h('span','sm mut" style="align-self:center','Pick up to 5 countries below'),UND.length?info(UND.length+' medals have no date in the source ('+undDesc()+'). They are the last point, so lines end at the table totals.'):null);
+ const pool=[...new Set([...S.tl,...COUNTRIES.slice(0,10).map(x=>x.c)])].map(c=>CMAP[c]),colors={};S.tl.forEach((c,i)=>colors[c]='var(--c'+(i+1)+')');
+ const chips=h('div','chips');pool.forEach(x=>{const on=S.tl.includes(x.c),b=h('button','btn pill'+(on?' on':''),h('i'),x.n+(on&&S.tl.length>1?' ×':''));b.setAttribute('aria-pressed',String(on));b.setAttribute('aria-label',(on?'Remove ':'Add ')+x.n);if(on)b.firstChild.style.background=colors[x.c];b.onclick=()=>{if(on){if(S.tl.length>1)S.tl=S.tl.filter(z=>z!==x.c)}else S.tl=[...S.tl.slice(S.tl.length>=5?1:0),x.c];render()};chips.append(b)});
+ const addBox=h('div','ctl" style="margin:10px 0 0',combo('Add any other country',COUNTRIES.filter(x=>!S.tl.includes(x.c)).map(x=>({v:x.c,l:x.n})),'',v=>{if(v){S.tl=[...S.tl.slice(S.tl.length>=5?1:0),v];render()}},'Search or choose…'),S.tl.length>=5?h('span','sm mut" style="align-self:center','5 is the maximum: adding another replaces the oldest one.'):null);
+ const mode=h('div','ctl',...[['T','All medals'],['G','Gold only']].map(([k,l])=>{const b=h('button','btn'+(S.tlMode===k?' on':''),l);b.setAttribute('aria-pressed',String(S.tlMode===k));b.onclick=()=>{S.tlMode=k;render()};return b}),UND.length?info(UND.length+' medals have no date in the source ('+undDesc()+'). They are the last point, so lines end at the table totals.'):null);
  r.append(mode);
  // who led, and when
  const leaders=XS.map((d,i)=>Object.entries(RANKS[i]).find(([c,rk])=>rk===1)[0]),dated=DATES.length,chg=[];leaders.slice(0,dated).forEach((c,i)=>{if(i>0&&c!==leaders[i-1])chg.push({d:DATES[i],c})});
  const lead=chg.length?`The lead changed ${chg.length} time${chg.length>1?'s':''}: ${chg.map(z=>CMAP[z.c].n+' from '+xlabel(z.d)).join(', ')}.`:`${CMAP[leaders[0]].n} led the table on every day.`;
- r.append(h('div','card',h('h3','',S.tlMode==='G'?'Cumulative gold medals by day':'Cumulative medals by day'),chips,h('div','" style="height:8px'),lineChart(S.tl,colors,S.tlMode,false),h('div','sm mut" style="margin-top:6px',lead)));
+ r.append(h('div','card',h('h2','ct',S.tlMode==='G'?'Cumulative gold medals by day':'Cumulative medals by day'),h('div','pick',h('b','',S.tl.length+' of 5 countries selected'),'. Click a country to add or remove it; at 5, a new pick replaces the oldest.'),chips,addBox,h('div','" style="height:12px'),lineChart(S.tl,colors,S.tlMode,false),h('div','sm mut" style="margin-top:6px',lead)));
  const mxr=Math.max(...S.tl.map(c=>Math.max(...RANKS.map(o=>o[c]))));
- r.append(h('div','card" style="margin-top:14px',h('h3','','Rank over time',info('Official order: gold, then silver, then bronze, using medals dated up to that day. The last point includes undated medals and equals the final table.')),lineSvg({series:S.tl.map(c=>({key:c,name:CMAP[c].n,color:colors[c],pts:RANKS.map(o=>o[c])})),invert:true,maxRank:Math.max(3,mxr),endText:(s,v)=>s.key+' #'+v,legend:false})));
+ r.append(h('div','card" style="margin-top:14px',h('h2','ct','Rank over time',info('Official order: gold, then silver, then bronze, using medals dated up to that day. The last point includes undated medals and equals the final table.')),lineSvg({series:S.tl.map(c=>({key:c,name:CMAP[c].n,color:colors[c],pts:RANKS.map(o=>o[c])})),invert:true,maxRank:Math.max(3,mxr),endText:(s,v)=>s.key+' #'+v,legend:false})));
  const per=XS.map(d=>({d,n:D.filter(z=>z.d===d&&(S.tlMode!=='G'||z.m==='Gold')).length})),dayOnly=per.filter(z=>z.d),peaks=[...dayOnly].sort((a,b)=>b.n-a.n).slice(0,2).map(z=>z.d),mx=Math.max(...per.map(z=>z.n));
- r.append(h('div','card" style="margin-top:14px',h('h3','',(S.tlMode==='G'?'Gold medals':'Medals')+' awarded per day (all countries)'),...per.map(z=>{const row=barRow(xlabel(z.d),simpleBar(z.n/mx,z.d?'var(--brand)':'var(--mut)',[{t:z.d||'No date in the source',b:z.n+' medals'}]),z.n);if(peaks.includes(z.d))row.querySelector('.nm').append(h('span','tag','peak'));return row})));return r};
+ r.append(h('div','card" style="margin-top:14px',h('h2','ct',(S.tlMode==='G'?'Gold medals':'Medals')+' awarded per day (all countries)'),...per.map(z=>{const row=barRow(xlabel(z.d),simpleBar(z.n/mx,z.d?'var(--brand)':'var(--mut)',[{t:z.d||'No date in the source',b:z.n+' medals'}]),z.n);if(peaks.includes(z.d))row.querySelector('.nm').append(h('span','tag','peak'));return row})));return r};
 
 V.explorer=()=>{const r=h('div'),E=S.ex;r.append(head1('Data explorer','Every medal, filterable','One row per medal. Filter, then download exactly what you see.'));
  const ctl=h('div','ctl'),q=h('input');q.type='search';q.placeholder='Event or country';q.value=E.q;q.oninput=()=>{E.q=q.value;E.n=100;draw()};
@@ -318,15 +329,15 @@ V.explorer=()=>{const r=h('div'),E=S.ex;r.append(head1('Data explorer','Every me
 
 V.method=()=>{const r=h('div');r.append(head1('Methodology','How these numbers are made','Every figure is arithmetic over official medal rows. Nothing is estimated.'));
  const c=META.checks||{},val=META.validation||[];
- r.append(h('div','card',h('h3','','Source'),h('p','sm" style="margin:0 0 10px','Asian Games 2026 (Aichi–Nagoya) official results portal: ',h('a','" href="https://results.asiangames2026.org" rel=noopener','results.asiangames2026.org'),'. Snapshot taken '+META.label+'. This is a verified snapshot, not live polling.'),
+ r.append(h('div','card',h('h2','ct','Source'),h('p','sm" style="margin:0 0 10px','Asian Games 2026 (Aichi–Nagoya) official results portal: ',h('a','" href="https://results.asiangames2026.org" rel=noopener','results.asiangames2026.org'),'. Snapshot taken '+META.label+'. This is a verified snapshot, not live polling.'),
   h('div','flow',h('div','st',h('b','','1 · Collect'),h('span','','Medal rows for every sport, plus the portal\'s own standings')),h('span','ar','→'),h('div','st',h('b','','2 · Validate'),h('span','','Rows compared with the official standings per sport, country, medal and gender')),h('span','ar','→'),h('div','st',h('b','','3 · Aggregate'),h('span','','Counts by country, sport, gender and day; shares and concentration'))),
   h('div','stat" style="margin-top:12px',stat(META.events,'Events'),stat(fmt(D.length),'Medals'),stat(COUNTRIES.length,'Countries'),stat(c.reconcile_mismatches!==undefined?c.reconcile_mismatches:0,'Mismatches'))));
  if(val.length){const t=h('table'),hd=h('tr');['Sport','Our medals','Official table',''].forEach((x,i)=>hd.append(h('th',i===0?'l':'',x)));t.append(hd);let so=0,sf=0;
   val.forEach(z=>{so+=z.ours;sf+=z.official;t.append(h('tr','',h('td','l',z.sport),h('td','',z.ours),h('td','',z.official),h('td','ok-t',z.ours===z.official?'✓':'✗ differs')))});
   t.append(h('tr','',h('td','l',h('b','','All sports')),h('td','',h('b','',so)),h('td','',h('b','',sf)),h('td','ok-t',so===sf?'✓':'✗')));
   r.append(h('section','blk',h('div','head',h('h2','','Validation evidence'),h('p','','Our count of medal rows against the official table, sport by sport. Country, medal and gender splits also match (0 mismatches).')),h('div','card',h('div','scroll tall',t))))}
- r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h3','','Rules that matter'),h('ul','sm',h('li','','A medal is one placing credited to one country. A team or pair is one medal.'),h('li','','Gender is the event\'s gender, taken from the event code, never the athlete\'s. The official table counts Open events as Mixed; the Gender page can show them separately. '+openText()+'.'),h('li','','Ties and double bronze are kept as the source gives them. Ranking is gold, then silver, then bronze.'),h('li','','Profile labels use HHI (Herfindahl–Hirschman index, 0–10,000): below 1,000 Diversified, 1,000–1,799 Moderate, 1,800+ Concentrated. These bands are this site\'s convention.'),h('li','','Over-indexed = a sport\'s share of a country\'s medals divided by that sport\'s share of all medals (location quotient), with at least 3 medals.'))),
-  h('div','card',h('h3','','Limits'),h('ul','sm',UND.length?h('li','',UND.length+' medals have no date in the source ('+undDesc()+'). They count everywhere except day-by-day charts, where they form the last point.'):null,h('li','','Reallocations after the Games (for example doping cases) are not in this snapshot.'),h('li','','Athlete names and birth dates are not stored or shown.'),h('li','','Collection details, code and tests are open: ',h('a','" href="https://github.com/yourentertainments10-coder/ResearchFlow" rel=noopener','github.com/yourentertainments10-coder/ResearchFlow'))))));return r};
+ r.append(h('div','grid2" style="margin-top:14px',h('div','card',h('h2','ct','Rules that matter'),h('ul','sm',h('li','','A medal is one placing credited to one country. A team or pair is one medal.'),h('li','','Gender is the event\'s gender, taken from the event code, never the athlete\'s. The official table counts Open events as Mixed; the Gender page can show them separately. '+openText()+'.'),h('li','','Ties and double bronze are kept as the source gives them. Ranking is gold, then silver, then bronze.'),h('li','','Profile labels use HHI (Herfindahl–Hirschman index, 0–10,000): below 1,000 Diversified, 1,000–1,799 Moderate, 1,800+ Concentrated. These bands are this site\'s convention.'),h('li','','Over-indexed = a sport\'s share of a country\'s medals divided by that sport\'s share of all medals (location quotient), with at least 3 medals.'))),
+  h('div','card',h('h2','ct','Limits'),h('ul','sm',UND.length?h('li','',UND.length+' medals have no date in the source ('+undDesc()+'). They count everywhere except day-by-day charts, where they form the last point.'):null,h('li','','Reallocations after the Games (for example doping cases) are not in this snapshot.'),h('li','','Athlete names and birth dates are not stored or shown.'),h('li','','Collection details, code and tests are open: ',h('a','" href="https://github.com/yourentertainments10-coder/ResearchFlow" rel=noopener','github.com/yourentertainments10-coder/ResearchFlow'))))));return r};
 
 // ---- shell ----
 const TABS=[['overview','Overview'],['countries','Countries'],['sports','Sports'],['gender','Gender'],['timeline','Timeline'],['explorer','Data Explorer'],['method','Methodology']];

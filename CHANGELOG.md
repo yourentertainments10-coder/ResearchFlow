@@ -2,6 +2,11 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Dashboard usability pass
+- Timeline: picking a 6th country replaces the oldest; any country can be added.
+- Gender: neutral title; per-country view has Men/Women/Mixed(/Open) toggle.
+- Searchable dropdowns show a chevron; compare bars use a fixed-width track; table filters on Countries and Sports; type scale and radii consolidated; one button and selected style; info icons no longer add a stray "i" to headings.
+
 ## Dashboard P0-P3 review fixes
 - Trend lines end at the table totals (341/150): 3 undated medals shown as a labelled last point.
 - Open vs Mixed toggle (4 gender buckets), corrected Open-events wording.
