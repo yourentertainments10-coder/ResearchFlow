@@ -180,6 +180,7 @@ def normalise(
         source_url=parsed.source_url,
         source_note=parsed.source_note,
         parsed=parsed,
+        external_key=parsed.external_key or None,
     )
 
 

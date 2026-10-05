@@ -30,3 +30,4 @@ class ParsedResult(BaseModel):
     date: str = ""
     source_url: str = ""
     source_note: str = ""
+    external_key: str = ""  # the source's own event id when it has one (portal event code)

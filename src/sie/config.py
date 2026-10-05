@@ -30,7 +30,14 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql://sie:sie@localhost:5432/sie"
     data_dir: Path = Path("data")
-    competition_id: str = "asiad-2026"
+    competition_id: str = (
+        "asiad-2026"  # the competition code this run loads (reference table `competitions`)
+    )
+    raw_store_backend: str = (
+        "fs"  # where raw bytes live: fs (data/raw) or db (raw_blobs); docs/DATABASE.md s4
+    )
+    manual_csv_max_rows: int = 20000
+    manual_csv_max_cell_chars: int = 500
     http_user_agent: str = "SIE-research/0.1 (set HTTP_USER_AGENT with a contact address)"
     http_min_interval_seconds: float = 2.0
     source_priority: str = "official,manual"  # tie-break input only (docs/DATA_PIPELINE.md s7)

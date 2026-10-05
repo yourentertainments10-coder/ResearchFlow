@@ -57,22 +57,66 @@ def seed_reference_cmd(
         typer.echo(f"{name:>16}: {count}")
 
 
-@app.command("load-capture")
-def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
-    """Load a portal capture (JSON from the browser snippet) into the database. Safe to rerun."""
-    from sie.load import LoadError, load_placings, parse_capture
+def _ingest(src, settings) -> None:
+    from sie.pipeline.load import LoadError
+    from sie.pipeline.runner import run_ingest
 
-    engine = make_engine(get_settings())
-    placings, raw = parse_capture(path)
     try:
-        with engine.begin() as conn:
-            result = load_placings(conn, placings, raw, path.name)
+        result = run_ingest(make_engine(settings), src, settings)
     except LoadError as exc:
         typer.echo(f"load error: {exc}", err=True)
         raise typer.Exit(code=2) from exc
     typer.echo(
-        f"events: {result.events}  placings: {result.placings}  raw unchanged: {result.raw_unchanged}"
+        f"run {result.run_id} {result.status}: raw {result.raw_outcome}, events {result.events}, "
+        f"placings {result.placings}, quarantined {result.rows_quarantined}, "
+        f"duplicates skipped {result.duplicates_skipped}"
     )
+    for warning in result.warnings:
+        typer.echo(f"warning: {warning}", err=True)
+    if result.status != "success":
+        typer.echo(f"failed: {result.error}", err=True)
+        raise typer.Exit(code=1)
+
+
+@app.command("load-capture")
+def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Load a portal capture (JSON from the browser snippet) into the database. Safe to rerun."""
+    from sie.pipeline.runner import SourceInput
+    from sie.sources.bornan.to_parsed import SOURCE, capture_to_parsed
+
+    settings = get_settings()
+    competition = settings.competition_id
+    src = SourceInput(
+        source=SOURCE,
+        url=f"capture:{path.name}",
+        content=path.read_bytes(),
+        content_type="application/json",
+        extension="json",
+        parse=lambda raw: capture_to_parsed(raw, competition),
+    )
+    _ingest(src, settings)
+
+
+@app.command("import-csv")
+def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Import a manual results CSV (docs/DATA_PIPELINE.md section 9). Safe to rerun."""
+    from sie.pipeline.runner import SourceInput
+    from sie.sources.manual.parser import SOURCE, parse_manual_csv
+
+    settings = get_settings()
+    src = SourceInput(
+        source=SOURCE,
+        url=f"file://{path.name}",
+        content=path.read_bytes(),
+        content_type="text/csv",
+        extension="csv",
+        parse=lambda raw: parse_manual_csv(
+            raw,
+            max_rows=settings.manual_csv_max_rows,
+            max_cell_chars=settings.manual_csv_max_cell_chars,
+        ),
+    )
+    _ingest(src, settings)
 
 
 MIN_PASSWORD_LENGTH = 16

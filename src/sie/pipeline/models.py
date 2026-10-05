@@ -83,6 +83,7 @@ class NormalisedResult:
     source_url: str
     source_note: str
     parsed: ParsedResult
+    external_key: str | None = None
 
     @property
     def event_key(self) -> tuple[int, str, str]:

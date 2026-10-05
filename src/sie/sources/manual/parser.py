@@ -14,6 +14,7 @@ import io
 
 from sie.sources.base import ParsedResult
 
+SOURCE = "manual"  # the source name stored on runs, raw documents and placings
 REQUIRED_COLUMNS = frozenset({"competition", "sport", "event", "medal", "country"})
 OPTIONAL_COLUMNS = frozenset(
     {
