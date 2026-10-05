@@ -20,11 +20,20 @@ CAPTURED_ISO = "2026-10-04T16:21:31Z"  # time of the owner capture (capture file
 TEMPLATE = (Path(__file__).parent / "web" / "dashboard.html").read_text(encoding="utf-8")
 
 
+def _event_count(df: pd.DataFrame) -> int:
+    """Distinct events. A portal event code is only unique within its discipline."""
+    if "event_id" in df.columns:
+        return int(df["event_id"].nunique())
+    return df.groupby(["discipline", "event_code"]).ngroups
+
+
 def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path:
     df = pd.read_csv(placings_csv).fillna({"date": ""})
+    # Until the committed reports are regenerated, placings.csv may still carry the portal event code.
+    event_col = "event_id" if "event_id" in df.columns else "event_code"
     data = [
         {
-            "c": r.country_code, "cn": r.country_name, "s": r.discipline_name, "e": r.event_id,
+            "c": r.country_code, "cn": r.country_name, "s": r.discipline_name, "e": getattr(r, event_col),
             "en": r.event_name, "g": r.gender, "m": r.medal, "d": r.date,
         }
         for r in df.itertuples()
@@ -47,7 +56,7 @@ def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path
 def main() -> None:
     root = Path(__file__).resolve().parents[2]
     df = pd.read_csv(root / "reports/placings.csv")
-    events = int(df["event_id"].nunique())
+    events = _event_count(df)
     site = root / "site"
     path = build(root / "reports/placings.csv", CAPTURED_ISO, site / "index.html", events)
     shutil.copy(

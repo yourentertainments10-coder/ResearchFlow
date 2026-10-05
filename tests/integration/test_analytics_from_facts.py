@@ -117,8 +117,8 @@ def expected(sheet: str) -> pd.DataFrame:
 
 
 def same(actual: pd.DataFrame, wanted: pd.DataFrame, keys: list[str], columns: list[str]) -> None:
-    a = actual.sort_values(keys).reset_index(drop=True)[columns]
-    w = wanted.sort_values(keys).reset_index(drop=True)[columns]
+    a = actual.sort_values(keys).reset_index(drop=True)[columns].rename_axis(columns=None)
+    w = wanted.sort_values(keys).reset_index(drop=True)[columns].rename_axis(columns=None)
     pd.testing.assert_frame_equal(a, w, check_dtype=False, check_exact=False, atol=1e-9)
 
 
@@ -234,10 +234,8 @@ def test_facts_frame_gives_the_same_metrics_as_the_parsed_placings_it_replaces(s
     with seeded.connect() as c:
         new = analysis_frame(load_medal_facts(c, competition_id(c, "asiad-2026")), CODES)
     old = placings_frame([p for rows in medals.values() for p in parse_medal_rows(rows)])
-    keys, cols = (
-        ["country_code", "discipline_name"],
-        ["country_code", "discipline_name", "Gold", "Silver", "Bronze", "Total"],
-    )
+    keys = ["country_code", "sport"]
+    cols = ["country_code", "sport", "Gold", "Silver", "Bronze", "Total"]
     same(country_sport(new), country_sport(old), keys, cols)
     assert len(new) == len(old)
     assert (
