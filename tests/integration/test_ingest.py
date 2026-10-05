@@ -436,3 +436,144 @@ def test_an_unseeded_database_is_a_setup_error_not_a_failed_run(engine, settings
     with pytest.raises(LoadError, match="seed-reference"):
         run_ingest(engine, csv_source("golden.csv", settings), settings)
     assert count(engine, "SELECT count(*) FROM ingest_runs") == 0
+
+
+# --- verification added before merge: exact acceptance results, failure recovery, side effects ----------
+
+PODIUMS = """
+    SELECT e.name, p.medal, p.slot, c.code, p.is_tie
+    FROM placings p
+    JOIN events e ON e.id = p.event_id
+    JOIN countries c ON c.id = p.country_id
+    WHERE p.is_current
+    ORDER BY e.name, p.medal, p.slot
+"""
+
+# Written out by hand, not derived from the CSV: this is the acceptance result for golden.csv.
+GOLDEN_EXPECTED = sorted(
+    [
+        ("Recurve Men's Individual", "Gold", 1, "IND", False),
+        ("Recurve Men's Individual", "Silver", 1, "KOR", False),
+        ("Recurve Men's Individual", "Bronze", 1, "CHN", False),
+        ("Compound Women's Team", "Gold", 1, "IND", False),
+        ("Compound Women's Team", "Silver", 1, "KOR", False),
+        ("Compound Women's Team", "Bronze", 1, "CHN", False),
+        ("Men's 57kg", "Gold", 1, "CHN", False),
+        ("Men's 57kg", "Silver", 1, "IND", False),
+        ("Men's 57kg", "Bronze", 1, "KOR", False),
+        ("Men's 57kg", "Bronze", 2, "JPN", False),
+        ("Men's 100m", "Gold", 1, "JPN", True),
+        ("Men's 100m", "Gold", 2, "KOR", True),
+        ("Men's 100m", "Bronze", 1, "IND", False),
+    ]
+)
+
+
+def podiums(engine):
+    with engine.connect() as c:
+        return sorted(tuple(r) for r in c.execute(text(PODIUMS)))
+
+
+def test_golden_csv_produces_exactly_the_expected_podiums(seeded, settings):
+    run_ingest(seeded, csv_source("golden.csv", settings), settings)
+    assert podiums(seeded) == GOLDEN_EXPECTED
+    # and the reporting view the analytics will read agrees with the placings
+    assert count(seeded, "SELECT count(*) FROM v_medal_facts") == len(GOLDEN_EXPECTED)
+
+
+def test_golden_reallocation_changes_exactly_one_placing_and_keeps_the_old_one(seeded, settings):
+    run_ingest(seeded, csv_source("golden.csv", settings), settings)
+    run_ingest(seeded, csv_source("golden_reallocated.csv", settings), settings)
+    expected = [
+        ("Recurve Men's Individual", "Gold", 1, "CHN", False)
+        if row[:4] == ("Recurve Men's Individual", "Gold", 1, "IND")
+        else row
+        for row in GOLDEN_EXPECTED
+    ]
+    assert podiums(seeded) == sorted(expected)
+    with seeded.connect() as c:
+        old = c.execute(
+            text(
+                """SELECT c.code, p.is_current, p.valid_to IS NOT NULL AS closed, p.id
+                   FROM placings p JOIN countries c ON c.id = p.country_id
+                   JOIN events e ON e.id = p.event_id
+                   WHERE e.name = 'Recurve Men''s Individual' AND p.medal = 'Gold' AND NOT p.is_current"""
+            )
+        ).one()
+        new = c.execute(
+            text(
+                """SELECT p.supersedes_id FROM placings p JOIN events e ON e.id = p.event_id
+                   WHERE e.name = 'Recurve Men''s Individual' AND p.medal = 'Gold' AND p.is_current"""
+            )
+        ).scalar_one()
+        history = c.execute(
+            text(
+                """SELECT oc.code, nc.code FROM placing_history h
+                   JOIN countries oc ON oc.id = h.old_country_id
+                   JOIN countries nc ON nc.id = h.new_country_id
+                   WHERE h.change_type = 'reallocated'"""
+            )
+        ).all()
+    assert (old.code, old.is_current, old.closed) == ("IND", False, True)
+    assert new == old.id  # the new version points back at the one it replaced
+    assert [tuple(r) for r in history] == [("IND", "CHN")]
+
+
+@pytest.mark.parametrize("backend", ["fs", "db"])
+def test_a_failed_load_leaves_no_partial_data_and_a_rerun_recovers(seeded, settings, backend):
+    settings = settings.model_copy(update={"raw_store_backend": backend})
+    raw_dir = settings.data_dir / "raw"
+    src = csv_source("golden.csv", settings)
+    with seeded.begin() as c:
+        c.execute(text("UPDATE competitions SET official_event_total = 1"))  # forces a late failure
+
+    failed = run_ingest(seeded, src, settings)
+    assert failed.status == "failed"
+    for table in ("placings", "placing_history", "events", "quarantine"):
+        assert count(seeded, f"SELECT count(*) FROM {table}") == 0, table  # nothing half-loaded
+    with seeded.connect() as c:  # the input and the failure are both on record
+        assert read_raw(c, failed.raw_version_id, raw_dir) == src.content
+        status, error = c.execute(text("SELECT status, error_summary FROM ingest_runs")).one()
+    assert status == "failed" and error
+
+    with seeded.begin() as c:  # the owner fixes the cause and runs the same file again
+        c.execute(text("UPDATE competitions SET official_event_total = NULL"))
+    ok = run_ingest(seeded, src, settings)
+    assert ok.status == "success", ok.error
+    assert ok.raw_outcome == "unchanged" and ok.raw_version_id == failed.raw_version_id
+    assert podiums(seeded) == GOLDEN_EXPECTED
+    assert count(seeded, "SELECT count(*) FROM raw_versions") == 1  # no second copy of the input
+    with seeded.connect() as c:
+        statuses = c.execute(text("SELECT status FROM ingest_runs ORDER BY id")).scalars().all()
+    assert statuses == ["failed", "success"]
+
+
+def test_a_rerun_adds_only_its_own_run_and_fetch_records(seeded, settings):
+    run_ingest(seeded, csv_source("golden.csv", settings), settings)
+    tables = (
+        "placings",
+        "placing_history",
+        "events",
+        "raw_documents",
+        "raw_versions",
+        "raw_blobs",
+        "quarantine",
+        "entrants",
+    )
+    before = {t: count(seeded, f"SELECT count(*) FROM {t}") for t in tables}
+    runs, fetches = (
+        count(seeded, f"SELECT count(*) FROM {t}") for t in ("ingest_runs", "raw_fetches")
+    )
+    run_ingest(seeded, csv_source("golden.csv", settings), settings)
+    assert {t: count(seeded, f"SELECT count(*) FROM {t}") for t in tables} == before
+    assert count(seeded, "SELECT count(*) FROM ingest_runs") == runs + 1  # the run itself is logged
+    assert count(seeded, "SELECT count(*) FROM raw_fetches") == fetches + 1
+    assert podiums(seeded) == GOLDEN_EXPECTED
+
+
+def test_run_counts_match_what_was_loaded_and_quarantined(seeded, settings):
+    result = run_ingest(seeded, csv_source("golden_with_bad_rows.csv", settings), settings)
+    placed = count(seeded, "SELECT count(*) FROM placings WHERE is_current")
+    quarantined = count(seeded, "SELECT count(*) FROM quarantine WHERE NOT resolved")
+    assert (result.rows_seen, placed, quarantined) == (16, 13, 3)
+    assert result.rows_seen == placed + quarantined + result.duplicates_skipped
