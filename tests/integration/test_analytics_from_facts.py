@@ -342,7 +342,7 @@ def test_every_medal_keeps_the_date_the_source_gave_it(verified):
     frozen = Counter(
         (
             r["discipline_name"],
-            r["event_name"],
+            " ".join(r["event_name"].split()),  # the loader collapses repeated spaces
             r["gender"],
             r["medal"],
             r["country_code"],
