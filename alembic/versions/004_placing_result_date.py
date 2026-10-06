@@ -19,9 +19,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    sql = (files("sie.db") / "sql" / "004_placing_result_date.sql").read_text(
-        encoding="utf-8"
-    )
+    sql = (files("sie.db") / "sql" / "004_placing_result_date.sql").read_text(encoding="utf-8")
     op.get_bind().exec_driver_sql(sql)
 
 
