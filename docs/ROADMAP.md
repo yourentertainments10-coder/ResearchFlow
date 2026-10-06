@@ -42,7 +42,7 @@ Acceptance: golden dataset matches expected outputs exactly; invariants pass; `s
 Tasks: pages listed in `ARCHITECTURE.md`, filters (country, sport, gender, medal, date), completeness and reconciliation banners, export buttons.
 Acceptance: each page renders against the test database and the real database; a viewer can answer "which sports power country X and how do its women compare" within a minute.
 
-## Phase 6: Automation and operations  [S to M]  (status: foundations built, 2026-10-06: failure categories and retry contract, run summary and outcome, source freshness, `sie run-summary` and `sie source-status`; see `DATA_PIPELINE.md` section 12. 6A built 2026-10-06: scheduler command and workflow, retry executor, advisory lock, stuck-run recovery. Notifications, health job, backup/restore, publish and a real portal fetcher are not built)
+## Phase 6: Automation and operations  [S to M]  (status: foundations built, 2026-10-06: failure categories and retry contract, run summary and outcome, source freshness, `sie run-summary` and `sie source-status`; see `DATA_PIPELINE.md` section 12. 6A built 2026-10-06: scheduler command and workflow, retry executor, advisory lock, stuck-run recovery. 6B built 2026-10-06: `sie health`, alert contract, notifier abstraction. Backup/restore, publish, a concrete delivery channel and a real portal fetcher are not built)
 Tasks: scheduler on the chosen runner (ADR-016), single-writer lock (Postgres advisory lock), failure and staleness notifications, source health check, nightly backup with a tested restore, `sie publish` export bundle, run history page.
 Acceptance: three consecutive unattended scheduled runs succeed; a deliberately broken source triggers an alert.
 

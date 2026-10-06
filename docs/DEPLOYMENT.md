@@ -39,6 +39,8 @@ Cost note: this setup uses free plans only, so it has limits and can change. If 
 
 Status of the pipeline workflow: `.github/workflows/refresh.yml` exists and runs on demand only (`workflow_dispatch`), ingesting a file through the scheduler (lock, retries, stuck-run recovery). It has no cron until the portal's terms are cleared (D1); see `DATA_PIPELINE.md` section 12.
 
+Alerts: `sie health` (JSON, exit 1 on any alert) is meant to run after each scheduled refresh; add `SCHEDULED_SOURCES` to the environment. Only the log channel exists; `NOTIFY_WEBHOOK_URL` is not wired yet.
+
 ## 4. Environments
 | Env | Database | Purpose |
 |-----|----------|---------|

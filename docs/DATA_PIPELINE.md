@@ -166,4 +166,24 @@ Code: `src/sie/pipeline/scheduler.py`, `src/sie/db/locks.py`; commands `sie sche
 - **Stuck runs.** After taking the lock, the scheduler closes this source's runs still `running` and older than 1 hour as `failed` with the text "abandoned: ...". They get no failure category (the locked categories are unchanged). `sie recover-stuck` does the same for any or all sources. Only `ingest_runs` is touched.
 - **No fetcher for the official portal is registered.** Its terms are unresolved (D1), so the scheduler runs a file supplied by the owner through the same path a future fetcher will use. The workflow is `workflow_dispatch` only; a cron is added when D1 is cleared.
 
-**Not built yet (remaining Phase 6):** notifications and alerts, the source health job, backup with a tested restore, the `sie publish` bundle, and a real portal fetcher (blocked on D1).
+### Source health and alerts (Phase 6B, built)
+Code: `src/sie/pipeline/health.py`, `alerts.py`, `notify.py`; command `sie health`. It reads freshness (`freshness.py`) and adds no new classification: `fresh`, `stale`, `failing` and `never_succeeded` keep the meaning above, and read-only throughout.
+
+**Health contract** (`SourceHealth`, one per source, evaluated independently): the freshness status; last successful run and last failed run (id, time, failure category, error detail); `consecutive_failures` (failed runs since the last success, or all failed runs if none ever succeeded; a run closed as abandoned counts as one failure); stuck run ids; last change time, fingerprint and raw artifact references. `never_succeeded` (no good data yet, including a source that has not run at all) is a different state from `stale` (had good data, it aged out) and `failing` (the latest finished attempt failed after a success).
+
+**Alert contract** (`evaluate_alerts`, pure and deterministic, level-triggered):
+| Alert | Condition | Severity | Threshold source |
+|-------|-----------|----------|------------------|
+| `never_succeeded` | status `never_succeeded` | critical | none |
+| `repeated_failures` | `consecutive_failures >= 3` | critical | the fetch attempt limit of the retry contract (`RETRY_RULES`), so one scheduled run that exhausts its fetch retries already alerts; a single failure does not, it may be retried |
+| `stale` | status `stale` | warning | `FRESHNESS_THRESHOLD_MINUTES` |
+| `stuck_runs` | a run `running` longer than the stuck age | warning | the scheduler's 1 hour (`--stuck-after-minutes`) |
+A healthy source raises nothing. Each alert has a stable `key` (`competition:source:kind`) and evidence (counts, run ids, last error). Alerts are produced for as long as the condition holds; remembering what was already sent is the delivery layer's job (`partition_alerts` splits new, still active and resolved against the previous keys).
+
+**Sources checked:** `--source` (repeatable), otherwise `SCHEDULED_SOURCES` (new, comma separated; the sources expected to refresh, so a source that never started still alerts) plus every source that has a run.
+
+**Notifications:** `Notifier.send(alerts) -> DeliveryResult`. Built in: `LogNotifier` (the only channel; critical as error, warning as warning) and `RecordingNotifier` (tests). `deliver()` never raises, reports every alert a channel lost or dropped, and sends nothing for an empty batch. No external provider is wired; a webhook adapter for `NOTIFY_WEBHOOK_URL` is a later, small addition.
+
+**Command:** `sie health` prints one deterministic JSON report (sorted keys, sources sorted) and exits 1 if any alert exists. `sie source-status` is kept unchanged: it reports a single source's freshness; `sie health` is new because it covers several sources and adds failure counts, stuck runs and alerts.
+
+**Not built yet (remaining Phase 6):** backup with a tested restore (6C), the `sie publish` bundle (6D), a concrete delivery channel and alert de-duplication state, alerting on a first non-auto-retryable failure (parse, validation, raw-store) before it repeats, and a real portal fetcher with its cron (blocked on D1).

@@ -256,3 +256,51 @@ def source_status(
     typer.echo(json.dumps(result.to_dict(), indent=2))
     if result.status != Freshness.FRESH:
         raise typer.Exit(code=1)
+
+
+@app.command("health")
+def health(
+    source: list[str] = typer.Option(
+        None,
+        "--source",
+        help="Source to check; repeat for several. Default: configured and seen sources.",
+    ),
+    stuck_after_minutes: int = typer.Option(
+        60, help="A run still 'running' after this long is stuck."
+    ),
+    notify: bool = typer.Option(True, help="Send alerts through the log notifier."),
+) -> None:
+    """Check every source's health and print JSON with the alerts. Exit 1 if any alert is raised.
+
+    Why not `source-status`: that command reports one source's freshness. This one covers several
+    sources at once, adds failure counts and stuck runs, and produces the alert list.
+    """
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sie.pipeline.health import check_health, discover_sources
+    from sie.pipeline.notify import LogNotifier, deliver
+
+    settings = get_settings()
+    with make_engine(settings).connect() as conn:
+        sources = (
+            list(source)
+            if source
+            else sorted(
+                set(settings.scheduled_source_list)
+                | set(discover_sources(conn, settings.competition_id))
+            )
+        )
+        report = check_health(
+            conn,
+            settings.competition_id,
+            sources,
+            datetime.now(UTC),
+            max_age=timedelta(minutes=settings.freshness_threshold_minutes),
+            stuck_after=timedelta(minutes=stuck_after_minutes),
+        )
+    typer.echo(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+    if notify:
+        deliver(LogNotifier(), report.alerts)
+    if report.alerts:
+        raise typer.Exit(code=1)

@@ -171,6 +171,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** An overlap is silent apart from a log line and exit 0; alerting on it belongs to Phase 6B. A non-scheduler run (`import-csv`) does not take the lock. If it runs longer than the stuck threshold while a scheduled run starts, the scheduler would close it; raise `--older-than` or route all runs through `scheduled-run`.
 - **Decided by:** the owner's Phase 6A brief (2026-10-06).
 
+## ADR-027: Health composes freshness; thresholds are existing numbers; no provider coupling
+
+- **Context:** Phase 6B needs health states, alert conditions and a way to deliver alerts, without redefining ADR-025/026 or choosing a provider.
+- **Decision:** `SourceHealth` wraps `SourceFreshness` and adds failure history and stuck runs; it never reclassifies freshness. Alert thresholds reuse existing numbers: `FRESHNESS_THRESHOLD_MINUTES`, the fetch attempt limit (3) for repeated failures, the scheduler's stuck age. The one new setting is `SCHEDULED_SOURCES`, because "expected to run" cannot be derived from runs that never happened. Delivery is a `Notifier` protocol with a log channel; `deliver()` never raises.
+- **Consequences:** Alerts are level-triggered and stateless, so a channel that sends them must de-duplicate by `key`. A first parse, validation or raw-store failure does not alert until it repeats or the data goes stale. No `failure_category` column was added: nothing here needs to query by category.
+- **Decided by:** the owner's Phase 6B brief (2026-10-06).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

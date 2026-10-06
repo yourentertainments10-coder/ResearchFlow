@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     http_min_interval_seconds: float = 2.0
     source_priority: str = "official,manual"  # tie-break input only (docs/DATA_PIPELINE.md s7)
     freshness_threshold_minutes: int = 30
+    # Sources expected to refresh on a schedule (comma separated). `sie health` checks these even if
+    # they have never run, so a source that never started raises an alert. Empty: only sources that ran.
+    scheduled_sources: str = ""
     log_level: str = "INFO"
     # Used only by `sie db-roles` (run once by the schema owner), never by the pipeline or dashboard.
     sie_reader_password: str | None = None
@@ -53,6 +56,10 @@ class Settings(BaseSettings):
     @classmethod
     def _normalise_url(cls, v: str) -> str:
         return normalise_database_url(v)
+
+    @property
+    def scheduled_source_list(self) -> list[str]:
+        return [s.strip() for s in self.scheduled_sources.split(",") if s.strip()]
 
     @property
     def source_priority_list(self) -> list[str]:

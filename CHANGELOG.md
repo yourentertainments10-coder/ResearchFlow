@@ -2,6 +2,10 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Phase 6B source health and alerts
+- `sie health`: per-source health (fresh, stale, failing, never_succeeded) with last success and failure, consecutive failures, stuck runs, fingerprint and raw artifact references.
+- Alert contract (never_succeeded, repeated_failures, stale, stuck_runs) using existing thresholds; notifier abstraction with a log channel; new setting `SCHEDULED_SOURCES`. ADR-027. No schema, analytics, report or dashboard changes.
+
 ## Phase 6A scheduler, retries, locking
 - `sie scheduled-run` and `sie recover-stuck`; per-source PostgreSQL advisory lock; fetch retry (3 attempts, backoff) and one load retry, applied from the existing retry rules; no automatic retry for parse, validation or raw-store failures; stuck runs closed as failed.
 - `refresh.yml` workflow (manual dispatch only until the portal terms are cleared). ADR-026. No schema, analytics, report or dashboard changes.
