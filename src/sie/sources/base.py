@@ -31,3 +31,4 @@ class ParsedResult(BaseModel):
     source_url: str = ""
     source_note: str = ""
     external_key: str = ""  # the source's own event id when it has one (portal event code)
+    country_label: str = ""  # the source's own name for the country, kept as provenance only

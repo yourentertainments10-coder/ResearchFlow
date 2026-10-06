@@ -34,6 +34,7 @@ def placings_to_parsed(placings: list[ParsedPlacing], competition: str) -> list[
             gender=p.gender,
             medal=p.medal,
             country=p.country_code,
+            country_label=p.country_name,
             participation="Team" if (p.discipline, p.event_code) in team_events else "Individual",
             slot=str(p.slot),
             # Two placings of one medal are marked as a tie. The validator decides what a second

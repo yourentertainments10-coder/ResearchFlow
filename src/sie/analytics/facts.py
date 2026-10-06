@@ -4,6 +4,9 @@ docs/ANALYTICS_SPEC.md: all metrics are computed from ``v_medal_facts``. Nothing
 parsed placings, capture files or the raw store to count medals. The only other inputs are the
 official tables, used as independent references to check our numbers against, never to produce them.
 
+Names: ``sport`` is the official sport (49), ``discipline`` the source's finer split (59); ``country``
+is the reference name, whatever the source called the country.
+
 Grain: one row per country medal (a placing is current, credited to one country).
 """
 
@@ -31,6 +34,8 @@ FACT_COLUMNS = (
     "event_date",
     "is_disputed",
     "entrant",
+    "result_date",
+    "source_country",
 )
 MEDALS = ("Gold", "Silver", "Bronze")
 GENDERS = ("Men", "Women", "Mixed")
@@ -59,7 +64,8 @@ def load_medal_facts(conn: Connection, competition: int) -> pd.DataFrame:
     rows = conn.execute(
         text(
             """SELECT competition_id, event_id, placing_id, medal, slot, is_tie, country_code, country,
-                      sport, discipline, gender, participation, event, event_date, is_disputed, entrant
+                      sport, discipline, gender, participation, event, event_date, is_disputed, entrant,
+                      result_date, source_country
                FROM reporting.medal_facts
                WHERE competition_id = :c
                ORDER BY event_id, medal, slot, country_code"""
@@ -90,7 +96,13 @@ def analysis_frame(facts: pd.DataFrame, discipline_codes: dict[str, str]) -> pd.
             "gender": facts["gender"],
             "medal": facts["medal"],
             "slot": facts["slot"],
-            "date": facts["event_date"].map(lambda d: d.isoformat() if pd.notna(d) else ""),
+            # The day this medal was decided, not the event's latest date: 55 events are decided on
+            # several days, and a medal timeline must put each medal on its own day (ADR-025).
+            "date": facts["result_date"].map(lambda d: d.isoformat() if pd.notna(d) else ""),
+            "event_date": facts["event_date"].map(lambda d: d.isoformat() if pd.notna(d) else ""),
+            # What the source called the country; analytics and display use ``country_name``
+            # (the reference name), this is provenance only (ADR-026).
+            "source_country": facts["source_country"],
         }
     )
 

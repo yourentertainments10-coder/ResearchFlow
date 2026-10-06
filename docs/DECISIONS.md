@@ -157,6 +157,23 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Documentation only. Nothing is implemented by this ADR. Phase 4 stays the immediate engineering priority. Roadmap phase numbers are unchanged; Phase 7 gains acceptance criteria and a "Research query layer" milestone follows it.
 - **Decided by:** the owner (2026-10-05).
 
+## ADR-025: A medal keeps the date it was decided
+
+- **Context:** `events.event_date` holds one date per event, the latest one the source gave. Counted per real event, 53 events are decided on more than one day and 106 medals fall on a different day than their event's latest date. A medal timeline built from the event date moves those medals to later days. (Earlier notes said 55 events and 288 medals: that came from grouping by the portal's event code, which merges different events of different disciplines.) Three Modern Pentathlon medals have no date in the source at all.
+- **Decision:** migration 004 adds `placings.result_date` (nullable `DATE`), set by the loader from each row's own date and exposed as `v_medal_facts.result_date`. `events.event_date` stays as the event's latest date. A source that gives no date leaves it `NULL`; `apply_placing` never invents one. A date arriving for a current placing that has none is filled in place (nothing was claimed before); a different date for a placing that has one is a correction and keeps the old version. Timelines count undated medals on a final `undated` row, so the last cumulative row equals the country medal table.
+- **Consequence:** a database loaded before migration 004 gets its dates when the capture is loaded again. Tests pin 53 multi-date events, 106 re-dated medals, 3 undated medals and the timeline totals.
+
+## ADR-026: Reference country names in analytics, source names kept as provenance
+
+- **Context:** The portal names countries its own way ("Republic of Korea", "People's Republic of China"); 8 of the 40 differ from the reference names ("South Korea", "China").
+- **Decision:** Analytics and the dashboard show the reference name (`countries.name`, already what `v_medal_facts.country` returns). Migration 004 also adds `placings.source_country`, the country label exactly as the source wrote it, set by the loader and never compared or used to match anything. Matching still goes through `country_aliases`.
+- **Consequence:** the portal's wording stays available for audit and for debugging aliases; no analytics table contains a source-specific name.
+
+## ADR-020 and ADR-019 applied to analytics (clarification)
+
+- The `sport` dimension of every analytics table is the official sport (49). The source's 59 disciplines stay available as `discipline` (`country_sport(df, "discipline")`, the report's discipline sheets, the `Placings` export). Official per-discipline reconciliation is unchanged because the portal's standings are keyed by discipline.
+- `Open` stays its own gender category in all analytics. `reconcile` and `reconcile_official_table` fold Open into Mixed because the official table has no Open column. The dashboard's Open toggle (official or separate) only changes the view.
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

@@ -59,6 +59,8 @@ def load_placed(
                 now=now,
                 run_id=run_id,
                 is_tie=item.row.is_tie,
+                result_date=item.row.event_date,
+                source_country=item.row.parsed.country_label or item.row.parsed.country or None,
             )
             _record_source_note(conn, event_id, item, change)
             counts[change] += 1
