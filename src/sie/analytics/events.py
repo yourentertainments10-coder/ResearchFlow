@@ -16,6 +16,8 @@ from sie.sources.bornan.parse_medals import ParsedPlacing
 def placings_frame(placings: list[ParsedPlacing]) -> pd.DataFrame:
     df = pd.DataFrame([p.__dict__ for p in placings])
     df["event_key"] = df["event_code"].str.split(".").str[:2].str.join(".")
+    # Parsed portal rows only know the discipline; the official sport comes from the database facts.
+    df["sport"] = df["discipline_name"]
     return df
 
 

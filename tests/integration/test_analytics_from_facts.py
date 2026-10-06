@@ -318,9 +318,9 @@ def test_facts_frame_gives_the_same_metrics_as_the_parsed_placings_it_replaces(s
     with seeded.connect() as c:
         new = analysis_frame(load_medal_facts(c, competition_id(c, "asiad-2026")), CODES)
     old = placings_frame([p for rows in medals.values() for p in parse_medal_rows(rows)])
-    keys = ["country_code", "sport"]
-    cols = ["country_code", "sport", "Gold", "Silver", "Bronze", "Total"]
-    same(country_sport(new), country_sport(old), keys, cols)
+    keys = ["country_code", "discipline"]
+    cols = ["country_code", "discipline", "Gold", "Silver", "Bronze", "Total"]
+    same(country_sport(new, "discipline"), country_sport(old, "discipline"), keys, cols)
     assert len(new) == len(old)
     assert (
         new.groupby(["gender", "medal"]).size().to_dict()
@@ -354,7 +354,7 @@ def test_every_medal_keeps_the_date_the_source_gave_it(verified):
         zip(verified["discipline_name"], verified["event_name"], verified["gender"],
             verified["medal"], verified["country_code"], verified["date"], strict=True)
     )  # fmt: skip
-    assert ours == frozen
+    assert ours - frozen == frozen - ours == Counter()
     # The portal gives no date for the three Modern Pentathlon men's individual medals: they stay
     # undated rather than being given their event's date.
     undated = verified[verified["date"] == ""]
