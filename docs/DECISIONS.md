@@ -145,10 +145,22 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Open:** whether the dashboard stays public is still D3 (owner).
 - **Consequence:** the dashboard reads the exported `placings.csv`, which is now produced from `reporting.medal_facts`; it has not been regenerated yet.
 
+## ADR-024: Asian Games is the first dataset, not the product boundary
+
+- **Context:** The only data so far is Asian Games 2026, and the dashboard and reports say so. Without a stated rule the core could grow Asian-Games-specific assumptions, and a later research-query or AI layer could blur facts and generated text.
+- **Decision:**
+  1. The product is a competition-agnostic sports research engine (`PRODUCT_VISION.md`). `competition_id` stays the boundary between competitions. A new competition is added through metadata, an adapter, parser configuration, reference mappings and validation rules, never by changing the core analytics.
+  2. Multi-competition support is not claimed until a second-competition fixture passes the proof listed in `PRODUCT_VISION.md` section 3 (Phase 7).
+  3. A future research query layer compiles questions into a deterministic, testable plan over the canonical data. It starts with a small enumerated set of questions, not an open agent. The plan shape is decided later, against the Phase 4 analytics API.
+  4. Raw source data, normalised data, analytical results, external evidence and generated explanation are separate layers and are never mixed.
+  5. AI only explains verified results. It never computes numbers, edits facts or hides conflicts.
+- **Consequences:** Documentation only. Nothing is implemented by this ADR. Phase 4 stays the immediate engineering priority. Roadmap phase numbers are unchanged; Phase 7 gains acceptance criteria and a "Research query layer" milestone follows it.
+- **Decided by:** the owner (2026-10-05).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
 | D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). **Open: the portal's terms of use (owner).** Automated fetching in Phase 3 waits for it; manual CSV import is the fallback |
 | D2 | Where data lives between scheduled runs | Resolved by ADR-016 |
 | D3 | Public or private dashboard | Phase 5 |
-| D4 | Include LLM explainer | Phase 7 |
+| D4 | Include LLM explainer | Phase 7 (constraints fixed by ADR-024) |

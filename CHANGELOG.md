@@ -2,6 +2,20 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Product direction (documentation only)
+- Added `docs/PRODUCT_VISION.md` and ADR-024: competition-agnostic engine, extension contract, second-competition proof criteria, research query and evidence layers, constrained role of AI. Roadmap Phase 7 gains acceptance criteria; a research query layer follows it. Everything beyond Asian Games 2026 is marked planned. No code changes.
+
+## Dashboard usability pass
+- Timeline: picking a 6th country replaces the oldest; any country can be added.
+- Gender: neutral title; per-country view has Men/Women/Mixed(/Open) toggle.
+- Searchable dropdowns show a chevron; compare bars use a fixed-width track; table filters on Countries and Sports; type scale and radii consolidated; one button and selected style; info icons no longer add a stray "i" to headings.
+
+## Dashboard P0-P3 review fixes
+- Trend lines end at the table totals (341/150): 3 undated medals shown as a labelled last point.
+- Open vs Mixed toggle (4 gender buckets), corrected Open-events wording.
+- Methodology: source link, 3-step pipeline, per-sport validation table (59/59).
+- New sports leaderboard, all-country overview, gender page, richer timeline (gold toggle, rank over time, peak days), explorer filters, searchable dropdowns, route aliases, not-found state, nav/KPI/disclaimer cleanup.
+
 ## [Unreleased]
 - Event-level analytics read `reporting.medal_facts` (`src/sie/analytics/facts.py`); `full_report.load` takes the facts frame and uses the capture file only for the official per-discipline standings it reconciles against. Metric functions unchanged. Regression tests load the 1568 frozen placings through the real ingestion path and compare every metric table with the frozen verified report (`tests/fixtures/expected/`). Fixes found on the way: a tied bronze (Women's Pole Vault) would have been quarantined; the portal converter judged ties and team events per event code although codes repeat across disciplines. `site/` and `reports/` not regenerated.
 - One canonical ingestion path (ADR-021): `pipeline/raw.py` (versioned raw store, `fs` or `db`), `pipeline/load.py`, `pipeline/runner.py`; `sie load-capture` and the new `sie import-csv` share it. `sie/load.py` removed. Unknown country, sport or gender now quarantine the row instead of failing the load; `ingest_runs` records source, counts and errors. Migration 003 (ADR-022) adds `raw_blobs`, `storage_backend`, `placings.source_note`, `ingest_runs.source`. Golden CSVs in `tests/fixtures/manual/`. `COMPETITION` is now the `COMPETITION_ID` setting. ADR-020 (sport grouping) and ADR-023 (static dashboard) recorded.

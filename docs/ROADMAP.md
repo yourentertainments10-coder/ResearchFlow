@@ -34,7 +34,7 @@ Why first: it lets analytics and the dashboard be built even before automation o
 Tasks: `SourceAdapter` and `SourceParser` protocols, raw store with version semantics, rate limiter with cache, adapter (fetch only) for the chosen primary source, separate parser tested on fixtures, change detection by hash, conflict policy engine and `sie resolve-conflict`, official medal table adapter and parser, reconciliation.
 Acceptance: one command ingests a full day of results; reconciliation report produced; parser failure on a changed fixture produces a clear error.
 
-## Phase 4: Analytics engine  [M]
+## Phase 4: Analytics engine  [M]  (status: in progress; this is the immediate engineering priority, ahead of anything in Phase 7)
 Tasks: `v_medal_facts`, metric functions per `ANALYTICS_SPEC.md`, invariants tests, snapshots, change detection, exports (CSV, Excel), rule-based insights.
 Acceptance: golden dataset matches expected outputs exactly; invariants pass; `sie analyze` writes all tables listed in the spec.
 
@@ -46,12 +46,17 @@ Acceptance: each page renders against the test database and the real database; a
 Tasks: scheduler on the chosen runner (ADR-016), single-writer lock (Postgres advisory lock), failure and staleness notifications, source health check, nightly backup with a tested restore, `sie publish` export bundle, run history page.
 Acceptance: three consecutive unattended scheduled runs succeed; a deliberately broken source triggers an alert.
 
-## Phase 7: Optional extras  [S each]
-- LLM rewriting of insights with number-lock verification
-- Hindi and English report generation
-- Power BI template reading the exports
-- Second competition adapter (proves extensibility)
-- Athlete-level data and entries (enables true medal efficiency)
+## Phase 7: Expansion  [S to M each, none required for v1]
+Direction and constraints: `PRODUCT_VISION.md`, ADR-024. Each item below has its own acceptance and is built separately.
+- **Second competition (the multi-competition proof)**. Acceptance: a small fixture competition is registered; its data enters the same canonical model; the same analytics functions run unchanged; source parsing stays in the adapter/parser; Asian Games 2026 outputs are unchanged (tests prove all five).
+- **Cross-competition analytics** (after the proof). Acceptance: a comparison (for example a country across two editions) uses canonical IDs only and states when editions are not comparable.
+- **LLM explanation with number-lock verification**. Acceptance: every number in generated text matches a verified result; insufficient evidence yields an explicit refusal, never a guess.
+- **Hindi and English report generation.**
+- **Power BI template reading the exports.**
+- **Athlete-level data and entries** (enables true medal efficiency), if a source provides it.
+
+## After Phase 7: Research query layer  (planned, not started)
+Question to intent to required data to filters to analytical operations to evidence to answer, over the canonical analytics. Starts with a constrained set of question types and a deterministic, testable query plan; never an unrestricted agent. Entry condition: reliable multi-competition data and Phase 4 analytics. Its design contract is in `PRODUCT_VISION.md` sections 5 to 7.
 
 ## Risks and mitigations
 | Risk | Impact | Mitigation |

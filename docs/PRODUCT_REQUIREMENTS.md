@@ -19,7 +19,7 @@ There is no login in v1 (see `SECURITY.md`).
 
 **Out of scope (v1):** athlete-level biographies, betting or prediction models, live commentary, user accounts, mobile app, paid data feeds.
 
-**Later (v2+):** other competitions, athlete-level analytics, LLM written summaries, Hindi/English report generation.
+**Later (v2+):** other competitions, athlete-level analytics, LLM written summaries, Hindi/English report generation, and a constrained research query layer. Direction and constraints: `PRODUCT_VISION.md`. Asian Games 2026 is the first dataset, not the product boundary.
 
 ## 5. Functional requirements
 | ID | Requirement | Acceptance criteria |
@@ -67,7 +67,7 @@ Formal definitions of *event*, *medal placing*, *entrant* and *country medal* ar
 - Each event normally has one Gold, one Silver and one Bronze placing. Combat sports often award **two bronzes**; ties can produce shared placings (`DOMAIN_MODEL.md` section 4).
 - **Team events** count as one medal for the country, not one per athlete.
 - **Mixed** events are their own gender category and never merged into Women or Men.
-- **Open / unspecified** gender events exist (for example some equestrian or sailing classes) and need an `Open` category.
+- **Open / unspecified** gender events exist (in this Games: all Esports and Equestrian events, plus one Artistic Swimming and one Taekwondo event) and need an `Open` category.
 - Medals can be **reallocated** later (doping, disqualification). The history must be preserved and the current state must be correct.
 - A "sport" can contain several **disciplines** (for example Aquatics contains swimming and diving). Analysis must be possible at both levels. Source naming differs, so mapping is required.
 - Neutral or refugee participants may appear under non-country codes. Handle through reference data, not special-case code.
