@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Product direction (documentation only)
+- Added `docs/PRODUCT_VISION.md` and ADR-024: competition-agnostic engine, extension contract, second-competition proof criteria, research query and evidence layers, constrained role of AI. Roadmap Phase 7 gains acceptance criteria; a research query layer follows it. Everything beyond Asian Games 2026 is marked planned. No code changes.
+
 ## Dashboard usability pass
 - Timeline: picking a 6th country replaces the oldest; any country can be added.
 - Gender: neutral title; per-country view has Men/Women/Mixed(/Open) toggle.

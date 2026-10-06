@@ -164,9 +164,20 @@ Environment variables, loaded by `config.py`: `DATABASE_URL` (provider URLs such
 
 ## 10. Scaling path
 Designed so growth is additive, not a rewrite:
-- **More competitions:** new `competitions` row, new source adapter and parser, reference CSVs. No core change.
+- **More competitions:** new `competitions` row, new source adapter and parser, reference CSVs. No core change. The contract and its proof test are in `PRODUCT_VISION.md` section 3.
 - **More load or users:** a read-only database role and provider connection pooling, then a read replica for the dashboard; scheduled work moves from a cron job to a worker queue only if runs start overlapping.
 - **Real user accounts, roles, an API:** add a FastAPI service over the same database (the analytics functions are already pure and reusable); the rules for authentication are already written in `SECURITY.md` section 7. The Streamlit dashboard can stay as the internal tool.
 - **More data (athlete-level, entries, live results):** new tables by migration; the four-concept domain model (`DOMAIN_MODEL.md`) already separates entrants from placings.
 - **Different front end:** the dashboard never contains formulas, so React or Power BI can replace it.
 Stage-by-stage growth plan and the rules that keep it possible: `SCALABILITY.md`.
+
+## 11. Future layers (planned, not implemented)
+These sit **on top of** the existing architecture and add nothing to its core. Full detail: `PRODUCT_VISION.md`.
+```
+question -> query planner -> research/data tools -> canonical database (v_medal_facts)
+         -> deterministic analytics -> evidence retrieval -> verified result -> LLM explanation
+```
+- **Research query layer:** compiles a supported question into a deterministic, testable query plan (competition, entities, filters, dimensions, metrics from `ANALYTICS_SPEC.md`, time range, evidence required). Numbers come only from the analytics layer. Plan shape to be fixed against the Phase 4 API.
+- **Evidence layer:** keeps raw source data, normalised data, analytical results, external evidence and generated explanation as separate layers, with source tiers (official API, official page, reputable secondary, search result, user-provided). Today only the first three exist.
+- **AI layer:** explains and orchestrates only. It may not compute, change facts or hide conflicts; numbers in its text are verified against results before display.
+- **Multi-competition:** only `competition_id`-scoped data, adapters, parsers and reference mappings differ per competition.

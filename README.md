@@ -1,6 +1,10 @@
 # Sports Intelligence Engine (SIE)
 
-A self-running data system that collects multi-sport competition results from the web, stores them as clean event-level data, runs deterministic analytics, and shows the findings on a dashboard. First target: **Asian Games 2026 (Aichi-Nagoya)**. The design is competition-agnostic, so Olympics, Commonwealth Games or any other multi-sport event can be added later by writing one new source adapter and parser.
+ResearchFlow is being built as a **competition-agnostic sports research and intelligence engine**: it collects official multi-sport results, stores them as clean event-level data, runs deterministic analytics and shows the findings on a dashboard.
+
+**Asian Games 2026 (Aichi-Nagoya) is the first production dataset and validation target, not the product boundary.** The design keeps competitions separate by `competition_id`, so another competition is meant to be added through its own adapter, parser configuration and reference mappings, not by changing the core. That second competition and the proof it needs are **planned, not built** (see `docs/PRODUCT_VISION.md`).
+
+**Not yet supported:** answering arbitrary research questions, multiple competitions, and any LLM layer. Today the system provides the verified Asian Games 2026 data, deterministic analytics and a fixed-page dashboard. The immediate engineering priority is Phase 4 (analytics).
 
 ## What it answers
 - Which country wins medals in which sports (full matrix, not only a top 10).
@@ -17,6 +21,7 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 ## Documents (read in this order)
 | # | File | Purpose |
 |---|------|---------|
+| 0 | `docs/PRODUCT_VISION.md` | Long-term direction: multi-competition, research queries, evidence, role of AI (planned vs built) |
 | 1 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
 | 2 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
 | 3 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |

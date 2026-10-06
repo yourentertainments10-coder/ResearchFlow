@@ -19,7 +19,7 @@ There is no login in v1 (see `SECURITY.md`).
 
 **Out of scope (v1):** athlete-level biographies, betting or prediction models, live commentary, user accounts, mobile app, paid data feeds.
 
-**Later (v2+):** other competitions, athlete-level analytics, LLM written summaries, Hindi/English report generation.
+**Later (v2+):** other competitions, athlete-level analytics, LLM written summaries, Hindi/English report generation, and a constrained research query layer. Direction and constraints: `PRODUCT_VISION.md`. Asian Games 2026 is the first dataset, not the product boundary.
 
 ## 5. Functional requirements
 | ID | Requirement | Acceptance criteria |
