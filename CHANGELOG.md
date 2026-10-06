@@ -2,6 +2,12 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Phase 6 operational foundation
+- Failure categories (fetch, raw store, parse, validation, load) with a retry contract; failed runs store `[category] detail`.
+- `record_fetch_failure` records unreachable sources without touching raw versions; the run is now committed before the raw store step so even a raw-store failure leaves a closed, failed run.
+- Deterministic run outcome and structured run summary; source freshness with fingerprint and raw artifact references; stuck-run detection; `sie run-summary` and `sie source-status`.
+- No migration, no analytics, report or dashboard changes. ADR-025.
+
 ## Product direction (documentation only)
 - Added `docs/PRODUCT_VISION.md` and ADR-024: competition-agnostic engine, extension contract, second-competition proof criteria, research query and evidence layers, constrained role of AI. Roadmap Phase 7 gains acceptance criteria; a research query layer follows it. Everything beyond Asian Games 2026 is marked planned. No code changes.
 

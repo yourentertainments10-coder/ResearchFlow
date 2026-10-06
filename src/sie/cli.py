@@ -149,3 +149,38 @@ def db_roles() -> None:
             pipeline_password=settings.sie_pipeline_password or "",
         )
     typer.echo(f"roles ready: {READER} (reporting views only), {PIPELINE} (no DELETE)")
+
+
+@app.command("run-summary")
+def run_summary(run_id: int = typer.Argument(..., help="An ingest_runs id.")) -> None:
+    """Print the structured summary of one ingestion run as JSON."""
+    import json
+
+    from sie.pipeline.observe import load_run_summary
+
+    with make_engine(get_settings()).connect() as conn:
+        try:
+            summary = load_run_summary(conn, run_id)
+        except LookupError as exc:
+            typer.echo(str(exc), err=True)
+            raise typer.Exit(code=2) from exc
+    typer.echo(json.dumps(summary.to_dict(), indent=2))
+
+
+@app.command("source-status")
+def source_status(
+    source: str = typer.Argument(..., help="Source name, for example 'official'."),
+) -> None:
+    """Print a source's freshness as JSON. Exits 1 unless the source is fresh (usable by a scheduler)."""
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sie.pipeline.freshness import Freshness, source_freshness
+
+    settings = get_settings()
+    max_age = timedelta(minutes=settings.freshness_threshold_minutes)
+    with make_engine(settings).connect() as conn:
+        result = source_freshness(conn, settings.competition_id, source, datetime.now(UTC), max_age)
+    typer.echo(json.dumps(result.to_dict(), indent=2))
+    if result.status != Freshness.FRESH:
+        raise typer.Exit(code=1)

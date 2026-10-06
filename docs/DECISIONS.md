@@ -157,6 +157,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Documentation only. Nothing is implemented by this ADR. Phase 4 stays the immediate engineering priority. Roadmap phase numbers are unchanged; Phase 7 gains acceptance criteria and a "Research query layer" milestone follows it.
 - **Decided by:** the owner (2026-10-05).
 
+## ADR-025: Failure category stored in `error_summary`, no migration
+
+- **Context:** Phase 6 needs to tell fetch, parse, validation and load failures apart and say what is safe to retry. `ingest_runs` has only a free-text `error_summary`.
+- **Decision:** Store the category as a prefix, `[load_failure] detail`, read back by `parse_error_summary`. Outcome and freshness are derived from existing columns. No schema change, so this work merges independently of any analytics migration.
+- **Consequence:** The category is queryable with `LIKE '[load_failure]%'` but not constrained by the database. If scheduling needs indexed filtering by category, add a `failure_category` column in a later migration and backfill from the prefix.
+- **Decided by:** the owner's Phase 6 brief (2026-10-06).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

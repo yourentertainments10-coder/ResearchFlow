@@ -138,3 +138,24 @@ competition,sport,discipline,event,gender,medal,country,athlete_or_team,date,sou
 
 ## 11. Observability
 Every run writes to `ingest_runs`: run_id, started_at, finished_at, status, documents_fetched, documents_changed, rows_loaded, rows_quarantined, error_summary. The dashboard "Data quality" page reads from it.
+
+## 12. Failure categories, retry contract and source freshness (Phase 6 foundation, built)
+Code: `src/sie/pipeline/failure.py`, `observe.py`, `freshness.py`, and `record_fetch_failure` in `runner.py`. No new tables: it reuses `ingest_runs`, `raw_fetches`, `raw_versions` and `quarantine`.
+
+**Run lifecycle.** `ingest_runs` row: competition, source, `started_at`, `finished_at`, `status` (`running`, `success`, `failed`), `docs_fetched`, `docs_changed`, `rows_loaded`, `rows_quarantined`, `error_summary`. The run is committed before anything else happens, so a run that dies is still on record (`stuck_runs` finds runs left `running`). A failed run is stored with `error_summary = "[category] detail"`.
+
+**Deterministic outcome** (`derive_outcome`, a pure function of the stored row): `running`, `failed`, `succeeded_with_quarantine` (some row needs attention, takes precedence), `unchanged` (the source bytes equal the previous version), `succeeded`. `sie run-summary <id>` prints the structured summary (counts, quarantine by reason, failure category, retry rule) built from the database row.
+
+| Category | Meaning | Retry | Why it is safe |
+|----------|---------|-------|----------------|
+| `fetch_failure` | Source unreachable or answered with an error | Automatic, up to 3 attempts with backoff | Nothing stored, no version changes. A `raw_fetches` row with outcome `error` and the HTTP status is the only trace |
+| `raw_store_failure` | Bytes could not be stored intact (for example a write-once conflict) | Manual only | The run is closed as failed; existing evidence is never replaced |
+| `parse_failure` | Input is not in the shape the parser expects | After a parser fix | Raw input kept; the same bytes parse the same way, so retrying unchanged is pointless |
+| `validation_failure` | The normalise or validate stage itself broke (a single bad row is quarantine, not a failed run) | After fixing rules or reference mappings | Raw input kept; nothing loaded |
+| `load_failure` | The all-or-nothing database load was rejected | Once automatically, then manual | One transaction, rolled back |
+
+**Idempotency and evidence.** Re-running a failed stage on the same input is always safe: raw bytes are written once and hashed (`unchanged` on repeat), the load is one transaction, quarantine is not duplicated. A failed fetch never creates, replaces or re-points a raw version. Bytes that already exist under a key with different content raise an error instead of overwriting.
+
+**Source freshness** (`source_freshness`, `sie source-status <source>`, read-only): `last_attempt_at/status`, `last_success_at`, `last_change_at`, a `fingerprint` (one hash over the latest version of every document of the source, so it changes only when content changes), and the raw artifact references (URL, version, sha256, backend, path). Status: `never_succeeded`, `failing` (the latest finished attempt failed after the last success, even if the success is recent), `stale` (last success older than `FRESHNESS_THRESHOLD_MINUTES`), `fresh`. `sie source-status` exits 1 unless the source is fresh.
+
+**Not built yet (remaining Phase 6):** the scheduler and its workflow, the advisory lock that stops overlapping runs, the retry loop that applies these rules, notifications, backups and restore tests, and the `sie publish` bundle. See `ROADMAP.md`.
