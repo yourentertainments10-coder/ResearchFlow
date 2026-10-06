@@ -164,6 +164,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequence:** The category is queryable with `LIKE '[load_failure]%'` but not constrained by the database. If scheduling needs indexed filtering by category, add a `failure_category` column in a later migration and backfill from the prefix.
 - **Decided by:** the owner's Phase 6 brief (2026-10-06).
 
+## ADR-026: Scheduler applies the failure contract; per-source advisory lock; no portal fetcher yet
+
+- **Context:** Phase 6A needs overlap prevention, retries and stuck-run handling on top of ADR-025, without changing its categories.
+- **Decision:** The retry numbers are read from `RETRY_RULES` (fetch 3 attempts, load 1 retry). The advisory lock key is derived from (competition, source), so independent sources are not serialised; a busy source is skipped, not queued. Stuck runs are closed as `failed` with no category. The workflow is manual-only and no automated portal fetcher exists, because D1 (terms of use) is open.
+- **Consequences:** An overlap is silent apart from a log line and exit 0; alerting on it belongs to Phase 6B. A non-scheduler run (`import-csv`) does not take the lock. If it runs longer than the stuck threshold while a scheduled run starts, the scheduler would close it; raise `--older-than` or route all runs through `scheduled-run`.
+- **Decided by:** the owner's Phase 6A brief (2026-10-06).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

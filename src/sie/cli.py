@@ -78,15 +78,12 @@ def _ingest(src, settings) -> None:
         raise typer.Exit(code=1)
 
 
-@app.command("load-capture")
-def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
-    """Load a portal capture (JSON from the browser snippet) into the database. Safe to rerun."""
+def _capture_input(path: Path, settings):
     from sie.pipeline.runner import SourceInput
     from sie.sources.bornan.to_parsed import SOURCE, capture_to_parsed
 
-    settings = get_settings()
     competition = settings.competition_id
-    src = SourceInput(
+    return SourceInput(
         source=SOURCE,
         url=f"capture:{path.name}",
         content=path.read_bytes(),
@@ -94,17 +91,13 @@ def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -
         extension="json",
         parse=lambda raw: capture_to_parsed(raw, competition),
     )
-    _ingest(src, settings)
 
 
-@app.command("import-csv")
-def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
-    """Import a manual results CSV (docs/DATA_PIPELINE.md section 9). Safe to rerun."""
+def _csv_input(path: Path, settings):
     from sie.pipeline.runner import SourceInput
     from sie.sources.manual.parser import SOURCE, parse_manual_csv
 
-    settings = get_settings()
-    src = SourceInput(
+    return SourceInput(
         source=SOURCE,
         url=f"file://{path.name}",
         content=path.read_bytes(),
@@ -116,7 +109,86 @@ def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> 
             max_cell_chars=settings.manual_csv_max_cell_chars,
         ),
     )
-    _ingest(src, settings)
+
+
+@app.command("load-capture")
+def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Load a portal capture (JSON from the browser snippet) into the database. Safe to rerun."""
+    settings = get_settings()
+    _ingest(_capture_input(path, settings), settings)
+
+
+@app.command("import-csv")
+def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+    """Import a manual results CSV (docs/DATA_PIPELINE.md section 9). Safe to rerun."""
+    settings = get_settings()
+    _ingest(_csv_input(path, settings), settings)
+
+
+@app.command("scheduled-run")
+def scheduled_run(
+    kind: str = typer.Argument(
+        ..., help="'capture' (portal capture JSON) or 'csv' (manual results CSV)."
+    ),
+    path: Path = typer.Argument(..., help="The file to ingest. Read on every attempt."),
+) -> None:
+    """Ingest a file the way the scheduler does: one run per source at a time, retries per the contract.
+
+    Exit 0 when the run succeeded or was skipped because another run of the same source is active;
+    exit 1 when it failed; exit 2 for a usage error.
+    """
+    from sie.pipeline.load import LoadError
+    from sie.pipeline.scheduler import FetchError, ScheduleStatus, SourceTask, run_scheduled
+
+    settings = get_settings()
+    builders = {"capture": _capture_input, "csv": _csv_input}
+    if kind not in builders:
+        typer.echo(f"unknown kind {kind!r}; use one of {sorted(builders)}", err=True)
+        raise typer.Exit(code=2)
+
+    def fetch():
+        try:
+            return builders[kind](path, settings)
+        except OSError as exc:
+            raise FetchError(f"cannot read {path}: {exc}") from exc
+
+    source = "manual" if kind == "csv" else "official"
+    task = SourceTask(source=source, url=f"{kind}:{path.name}", fetch=fetch)
+    try:
+        result = run_scheduled(make_engine(settings), settings, task)
+    except LoadError as exc:
+        typer.echo(f"load error: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    final = result.final
+    typer.echo(
+        f"{result.source}: {result.status}, fetch attempts {result.fetch_attempts}, "
+        f"load retries {result.load_retries}, stuck runs closed {result.stuck_closed}"
+        + (f", run {final.run_id}" if final else "")
+    )
+    if result.status == ScheduleStatus.FAILED:
+        typer.echo(f"failed: {final.error if final else 'no run'}", err=True)
+        raise typer.Exit(code=1)
+
+
+@app.command("recover-stuck")
+def recover_stuck(
+    older_than_minutes: int = typer.Option(60, help="Only runs started longer ago than this."),
+    source: str | None = typer.Option(None, help="Limit to one source."),
+) -> None:
+    """Close runs left 'running' by a process that died. Does not touch data or raw evidence."""
+    from datetime import UTC, datetime, timedelta
+
+    from sie.pipeline.scheduler import close_stuck_runs
+
+    settings = get_settings()
+    closed = close_stuck_runs(
+        make_engine(settings),
+        settings,
+        source=source,
+        now=datetime.now(UTC),
+        older_than=timedelta(minutes=older_than_minutes),
+    )
+    typer.echo(f"closed {len(closed)} stuck run(s): {closed}")
 
 
 MIN_PASSWORD_LENGTH = 16

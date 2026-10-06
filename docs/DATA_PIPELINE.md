@@ -158,4 +158,12 @@ Code: `src/sie/pipeline/failure.py`, `observe.py`, `freshness.py`, and `record_f
 
 **Source freshness** (`source_freshness`, `sie source-status <source>`, read-only): `last_attempt_at/status`, `last_success_at`, `last_change_at`, a `fingerprint` (one hash over the latest version of every document of the source, so it changes only when content changes), and the raw artifact references (URL, version, sha256, backend, path). Status: `never_succeeded`, `failing` (the latest finished attempt failed after the last success, even if the success is recent), `stale` (last success older than `FRESHNESS_THRESHOLD_MINUTES`), `fresh`. `sie source-status` exits 1 unless the source is fresh.
 
-**Not built yet (remaining Phase 6):** the scheduler and its workflow, the advisory lock that stops overlapping runs, the retry loop that applies these rules, notifications, backups and restore tests, and the `sie publish` bundle. See `ROADMAP.md`.
+### Scheduler, retries and locking (Phase 6A, built)
+Code: `src/sie/pipeline/scheduler.py`, `src/sie/db/locks.py`; commands `sie scheduled-run <capture|csv> <file>` and `sie recover-stuck`; workflow `.github/workflows/refresh.yml`. It applies the retry contract above and does not redefine it.
+
+- **Lock.** One session-level PostgreSQL advisory lock per (competition, source), taken with `pg_try_advisory_lock` on a dedicated connection held for the whole run. A second run of the same source does not wait: it returns `skipped_locked`, writes no run row and exits 0. Different sources use different keys and run independently. The lock ends with its session, so a crashed process cannot leave a source locked.
+- **Retries.** Fetch: at most 3 attempts in total, waiting 2 s then 4 s between them, each failure recorded as its own `fetch_failure` run. Load: at most 1 automatic retry, on the bytes already fetched (nothing is fetched or stored twice). Parse, validation and raw-store failures are returned as they are, never retried here.
+- **Stuck runs.** After taking the lock, the scheduler closes this source's runs still `running` and older than 1 hour as `failed` with the text "abandoned: ...". They get no failure category (the locked categories are unchanged). `sie recover-stuck` does the same for any or all sources. Only `ingest_runs` is touched.
+- **No fetcher for the official portal is registered.** Its terms are unresolved (D1), so the scheduler runs a file supplied by the owner through the same path a future fetcher will use. The workflow is `workflow_dispatch` only; a cron is added when D1 is cleared.
+
+**Not built yet (remaining Phase 6):** notifications and alerts, the source health job, backup with a tested restore, the `sie publish` bundle, and a real portal fetcher (blocked on D1).

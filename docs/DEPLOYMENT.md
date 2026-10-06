@@ -37,6 +37,8 @@ Sources: Render free-tier docs (`render.com/docs/free`), Neon pricing (`neon.com
 
 Cost note: this setup uses free plans only, so it has limits and can change. If a limit blocks you, the smallest paid upgrade is usually a paid Postgres plan. Nothing in the code has to change.
 
+Status of the pipeline workflow: `.github/workflows/refresh.yml` exists and runs on demand only (`workflow_dispatch`), ingesting a file through the scheduler (lock, retries, stuck-run recovery). It has no cron until the portal's terms are cleared (D1); see `DATA_PIPELINE.md` section 12.
+
 ## 4. Environments
 | Env | Database | Purpose |
 |-----|----------|---------|

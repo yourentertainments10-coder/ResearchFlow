@@ -306,7 +306,7 @@ One row per country medal. All analytics aggregate from `v_medal_facts`; `ANALYT
 
 ## 11. Rules
 - Foreign keys are always enforced (Postgres default).
-- A load runs in a single transaction, and the pipeline holds a session-level advisory lock (`pg_try_advisory_lock`, fixed key) for the whole run. A second run that cannot get the lock exits cleanly. This replaces a lock file and works across machines.
+- A load runs in a single transaction, and the scheduler holds a session-level advisory lock (`pg_try_advisory_lock`, key derived from competition and source) for the whole run. A second run of the same source that cannot get the lock is skipped and exits cleanly; other sources are not affected. This replaces a lock file and works across machines.
 - Ingestion is idempotent: upserts key on the unique constraints and on `ux_placings_current`.
 - Rows are never physically deleted. Corrections close a placing version and write `placing_history`.
 - Connections: TLS required (`sslmode=require`). Batch jobs use `NullPool` and `pool_pre_ping`, because serverless Postgres can suspend idle compute.

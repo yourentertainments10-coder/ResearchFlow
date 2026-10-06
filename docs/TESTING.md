@@ -56,6 +56,9 @@ Tests run on **real PostgreSQL**, never SQLite, because the design depends on pa
 ### 5a. Operational foundations (Phase 6, built)
 `tests/unit/test_ops_contract.py` (categories, retry rules, outcome table, freshness classification, fingerprint) and `tests/integration/test_ops_foundation.py` (each failure category on real PostgreSQL, raw evidence untouched by a fetch failure, retries idempotent, run summary, freshness through failure and recovery, stuck runs).
 
+### 5b. Scheduler, retries and locking (Phase 6A, built)
+`tests/unit/test_scheduler_contract.py` (the locked retry numbers, backoff, lock keys) and `tests/integration/test_scheduler.py`: successful run, fetch retry and exhaustion, load retry once, no retry for parse/validation/raw-store, lock exclusivity per source, a duplicate run skipped while another is active, five simultaneous runs producing one, lock released after failure and after a setup error, lock released when the session dies, rerun after a failed run, stuck-run closing. Removing the lock makes the concurrency tests fail.
+
 ## 6. Quality gates
 - CI (GitHub Actions) runs on every push: `ruff check`, `ruff format --check`, `pytest --cov`, migration test.
 - Minimum coverage: 85 percent for `pipeline/` and `analytics/`.
