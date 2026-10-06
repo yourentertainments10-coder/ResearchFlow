@@ -3,10 +3,13 @@
   "checks": {
     "rows": 1568,
     "reconcile_mismatches": 0,
+    "official_table_mismatches": 0,
     "events_in_rows": 469,
     "events_official": 469,
-    "event_keys_unmatched": 0,
-    "country_total_diffs": 0
+    "disciplines_event_count_mismatch": 0,
+    "country_total_diffs": 0,
+    "undated_medals": 3,
+    "timeline_total": 1568
   },
   "validation": [
     {
