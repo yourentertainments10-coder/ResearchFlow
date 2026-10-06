@@ -130,7 +130,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Context:** `sie/load.py` (portal captures) and the Phase 2 import code (CSV) were two loaders with different rules.
 - **Decision:** Every source supplies bytes and a pure parse function to `pipeline/runner.run_ingest`. The raw bytes are stored and committed first; then parse, normalise, validate, quarantine and load run in one transaction; the run is closed as `success` or `failed` in `ingest_runs`. `sie/load.py` is removed. `sie load-capture` and `sie import-csv` are thin commands over the same code; `sources/bornan/to_parsed.py` and `sources/manual/parser.py` are the only source-specific parts.
 - **Behaviour that changed:** unknown country, sport or gender no longer fail the whole load: the row goes to `quarantine` with a reason and the valid rows load (`DATA_PIPELINE.md` section 6). Unchanged raw content is still re-processed (cheap and idempotent), so adding an alias and re-running resolves quarantined rows; the earlier quarantine rows of that raw version are marked `resolved`.
-- **Not yet built:** entrants (names are not stored; the portal adapter drops them on purpose), the conflict policy, `reconciliation_results`, and the analytics read path (analytics still compute from the capture file instead of `v_medal_facts`, which `ANALYTICS_SPEC.md` requires).
+- **Not yet built:** entrants (names are not stored; the portal adapter drops them on purpose), the conflict policy, `reconciliation_results`, and the regeneration of `site/` and `reports/`. The analytics read path was moved to `v_medal_facts` afterwards (`sie.analytics.facts`; only the official tables are still read, as references to check against).
 
 ## ADR-022: Raw bytes in the database or on disk (migration 003)
 
@@ -143,7 +143,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Context:** ADR-007 chose Streamlit. The delivered dashboard is a static page (`src/sie/dashboard.py` writes `site/index.html`) served by Cloudflare.
 - **Decision:** Keep the static dashboard for v1. It reads an exported file, not the database, and contains no metric logic beyond display.
 - **Open:** whether the dashboard stays public is still D3 (owner).
-- **Consequence:** the dashboard is not yet fed from `reporting.medal_facts` (see ADR-021).
+- **Consequence:** the dashboard reads the exported `placings.csv`, which is now produced from `reporting.medal_facts`; it has not been regenerated yet.
 
 ## ADR-024: Asian Games is the first dataset, not the product boundary
 

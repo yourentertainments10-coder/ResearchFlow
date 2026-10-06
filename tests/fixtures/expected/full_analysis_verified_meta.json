@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-10-04T16:21:31.114Z",
+  "checks": {
+    "rows": 1568,
+    "reconcile_mismatches": 0,
+    "events_in_rows": 469,
+    "events_official": 469,
+    "event_keys_unmatched": 0,
+    "country_total_diffs": 0
+  }
+}

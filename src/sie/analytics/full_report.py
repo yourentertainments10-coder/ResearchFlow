@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
@@ -11,39 +12,47 @@ import pandas as pd
 from sie.analytics.events import (
     country_dependence,
     country_sport,
-    placings_frame,
     reconcile,
     specialisation,
     sport_concentration,
 )
-from sie.analytics.standings import concentration, gender_totals, summary, to_frame
-from sie.sources.bornan.parse_medals import parse_medal_rows
+from sie.analytics.facts import analysis_frame, country_gender_frame
+from sie.analytics.standings import concentration, gender_totals, summary
 
+PLACING_COLUMNS = [
+    "discipline", "discipline_name", "sport", "event_id", "event_name", "gender", "medal", "slot",
+    "country_code", "country_name", "date",
+]  # fmt: skip
 SOURCE = "Official results portal (medals/discipline and medals/standings per discipline, AG2026)"
 
 
-def load(capture: Path, disc_list: Path, all_standings: Path) -> dict:
-    cap = json.loads(capture.read_text())
-    placings = [p for rows in cap["medals"].values() for p in parse_medal_rows(rows)]
-    df = placings_frame(placings)
-    official_events = {
-        (d["Disc"], e["EvKey"]) for d in json.loads(disc_list.read_text()) for e in d["Events"]
-    }
-    ev_codes = set(
-        zip(df["discipline"], df["event_key"].str.replace(r"\.$", "", regex=True), strict=True)
-    )
+def load(facts: pd.DataFrame, reference: Path, disc_list: Path, all_standings: Path) -> dict:
+    """Analysis frame from ``v_medal_facts`` plus the official tables used only as references.
+
+    ``reference`` is the portal capture file: its per-discipline standings and capture time are the
+    independent check, not the source of any medal count.
+    """
+    cap = json.loads(reference.read_text())
+    disciplines = json.loads(disc_list.read_text())
+    df = analysis_frame(facts, {d["DiscDesc"]: d["Disc"] for d in disciplines})
+    official_events = Counter(d["Disc"] for d in disciplines for _ in d["Events"])
+    mine = df.groupby("discipline")["event_id"].nunique().to_dict()
     checks = {
         "rows": len(df),
         "reconcile_mismatches": len(reconcile(df, cap["standings"])),
-        "events_in_rows": df.groupby(["discipline", "event_code"]).ngroups,
-        "events_official": len(official_events),
-        "event_keys_unmatched": len({k for k in ev_codes if k not in official_events}),
+        "events_in_rows": int(df["event_id"].nunique()),
+        "events_official": sum(official_events.values()),
+        "disciplines_event_count_mismatch": sum(
+            1
+            for k in set(official_events) | set(mine)
+            if official_events.get(k, 0) != mine.get(k, 0)
+        ),
     }
     all_rec = json.loads(all_standings.read_text())
     off = {r["Org"]: r["Count"]["total"]["total"] for r in all_rec}
-    mine = df.groupby("country_code").size().to_dict()
+    ours = df.groupby("country_code").size().to_dict()
     checks["country_total_diffs"] = sum(
-        1 for k in set(off) | set(mine) if off.get(k, 0) != mine.get(k, 0)
+        1 for k in set(off) | set(ours) if off.get(k, 0) != ours.get(k, 0)
     )
     return {
         "df": df,
@@ -92,7 +101,8 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
     if checks["reconcile_mismatches"] or checks["country_total_diffs"]:
         raise ValueError(f"data does not reconcile: {checks}")
     cs = country_sport(df)
-    country = summary(to_frame(data["all_records"]))
+    official_view = country_gender_frame(df, fold_open=True)  # the official table's 3 buckets
+    country = summary(official_view)
     conc = concentration(country)
     sport_c = sport_concentration(cs).sort_values("medals", ascending=False)
     dep = country_dependence(cs)
@@ -103,16 +113,16 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
         f.insert(1, "name", f.iloc[:, 0].map(names)) if "name" not in f else None
     cg, sg = gender_tables(df)
     events_by_sport = (
-        df.groupby("discipline_name")["event_code"]
+        df.groupby("discipline_name")["event_id"]
         .nunique()
         .rename("events")
         .reset_index()
         .rename(columns={"discipline_name": "sport"})
     )
     sport_c = sport_c.merge(events_by_sport, on="sport")
-    gt = gender_totals(to_frame(data["all_records"]))
+    gt = gender_totals(official_view)
     sweeps = (
-        df.groupby(["discipline_name", "event_code", "country_code"]).size().reset_index(name="n").query("n>=2")
+        df.groupby(["discipline_name", "event_id", "country_code"]).size().reset_index(name="n").query("n>=2")
         .groupby("country_code").size().sort_values(ascending=False).head(10).rename("podium_sweeps_or_double_podiums").reset_index()
     )  # fmt: skip
 
@@ -122,7 +132,7 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
         "Country": country, "Country x sport": cs, "Sport concentration": sport_c,
         "Country dependence": dep, "Specialisation LQ": spec, "Country x gender": cg,
         "Sport x gender": sg, "Gender totals": gt, "Concentration": pd.DataFrame(list(conc.items()), columns=["metric", "value"]),
-        "Placings": df.drop(columns=["entrant_name", "awarded_at"]).assign(date=df["awarded_at"].str[:10]),
+        "Placings": df[PLACING_COLUMNS],
     }  # fmt: skip
     with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
         for n, f in sheets.items():
@@ -144,10 +154,7 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
         "validation": validation,
     }
     (out_dir / "meta.json").write_text(json.dumps(meta, indent=2))
-    pub = df.assign(date=df["awarded_at"].str[:10]).drop(
-        columns=["entrant_name", "awarded_at", "entrant_type"]
-    )
-    pub.to_csv(out_dir / "placings.csv", index=False)
+    df[PLACING_COLUMNS].to_csv(out_dir / "placings.csv", index=False)
 
     cards = "".join(
         f"<div class=card><span>{k.replace('_', ' ')}</span><b>{v}</b></div>"
@@ -165,7 +172,7 @@ body{{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,sans-serif;ma
 table{{border-collapse:collapse;width:100%;font-size:13px}}th,td{{padding:4px 8px;border-bottom:1px solid var(--line);text-align:right}}th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){{text-align:left}}
 .wrap{{overflow-x:auto}}small{{color:var(--mut)}}h2{{margin-top:28px}}</style>
 <h1>Asian Games 2026 (Aichi-Nagoya): full medal analysis</h1>
-<p><small>Source: {SOURCE}. Captured {data["captured"]}. Validation: {ok}; {checks["events_in_rows"]} events found vs {checks["events_official"]} on the official programme; {checks["country_total_diffs"]} country total differences.</small></p>
+<p><small>Source: {SOURCE}. Captured {data["captured"]}. Validation: {ok}; {checks["events_in_rows"]} events found vs {checks["events_official"]} on the official programme ({checks["disciplines_event_count_mismatch"]} disciplines differ); {checks["country_total_diffs"]} country total differences.</small></p>
 <div class=cards>{cards}</div>
 <h2>Country medal table</h2>{_tbl(country[["Rank", "country", "Gold", "Silver", "Bronze", "Total", "Share_%", "Gold_rate_%", "Women_%", "Points_321"]])}
 <h2>How dependent is each country on a few sports? (top 20 by medals)</h2><small>HHI across sports (10000 = all medals in one sport).</small>{_tbl(dep, 20)}
@@ -180,13 +187,21 @@ table{{border-collapse:collapse;width:100%;font-size:13px}}th,td{{padding:4px 8p
     return {"xlsx": xlsx, "html": page_path, "csv": out_dir / "placings.csv"}
 
 
-def main() -> None:  # python -m sie.analytics.full_report CAPTURE
+def main() -> None:  # python -m sie.analytics.full_report CAPTURE (official standings reference)
     import sys
 
+    from sie.analytics.facts import competition_id, load_medal_facts
+    from sie.config import get_settings
+    from sie.db.session import make_engine
+
+    settings = get_settings()
     root = Path(__file__).resolve().parents[3]
     fx = root / "tests/fixtures/sources/bornan"
+    with make_engine(settings).connect() as conn:  # medals come from the database, never the file
+        facts = load_medal_facts(conn, competition_id(conn, settings.competition_id))
     out = build(
         load(
+            facts,
             Path(sys.argv[1]),
             fx / "ALL_disc_data.trimmed.json",
             fx / "ALL_medals_standings.decoded.json",
