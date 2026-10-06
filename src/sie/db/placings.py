@@ -7,7 +7,7 @@ overwritten; the old version is closed and kept, and a placing_history row recor
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from sqlalchemy import Connection, text
@@ -16,19 +16,24 @@ ChangeType = Literal["created", "unchanged", "reallocated", "corrected"]
 
 _SELECT_CURRENT = text(
     """
-    SELECT id, country_id, entrant_id, is_tie
+    SELECT id, country_id, entrant_id, is_tie, result_date, source_country
     FROM placings
     WHERE event_id = :event_id AND medal = :medal AND slot = :slot AND is_current
     FOR UPDATE
     """
 )
 _CLOSE = text("UPDATE placings SET is_current = false, valid_to = :now WHERE id = :id")
+_FILL = text(
+    """UPDATE placings SET result_date = coalesce(result_date, :d),
+                        source_country = coalesce(source_country, :sc)
+       WHERE id = :id"""
+)
 _INSERT = text(
     """
-    INSERT INTO placings (event_id, medal, slot, country_id, entrant_id, is_tie,
-                          valid_from, supersedes_id, raw_version_id, source)
-    VALUES (:event_id, :medal, :slot, :country_id, :entrant_id, :is_tie,
-            :now, :supersedes_id, :raw_version_id, :source)
+    INSERT INTO placings (event_id, medal, slot, country_id, entrant_id, is_tie, result_date,
+                          source_country, valid_from, supersedes_id, raw_version_id, source)
+    VALUES (:event_id, :medal, :slot, :country_id, :entrant_id, :is_tie, :result_date,
+            :source_country, :now, :supersedes_id, :raw_version_id, :source)
     RETURNING id
     """
 )
@@ -56,22 +61,39 @@ def apply_placing(
     now: datetime,
     run_id: int | None = None,
     is_tie: bool = False,
+    result_date: date | None = None,
+    source_country: str | None = None,
     reason: str | None = None,
 ) -> ChangeType:
     """Make (event, medal, slot) show the given country and entrant. Idempotent.
 
     Returns ``created`` (no current placing), ``unchanged`` (identical, nothing written),
-    ``reallocated`` (different country) or ``corrected`` (same country, different entrant or tie flag).
+    ``reallocated`` (different country) or ``corrected`` (same country, different entrant, tie flag or
+    result date).
+
+    ``result_date`` is the day this medal was decided. ``None`` means the source does not say, which
+    never changes what is stored. ``source_country`` is the country label exactly as the source wrote it
+    (provenance, never compared). A date arriving for a placing that has none yet is filled in on the
+    current row (the row predates migration 004; nothing was claimed before) and reports ``unchanged``.
+    Either is filled in the same way when only the label is missing. A different date for a placing that already has one is a correction and keeps the old version.
     """
     key = {"event_id": event_id, "medal": medal, "slot": slot}
     current = conn.execute(_SELECT_CURRENT, key).one_or_none()
 
-    if current is not None and (
-        current.country_id == country_id
+    same_claim = (
+        current is not None
+        and current.country_id == country_id
         and current.entrant_id == entrant_id
         and current.is_tie == is_tie
-    ):
-        return "unchanged"
+    )
+    if same_claim:
+        redated = result_date is not None and current.result_date not in (None, result_date)
+        if not redated:
+            missing_date = result_date is not None and current.result_date is None
+            missing_label = source_country is not None and current.source_country is None
+            if missing_date or missing_label:
+                conn.execute(_FILL, {"d": result_date, "sc": source_country, "id": current.id})
+            return "unchanged"
 
     if current is not None:
         conn.execute(_CLOSE, {"id": current.id, "now": now})
@@ -83,6 +105,8 @@ def apply_placing(
             "country_id": country_id,
             "entrant_id": entrant_id,
             "is_tie": is_tie,
+            "result_date": result_date,
+            "source_country": source_country,
             "now": now,
             "supersedes_id": current.id if current is not None else None,
             "raw_version_id": raw_version_id,

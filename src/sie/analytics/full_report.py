@@ -12,7 +12,10 @@ import pandas as pd
 from sie.analytics.events import (
     country_dependence,
     country_sport,
+    country_timeline,
+    medal_timeline,
     reconcile,
+    reconcile_official_table,
     specialisation,
     sport_concentration,
 )
@@ -21,7 +24,7 @@ from sie.analytics.standings import concentration, gender_totals, summary
 
 PLACING_COLUMNS = [
     "discipline", "discipline_name", "sport", "event_id", "event_name", "gender", "medal", "slot",
-    "country_code", "country_name", "date",
+    "country_code", "country_name", "source_country", "date",
 ]  # fmt: skip
 SOURCE = "Official results portal (medals/discipline and medals/standings per discipline, AG2026)"
 
@@ -40,6 +43,9 @@ def load(facts: pd.DataFrame, reference: Path, disc_list: Path, all_standings: P
     checks = {
         "rows": len(df),
         "reconcile_mismatches": len(reconcile(df, cap["standings"])),
+        "official_table_mismatches": len(
+            reconcile_official_table(df, json.loads(all_standings.read_text()))
+        ),
         "events_in_rows": int(df["event_id"].nunique()),
         "events_official": sum(official_events.values()),
         "disciplines_event_count_mismatch": sum(
@@ -91,14 +97,18 @@ def gender_tables(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         return t.sort_values("Total", ascending=False).reset_index()
 
     cg = table(["country_code"])
-    sg = table(["discipline_name"]).rename(columns={"discipline_name": "sport"})
+    sg = table(["sport"])
     return cg, sg
 
 
 def build(data: dict, out_dir: Path) -> dict[str, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     df, checks = data["df"], data["checks"]
-    if checks["reconcile_mismatches"] or checks["country_total_diffs"]:
+    if (
+        checks["reconcile_mismatches"]
+        or checks["official_table_mismatches"]
+        or checks["country_total_diffs"]
+    ):
         raise ValueError(f"data does not reconcile: {checks}")
     cs = country_sport(df)
     official_view = country_gender_frame(df, fold_open=True)  # the official table's 3 buckets
@@ -112,17 +122,29 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
     for f in (dep, spec_top, cs):
         f.insert(1, "name", f.iloc[:, 0].map(names)) if "name" not in f else None
     cg, sg = gender_tables(df)
-    events_by_sport = (
+    sport_c = sport_c.merge(
+        df.groupby("sport")["event_id"].nunique().rename("events").reset_index(), on="sport"
+    )
+    # The source's own 59 disciplines are kept next to the 49 official sports (ADR-020).
+    csd = country_sport(df, "discipline")
+    csd.insert(1, "name", csd["country_code"].map(names))
+    disc_c = sport_concentration(csd, "discipline").sort_values("medals", ascending=False)
+    disc_c = disc_c.merge(
         df.groupby("discipline_name")["event_id"]
         .nunique()
         .rename("events")
         .reset_index()
-        .rename(columns={"discipline_name": "sport"})
+        .rename(columns={"discipline_name": "discipline"}),
+        on="discipline",
     )
-    sport_c = sport_c.merge(events_by_sport, on="sport")
+    timeline = medal_timeline(df)
+    checks["undated_medals"] = int((df["date"] == "").sum())
+    checks["timeline_total"] = int(timeline["Total_cum"].iloc[-1]) if len(timeline) else 0
+    if checks["timeline_total"] != len(df):
+        raise ValueError(f"timeline does not end at the country table total: {checks}")
     gt = gender_totals(official_view)
     sweeps = (
-        df.groupby(["discipline_name", "event_id", "country_code"]).size().reset_index(name="n").query("n>=2")
+        df.groupby(["sport", "event_id", "country_code"]).size().reset_index(name="n").query("n>=2")
         .groupby("country_code").size().sort_values(ascending=False).head(10).rename("podium_sweeps_or_double_podiums").reset_index()
     )  # fmt: skip
 
@@ -131,7 +153,8 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
         "Checks": pd.DataFrame(list(checks.items()), columns=["check", "value"]),
         "Country": country, "Country x sport": cs, "Sport concentration": sport_c,
         "Country dependence": dep, "Specialisation LQ": spec, "Country x gender": cg,
-        "Sport x gender": sg, "Gender totals": gt, "Concentration": pd.DataFrame(list(conc.items()), columns=["metric", "value"]),
+        "Sport x gender": sg, "Country x discipline": csd, "Discipline concentration": disc_c,
+        "Medal timeline": timeline, "Country timeline": country_timeline(df), "Gender totals": gt, "Concentration": pd.DataFrame(list(conc.items()), columns=["metric", "value"]),
         "Placings": df[PLACING_COLUMNS],
     }  # fmt: skip
     with pd.ExcelWriter(xlsx, engine="openpyxl") as w:
@@ -158,7 +181,7 @@ def build(data: dict, out_dir: Path) -> dict[str, Path]:
 
     cards = "".join(
         f"<div class=card><span>{k.replace('_', ' ')}</span><b>{v}</b></div>"
-        for k, v in {**{"medal events": checks["events_in_rows"], "country medals": checks["rows"], "disciplines": df["discipline"].nunique()}, **conc}.items()
+        for k, v in {**{"medal events": checks["events_in_rows"], "country medals": checks["rows"], "sports": df["sport"].nunique(), "disciplines": df["discipline"].nunique()}, **conc}.items()
         if k not in ("total_medals",)
     )  # fmt: skip
     ok = "all medal rows reconcile with the official standings (0 mismatches over 59 disciplines)"
@@ -178,8 +201,9 @@ table{{border-collapse:collapse;width:100%;font-size:13px}}th,td{{padding:4px 8p
 <h2>How dependent is each country on a few sports? (top 20 by medals)</h2><small>HHI across sports (10000 = all medals in one sport).</small>{_tbl(dep, 20)}
 <h2>Where each country over-performs (location quotient, at least 5 medals)</h2><small>LQ above 1: the sport weighs more in the country's haul than in the Games overall.</small>{_tbl(spec_top)}
 <h2>Sport concentration: who dominates each sport</h2>{_tbl(sport_c)}
-<h2>Women's, men's and mixed medals by country</h2><small>Gender is the event's gender; Open events (esports, equestrian, one artistic swimming and one taekwondo event) count as Mixed, as the official table does.</small>{_tbl(cg, 25)}
+<h2>Women's, men's and mixed medals by country</h2><small>Gender is the event's gender. Open events (esports, equestrian, one artistic swimming and one taekwondo event) have their own column here; the official medal table counts them under Mixed.</small>{_tbl(cg, 25)}
 <h2>Women's share by sport</h2>{_tbl(sg)}
+<h2>Disciplines (the source's finer split of the 49 sports)</h2>{_tbl(disc_c)}
 <h2>Countries with most events where they took two or more podium places</h2>{_tbl(sweeps)}
 </html>"""  # noqa: E501
     page_path = out_dir / "asian_games_2026_full_analysis.html"

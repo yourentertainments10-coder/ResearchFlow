@@ -31,9 +31,11 @@ def build(placings_csv: Path, captured_iso: str, out: Path, events: int) -> Path
     df = pd.read_csv(placings_csv).fillna({"date": ""})
     # Until the committed reports are regenerated, placings.csv may still carry the portal event code.
     event_col = "event_id" if "event_id" in df.columns else "event_code"
+    # The dashboard's sport is the official sport (49); older CSVs only have the discipline (59).
+    sport_col = "sport" if "sport" in df.columns else "discipline_name"
     data = [
         {
-            "c": r.country_code, "cn": r.country_name, "s": r.discipline_name, "e": getattr(r, event_col),
+            "c": r.country_code, "cn": r.country_name, "s": getattr(r, sport_col), "e": getattr(r, event_col),
             "en": r.event_name, "g": r.gender, "m": r.medal, "d": r.date,
         }
         for r in df.itertuples()

@@ -98,6 +98,8 @@ CREATE TABLE placings (
   raw_version_id BIGINT REFERENCES raw_versions(id),  -- NULL only for manual rows that carry a source note
   source         TEXT NOT NULL,
   source_note    TEXT,                                -- manual imports: source URL / note
+  result_date    DATE,                                -- the day this medal was decided; NULL if the source gives none (ADR-025)
+  source_country TEXT,                                -- the country as the source named it: provenance only (ADR-026)
   CHECK ((is_current AND valid_to IS NULL) OR (NOT is_current AND valid_to IS NOT NULL)),
   -- Invariant I1 in the database: if an entrant is set, its country must equal the placing's country.
   -- MATCH SIMPLE skips the check when entrant_id is NULL.
@@ -286,7 +288,8 @@ SELECT p.id AS placing_id, p.event_id, e.competition_id, p.medal, p.slot, p.is_t
        c.code AS country_code, c.name AS country,
        s.name AS sport, d.name AS discipline,
        e.gender, e.participation, e.name AS event, e.event_date, e.is_disputed,
-       en.name AS entrant
+       en.name AS entrant,
+       p.result_date, p.source_country      -- added by migration 004 (ADR-025, ADR-026)
 FROM placings p
 JOIN events e      ON e.id = p.event_id
 JOIN disciplines d ON d.id = e.discipline_id
