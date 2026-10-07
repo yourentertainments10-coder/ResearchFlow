@@ -125,14 +125,84 @@ def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> 
     _ingest(_csv_input(path, settings), settings)
 
 
+def _portal_input(settings):
+    """Fetch the whole portal capture now. Raises FetchError (retried by the scheduler)."""
+    from sie.pipeline.runner import SourceInput
+    from sie.pipeline.scheduler import FetchError
+    from sie.sources.bornan.fetch import PortalClient, fetch_capture
+    from sie.sources.bornan.to_parsed import SOURCE, capture_to_parsed
+
+    if not settings.portal_fetch_enabled:
+        raise FetchError("portal fetching is disabled: set PORTAL_FETCH_ENABLED=true to allow it")
+    client = PortalClient(
+        settings.http_user_agent,
+        min_interval=settings.http_min_interval_seconds,
+        timeout=settings.http_timeout_seconds,
+    )
+    content = fetch_capture(client)
+    competition = settings.competition_id
+    return SourceInput(
+        source=SOURCE,
+        url="portal:AG2026/medals",
+        content=content,
+        content_type="application/json",
+        extension="json",
+        parse=lambda raw: capture_to_parsed(raw, competition),
+    )
+
+
+def _portal_preflight(settings) -> None:
+    """Configuration problems are usage errors (exit 2), not fetch failures: nothing is recorded."""
+    from sie.pipeline.scheduler import FetchError
+    from sie.sources.bornan.fetch import check_user_agent
+
+    if not settings.portal_fetch_enabled:
+        typer.echo(
+            "portal fetching is disabled: set PORTAL_FETCH_ENABLED=true to allow it", err=True
+        )
+        raise typer.Exit(code=2)
+    try:
+        check_user_agent(settings.http_user_agent)
+    except FetchError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=2) from exc
+
+
+@app.command("fetch-portal")
+def fetch_portal(
+    out: Path = typer.Option(..., "--out", help="Write the capture JSON here (no database used)."),
+) -> None:
+    """Fetch the portal's medal data into a capture file, without loading it. For a first, safe look.
+
+    The file holds medallist names: keep it out of Git (data/ is ignored). Needs PORTAL_FETCH_ENABLED=true
+    and a real HTTP_USER_AGENT.
+    """
+    from sie.pipeline.scheduler import FetchError
+
+    settings = get_settings()
+    _portal_preflight(settings)
+    try:
+        src = _portal_input(settings)
+    except FetchError as exc:
+        typer.echo(f"fetch failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(src.content)
+    typer.echo(f"wrote {out} ({len(src.content)} bytes)")
+
+
 @app.command("scheduled-run")
 def scheduled_run(
     kind: str = typer.Argument(
-        ..., help="'capture' (portal capture JSON) or 'csv' (manual results CSV)."
+        ...,
+        help="'portal' (fetch the official portal now), 'capture' (portal capture JSON) or "
+        "'csv' (manual results CSV).",
     ),
-    path: Path = typer.Argument(..., help="The file to ingest. Read on every attempt."),
+    path: Path | None = typer.Argument(
+        None, help="The file to ingest (capture, csv). Read on every attempt. Not used for portal."
+    ),
 ) -> None:
-    """Ingest a file the way the scheduler does: one run per source at a time, retries per the contract.
+    """Ingest a source the way the scheduler does: one run per source at a time, retries per the contract.
 
     Exit 0 when the run succeeded or was skipped because another run of the same source is active;
     exit 1 when it failed; exit 2 for a usage error.
@@ -142,18 +212,26 @@ def scheduled_run(
 
     settings = get_settings()
     builders = {"capture": _capture_input, "csv": _csv_input}
-    if kind not in builders:
-        typer.echo(f"unknown kind {kind!r}; use one of {sorted(builders)}", err=True)
+    if kind not in {*builders, "portal"}:
+        typer.echo(f"unknown kind {kind!r}; use one of {sorted([*builders, 'portal'])}", err=True)
+        raise typer.Exit(code=2)
+    if kind == "portal":
+        _portal_preflight(settings)
+    if kind != "portal" and path is None:
+        typer.echo(f"kind {kind!r} needs a file path", err=True)
         raise typer.Exit(code=2)
 
     def fetch():
+        if kind == "portal":
+            return _portal_input(settings)
         try:
             return builders[kind](path, settings)
         except OSError as exc:
             raise FetchError(f"cannot read {path}: {exc}") from exc
 
     source = "manual" if kind == "csv" else "official"
-    task = SourceTask(source=source, url=f"{kind}:{path.name}", fetch=fetch)
+    url = "portal:AG2026/medals" if kind == "portal" else f"{kind}:{path.name}"
+    task = SourceTask(source=source, url=url, fetch=fetch)
     try:
         result = run_scheduled(make_engine(settings), settings, task)
     except LoadError as exc:

@@ -1,6 +1,6 @@
 # Source Discovery (Phase 0)
 
-Status: **complete except the portal's terms of use.** The data API was located, its encoding identified (ordinary zlib compression, sections 8 and 9), and event-level data was confirmed from an owner capture (section 10). The one open item is the portal's own terms of use, which blocks automated fetching in Phase 3 but nothing before it.
+Status: **complete.** The data API was located, its encoding identified (ordinary zlib compression, sections 8 and 9), and event-level data was confirmed from an owner capture (section 10). The portal publishes no terms of use; the owner cleared D1 on 2026-10-07 (section 12).
 Checked: 2026-10-04, using page fetches and web search from the Claude workspace. This workspace cannot run a browser, inspect network calls or reach arbitrary sites from its shell, so the checks below are limited to what a page fetch shows.
 
 ## 1. Competition facts
@@ -80,9 +80,9 @@ With those samples I can write the parser and the adapter against real data, tes
 
 ## 7. Open items for the final Phase 0 sign-off
 - [x] Owner supplies endpoint samples (sections 8 to 10)
-- [ ] Owner supplies the portal's terms text (section 4, step 1). **Still open; it gates automated fetching in Phase 3**
+- [x] Portal terms: none published; D1 cleared by the owner on 2026-10-07 (section 12)
 - [x] Event total recorded: 469 in the portal's event list (section 10). Loading it into `competitions.official_event_total` is part of Phase 2
-- [ ] robots/terms decision recorded here and in `DECISIONS.md` (D1): robots is recorded (404 on both hosts), the terms part waits for the owner (section 10)
+- [x] robots/terms decision recorded here and in `DECISIONS.md` (D1): robots is recorded (404 on both hosts), terms: none published, D1 cleared by the owner (section 12)
 - [x] Fixtures saved under `tests/fixtures/sources/<source>/`
 - [ ] Whether a `canonical_bytes()` rule is needed for volatile fields (`DATA_PIPELINE.md` section 4)
 
@@ -130,7 +130,7 @@ The owner's lossless copy (base64 of the 3167 response bytes) settled section 8.
 - 470 gold against 469 silver is consistent with one gold tie or a data timing difference. This is a guess and is not recorded as a fact. The official total of medal events is still not confirmed (the chat's 469 is unverified; the portal's own event list will give the count).
 
 **Still open before Phase 0 sign-off:**
-- [ ] Portal terms of use text (owner)
+- [x] Portal terms of use: none published (section 12)
 - [ ] Samples, captured the same way, of: `SWM/medals/discipline`, `SWM/disc/data`, one `entries/event/...` URL, `config`, `params`, `latest`, `multi-medallists`, and the unit result `ARCMCTEAM------IND01` (the last four need their full URLs from the Network tab)
 - [ ] Whether events/units carry gold, silver and bronze countries directly (needed for placings), and how team events and double bronze appear
 
@@ -165,8 +165,8 @@ The responses carry athlete birth dates, including athletes who are minors, and 
 |------|----------|
 | How event-level data is obtained | Primary: the portal's JSON API, using `ALL/disc/data` (event list), `{DISC}/medals/discipline` (placings), and `ALL/medals/standings` with `{DISC}/medals/standings` (official table, for reconciliation). Fallback: manual CSV import, always available |
 | robots.txt | 404 on both `results.asiangames2026.org` and `back.results.asiangames2026.org`. No crawling rules are published. That is not permission |
-| Terms of use | **Not found.** Not recorded anywhere we can read. Under `AGENTS.md` rule 9 this must be settled by the owner (read the portal's footer or legal link, or ask the organisers or the Olympic Council of Asia in writing) before any automated fetching. Until then, data enters through manual import of owner captures |
-| Effect on the roadmap | Phases 2, 4 and 5 are unaffected. Phase 3 can build the parser, the raw store and the reconciliation on the saved fixtures now. Only the live adapter that fetches from the portal waits for the terms decision |
+| Terms of use | **None published.** D1 was cleared by the owner on 2026-10-07 (section 12) |
+| Effect on the roadmap | Phases 2, 4 and 5 are unaffected. Phase 3 can build the parser, the raw store and the reconciliation on the saved fixtures now. The live adapter (`sources/bornan/fetch.py`) was built once D1 was cleared (ADR-031) |
 
 
 ## 11. Full capture and reconciliation (2026-10-04, 16:21 UTC)
@@ -182,10 +182,9 @@ The owner ran the crawl snippet: `{DISC}/medals/discipline` and `{DISC}/medals/s
 
 **Gender rule (found by reconciliation, now in the parser).** The `Gender` field of a medal row is the *athlete's*. For Open events (20 of them: all 11 Esports and 7 Equestrian events, one of two Artistic Swimming events, one of 11 Taekwondo events) it can be M or W (23 rows). The official table takes the event's gender from the first letter of the event code and counts Open events under Mixed. Using the row field gave 107 mismatches in ELS, EQU, SWA and TKW; using the event-code letter gave 0. This is the rule in `DOMAIN_MODEL.md` section 4.6 (gender belongs to the event). Reports show Open events inside Mixed, as the official table does.
 
-Still open: the portal's terms of use (gates the live adapter, not manual import), reallocation and withheld-medal behaviour (needs a later capture to compare).
+Still open: reallocation and withheld-medal behaviour (needs a later capture to compare).
 
-## 12. Terms of use: none found (2026-10-04)
-The owner looked on the results portal for a Terms or Legal link and there is none on the page. No robots.txt either (section 10). Absence of published terms is not permission, so the rules stay conservative:
-- No automated fetching from the portal by the pipeline until the organisers confirm it in writing (`AGENTS.md` rule 9). Data enters through a capture the owner runs in their own browser, which reads the same public URLs the portal's own page reads, with a 2-second gap.
+## 12. Terms of use: none published; D1 cleared (2026-10-07)
+The owner looked on the results portal for a Terms or Legal link on 2026-10-04 and there is none on the page. No robots.txt either (section 10). On 2026-10-07 the owner cleared D1, so the pipeline may fetch the portal's public result data automatically (ADR-031). The fetcher keeps to the engineering rules in `AGENTS.md` rule 9: honest User-Agent with a contact, at most one request per 2 seconds, no `entries/...` endpoints, stop on errors. Manual CSV import and owner captures (`sie load-capture`) remain available as a fallback, and `PORTAL_FETCH_ENABLED` switches the fetcher off without a code change.
 - The raw capture (athlete names, team members) is kept out of Git. Git carries only `reports/placings.csv` (country, sport, event, gender, medal, slot: no person data) and the reports built from it.
 - Output credits the source ("Official results portal, AG2026") and is for non-commercial analysis.

@@ -55,7 +55,7 @@ Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 spo
 | Official-table report (`analytics/report.py`) | reads the official standings feed on purpose (it is the reference), not our data |
 | Analytics (country, sport, gender, concentration, specialisation) | done |
 | Static dashboard (`site/index.html`) and Excel/HTML reports (`reports/`) | done |
-| Live fetching from the portal | not built: no terms of use published, needs organisers' OK (`docs/SOURCE_DISCOVERY.md` section 12) |
+| Live fetching from the portal | built, daily schedule gated by `PORTAL_FETCH_ENABLED`; D1 cleared by the owner 2026-10-07 (ADR-031); not yet run against the live portal |
 | Scheduler, backups, conflict engine, hosted Postgres | planned (Phases 3 and 6) |
 
 ### Run it
