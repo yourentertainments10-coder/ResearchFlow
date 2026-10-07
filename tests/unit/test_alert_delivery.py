@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import json
-import threading
 from datetime import UTC, datetime, timedelta
-from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
-from tests.unit.test_alert_contract import health
+from test_alert_contract import health
 
 from sie.pipeline.alert_state import (
     FileAlertState,
@@ -20,6 +18,7 @@ from sie.pipeline.alerts import AlertKind, evaluate_alerts
 from sie.pipeline.freshness import Freshness
 from sie.pipeline.health import RunRef
 from sie.pipeline.notify import DeliveryResult, RecordingNotifier, WebhookNotifier, deliver
+from webhook_hook import Hook
 
 T0 = datetime(2026, 10, 4, 12, 0, tzinfo=UTC)
 
@@ -146,29 +145,6 @@ def test_the_file_store_survives_a_restart_and_sets_a_corrupt_file_aside(tmp_pat
 
 
 # --- webhook channel ------------------------------------------------------------------------------------
-
-
-class Hook:
-    def __init__(self, status=200):
-        outer = self
-        self.received, self.status = [], status
-
-        class Handler(BaseHTTPRequestHandler):
-            def do_POST(self):
-                body = self.rfile.read(int(self.headers["Content-Length"]))
-                outer.received.append((self.headers["Content-Type"], json.loads(body)))
-                self.send_response(outer.status)
-                self.end_headers()
-
-            def log_message(self, *_):
-                pass
-
-        self.server = HTTPServer(("127.0.0.1", 0), Handler)
-        self.url = f"http://127.0.0.1:{self.server.server_port}/hook"
-        threading.Thread(target=self.server.serve_forever, daemon=True).start()
-
-    def close(self):
-        self.server.shutdown()
 
 
 @pytest.fixture()

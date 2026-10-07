@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 from sqlalchemy import text
-from tests.integration.test_ops_foundation import csv_source
+from test_ops_foundation import csv_source
 from typer.testing import CliRunner
 
 from sie.cli import app

@@ -10,7 +10,7 @@ from pathlib import Path
 import pgserver
 import pytest
 from sqlalchemy import create_engine, text
-from tests.integration.test_ops_foundation import csv_source
+from test_ops_foundation import csv_source
 
 from sie.config import Settings
 from sie.ops.backup import SCRATCH_PREFIX, BackupError, backup, prune, restore_test

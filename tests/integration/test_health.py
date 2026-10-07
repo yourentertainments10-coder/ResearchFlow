@@ -307,7 +307,7 @@ def test_a_first_parse_failure_alerts_immediately_and_clears_when_fixed(seeded, 
 def test_the_health_command_delivers_a_new_alert_once_and_stays_quiet_until_it_changes(
     seeded, settings, cli_env
 ):
-    from tests.unit.test_alert_delivery import Hook
+    from webhook_hook import Hook
 
     hook = Hook()
     try:
