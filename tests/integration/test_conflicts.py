@@ -110,9 +110,7 @@ def load_disagreement(seeded, settings):
     first = run_ingest(seeded, official(settings), settings, now=T0)
     assert first.status == "success", first.error
     event = first_event(seeded)
-    claim = run_ingest(
-        seeded, manual_claim(seeded, "JPN"), settings, now=T0 + timedelta(minutes=5)
-    )
+    claim = run_ingest(seeded, manual_claim(seeded, "JPN"), settings, now=T0 + timedelta(minutes=5))
     assert claim.status == "success", claim.error
     return event
 
@@ -136,7 +134,9 @@ def test_rerunning_the_official_source_adds_no_observation_and_changes_nothing(s
 def test_a_disagreeing_manual_claim_is_held_and_the_event_is_disputed(seeded, settings):
     event = load_disagreement(seeded, settings)
     assert scalar(seeded, GOLD_COUNTRY, e=event) == "KOR"  # the accepted value did not move
-    assert scalar(seeded, "SELECT count(*) FROM placing_history WHERE change_type <> 'created'") == 0
+    assert (
+        scalar(seeded, "SELECT count(*) FROM placing_history WHERE change_type <> 'created'") == 0
+    )
     (conflict,) = open_conflicts(seeded)
     assert conflict["policy_rule"] == "official_stale" and conflict["status"] == "needs_review"
     assert {conflict["source_a"], conflict["source_b"]} == {"official", "manual"}
@@ -146,9 +146,7 @@ def test_a_disagreeing_manual_claim_is_held_and_the_event_is_disputed(seeded, se
 
 def test_repeating_the_disagreeing_claim_does_not_duplicate_conflicts(seeded, settings):
     load_disagreement(seeded, settings)
-    run_ingest(
-        seeded, manual_claim(seeded, "JPN"), settings, now=T0 + timedelta(minutes=10)
-    )
+    run_ingest(seeded, manual_claim(seeded, "JPN"), settings, now=T0 + timedelta(minutes=10))
     assert scalar(seeded, "SELECT count(*) FROM source_conflicts") == 1
     assert scalar(seeded, "SELECT count(*) FROM source_observations WHERE source = 'manual'") == 1
 
@@ -157,7 +155,9 @@ def test_an_official_refetch_that_still_disagrees_keeps_the_conflict_open(seeded
     event = load_disagreement(seeded, settings)
     run_ingest(seeded, official(settings), settings, now=T0 + timedelta(minutes=15))
     assert scalar(seeded, GOLD_COUNTRY, e=event) == "KOR"
-    assert scalar(seeded, "SELECT count(*) FROM source_conflicts WHERE status = 'needs_review'") == 1
+    assert (
+        scalar(seeded, "SELECT count(*) FROM source_conflicts WHERE status = 'needs_review'") == 1
+    )
     assert scalar(seeded, "SELECT is_disputed FROM events WHERE id = :e", e=event) is True
 
 
@@ -168,10 +168,15 @@ def test_an_official_refetch_that_agrees_resolves_the_conflict_with_history(seed
     )
     assert changed.placings["reallocated"] == 1
     assert scalar(seeded, GOLD_COUNTRY, e=event) == "JPN"
-    assert scalar(seeded, "SELECT count(*) FROM source_conflicts WHERE status = 'needs_review'") == 0
+    assert (
+        scalar(seeded, "SELECT count(*) FROM source_conflicts WHERE status = 'needs_review'") == 0
+    )
     assert scalar(seeded, "SELECT status FROM source_conflicts") == "resolved"
     assert scalar(seeded, "SELECT is_disputed FROM events WHERE id = :e", e=event) is False
-    assert scalar(seeded, "SELECT count(*) FROM placing_history WHERE change_type = 'reallocated'") == 1
+    assert (
+        scalar(seeded, "SELECT count(*) FROM placing_history WHERE change_type = 'reallocated'")
+        == 1
+    )
 
 
 def test_resolving_in_favour_of_manual_applies_it_and_stores_who_and_why(seeded, settings):
@@ -201,7 +206,11 @@ def test_resolving_in_favour_of_official_keeps_the_value_and_clears_the_flag(see
     (conflict,) = open_conflicts(seeded)
     with seeded.begin() as conn:
         change = resolve_conflict(
-            conn, conflict["id"], accept_source="official", note="official is right", by="owner",
+            conn,
+            conflict["id"],
+            accept_source="official",
+            note="official is right",
+            by="owner",
             now=T0 + timedelta(hours=1),
         )
     assert change == "unchanged"
@@ -215,9 +224,13 @@ def test_resolution_errors_are_specific(seeded, settings):
     now = T0 + timedelta(hours=1)
     with seeded.begin() as conn:
         with pytest.raises(ConflictError, match="note"):
-            resolve_conflict(conn, conflict["id"], accept_source="manual", note=" ", by="o", now=now)
+            resolve_conflict(
+                conn, conflict["id"], accept_source="manual", note=" ", by="o", now=now
+            )
         with pytest.raises(ConflictError, match="not 'scraper'"):
-            resolve_conflict(conn, conflict["id"], accept_source="scraper", note="x", by="o", now=now)
+            resolve_conflict(
+                conn, conflict["id"], accept_source="scraper", note="x", by="o", now=now
+            )
         with pytest.raises(ConflictError, match="no conflict"):
             resolve_conflict(conn, 99999, accept_source="manual", note="x", by="o", now=now)
     with seeded.begin() as conn:

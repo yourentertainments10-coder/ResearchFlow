@@ -59,7 +59,9 @@ class Decision:
     apply: bool  # write the new claim to ``placings`` (through apply_placing)
     rule: Rule | None = None  # set when a conflict row is recorded or an open one is closed
     status: Status | None = None  # the conflict's status; None when there is no conflict
-    against: Claim | None = None  # the claim the new one conflicts with (or agrees with, to resolve)
+    against: Claim | None = (
+        None  # the claim the new one conflicts with (or agrees with, to resolve)
+    )
     refetch_official: bool = False  # ask for an immediate re-fetch of the official source
 
     @property
@@ -85,14 +87,15 @@ def decide(
 
     if not disagreeing:
         if open_conflict and others:
-            return Decision(apply=True, rule=Rule.AGREEMENT, status=Status.RESOLVED, against=others[0])
+            return Decision(
+                apply=True, rule=Rule.AGREEMENT, status=Status.RESOLVED, against=others[0]
+            )
         return Decision(apply=True)
 
     if not has_accepted:  # nothing to protect: the first accepted value is this claim
         return Decision(apply=True)
 
     official_other = next((o for o in disagreeing if o.source == policy.official_source), None)
-    newest_other = max(o.observed_at for o in disagreeing)
 
     if new.source == policy.official_source:
         # The official source was just fetched, so it is fresh by construction.
@@ -103,7 +106,10 @@ def decide(
     if official_other is not None:
         if policy.official_is_fresh(official_other, new.observed_at, now):
             return Decision(
-                apply=False, rule=Rule.OFFICIAL_FRESH, status=Status.AUTO_RESOLVED, against=official_other
+                apply=False,
+                rule=Rule.OFFICIAL_FRESH,
+                status=Status.AUTO_RESOLVED,
+                against=official_other,
             )
         return Decision(
             apply=False,

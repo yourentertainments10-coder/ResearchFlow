@@ -22,8 +22,8 @@ from pathlib import Path
 from sqlalchemy import Engine, text
 
 from sie.config import Settings
-from sie.pipeline.failure import FailureCategory, format_error_summary
 from sie.pipeline.conflicts import conflict_policy
+from sie.pipeline.failure import FailureCategory, format_error_summary
 from sie.pipeline.load import LoadError, load_placed, write_quarantine
 from sie.pipeline.models import NormalisedResult, Rejection
 from sie.pipeline.normalise import load_reference_index, normalise
