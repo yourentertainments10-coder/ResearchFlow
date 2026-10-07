@@ -58,6 +58,10 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -e .
+      - name: Prepare schema and reference data
+        run: |
+          sie migrate
+          sie seed-reference
       - name: Close runs left running by a dead process
         run: sie recover-stuck --older-than-minutes 60
       - name: Refresh with locking and retries
