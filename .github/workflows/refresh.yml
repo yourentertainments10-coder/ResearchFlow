@@ -1,0 +1,53 @@
+# Scheduled ingestion (Phase 6A). Deliberately NOT on a cron yet.
+#
+# Why: the official portal publishes no terms of use, so nothing may fetch it automatically until the
+# owner clears decision D1 (docs/DECISIONS.md, docs/SOURCE_DISCOVERY.md section 12). Until then this
+# workflow ingests a file committed to the repository or supplied by the owner, through exactly the
+# code path a real fetcher will use (lock, retries, stuck-run recovery).
+#
+# To schedule it later, add under `on:`
+#   schedule:
+#     - cron: "*/30 * * * *"
+# GitHub may run scheduled jobs late and disables them after a long quiet period in a public repo.
+name: refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: "capture (portal capture JSON) or csv (manual results CSV)"
+        required: true
+        default: csv
+      path:
+        description: "Path of the file inside the repository"
+        required: true
+
+# One refresh at a time per repository. The database advisory lock is the real guard (it also covers
+# runs started from a laptop); this stops GitHub from even starting two at once.
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RAW_STORE_BACKEND: db  # no persistent disk on a hosted runner (ADR-016)
+      COMPETITION_ID: asiad-2026
+      INGEST_KIND: ${{ inputs.kind }}
+      INGEST_PATH: ${{ inputs.path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .
+      - name: Close runs left running by a dead process
+        run: sie recover-stuck --older-than-minutes 60
+      - name: Ingest with locking and retries
+        run: sie scheduled-run "$INGEST_KIND" "$INGEST_PATH"

@@ -138,3 +138,60 @@ competition,sport,discipline,event,gender,medal,country,athlete_or_team,date,sou
 
 ## 11. Observability
 Every run writes to `ingest_runs`: run_id, started_at, finished_at, status, documents_fetched, documents_changed, rows_loaded, rows_quarantined, error_summary. The dashboard "Data quality" page reads from it.
+
+## 12. Failure categories, retry contract and source freshness (Phase 6 foundation, built)
+Code: `src/sie/pipeline/failure.py`, `observe.py`, `freshness.py`, and `record_fetch_failure` in `runner.py`. No new tables: it reuses `ingest_runs`, `raw_fetches`, `raw_versions` and `quarantine`.
+
+**Run lifecycle.** `ingest_runs` row: competition, source, `started_at`, `finished_at`, `status` (`running`, `success`, `failed`), `docs_fetched`, `docs_changed`, `rows_loaded`, `rows_quarantined`, `error_summary`. The run is committed before anything else happens, so a run that dies is still on record (`stuck_runs` finds runs left `running`). A failed run is stored with `error_summary = "[category] detail"`.
+
+**Deterministic outcome** (`derive_outcome`, a pure function of the stored row): `running`, `failed`, `succeeded_with_quarantine` (some row needs attention, takes precedence), `unchanged` (the source bytes equal the previous version), `succeeded`. `sie run-summary <id>` prints the structured summary (counts, quarantine by reason, failure category, retry rule) built from the database row.
+
+| Category | Meaning | Retry | Why it is safe |
+|----------|---------|-------|----------------|
+| `fetch_failure` | Source unreachable or answered with an error | Automatic, up to 3 attempts with backoff | Nothing stored, no version changes. A `raw_fetches` row with outcome `error` and the HTTP status is the only trace |
+| `raw_store_failure` | Bytes could not be stored intact (for example a write-once conflict) | Manual only | The run is closed as failed; existing evidence is never replaced |
+| `parse_failure` | Input is not in the shape the parser expects | After a parser fix | Raw input kept; the same bytes parse the same way, so retrying unchanged is pointless |
+| `validation_failure` | The normalise or validate stage itself broke (a single bad row is quarantine, not a failed run) | After fixing rules or reference mappings | Raw input kept; nothing loaded |
+| `load_failure` | The all-or-nothing database load was rejected | Once automatically, then manual | One transaction, rolled back |
+
+**Idempotency and evidence.** Re-running a failed stage on the same input is always safe: raw bytes are written once and hashed (`unchanged` on repeat), the load is one transaction, quarantine is not duplicated. A failed fetch never creates, replaces or re-points a raw version. Bytes that already exist under a key with different content raise an error instead of overwriting.
+
+**Source freshness** (`source_freshness`, `sie source-status <source>`, read-only): `last_attempt_at/status`, `last_success_at`, `last_change_at`, a `fingerprint` (one hash over the latest version of every document of the source, so it changes only when content changes), and the raw artifact references (URL, version, sha256, backend, path). Status: `never_succeeded`, `failing` (the latest finished attempt failed after the last success, even if the success is recent), `stale` (last success older than `FRESHNESS_THRESHOLD_MINUTES`), `fresh`. `sie source-status` exits 1 unless the source is fresh.
+
+### Scheduler, retries and locking (Phase 6A, built)
+Code: `src/sie/pipeline/scheduler.py`, `src/sie/db/locks.py`; commands `sie scheduled-run <capture|csv> <file>` and `sie recover-stuck`; workflow `.github/workflows/refresh.yml`. It applies the retry contract above and does not redefine it.
+
+- **Lock.** One session-level PostgreSQL advisory lock per (competition, source), taken with `pg_try_advisory_lock` on a dedicated connection held for the whole run. A second run of the same source does not wait: it returns `skipped_locked`, writes no run row and exits 0. Different sources use different keys and run independently. The lock ends with its session, so a crashed process cannot leave a source locked.
+- **Retries.** Fetch: at most 3 attempts in total, waiting 2 s then 4 s between them, each failure recorded as its own `fetch_failure` run. Load: at most 1 automatic retry, on the bytes already fetched (nothing is fetched or stored twice). Parse, validation and raw-store failures are returned as they are, never retried here.
+- **Stuck runs.** After taking the lock, the scheduler closes this source's runs still `running` and older than 1 hour as `failed` with the text "abandoned: ...". They get no failure category (the locked categories are unchanged). `sie recover-stuck` does the same for any or all sources. Only `ingest_runs` is touched.
+- **No fetcher for the official portal is registered.** Its terms are unresolved (D1), so the scheduler runs a file supplied by the owner through the same path a future fetcher will use. The workflow is `workflow_dispatch` only; a cron is added when D1 is cleared.
+
+### Source health and alerts (Phase 6B, built)
+Code: `src/sie/pipeline/health.py`, `alerts.py`, `notify.py`; command `sie health`. It reads freshness (`freshness.py`) and adds no new classification: `fresh`, `stale`, `failing` and `never_succeeded` keep the meaning above, and read-only throughout.
+
+**Health contract** (`SourceHealth`, one per source, evaluated independently): the freshness status; last successful run and last failed run (id, time, failure category, error detail); `consecutive_failures` (failed runs since the last success, or all failed runs if none ever succeeded; a run closed as abandoned counts as one failure); stuck run ids; last change time, fingerprint and raw artifact references. `never_succeeded` (no good data yet, including a source that has not run at all) is a different state from `stale` (had good data, it aged out) and `failing` (the latest finished attempt failed after a success).
+
+**Alert contract** (`evaluate_alerts`, pure and deterministic, level-triggered):
+| Alert | Condition | Severity | Threshold source |
+|-------|-----------|----------|------------------|
+| `never_succeeded` | status `never_succeeded` | critical | none |
+| `repeated_failures` | `consecutive_failures >= 3` | critical | the fetch attempt limit of the retry contract (`RETRY_RULES`), so one scheduled run that exhausts its fetch retries already alerts; a single failure does not, it may be retried |
+| `stale` | status `stale` | warning | `FRESHNESS_THRESHOLD_MINUTES` |
+| `stuck_runs` | a run `running` longer than the stuck age | warning | the scheduler's 1 hour (`--stuck-after-minutes`) |
+A healthy source raises nothing. Each alert has a stable `key` (`competition:source:kind`) and evidence (counts, run ids, last error). Alerts are produced for as long as the condition holds; remembering what was already sent is the delivery layer's job (`partition_alerts` splits new, still active and resolved against the previous keys).
+
+**Sources checked:** `--source` (repeatable), otherwise `SCHEDULED_SOURCES` (new, comma separated; the sources expected to refresh, so a source that never started still alerts) plus every source that has a run.
+
+**Notifications:** `Notifier.send(alerts) -> DeliveryResult`. Built in: `LogNotifier` (the only channel; critical as error, warning as warning) and `RecordingNotifier` (tests). `deliver()` never raises, reports every alert a channel lost or dropped, and sends nothing for an empty batch. `WebhookNotifier` (6B follow-up) posts one JSON batch (`text`, `content`, `alerts`) to `NOTIFY_WEBHOOK_URL`; https only (http for localhost); any non-2xx or network error marks every alert in the batch as failed.
+
+**Command:** `sie health` prints one deterministic JSON report (sorted keys, sources sorted) and exits 1 if any alert exists. `sie source-status` is kept unchanged: it reports a single source's freshness; `sie health` is new because it covers several sources and adds failure counts, stuck runs and alerts.
+
+**Delivery and de-duplication (ADR-030):** `sie health --channel log|webhook|none`. State is a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). An alert is sent when it is new, returns after being resolved, was never delivered successfully, or (if `ALERT_RENOTIFY_MINUTES` > 0) is due a reminder. Failed deliveries leave no record, so the next check retries. Resolved alerts are marked inactive. Output always lists every active alert plus a `notification` block `{sent, suppressed, resolved, failed}`; exit 1 while any alert is active.
+
+**`needs_attention` (critical):** the latest failure's category is parse, validation or raw store (not auto-retryable), so it alerts on the first failure instead of waiting for three. Fetch and load failures still wait for the retry limit.
+
+**Backup (6C):** `sie backup [--out DIR] [--keep 14] [--no-verify]` and `sie restore-test DUMP`. Dump and manifest counts come from one exported snapshot. The restore test restores into a scratch database (`sie_restore_*`, always dropped), then checks the dump hash, `alembic_version`, every table's row count (public and reporting) and every raw blob's SHA-256. `PG_BIN_DIR` selects the pg client tools (they must not be older than the server). Not covered: raw files on disk (`fs` backend), encryption and off-host upload (workflow steps). `backup.yml` runs it nightly with `DATABASE_URL`.
+
+**Publish (6D):** `sie publish --out DIR` writes `medals.csv`, `events.csv`, `manifest.json` (counts, `data_as_of`, `data_fingerprint`, per-file SHA-256) from `reporting` views only. Refuses to publish an unknown competition or one with no current placings, leaving the old bundle untouched. The dashboard HTML is still built by `python -m sie.dashboard`.
+
+**Not built yet (remaining Phase 6):** the real portal fetcher and its cron. Blocked on D1: the portal publishes no terms of use, so under the conservative rule (`SOURCE_DISCOVERY.md` section 12) nothing may fetch it automatically until the organisers agree.

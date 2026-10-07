@@ -155,7 +155,7 @@ Environment variables, loaded by `config.py`: `DATABASE_URL` (provider URLs such
 ## 9. Failure handling
 | Failure | Behaviour |
 |---------|-----------|
-| Network error or timeout | Retry with exponential backoff, then fail the document only |
+| Network error or timeout | Recorded as a `fetch_failure` run plus a `raw_fetches` error row; automatic retry with backoff, up to 3 attempts. Categories and retry rules for every stage: `DATA_PIPELINE.md` section 12 |
 | Site structure changed (parse error) | Fail loudly, keep old data, alert; never guess |
 | Unknown country or sport | Quarantine row, show in Data quality page |
 | Source disagreement | Conflict policy table in `DATA_PIPELINE.md` section 7: a fresh official value is preferred; stale or competing values are held, the event is flagged `disputed` and queued for review. Never a silent overwrite |

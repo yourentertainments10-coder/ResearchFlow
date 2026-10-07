@@ -53,3 +53,8 @@ tmp/
 data/raw/
 data/exports/
 data/.pipeline.lock
+
+# alert de-duplication state (local runtime state)
+data/alert_state.json*
+data/backups/
+data/publish/

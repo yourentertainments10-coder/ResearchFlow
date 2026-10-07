@@ -174,6 +174,34 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - The `sport` dimension of every analytics table is the official sport (49). The source's 59 disciplines stay available as `discipline` (`country_sport(df, "discipline")`, the report's discipline sheets, the `Placings` export). Official per-discipline reconciliation is unchanged because the portal's standings are keyed by discipline.
 - `Open` stays its own gender category in all analytics. `reconcile` and `reconcile_official_table` fold Open into Mixed because the official table has no Open column. The dashboard's Open toggle (official or separate) only changes the view.
 
+## ADR-027: Failure category stored in `error_summary`, no migration
+
+- **Context:** Phase 6 needs to tell fetch, parse, validation and load failures apart and say what is safe to retry. `ingest_runs` has only a free-text `error_summary`.
+- **Decision:** Store the category as a prefix, `[load_failure] detail`, read back by `parse_error_summary`. Outcome and freshness are derived from existing columns. No schema change, so this work merges independently of any analytics migration.
+- **Consequence:** The category is queryable with `LIKE '[load_failure]%'` but not constrained by the database. If scheduling needs indexed filtering by category, add a `failure_category` column in a later migration and backfill from the prefix.
+- **Decided by:** the owner's Phase 6 brief (2026-10-06).
+
+## ADR-028: Scheduler applies the failure contract; per-source advisory lock; no portal fetcher yet
+
+- **Context:** Phase 6A needs overlap prevention, retries and stuck-run handling on top of ADR-027, without changing its categories.
+- **Decision:** The retry numbers are read from `RETRY_RULES` (fetch 3 attempts, load 1 retry). The advisory lock key is derived from (competition, source), so independent sources are not serialised; a busy source is skipped, not queued. Stuck runs are closed as `failed` with no category. The workflow is manual-only and no automated portal fetcher exists, because D1 (terms of use) is open.
+- **Consequences:** An overlap is silent apart from a log line and exit 0; alerting on it belongs to Phase 6B. A non-scheduler run (`import-csv`) does not take the lock. If it runs longer than the stuck threshold while a scheduled run starts, the scheduler would close it; raise `--older-than` or route all runs through `scheduled-run`.
+- **Decided by:** the owner's Phase 6A brief (2026-10-06).
+
+## ADR-029: Health composes freshness; thresholds are existing numbers; no provider coupling
+
+- **Context:** Phase 6B needs health states, alert conditions and a way to deliver alerts, without redefining ADR-027/026 or choosing a provider.
+- **Decision:** `SourceHealth` wraps `SourceFreshness` and adds failure history and stuck runs; it never reclassifies freshness. Alert thresholds reuse existing numbers: `FRESHNESS_THRESHOLD_MINUTES`, the fetch attempt limit (3) for repeated failures, the scheduler's stuck age. The one new setting is `SCHEDULED_SOURCES`, because "expected to run" cannot be derived from runs that never happened. Delivery is a `Notifier` protocol with a log channel; `deliver()` never raises.
+- **Consequences:** Alerts are level-triggered and stateless, so a channel that sends them must de-duplicate by `key`. A first parse, validation or raw-store failure does not alert until it repeats or the data goes stale. No `failure_category` column was added: nothing here needs to query by category.
+- **Decided by:** the owner's Phase 6B brief (2026-10-06).
+
+## ADR-030: Backup, publish bundle, delivery state in a file; first-failure alert for non-auto-retryable categories
+
+- **Context:** Phase 6C/6D and the remaining 6B follow-ups: a backup that is proven to restore, an export bundle, a real delivery channel with de-duplication, and an alert on the first parse, validation or raw-store failure.
+- **Decision:** (1) `sie backup` runs `pg_dump` (custom format, no owners) from the same exported snapshot as the row counts in its manifest, then restores into a scratch database and checks schema revision, row counts and a re-hash of every `raw_blobs` value; a backup that fails its restore test exits 1. (2) `sie publish` writes `medals.csv`, `events.csv` and `manifest.json` from the `reporting` schema only; output is deterministic and the manifest is written last. (3) Alert de-duplication state is a JSON file behind a `AlertStateStore` protocol, not a table: this PR was written while Phase 4's migration 004 was unmerged, and a second 004 would have given Alembic two heads. Migration 004 is now on main, so a later migration 005 can move the state into a table. (4) New alert `needs_attention` (critical) fires on the first failure whose category is not auto-retryable (parse, validation, raw store). (5) `WebhookNotifier` posts one JSON batch to `NOTIFY_WEBHOOK_URL` (https; http only for localhost).
+- **Consequences:** The state file must live on storage that survives between `sie health` runs (a hosted runner without a persistent disk will re-send every alert; use `ALERT_STATE_PATH` on durable disk, or move the store to a table once migrations are merged). A failed delivery is retried on the next check. Raw bytes kept on disk (`fs` backend) are not in a database dump; the manifest and restore test say so. The portal fetcher and its cron are still not built: they wait for decision D1.
+- **Decided by:** the owner's Phase 6 follow-up brief (2026-10-06).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

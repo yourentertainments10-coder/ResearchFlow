@@ -2,6 +2,23 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Phase 6C/6D backup, publish, delivery
+- `sie backup` / `sie restore-test` (snapshot-consistent dump, scratch restore, hash and count checks), `sie publish` export bundle, `WebhookNotifier` for `NOTIFY_WEBHOOK_URL`, file-based alert de-duplication, `needs_attention` alert on a first parse, validation or raw-store failure, `backup.yml` workflow. New settings `PG_BIN_DIR`, `ALERT_STATE_PATH`, `ALERT_RENOTIFY_MINUTES`. ADR-030. No schema, analytics, report or dashboard changes. Portal fetcher and cron still blocked on D1.
+
+## Phase 6B source health and alerts
+- `sie health`: per-source health (fresh, stale, failing, never_succeeded) with last success and failure, consecutive failures, stuck runs, fingerprint and raw artifact references.
+- Alert contract (never_succeeded, repeated_failures, stale, stuck_runs) using existing thresholds; notifier abstraction with a log channel; new setting `SCHEDULED_SOURCES`. ADR-029. No schema, analytics, report or dashboard changes.
+
+## Phase 6A scheduler, retries, locking
+- `sie scheduled-run` and `sie recover-stuck`; per-source PostgreSQL advisory lock; fetch retry (3 attempts, backoff) and one load retry, applied from the existing retry rules; no automatic retry for parse, validation or raw-store failures; stuck runs closed as failed.
+- `refresh.yml` workflow (manual dispatch only until the portal terms are cleared). ADR-028. No schema, analytics, report or dashboard changes.
+
+## Phase 6 operational foundation
+- Failure categories (fetch, raw store, parse, validation, load) with a retry contract; failed runs store `[category] detail`.
+- `record_fetch_failure` records unreachable sources without touching raw versions; the run is now committed before the raw store step so even a raw-store failure leaves a closed, failed run.
+- Deterministic run outcome and structured run summary; source freshness with fingerprint and raw artifact references; stuck-run detection; `sie run-summary` and `sie source-status`.
+- No migration, no analytics, report or dashboard changes. ADR-027.
+
 ## Product direction (documentation only)
 - Added `docs/PRODUCT_VISION.md` and ADR-024: competition-agnostic engine, extension contract, second-competition proof criteria, research query and evidence layers, constrained role of AI. Roadmap Phase 7 gains acceptance criteria; a research query layer follows it. Everything beyond Asian Games 2026 is marked planned. No code changes.
 
