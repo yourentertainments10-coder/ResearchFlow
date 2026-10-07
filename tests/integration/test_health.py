@@ -257,6 +257,7 @@ def test_discovery_finds_sources_that_have_run(seeded, settings):
 def cli_env(settings, monkeypatch):
     monkeypatch.setenv("DATABASE_URL", settings.database_url)
     monkeypatch.setenv("COMPETITION_ID", COMP)
+    monkeypatch.setenv("DATA_DIR", str(settings.data_dir))
     monkeypatch.setenv("SCHEDULED_SOURCES", "official")
 
 
@@ -276,3 +277,79 @@ def test_the_health_command_exits_zero_when_healthy_and_one_with_alerts(
     assert bad.exit_code == 1 and data["healthy"] is False
     assert [a["kind"] for a in data["alerts"]] == ["never_succeeded"]
     assert [s["source"] for s in data["sources"]] == ["manual", "official"]
+
+
+def test_a_first_parse_failure_alerts_immediately_and_clears_when_fixed(seeded, settings):
+    def explode(_raw):
+        raise ValueError("layout changed")
+
+    run_ingest(
+        seeded,
+        SourceInput(
+            source="manual", url="file://x.csv", content=b"a,b\n", content_type="text/csv",
+            extension="csv", parse=explode,
+        ),
+        settings,
+    )  # fmt: skip
+    rep = report(seeded, ["manual"])
+    assert kinds(rep) == [
+        AlertKind.NEVER_SUCCEEDED,
+        AlertKind.NEEDS_ATTENTION,
+    ]  # one failure, no repeat yet
+    attention = rep.alerts[1]
+    assert attention.evidence["failure_category"] == "parse_failure"
+    assert "layout changed" in attention.evidence["last_error"]
+
+    ingest(seeded, settings)
+    assert report(seeded, ["manual"]).healthy
+
+
+def test_the_health_command_delivers_a_new_alert_once_and_stays_quiet_until_it_changes(
+    seeded, settings, cli_env
+):
+    from tests.unit.test_alert_delivery import Hook
+
+    hook = Hook()
+    try:
+        env = {"NOTIFY_WEBHOOK_URL": hook.url}
+        runner = CliRunner()
+        first = runner.invoke(app, ["health", "--channel", "webhook"], env=env)
+        second = runner.invoke(app, ["health", "--channel", "webhook"], env=env)
+        d1, d2 = json.loads(first.stdout), json.loads(second.stdout)
+        assert first.exit_code == second.exit_code == 1  # the condition still holds
+        assert d1["notification"]["sent"] == ["asiad-2026:official:never_succeeded"]
+        assert (
+            d2["notification"]["sent"] == []
+            and d2["notification"]["suppressed"] == d1["notification"]["sent"]
+        )
+        assert len(hook.received) == 1  # the channel heard it once
+
+        ingest(seeded, settings, source="official")  # the source finally works
+        third = runner.invoke(app, ["health", "--channel", "webhook"], env=env)
+        assert third.exit_code == 0 and json.loads(third.stdout)["notification"]["resolved"] == [
+            "asiad-2026:official:never_succeeded"
+        ]
+        assert len(hook.received) == 1
+    finally:
+        hook.close()
+
+
+def test_the_health_command_rejects_a_missing_or_insecure_webhook_and_unknown_channels(
+    seeded, settings, cli_env
+):
+    runner = CliRunner()
+    assert (
+        runner.invoke(
+            app, ["health", "--channel", "webhook"], env={"NOTIFY_WEBHOOK_URL": ""}
+        ).exit_code
+        == 2
+    )
+    assert runner.invoke(
+        app, ["health", "--channel", "webhook"], env={"NOTIFY_WEBHOOK_URL": "http://example.org/x"}
+    ).exit_code == 2  # fmt: skip
+    assert runner.invoke(app, ["health", "--channel", "pigeon"]).exit_code == 2
+
+
+def test_the_none_channel_keeps_no_state(seeded, settings, cli_env):
+    CliRunner().invoke(app, ["health", "--channel", "none"])
+    assert not (settings.data_dir / "alert_state.json").exists()

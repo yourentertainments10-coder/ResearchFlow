@@ -8,10 +8,14 @@ or crash the job, and it tells the caller exactly which alerts were not delivere
 
 from __future__ import annotations
 
+import json
 import logging
+import urllib.error
+import urllib.request
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Protocol
+from urllib.parse import urlparse
 
 from sie.pipeline.alerts import Alert
 
@@ -55,6 +59,50 @@ class RecordingNotifier:
     def send(self, alerts: Sequence[Alert]) -> DeliveryResult:
         self.sent.extend(alerts)
         return DeliveryResult(delivered=[a.key for a in alerts])
+
+
+class WebhookNotifier:
+    """POSTs the alerts as JSON to a webhook (``NOTIFY_WEBHOOK_URL``). One request per batch.
+
+    The body has ``alerts`` (the full alert objects) and a plain ``text`` and ``content`` summary, so
+    Slack-style and Discord-style webhooks both show something readable. HTTPS only, except
+    localhost for development. A non-2xx answer or a network error fails every alert in the batch,
+    which is reported by ``deliver`` and retried by the de-duplication state on the next check.
+    """
+
+    LOCAL_HOSTS = ("localhost", "127.0.0.1", "::1")
+
+    def __init__(self, url: str, timeout: float = 10.0) -> None:
+        parsed = urlparse(url)
+        if parsed.scheme != "https" and not (
+            parsed.scheme == "http" and parsed.hostname in self.LOCAL_HOSTS
+        ):
+            raise ValueError("webhook URL must use https (http only for localhost)")
+        self.url, self.timeout = url, timeout
+
+    def send(self, alerts: Sequence[Alert]) -> DeliveryResult:
+        lines = [f"[{a.severity}] {a.message}" for a in alerts]
+        body = json.dumps(
+            {
+                "text": "\n".join(lines),
+                "content": "\n".join(lines),
+                "alerts": [a.to_dict() for a in alerts],
+            }
+        ).encode()
+        request = urllib.request.Request(
+            self.url, data=body, headers={"Content-Type": "application/json"}, method="POST"
+        )
+        keys = [a.key for a in alerts]
+        try:
+            with urllib.request.urlopen(request, timeout=self.timeout) as response:  # noqa: S310
+                if 200 <= response.status < 300:
+                    return DeliveryResult(delivered=keys)
+                reason = f"HTTP {response.status}"
+        except urllib.error.HTTPError as exc:
+            reason = f"HTTP {exc.code}"
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            reason = f"{type(exc).__name__}: {exc}"[:200]
+        return DeliveryResult(failed=dict.fromkeys(keys, reason))
 
 
 def deliver(notifier: Notifier, alerts: Sequence[Alert]) -> DeliveryResult:

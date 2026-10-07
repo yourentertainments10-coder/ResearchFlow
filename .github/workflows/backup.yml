@@ -1,0 +1,45 @@
+# Nightly backup with a tested restore (Phase 6C, docs/DEPLOYMENT.md section 3 item 5).
+# The restore test needs a scratch database on the same server, so DATABASE_URL must be a direct
+# (non-pooled) connection by a role that may CREATE DATABASE. If it cannot, run `sie backup --no-verify`
+# here and `sie restore-test` on a machine that can.
+# Encrypt and upload the dump off-host in the last step; the artifact below is only a stopgap
+# (retention 14 days) and is not encrypted, so keep the repository private.
+name: backup
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 21 * * *"
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      COMPETITION_ID: asiad-2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: PostgreSQL client matching the server
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+          pg_dump --version
+      - run: pip install -e .
+      - name: Dump and prove it restores
+        run: sie backup --out backups --keep 14
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sie-backup
+          path: backups/
+          retention-days: 14

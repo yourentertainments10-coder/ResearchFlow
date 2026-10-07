@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Phase 6C/6D backup, publish, delivery
+- `sie backup` / `sie restore-test` (snapshot-consistent dump, scratch restore, hash and count checks), `sie publish` export bundle, `WebhookNotifier` for `NOTIFY_WEBHOOK_URL`, file-based alert de-duplication, `needs_attention` alert on a first parse, validation or raw-store failure, `backup.yml` workflow. New settings `PG_BIN_DIR`, `ALERT_STATE_PATH`, `ALERT_RENOTIFY_MINUTES`. ADR-028. No schema, analytics, report or dashboard changes. Portal fetcher and cron still blocked on D1.
+
 ## Phase 6B source health and alerts
 - `sie health`: per-source health (fresh, stale, failing, never_succeeded) with last success and failure, consecutive failures, stuck runs, fingerprint and raw artifact references.
 - Alert contract (never_succeeded, repeated_failures, stale, stuck_runs) using existing thresholds; notifier abstraction with a log channel; new setting `SCHEDULED_SOURCES`. ADR-027. No schema, analytics, report or dashboard changes.

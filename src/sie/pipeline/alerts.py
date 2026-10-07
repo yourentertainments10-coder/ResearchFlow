@@ -13,6 +13,10 @@ Conditions and the numbers behind them (nothing here is a new threshold):
   threshold is the fetch attempt limit of the locked retry contract, so one scheduled run that exhausts
   its fetch retries is already a repeated failure. A single failure is not alerted: it may be retried.
 * ``stuck_runs``: runs still ``running`` past the stuck threshold the scheduler already uses.
+* ``needs_attention``: the source's current failure is one the retry contract never retries by itself
+  (parse, validation or raw-store failure). It alerts on the first such failure, because waiting for it
+  to repeat would only repeat an identical failure. Fetch and load failures are retried, so they wait
+  for ``repeated_failures``.
 """
 
 from __future__ import annotations
@@ -22,7 +26,7 @@ from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
-from sie.pipeline.failure import FailureCategory, retry_rule
+from sie.pipeline.failure import FailureCategory, RetryPolicy, retry_rule
 
 if TYPE_CHECKING:  # health.py imports this module; the type is only needed for annotations
     from sie.pipeline.health import SourceHealth
@@ -35,6 +39,7 @@ class AlertKind(StrEnum):
     REPEATED_FAILURES = "repeated_failures"
     STALE = "stale"
     STUCK_RUNS = "stuck_runs"
+    NEEDS_ATTENTION = "needs_attention"
 
 
 class Severity(StrEnum):
@@ -47,6 +52,7 @@ SEVERITY = {
     AlertKind.REPEATED_FAILURES: Severity.CRITICAL,
     AlertKind.STALE: Severity.WARNING,
     AlertKind.STUCK_RUNS: Severity.WARNING,
+    AlertKind.NEEDS_ATTENTION: Severity.CRITICAL,
 }
 _ORDER = {kind: i for i, kind in enumerate(AlertKind)}
 
@@ -118,6 +124,18 @@ def evaluate_alerts(
             run_ids=list(health.stuck_run_ids),
             stuck_after_seconds=health.stuck_after_seconds,
         )
+    failure = health.last_failure
+    if health.consecutive_failures > 0 and failure and failure.failure_category:
+        category = FailureCategory(failure.failure_category)
+        if retry_rule(category).policy != RetryPolicy.AUTO:
+            add(
+                AlertKind.NEEDS_ATTENTION,
+                f"{health.source} failed with {category} and will not retry by itself",
+                failure_category=str(category),
+                retry_policy=str(retry_rule(category).policy),
+                last_failed_run_id=failure.run_id,
+                last_error=failure.error_detail,
+            )
     return sorted(out, key=lambda a: _ORDER[a.kind])
 
 

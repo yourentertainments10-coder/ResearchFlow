@@ -178,6 +178,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Alerts are level-triggered and stateless, so a channel that sends them must de-duplicate by `key`. A first parse, validation or raw-store failure does not alert until it repeats or the data goes stale. No `failure_category` column was added: nothing here needs to query by category.
 - **Decided by:** the owner's Phase 6B brief (2026-10-06).
 
+## ADR-028: Backup, publish bundle, delivery state in a file; first-failure alert for non-auto-retryable categories
+
+- **Context:** Phase 6C/6D and the remaining 6B follow-ups: a backup that is proven to restore, an export bundle, a real delivery channel with de-duplication, and an alert on the first parse, validation or raw-store failure.
+- **Decision:** (1) `sie backup` runs `pg_dump` (custom format, no owners) from the same exported snapshot as the row counts in its manifest, then restores into a scratch database and checks schema revision, row counts and a re-hash of every `raw_blobs` value; a backup that fails its restore test exits 1. (2) `sie publish` writes `medals.csv`, `events.csv` and `manifest.json` from the `reporting` schema only; output is deterministic and the manifest is written last. (3) Alert de-duplication state is a JSON file behind a `AlertStateStore` protocol, not a table: a second migration numbered 004 would give Alembic two heads with the Phase 4 branch. (4) New alert `needs_attention` (critical) fires on the first failure whose category is not auto-retryable (parse, validation, raw store). (5) `WebhookNotifier` posts one JSON batch to `NOTIFY_WEBHOOK_URL` (https; http only for localhost).
+- **Consequences:** The state file must live on storage that survives between `sie health` runs (a hosted runner without a persistent disk will re-send every alert; use `ALERT_STATE_PATH` on durable disk, or move the store to a table once migrations are merged). A failed delivery is retried on the next check. Raw bytes kept on disk (`fs` backend) are not in a database dump; the manifest and restore test say so. The portal fetcher and its cron are still not built: they wait for decision D1.
+- **Decided by:** the owner's Phase 6 follow-up brief (2026-10-06).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

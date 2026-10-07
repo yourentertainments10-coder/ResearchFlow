@@ -51,11 +51,21 @@ class Settings(BaseSettings):
     sie_pipeline_password: str | None = None
     llm_api_key: str | None = None
     notify_webhook_url: str | None = None
+    # Alert de-duplication: where the state lives, and when to remind about an alert that is still
+    # open. 0 means never remind (an alert is sent once until it resolves and returns).
+    alert_state_path: Path | None = None
+    alert_renotify_minutes: int = 0
+    # Backups and tools: directory of pg_dump/pg_restore (default: found on PATH).
+    pg_bin_dir: Path | None = None
 
     @field_validator("database_url")
     @classmethod
     def _normalise_url(cls, v: str) -> str:
         return normalise_database_url(v)
+
+    @property
+    def alert_state_file(self) -> Path:
+        return self.alert_state_path or self.data_dir / "alert_state.json"
 
     @property
     def scheduled_source_list(self) -> list[str]:
