@@ -202,10 +202,17 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** The state file must live on storage that survives between `sie health` runs (a hosted runner without a persistent disk will re-send every alert; use `ALERT_STATE_PATH` on durable disk, or move the store to a table once migrations are merged). A failed delivery is retried on the next check. Raw bytes kept on disk (`fs` backend) are not in a database dump; the manifest and restore test say so. The portal fetcher and its cron are still not built: they wait for decision D1.
 - **Decided by:** the owner's Phase 6 follow-up brief (2026-10-06).
 
+## ADR-031: D1 accepted by the owner: the portal may be fetched automatically, politely
+
+- **Context:** The portal publishes no terms of use and no robots.txt (`SOURCE_DISCOVERY.md` section 12). Until now automated fetching waited for the owner (`AGENTS.md` rule 9).
+- **Decision:** The owner accepted D1 on 2026-10-07 and asked for the automated fetcher. This records that decision; it is the owner's acceptance, not a written confirmation from the organisers. The conservative rules are kept and enforced in code (`sources/http.py`), not left to each adapter: https only to the configured host, an honest `User-Agent` with a contact address (the placeholder is refused), at least 2 s between requests, no parallel requests, every response cached with conditional requests, a hard stop at HTTP 403 or 429 (no retry, no workaround), no logins or access controls bypassed, public factual results only, output credits the source. Fetch and parse stay separate: `bornan/adapter.py` fetches, `capture.py` assembles, `to_parsed.py` parses saved bytes.
+- **Consequences:** `sie fetch-portal` writes a capture file; `portal_source_input()` returns the runner input a scheduler task needs. The fetched capture omits the fetch time from the ingested bytes so an unchanged portal is detected as `unchanged`; the time is in `raw_fetches`. Registering the fetcher with the scheduler and a cron is operations work (Phase 6) and is not done here. The raw capture still holds athlete names and stays out of Git. If the organisers or the portal later forbid automation, delete the `fetch-portal` command and the adapter; the manual capture path is unaffected.
+- **Decided by:** the owner (2026-10-07).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
-| D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). **Open: the portal's terms of use (owner).** Automated fetching in Phase 3 waits for it; manual CSV import is the fallback |
+| D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). Resolved by ADR-031 (owner accepted, 2026-10-07): automated fetching is allowed under the politeness rules; manual CSV import remains the fallback |
 | D2 | Where data lives between scheduled runs | Resolved by ADR-016 |
 | D3 | Public or private dashboard | Phase 5 |
 | D4 | Include LLM explainer | Phase 7 (constraints fixed by ADR-024) |

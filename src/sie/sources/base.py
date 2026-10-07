@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+from typing import Protocol
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -32,3 +35,46 @@ class ParsedResult(BaseModel):
     source_note: str = ""
     external_key: str = ""  # the source's own event id when it has one (portal event code)
     country_label: str = ""  # the source's own name for the country, kept as provenance only
+
+
+# --- adapter and parser interfaces (docs/ARCHITECTURE.md section 6) --------------------------------------
+
+
+class DocumentRef(BaseModel):
+    """Something an adapter can fetch: a stable key (``ARC:medals/discipline``) and its URL."""
+
+    model_config = ConfigDict(frozen=True)
+
+    key: str
+    url: str
+
+
+class RawDocument(BaseModel):
+    """What a fetch returns: the bytes exactly as received, plus how and when they arrived."""
+
+    model_config = ConfigDict(frozen=True)
+
+    ref: DocumentRef
+    content: bytes
+    content_type: str = ""
+    http_status: int = 200
+    fetched_at: datetime
+    from_cache: bool = False
+
+
+class SourceAdapter(Protocol):
+    """Fetch only: network access, nothing else. It never parses and never touches the database."""
+
+    name: str
+
+    def list_documents(self, since: datetime | None = None) -> list[DocumentRef]: ...
+
+    def fetch(self, ref: DocumentRef) -> RawDocument: ...
+
+
+class SourceParser(Protocol):
+    """Parse only: a pure function over bytes that were already saved."""
+
+    source: str
+
+    def parse(self, content: bytes) -> list[ParsedResult]: ...

@@ -189,3 +189,5 @@ The owner looked on the results portal for a Terms or Legal link and there is no
 - No automated fetching from the portal by the pipeline until the organisers confirm it in writing (`AGENTS.md` rule 9). Data enters through a capture the owner runs in their own browser, which reads the same public URLs the portal's own page reads, with a 2-second gap.
 - The raw capture (athlete names, team members) is kept out of Git. Git carries only `reports/placings.csv` (country, sport, event, gender, medal, slot: no person data) and the reports built from it.
 - Output credits the source ("Official results portal, AG2026") and is for non-commercial analysis.
+
+**Update 2026-10-07:** the owner accepted D1 and allowed automated fetching under the rules above (ADR-031). They are enforced in `src/sie/sources/http.py`.

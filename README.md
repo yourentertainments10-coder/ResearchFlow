@@ -49,6 +49,7 @@ Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 spo
 | Part | State |
 |------|-------|
 | PostgreSQL schema, roles, migrations | done (Phase 1) |
+| Polite portal fetch (`sie fetch-portal`, needs `HTTP_USER_AGENT` with a contact address; ADR-031) | built, tested on fixtures, not scheduled |
 | One ingestion path (`sie load-capture`, `sie import-csv`): raw store, quarantine, validator, `ingest_runs` | done, idempotent, reallocation-aware (ADR-021) |
 | Entrants (names) stored | not built; the portal parser drops names on purpose |
 | Event-level analytics read `v_medal_facts` (`sie.analytics.facts`) | done and regression-tested against the verified report; `site/` and `reports/` not yet regenerated |

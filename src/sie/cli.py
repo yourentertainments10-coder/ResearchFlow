@@ -118,6 +118,30 @@ def load_capture(path: Path = typer.Argument(..., exists=True, readable=True)) -
     _ingest(_capture_input(path, settings), settings)
 
 
+@app.command("fetch-portal")
+def fetch_portal(
+    out: Path = typer.Argument(..., help="Where to write the capture JSON (keep it out of Git)."),
+) -> None:
+    """Fetch the official portal's medal data politely and save it as a capture file.
+
+    One request at a time, at least HTTP_MIN_INTERVAL_SECONDS apart, cached, and it stops at the first
+    HTTP 403 or 429. Needs HTTP_USER_AGENT with a contact address. The file holds athlete names:
+    never commit it. Ingest it with `sie load-capture` (or `sie scheduled-run capture`).
+    """
+    from sie.sources.bornan.fetch import fetch_capture
+    from sie.sources.http import FetchError
+
+    settings = get_settings()
+    try:
+        data = fetch_capture(settings, with_time=True)
+    except FetchError as exc:
+        typer.echo(f"fetch failed: {exc}", err=True)
+        raise typer.Exit(1) from exc
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(data)
+    typer.echo(f"wrote {out} ({len(data)} bytes)")
+
+
 @app.command("import-csv")
 def import_csv(path: Path = typer.Argument(..., exists=True, readable=True)) -> None:
     """Import a manual results CSV (docs/DATA_PIPELINE.md section 9). Safe to rerun."""
