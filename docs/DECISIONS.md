@@ -130,7 +130,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Context:** `sie/load.py` (portal captures) and the Phase 2 import code (CSV) were two loaders with different rules.
 - **Decision:** Every source supplies bytes and a pure parse function to `pipeline/runner.run_ingest`. The raw bytes are stored and committed first; then parse, normalise, validate, quarantine and load run in one transaction; the run is closed as `success` or `failed` in `ingest_runs`. `sie/load.py` is removed. `sie load-capture` and `sie import-csv` are thin commands over the same code; `sources/bornan/to_parsed.py` and `sources/manual/parser.py` are the only source-specific parts.
 - **Behaviour that changed:** unknown country, sport or gender no longer fail the whole load: the row goes to `quarantine` with a reason and the valid rows load (`DATA_PIPELINE.md` section 6). Unchanged raw content is still re-processed (cheap and idempotent), so adding an alias and re-running resolves quarantined rows; the earlier quarantine rows of that raw version are marked `resolved`.
-- **Not yet built:** entrants (names are not stored; the portal adapter drops them on purpose), the conflict policy, `reconciliation_results`, and the analytics read path (analytics still compute from the capture file instead of `v_medal_facts`, which `ANALYTICS_SPEC.md` requires).
+- **Not yet built:** entrants (names are not stored; the portal adapter drops them on purpose), the conflict policy, `reconciliation_results`, and the regeneration of `site/` and `reports/`. The analytics read path was moved to `v_medal_facts` afterwards (`sie.analytics.facts`; only the official tables are still read, as references to check against).
 
 ## ADR-022: Raw bytes in the database or on disk (migration 003)
 
@@ -143,7 +143,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Context:** ADR-007 chose Streamlit. The delivered dashboard is a static page (`src/sie/dashboard.py` writes `site/index.html`) served by Cloudflare.
 - **Decision:** Keep the static dashboard for v1. It reads an exported file, not the database, and contains no metric logic beyond display.
 - **Open:** whether the dashboard stays public is still D3 (owner).
-- **Consequence:** the dashboard is not yet fed from `reporting.medal_facts` (see ADR-021).
+- **Consequence:** the dashboard reads the exported `placings.csv`, which is now produced from `reporting.medal_facts`; it has not been regenerated yet.
 
 ## ADR-024: Asian Games is the first dataset, not the product boundary
 
@@ -157,31 +157,48 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Documentation only. Nothing is implemented by this ADR. Phase 4 stays the immediate engineering priority. Roadmap phase numbers are unchanged; Phase 7 gains acceptance criteria and a "Research query layer" milestone follows it.
 - **Decided by:** the owner (2026-10-05).
 
-## ADR-025: Failure category stored in `error_summary`, no migration
+## ADR-025: A medal keeps the date it was decided
+
+- **Context:** `events.event_date` holds one date per event, the latest one the source gave. Counted per real event, 53 events are decided on more than one day and 106 medals fall on a different day than their event's latest date. A medal timeline built from the event date moves those medals to later days. (Earlier notes said 55 events and 288 medals: that came from grouping by the portal's event code, which merges different events of different disciplines.) Three Modern Pentathlon medals have no date in the source at all.
+- **Decision:** migration 004 adds `placings.result_date` (nullable `DATE`), set by the loader from each row's own date and exposed as `v_medal_facts.result_date`. `events.event_date` stays as the event's latest date. A source that gives no date leaves it `NULL`; `apply_placing` never invents one. A date arriving for a current placing that has none is filled in place (nothing was claimed before); a different date for a placing that has one is a correction and keeps the old version. Timelines count undated medals on a final `undated` row, so the last cumulative row equals the country medal table.
+- **Consequence:** a database loaded before migration 004 gets its dates when the capture is loaded again. Tests pin 53 multi-date events, 106 re-dated medals, 3 undated medals and the timeline totals.
+
+## ADR-026: Reference country names in analytics, source names kept as provenance
+
+- **Context:** The portal names countries its own way ("Republic of Korea", "People's Republic of China"); 8 of the 40 differ from the reference names ("South Korea", "China").
+- **Decision:** Analytics and the dashboard show the reference name (`countries.name`, already what `v_medal_facts.country` returns). Migration 004 also adds `placings.source_country`, the country label exactly as the source wrote it, set by the loader and never compared or used to match anything. Matching still goes through `country_aliases`.
+- **Consequence:** the portal's wording stays available for audit and for debugging aliases; no analytics table contains a source-specific name.
+
+## ADR-020 and ADR-019 applied to analytics (clarification)
+
+- The `sport` dimension of every analytics table is the official sport (49). The source's 59 disciplines stay available as `discipline` (`country_sport(df, "discipline")`, the report's discipline sheets, the `Placings` export). Official per-discipline reconciliation is unchanged because the portal's standings are keyed by discipline.
+- `Open` stays its own gender category in all analytics. `reconcile` and `reconcile_official_table` fold Open into Mixed because the official table has no Open column. The dashboard's Open toggle (official or separate) only changes the view.
+
+## ADR-027: Failure category stored in `error_summary`, no migration
 
 - **Context:** Phase 6 needs to tell fetch, parse, validation and load failures apart and say what is safe to retry. `ingest_runs` has only a free-text `error_summary`.
 - **Decision:** Store the category as a prefix, `[load_failure] detail`, read back by `parse_error_summary`. Outcome and freshness are derived from existing columns. No schema change, so this work merges independently of any analytics migration.
 - **Consequence:** The category is queryable with `LIKE '[load_failure]%'` but not constrained by the database. If scheduling needs indexed filtering by category, add a `failure_category` column in a later migration and backfill from the prefix.
 - **Decided by:** the owner's Phase 6 brief (2026-10-06).
 
-## ADR-026: Scheduler applies the failure contract; per-source advisory lock; no portal fetcher yet
+## ADR-028: Scheduler applies the failure contract; per-source advisory lock; no portal fetcher yet
 
-- **Context:** Phase 6A needs overlap prevention, retries and stuck-run handling on top of ADR-025, without changing its categories.
+- **Context:** Phase 6A needs overlap prevention, retries and stuck-run handling on top of ADR-027, without changing its categories.
 - **Decision:** The retry numbers are read from `RETRY_RULES` (fetch 3 attempts, load 1 retry). The advisory lock key is derived from (competition, source), so independent sources are not serialised; a busy source is skipped, not queued. Stuck runs are closed as `failed` with no category. The workflow is manual-only and no automated portal fetcher exists, because D1 (terms of use) is open.
 - **Consequences:** An overlap is silent apart from a log line and exit 0; alerting on it belongs to Phase 6B. A non-scheduler run (`import-csv`) does not take the lock. If it runs longer than the stuck threshold while a scheduled run starts, the scheduler would close it; raise `--older-than` or route all runs through `scheduled-run`.
 - **Decided by:** the owner's Phase 6A brief (2026-10-06).
 
-## ADR-027: Health composes freshness; thresholds are existing numbers; no provider coupling
+## ADR-029: Health composes freshness; thresholds are existing numbers; no provider coupling
 
-- **Context:** Phase 6B needs health states, alert conditions and a way to deliver alerts, without redefining ADR-025/026 or choosing a provider.
+- **Context:** Phase 6B needs health states, alert conditions and a way to deliver alerts, without redefining ADR-027/026 or choosing a provider.
 - **Decision:** `SourceHealth` wraps `SourceFreshness` and adds failure history and stuck runs; it never reclassifies freshness. Alert thresholds reuse existing numbers: `FRESHNESS_THRESHOLD_MINUTES`, the fetch attempt limit (3) for repeated failures, the scheduler's stuck age. The one new setting is `SCHEDULED_SOURCES`, because "expected to run" cannot be derived from runs that never happened. Delivery is a `Notifier` protocol with a log channel; `deliver()` never raises.
 - **Consequences:** Alerts are level-triggered and stateless, so a channel that sends them must de-duplicate by `key`. A first parse, validation or raw-store failure does not alert until it repeats or the data goes stale. No `failure_category` column was added: nothing here needs to query by category.
 - **Decided by:** the owner's Phase 6B brief (2026-10-06).
 
-## ADR-028: Backup, publish bundle, delivery state in a file; first-failure alert for non-auto-retryable categories
+## ADR-030: Backup, publish bundle, delivery state in a file; first-failure alert for non-auto-retryable categories
 
 - **Context:** Phase 6C/6D and the remaining 6B follow-ups: a backup that is proven to restore, an export bundle, a real delivery channel with de-duplication, and an alert on the first parse, validation or raw-store failure.
-- **Decision:** (1) `sie backup` runs `pg_dump` (custom format, no owners) from the same exported snapshot as the row counts in its manifest, then restores into a scratch database and checks schema revision, row counts and a re-hash of every `raw_blobs` value; a backup that fails its restore test exits 1. (2) `sie publish` writes `medals.csv`, `events.csv` and `manifest.json` from the `reporting` schema only; output is deterministic and the manifest is written last. (3) Alert de-duplication state is a JSON file behind a `AlertStateStore` protocol, not a table: a second migration numbered 004 would give Alembic two heads with the Phase 4 branch. (4) New alert `needs_attention` (critical) fires on the first failure whose category is not auto-retryable (parse, validation, raw store). (5) `WebhookNotifier` posts one JSON batch to `NOTIFY_WEBHOOK_URL` (https; http only for localhost).
+- **Decision:** (1) `sie backup` runs `pg_dump` (custom format, no owners) from the same exported snapshot as the row counts in its manifest, then restores into a scratch database and checks schema revision, row counts and a re-hash of every `raw_blobs` value; a backup that fails its restore test exits 1. (2) `sie publish` writes `medals.csv`, `events.csv` and `manifest.json` from the `reporting` schema only; output is deterministic and the manifest is written last. (3) Alert de-duplication state is a JSON file behind a `AlertStateStore` protocol, not a table: this PR was written while Phase 4's migration 004 was unmerged, and a second 004 would have given Alembic two heads. Migration 004 is now on main, so a later migration 005 can move the state into a table. (4) New alert `needs_attention` (critical) fires on the first failure whose category is not auto-retryable (parse, validation, raw store). (5) `WebhookNotifier` posts one JSON batch to `NOTIFY_WEBHOOK_URL` (https; http only for localhost).
 - **Consequences:** The state file must live on storage that survives between `sie health` runs (a hosted runner without a persistent disk will re-send every alert; use `ALERT_STATE_PATH` on durable disk, or move the store to a table once migrations are merged). A failed delivery is retried on the next check. Raw bytes kept on disk (`fs` backend) are not in a database dump; the manifest and restore test say so. The portal fetcher and its cron are still not built: they wait for decision D1.
 - **Decided by:** the owner's Phase 6 follow-up brief (2026-10-06).
 

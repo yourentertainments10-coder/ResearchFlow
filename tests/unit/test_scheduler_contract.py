@@ -10,7 +10,7 @@ from sie.pipeline.scheduler import backoff_seconds
 
 
 def test_the_scheduler_applies_the_locked_retry_contract_and_does_not_redefine_it():
-    # If someone edits these numbers, the contract changed: update DATA_PIPELINE.md section 12 and ADR-025.
+    # If someone edits these numbers, the contract changed: update DATA_PIPELINE.md section 12 and ADR-027.
     assert RETRY_RULES[FailureCategory.FETCH].max_auto_attempts == 3
     assert RETRY_RULES[FailureCategory.LOAD].max_auto_attempts == 1
     for category in (FailureCategory.PARSE, FailureCategory.VALIDATION):

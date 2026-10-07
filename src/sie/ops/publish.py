@@ -1,4 +1,4 @@
-"""``sie publish``: a static export bundle of the current results (ROADMAP Phase 6, ADR-016/ADR-028).
+"""``sie publish``: a static export bundle of the current results (ROADMAP Phase 6, ADR-016/ADR-030).
 
 The bundle is what may leave the database: it is read only from the ``reporting`` schema (no raw
 documents, quarantine, run logs or paths, docs/DATABASE.md section 6), so a hosted copy can never leak

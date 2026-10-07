@@ -12,7 +12,7 @@ Rules (``plan_notifications``, pure):
 * a condition that no longer holds is marked resolved.
 
 State is a small JSON file written atomically (``FileAlertState``). A file store is deliberate: the
-database store waits for the schema migration queue (a second 004 would give two Alembic heads). One
+database store is a possible later migration (see ADR-030). One
 writer at a time is assumed, which holds because ``sie health`` runs after the scheduled run under the
 same concurrency group. A corrupt file is set aside and treated as empty, so the worst case is a
 repeated alert, never a missing one. Hosted runners have no persistent disk: keep the file with the

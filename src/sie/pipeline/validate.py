@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from sie.pipeline.models import CompetitionRef, NormalisedResult, Reason, Rejection
 from sie.pipeline.normalise import ReferenceIndex
@@ -138,7 +138,7 @@ def _validate_event(
         by_slot = dict(items)
         for slot, row in items:
             if slot == 1 or slot == 2 and _second_slot_allowed(medal, row, by_slot.get(1), ref):
-                allowed.append(Placed(row, slot))
+                allowed.append(Placed(_final_row(row, ref), slot))
             else:
                 reject(
                     row,
@@ -164,6 +164,13 @@ def _validate_event(
         countries.add(placed.row.country_id)
         kept.append(placed)
     return kept
+
+
+def _final_row(row: NormalisedResult, ref: ReferenceIndex) -> NormalisedResult:
+    """Two bronzes in a double-bronze sport are the normal outcome, never a tie."""
+    if row.medal == "Bronze" and row.sport_id in ref.double_bronze and row.is_tie:
+        return replace(row, is_tie=False)
+    return row
 
 
 def _second_slot_allowed(

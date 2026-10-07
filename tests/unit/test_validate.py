@@ -155,3 +155,20 @@ def test_completeness_is_tie_aware(gold, silver, bronze, complete):
 def test_the_output_keeps_file_order():
     out = run(row(5, "Bronze", CHN), row(2, "Gold", IND), row(3, "Silver", KOR))
     assert [p.row.row_number for p in out.placed] == [2, 3, 5]
+
+
+def test_a_marked_bronze_tie_outside_double_bronze_sports_is_allowed_and_kept_as_a_tie():
+    out = run(
+        row(2, "Bronze", IND, is_tie=True),
+        row(3, "Bronze", KOR, is_tie=True),
+        row(4, "Gold", CHN),
+    )
+    assert slots(out) == [(2, "Bronze", 1), (3, "Bronze", 2), (4, "Gold", 1)]
+    assert [p.row.is_tie for p in out.placed if p.row.medal == "Bronze"] == [True, True]
+
+
+def test_two_bronzes_in_a_double_bronze_sport_are_never_stored_as_a_tie_even_if_the_source_says_so():
+    boxing = {"sport": BOXING, "discipline": BOXING_D, "event": "Men's 57kg", "is_tie": True}
+    out = run(row(2, "Bronze", IND, **boxing), row(3, "Bronze", KOR, **boxing))
+    assert slots(out) == [(2, "Bronze", 1), (3, "Bronze", 2)]
+    assert not any(p.row.is_tie for p in out.placed)

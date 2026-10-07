@@ -186,7 +186,7 @@ A healthy source raises nothing. Each alert has a stable `key` (`competition:sou
 
 **Command:** `sie health` prints one deterministic JSON report (sorted keys, sources sorted) and exits 1 if any alert exists. `sie source-status` is kept unchanged: it reports a single source's freshness; `sie health` is new because it covers several sources and adds failure counts, stuck runs and alerts.
 
-**Delivery and de-duplication (ADR-028):** `sie health --channel log|webhook|none`. State is a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). An alert is sent when it is new, returns after being resolved, was never delivered successfully, or (if `ALERT_RENOTIFY_MINUTES` > 0) is due a reminder. Failed deliveries leave no record, so the next check retries. Resolved alerts are marked inactive. Output always lists every active alert plus a `notification` block `{sent, suppressed, resolved, failed}`; exit 1 while any alert is active.
+**Delivery and de-duplication (ADR-030):** `sie health --channel log|webhook|none`. State is a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). An alert is sent when it is new, returns after being resolved, was never delivered successfully, or (if `ALERT_RENOTIFY_MINUTES` > 0) is due a reminder. Failed deliveries leave no record, so the next check retries. Resolved alerts are marked inactive. Output always lists every active alert plus a `notification` block `{sent, suppressed, resolved, failed}`; exit 1 while any alert is active.
 
 **`needs_attention` (critical):** the latest failure's category is parse, validation or raw store (not auto-retryable), so it alerts on the first failure instead of waiting for three. Fetch and load failures still wait for the retry limit.
 

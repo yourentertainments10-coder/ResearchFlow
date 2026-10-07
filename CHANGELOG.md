@@ -3,21 +3,21 @@
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
 ## Phase 6C/6D backup, publish, delivery
-- `sie backup` / `sie restore-test` (snapshot-consistent dump, scratch restore, hash and count checks), `sie publish` export bundle, `WebhookNotifier` for `NOTIFY_WEBHOOK_URL`, file-based alert de-duplication, `needs_attention` alert on a first parse, validation or raw-store failure, `backup.yml` workflow. New settings `PG_BIN_DIR`, `ALERT_STATE_PATH`, `ALERT_RENOTIFY_MINUTES`. ADR-028. No schema, analytics, report or dashboard changes. Portal fetcher and cron still blocked on D1.
+- `sie backup` / `sie restore-test` (snapshot-consistent dump, scratch restore, hash and count checks), `sie publish` export bundle, `WebhookNotifier` for `NOTIFY_WEBHOOK_URL`, file-based alert de-duplication, `needs_attention` alert on a first parse, validation or raw-store failure, `backup.yml` workflow. New settings `PG_BIN_DIR`, `ALERT_STATE_PATH`, `ALERT_RENOTIFY_MINUTES`. ADR-030. No schema, analytics, report or dashboard changes. Portal fetcher and cron still blocked on D1.
 
 ## Phase 6B source health and alerts
 - `sie health`: per-source health (fresh, stale, failing, never_succeeded) with last success and failure, consecutive failures, stuck runs, fingerprint and raw artifact references.
-- Alert contract (never_succeeded, repeated_failures, stale, stuck_runs) using existing thresholds; notifier abstraction with a log channel; new setting `SCHEDULED_SOURCES`. ADR-027. No schema, analytics, report or dashboard changes.
+- Alert contract (never_succeeded, repeated_failures, stale, stuck_runs) using existing thresholds; notifier abstraction with a log channel; new setting `SCHEDULED_SOURCES`. ADR-029. No schema, analytics, report or dashboard changes.
 
 ## Phase 6A scheduler, retries, locking
 - `sie scheduled-run` and `sie recover-stuck`; per-source PostgreSQL advisory lock; fetch retry (3 attempts, backoff) and one load retry, applied from the existing retry rules; no automatic retry for parse, validation or raw-store failures; stuck runs closed as failed.
-- `refresh.yml` workflow (manual dispatch only until the portal terms are cleared). ADR-026. No schema, analytics, report or dashboard changes.
+- `refresh.yml` workflow (manual dispatch only until the portal terms are cleared). ADR-028. No schema, analytics, report or dashboard changes.
 
 ## Phase 6 operational foundation
 - Failure categories (fetch, raw store, parse, validation, load) with a retry contract; failed runs store `[category] detail`.
 - `record_fetch_failure` records unreachable sources without touching raw versions; the run is now committed before the raw store step so even a raw-store failure leaves a closed, failed run.
 - Deterministic run outcome and structured run summary; source freshness with fingerprint and raw artifact references; stuck-run detection; `sie run-summary` and `sie source-status`.
-- No migration, no analytics, report or dashboard changes. ADR-025.
+- No migration, no analytics, report or dashboard changes. ADR-027.
 
 ## Product direction (documentation only)
 - Added `docs/PRODUCT_VISION.md` and ADR-024: competition-agnostic engine, extension contract, second-competition proof criteria, research query and evidence layers, constrained role of AI. Roadmap Phase 7 gains acceptance criteria; a research query layer follows it. Everything beyond Asian Games 2026 is marked planned. No code changes.
@@ -34,6 +34,8 @@ All notable changes to this project and its documentation. Format follows Keep a
 - New sports leaderboard, all-country overview, gender page, richer timeline (gold toggle, rank over time, peak days), explorer filters, searchable dropdowns, route aliases, not-found state, nav/KPI/disclaimer cleanup.
 
 ## [Unreleased]
+- Analytics decisions (ADR-025, ADR-026, ADR-019/020 applied): migration 004 adds `placings.result_date` and `placings.source_country` (also in `v_medal_facts` and `reporting.medal_facts`); the loader fills them; the medal timeline uses each medal's own date (53 multi-date events, 106 re-dated medals, 3 undated medals on an explicit `undated` row); `sport` in analytics is the 49 official sports with the 59 disciplines kept as `discipline`; Open stays separate, with `reconcile_official_table` folding it only for the official-table comparison; analytics use reference country names and keep the source's name. Tests: frozen discipline tables still match, 49-sport tables equal the frozen ones summed by the reference mapping, official country table reconciles at zero mismatches, timeline ends at 1568. `site/` and `reports/` not regenerated yet.
+- Event-level analytics read `reporting.medal_facts` (`src/sie/analytics/facts.py`); `full_report.load` takes the facts frame and uses the capture file only for the official per-discipline standings it reconciles against. Metric functions unchanged. Regression tests load the 1568 frozen placings through the real ingestion path and compare every metric table with the frozen verified report (`tests/fixtures/expected/`). Fixes found on the way: a tied bronze (Women's Pole Vault) would have been quarantined; the portal converter judged ties and team events per event code although codes repeat across disciplines. `site/` and `reports/` not regenerated.
 - One canonical ingestion path (ADR-021): `pipeline/raw.py` (versioned raw store, `fs` or `db`), `pipeline/load.py`, `pipeline/runner.py`; `sie load-capture` and the new `sie import-csv` share it. `sie/load.py` removed. Unknown country, sport or gender now quarantine the row instead of failing the load; `ingest_runs` records source, counts and errors. Migration 003 (ADR-022) adds `raw_blobs`, `storage_backend`, `placings.source_note`, `ingest_runs.source`. Golden CSVs in `tests/fixtures/manual/`. `COMPETITION` is now the `COMPETITION_ID` setting. ADR-020 (sport grouping) and ADR-023 (static dashboard) recorded.
 - Open events are now a separate gender category in the event-level reports (`gender_tables`) and the dashboard instead of being folded into Mixed (ADR-019). Reconciliation still folds Open into the official Mixed bucket. The committed `site/index.html` and `reports/` were not regenerated in this change.
 - Phase 0 (source discovery) done except the portal's terms of use. The owner's event-level capture confirmed 59 disciplines and 469 events (Men 221, Women 207, Mixed 21, Open 20), one medal row per placing with ties as `Order` 2 and teams as one row per country, and an exact match between medal rows and the portal's standings for Swimming and Archery. Findings, the personal-data rule (birth dates are never stored) and the D1 decision are in `docs/SOURCE_DISCOVERY.md` section 10. Trimmed fixtures added under `tests/fixtures/sources/bornan/`.
