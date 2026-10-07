@@ -31,7 +31,9 @@ class LoadSummary:
     quarantined: int = 0
     conflicts: dict[str, int] = field(default_factory=dict)  # policy rule -> rows decided
     held: int = 0  # claims not applied because the conflict policy held them back
-    refetch_official: bool = False  # the policy asks for an immediate re-fetch of the official source
+    refetch_official: bool = (
+        False  # the policy asks for an immediate re-fetch of the official source
+    )
 
 
 def load_placed(
