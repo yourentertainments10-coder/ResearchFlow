@@ -41,6 +41,14 @@ Status of the pipeline workflow: `.github/workflows/refresh.yml` exists and runs
 
 Alerts: `sie health` (JSON, exit 1 on any alert) is meant to run after each scheduled refresh; add `SCHEDULED_SOURCES` to the environment. Only the log channel exists; `NOTIFY_WEBHOOK_URL` is not wired yet.
 
+### Remaining production setup (Phase 6 leaves these to the owner)
+Nothing below is configured by the code or the workflows; no credentials or storage have been created.
+1. **`DATABASE_URL` secret.** Set it as a GitHub Actions repository secret (or the hosting provider's secret store). `backup.yml` and `refresh.yml` read it. Use a direct (non-pooled) connection; the backup restore test needs a role that can `CREATE DATABASE`. Until it is set, the scheduled `backup` workflow will fail each night.
+2. **Durable alert state.** `sie health` keeps its de-duplication state in a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). On an ephemeral runner or container that file is lost on every deploy or restart and every active alert is sent again. Point `ALERT_STATE_PATH` at storage that persists, or move the state to a database table once the Phase 4 migration branch is merged (ADR-028).
+3. **Encrypted off-host backup storage.** `sie backup` writes dumps and manifests; the workflow's artifact upload is a stopgap that is not encrypted. Add an encrypt-and-upload step to an object store (or another off-host location) and keep the last 14.
+4. **`refresh.yml` stays manual-dispatch only** until D1 is resolved. Do not add a `schedule:` trigger.
+5. **No automatic portal fetcher.** It is not implemented and must not be scheduled until the organisers give explicit permission or clear published terms allow it (`SOURCE_DISCOVERY.md` section 12).
+
 ## 4. Environments
 | Env | Database | Purpose |
 |-----|----------|---------|
