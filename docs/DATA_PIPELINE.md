@@ -203,3 +203,10 @@ Code: `src/sie/sources/http.py` (network rules), `sources/bornan/adapter.py` (fe
 - **Rules enforced in `PoliteClient`** (ADR-031): https and allowed host only; `HTTP_USER_AGENT` must carry a contact address; `HTTP_MIN_INTERVAL_SECONDS` between requests (default 2); one request at a time; responses with a validator are cached under `DATA_DIR/cache/http` and re-requested with `If-None-Match` / `If-Modified-Since` (a 304 serves the cache); 403 or 429 raises `FetchBlocked` and the client sends nothing more; other HTTP errors are `FetchError` with the status; a response over 20 MB is refused. A missing discipline document fails the whole capture; a partial capture is never assembled.
 - **What is stored.** The assembled capture has the same shape the pipeline already loads (`medals`, `standings`, plus `all_standings`, the official all-country table kept for reconciliation). Ingested bytes carry no fetch time, so two fetches of an unchanged portal are byte-identical and the raw store reports `unchanged`; the file written by `sie fetch-portal` adds `at` because the reports need it. The raw document key is `portal:AG2026`.
 - **Not done here:** registering the fetcher with the scheduler, a cron, and any change to the Phase 6 workflows.
+
+## 14. Conflict policy engine (Phase 3, built)
+Code: `pipeline/conflicts.py` (pure `decide`), `db/conflicts.py` (observations, conflicts, disputed flag, resolution), called from `pipeline/load.py`. Commands: `sie conflicts [--all]`, `sie resolve-conflict ID --accept SOURCE --note "..." [--by NAME]`. Rules and consequences: ADR-032.
+
+- Official source = first entry of `SOURCE_PRIORITY`; fresh window = `FRESHNESS_THRESHOLD_MINUTES`. Every row of the section 7 table has a unit test (`tests/unit/test_conflict_policy.py`); the database behaviour is tested in `tests/integration/test_conflicts.py`.
+- `policy_rule` values: `official_fresh`, `official_stale`, `official_still_disagrees`, `non_official`, `agreement`.
+- `LoadSummary.refetch_official` reports that the policy wants an immediate official re-fetch. Acting on it is the scheduler's job (Phase 6, not touched here).
