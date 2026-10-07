@@ -37,17 +37,17 @@ Sources: Render free-tier docs (`render.com/docs/free`), Neon pricing (`neon.com
 
 Cost note: this setup uses free plans only, so it has limits and can change. If a limit blocks you, the smallest paid upgrade is usually a paid Postgres plan. Nothing in the code has to change.
 
-Status of the pipeline workflow: `.github/workflows/refresh.yml` exists and runs on demand only (`workflow_dispatch`), ingesting a file through the scheduler (lock, retries, stuck-run recovery). It has no cron until the portal's terms are cleared (D1); see `DATA_PIPELINE.md` section 12.
+Status of the pipeline workflow: `.github/workflows/refresh.yml` fetches the official portal daily (02:30 UTC) through the scheduler (lock, retries, stuck-run recovery), then runs `sie health`. The schedule only runs when the repository variable `PORTAL_FETCH_ENABLED` is `true`; `HTTP_USER_AGENT` (variable) must carry a contact address. It can also be started by hand to ingest a file. See ADR-031 and `DATA_PIPELINE.md` section 12.
 
 Alerts: `sie health` (JSON, exit 1 on any alert) is meant to run after each scheduled refresh; add `SCHEDULED_SOURCES` to the environment. Only the log channel exists; `NOTIFY_WEBHOOK_URL` is not wired yet.
 
 ### Remaining production setup (Phase 6 leaves these to the owner)
 Nothing below is configured by the code or the workflows; no credentials or storage have been created.
 1. **`DATABASE_URL` secret.** Set it as a GitHub Actions repository secret (or the hosting provider's secret store). `backup.yml` and `refresh.yml` read it. Use a direct (non-pooled) connection; the backup restore test needs a role that can `CREATE DATABASE`. Until it is set, the scheduled `backup` workflow will fail each night.
-2. **Durable alert state.** `sie health` keeps its de-duplication state in a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). On an ephemeral runner or container that file is lost on every deploy or restart and every active alert is sent again. Point `ALERT_STATE_PATH` at storage that persists, or move the state to a database table in a later migration (ADR-030).
+2. **Durable alert state.** The workflow keeps the state in an Actions cache, which can be evicted (unused entries expire after about 7 days), after which open alerts are re-sent once. `sie health` keeps its de-duplication state in a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). On an ephemeral runner or container that file is lost on every deploy or restart and every active alert is sent again. Point `ALERT_STATE_PATH` at storage that persists, or move the state to a database table in a later migration (ADR-030).
 3. **Encrypted off-host backup storage.** `sie backup` writes dumps and manifests; the workflow's artifact upload is a stopgap that is not encrypted. Add an encrypt-and-upload step to an object store (or another off-host location) and keep the last 14.
-4. **`refresh.yml` stays manual-dispatch only** until D1 is resolved. Do not add a `schedule:` trigger.
-5. **No automatic portal fetcher.** It is not implemented and must not be scheduled until the organisers give explicit permission or clear published terms allow it (`SOURCE_DISCOVERY.md` section 12).
+4. **Repository variables for the scheduled refresh (D1 is cleared, ADR-031).** Set `PORTAL_FETCH_ENABLED` to `true` to switch the schedule on (any other value pauses it) and `HTTP_USER_AGENT` to something like `SIE-research/0.1 (contact: you@example.org)` with a real contact address. Optional secret `NOTIFY_WEBHOOK_URL` delivers alerts; without it they go to the job log and the failed job email.
+5. **First live run.** The fetcher was never run against the live portal (the build sandbox cannot reach it). Run `sie fetch-portal --out data/capture.json` from your computer first, check the file, then `sie scheduled-run portal`, then switch the schedule on. Record the basis for D1 (who confirmed what, when) in `SOURCE_DISCOVERY.md` section 12.
 
 ## 4. Environments
 | Env | Database | Purpose |

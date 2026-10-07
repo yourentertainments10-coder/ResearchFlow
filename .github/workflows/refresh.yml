@@ -1,26 +1,28 @@
-# Scheduled ingestion (Phase 6A). Deliberately NOT on a cron yet.
+# Scheduled refresh of the official portal (ADR-031), plus on-demand ingestion of a file.
 #
-# Why: the official portal publishes no terms of use, so nothing may fetch it automatically until the
-# owner clears decision D1 (docs/DECISIONS.md, docs/SOURCE_DISCOVERY.md section 12). Until then this
-# workflow ingests a file committed to the repository or supplied by the owner, through exactly the
-# code path a real fetcher will use (lock, retries, stuck-run recovery).
-#
-# To schedule it later, add under `on:`
-#   schedule:
-#     - cron: "*/30 * * * *"
-# GitHub may run scheduled jobs late and disables them after a long quiet period in a public repo.
+# D1 (terms of use) was cleared by the owner on 2026-10-07. The scheduled run is still gated:
+#   * repository variable PORTAL_FETCH_ENABLED must be "true" (set it to anything else to pause the
+#     schedule without a code change);
+#   * repository variable HTTP_USER_AGENT must identify the project with a contact address, e.g.
+#     "SIE-research/0.1 (contact: you@example.org)". The fetcher refuses the placeholder default.
+#   * secret DATABASE_URL (direct connection) must exist. Optional secret NOTIFY_WEBHOOK_URL sends alerts.
+# The Games ended on 2026-10-04, so the schedule is daily, not every 30 minutes. GitHub may start
+# scheduled jobs late, and disables schedules in a public repository after about 60 days without
+# repository activity (check the current rule).
 name: refresh
 
 on:
   workflow_dispatch:
     inputs:
       kind:
-        description: "capture (portal capture JSON) or csv (manual results CSV)"
+        description: "portal (fetch the official portal), capture (portal capture JSON) or csv (manual results CSV)"
         required: true
-        default: csv
+        default: portal
       path:
-        description: "Path of the file inside the repository"
-        required: true
+        description: "Path of the file inside the repository (capture and csv only)"
+        required: false
+  schedule:
+    - cron: "30 2 * * *"
 
 # One refresh at a time per repository. The database advisory lock is the real guard (it also covers
 # runs started from a laptop); this stops GitHub from even starting two at once.
@@ -33,13 +35,22 @@ permissions:
 
 jobs:
   refresh:
+    # A schedule only runs when the owner has switched the fetcher on. A manual run always starts.
+    if: github.event_name == 'workflow_dispatch' || vars.PORTAL_FETCH_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       RAW_STORE_BACKEND: db  # no persistent disk on a hosted runner (ADR-016)
       COMPETITION_ID: asiad-2026
-      INGEST_KIND: ${{ inputs.kind }}
+      PORTAL_FETCH_ENABLED: ${{ vars.PORTAL_FETCH_ENABLED }}
+      HTTP_USER_AGENT: ${{ vars.HTTP_USER_AGENT }}
+      # Daily refresh: a source is stale after 26 hours (the default 30 minutes is for live Games).
+      FRESHNESS_THRESHOLD_MINUTES: "1560"
+      SCHEDULED_SOURCES: official
+      ALERT_STATE_PATH: alert-state/alert_state.json
+      NOTIFY_WEBHOOK_URL: ${{ secrets.NOTIFY_WEBHOOK_URL }}
+      INGEST_KIND: ${{ inputs.kind || 'portal' }}
       INGEST_PATH: ${{ inputs.path }}
     steps:
       - uses: actions/checkout@v4
@@ -49,5 +60,24 @@ jobs:
       - run: pip install -e .
       - name: Close runs left running by a dead process
         run: sie recover-stuck --older-than-minutes 60
-      - name: Ingest with locking and retries
-        run: sie scheduled-run "$INGEST_KIND" "$INGEST_PATH"
+      - name: Refresh with locking and retries
+        run: sie scheduled-run "$INGEST_KIND" ${INGEST_PATH:+"$INGEST_PATH"}
+      # Alert de-duplication state must survive between runs, or every open alert is re-sent daily.
+      # The cache is a stopgap for that; see docs/DEPLOYMENT.md "Remaining production setup".
+      - name: Restore alert state
+        uses: actions/cache/restore@v4
+        with:
+          path: alert-state
+          key: alert-state-${{ github.run_id }}
+          restore-keys: alert-state-
+      - name: Health check and alerts
+        run: |
+          channel=log
+          if [ -n "$NOTIFY_WEBHOOK_URL" ]; then channel=webhook; fi
+          sie health --channel "$channel"
+      - name: Save alert state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: alert-state
+          key: alert-state-${{ github.run_id }}

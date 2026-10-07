@@ -40,6 +40,10 @@ class Settings(BaseSettings):
     manual_csv_max_cell_chars: int = 500
     http_user_agent: str = "SIE-research/0.1 (set HTTP_USER_AGENT with a contact address)"
     http_min_interval_seconds: float = 2.0
+    http_timeout_seconds: float = 30.0
+    # Kill switch for the live portal fetcher (ADR-031). Off unless explicitly set to true, so nothing
+    # reaches the portal by accident; set PORTAL_FETCH_ENABLED=false to stop it without a code change.
+    portal_fetch_enabled: bool = False
     source_priority: str = "official,manual"  # tie-break input only (docs/DATA_PIPELINE.md s7)
     freshness_threshold_minutes: int = 30
     # Sources expected to refresh on a schedule (comma separated). `sie health` checks these even if

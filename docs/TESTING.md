@@ -65,6 +65,9 @@ Tests run on **real PostgreSQL**, never SQLite, because the design depends on pa
 ### 5d. Backup, publish, delivery (Phase 6C/6D, built)
 `tests/integration/test_backup.py` (real pg_dump/pg_restore: round trip, tampered dump, count mismatch, corrupted blob, missing manifest, `fs` warning, pruning, no partial files, scratch DB always dropped), `tests/integration/test_publish.py` (contents, byte-identical output, fingerprint, nothing internal exported, refusal keeps old bundle, tamper detection, CLI) and `tests/unit/test_alert_delivery.py` plus new `test_health.py` cases (dedup, resolve and return, retry after failed delivery, reminders, webhook against a local HTTP server, first-failure alert).
 
+### 5e. Portal fetcher (ADR-031, built)
+`tests/unit/test_portal_fetch.py` (no network: URLs requested, only public endpoints, User-Agent and placeholder refusal, 2-second gap, 429/5xx/404/302 stop at once, discipline codes validated, all-or-nothing, undecodable and oversized bodies, no redirect following, byte-identical capture) and `tests/integration/test_portal_refresh.py` (real PostgreSQL, fake portal: load then unchanged, three recorded fetch failures with no data change, last good data kept, kill switch and placeholder User-Agent exit 2 and record nothing, CLI end to end). Never run against the live portal in CI.
+
 ## 6. Quality gates
 - CI (GitHub Actions) runs on every push: `ruff check`, `ruff format --check`, `pytest --cov`, migration test.
 - Minimum coverage: 85 percent for `pipeline/` and `analytics/`.

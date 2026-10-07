@@ -202,10 +202,17 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** The state file must live on storage that survives between `sie health` runs (a hosted runner without a persistent disk will re-send every alert; use `ALERT_STATE_PATH` on durable disk, or move the store to a table once migrations are merged). A failed delivery is retried on the next check. Raw bytes kept on disk (`fs` backend) are not in a database dump; the manifest and restore test say so. The portal fetcher and its cron are still not built: they wait for decision D1.
 - **Decided by:** the owner's Phase 6 follow-up brief (2026-10-06).
 
+## ADR-031: D1 cleared; portal fetcher and daily refresh, with guards
+
+- **Context:** The portal publishes no terms of use or robots.txt (`SOURCE_DISCOVERY.md` section 12). On 2026-10-07 the owner stated that D1 is cleared. The repository does not record the basis (a written reply from the organisers, or published terms); the owner should add it to `SOURCE_DISCOVERY.md` section 12.
+- **Decision:** Build the fetcher (`sie/sources/bornan/fetch.py`, `sie scheduled-run portal`, `sie fetch-portal`) and schedule `refresh.yml` daily (the Games ended 2026-10-04, so every 30 minutes is not needed). It follows AGENTS.md rule 9: one fixed https host, honest User-Agent with a contact (the placeholder default is refused), at least 2 seconds between requests, no redirects, size cap, only `ALL/disc/data` and `{DISC}/medals/discipline` (never `entries/...`), stop on 429 or 5xx, all or nothing. Two switches stay in the owner's hands: `PORTAL_FETCH_ENABLED` (code and workflow) and the `HTTP_USER_AGENT` variable. The scheduled run also runs `sie health` with the alert state in an Actions cache.
+- **Consequences:** If the organisers later restrict automated access, setting `PORTAL_FETCH_ENABLED` to anything but `true` stops it with no code change. The fetcher was tested against a fake portal and the saved fixtures only: the sandbox this was built in cannot reach the portal, so the first live run must be watched (use `sie fetch-portal --out FILE` first). A change in the portal's wire format fails as a fetch failure and is retried 3 times; it needs a code fix. Alert state in an Actions cache can be evicted; durable storage is still the proper fix (ADR-030).
+- **Decided by:** the owner (2026-10-07).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
-| D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). **Open: the portal's terms of use (owner).** Automated fetching in Phase 3 waits for it; manual CSV import is the fallback |
+| D1 | Primary source (Phase 0 outcome) | Phase 3. Chosen: official results portal API (`back.results.asiangames2026.org`), decodable without a key, event-level data confirmed (`SOURCE_DISCOVERY.md` section 10). **Cleared by the owner on 2026-10-07** (ADR-031); manual CSV import stays as the fallback |
 | D2 | Where data lives between scheduled runs | Resolved by ADR-016 |
 | D3 | Public or private dashboard | Phase 5 |
 | D4 | Include LLM explainer | Phase 7 (constraints fixed by ADR-024) |

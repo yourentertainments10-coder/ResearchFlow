@@ -10,9 +10,9 @@ This layer only *applies* the retry contract defined in ``failure.py``; it does 
 Every attempt is a normal ingestion run, so it has its own ``ingest_runs`` row and summary. A rerun of
 the same bytes is idempotent (``runner.py``), which is what makes retrying safe.
 
-A source supplies a ``SourceTask``: a ``fetch`` callable returning the bytes and parser to ingest. No
-fetcher for the official portal is registered, because its terms of use are still open (D1 in
-``DECISIONS.md``); files supplied by the owner go through the same path.
+A source supplies a ``SourceTask``: a ``fetch`` callable returning the bytes and parser to ingest. The
+official portal's fetcher is ``sie/sources/bornan/fetch.py`` (ADR-031); files supplied by the owner go
+through the same path.
 """
 
 from __future__ import annotations

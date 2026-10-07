@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Portal fetcher and daily refresh
+- `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
+
 ## Phase 6C/6D backup, publish, delivery
 - `sie backup` / `sie restore-test` (snapshot-consistent dump, scratch restore, hash and count checks), `sie publish` export bundle, `WebhookNotifier` for `NOTIFY_WEBHOOK_URL`, file-based alert de-duplication, `needs_attention` alert on a first parse, validation or raw-store failure, `backup.yml` workflow. New settings `PG_BIN_DIR`, `ALERT_STATE_PATH`, `ALERT_RENOTIFY_MINUTES`. ADR-030. No schema, analytics, report or dashboard changes. Portal fetcher and cron still blocked on D1.
 
