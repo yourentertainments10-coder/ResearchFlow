@@ -30,7 +30,7 @@ Tasks: define `ParsedResult`, normaliser, validator with quarantine, idempotent 
 Acceptance: the golden CSV loads; the same file loaded twice changes nothing; bad rows appear in quarantine with reasons; a reallocation in the golden data produces the closed and new placing versions plus one history row.
 Why first: it lets analytics and the dashboard be built even before automation of collection works.
 
-## Phase 3: Source adapter(s)  [M to L]
+## Phase 3: Source adapter(s)  [M to L]  (status: in progress. The portal fetcher is built (Phase 6 work, ADR-031). Conflict policy engine and `sie resolve-conflict` built (ADR-032, `DATA_PIPELINE.md` section 13). Not built: stored reconciliation of the official table)
 Tasks: `SourceAdapter` and `SourceParser` protocols, raw store with version semantics, rate limiter with cache, adapter (fetch only) for the chosen primary source, separate parser tested on fixtures, change detection by hash, conflict policy engine and `sie resolve-conflict`, official medal table adapter and parser, reconciliation.
 Acceptance: one command ingests a full day of results; reconciliation report produced; parser failure on a changed fixture produces a clear error.
 
