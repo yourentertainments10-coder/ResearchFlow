@@ -94,10 +94,12 @@ def test_the_golden_data_set_gives_exactly_the_hand_computed_country_table(golde
     assert int(analysis.tables["country_sport"]["Total"].sum()) == 13
 
 
-def test_women_in_the_golden_data_are_one_compound_team_gold(golden, settings):
+def test_women_in_the_golden_data_are_one_compound_team_podium(golden, settings):
     analysis, _ = analyse(golden, settings, DAY1)
     women = analysis.tables["women_country_summary"]
-    assert women["country_code"].tolist() == ["IND"] and int(women["Gold"].iloc[0]) == 1
+    # Compound Women's Team is the only women's event: gold IND, silver KOR, bronze CHN.
+    assert women["country_code"].tolist() == ["IND", "KOR", "CHN"]
+    assert women["Total"].tolist() == [1, 1, 1] and women["Gold"].tolist() == [1, 0, 0]
 
 
 def test_every_spec_table_is_produced_and_written(golden, settings, tmp_path):
