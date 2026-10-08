@@ -5,6 +5,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
 
+## analyze workflow
+- `.github/workflows/analyze.yml` (manual): `sie analyze --official` on the production database, uploads the tables, fails on a reconciliation mismatch.
+
 ## Phase 4 analytics engine
 - `sie analyze` writes the twelve tables of the spec (plus discipline, women-only, insights and rank trajectory tables), a workbook and a manifest with completeness and reconciliation status. Pure metrics (`analytics/metrics.py`), invariants, rule-based insights, snapshots and change detection (no migration). ADR-033, `ANALYTICS_SPEC.md` section 14.
 - Cleanup: statements that `site/` and `reports/` were not regenerated corrected (ADR-023, changelog, README); the Methodology validation table is headed "Discipline" (it lists the source's 59 disciplines), in the template and in `site/index.html`.

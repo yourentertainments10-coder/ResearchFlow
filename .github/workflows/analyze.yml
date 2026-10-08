@@ -1,0 +1,50 @@
+# Phase 4 acceptance against the production database: `sie analyze --official` on DATABASE_URL.
+# Manual only. It reads the facts, reconciles them with the official all-country table committed under
+# tests/fixtures (the same file the reports were checked against), takes the snapshots unless told
+# not to, and uploads every table as an artifact. The job fails (exit 1) when reconciliation shows a
+# mismatch, so a green run is the acceptance evidence.
+name: analyze
+
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot:
+        description: "Take change/daily snapshots (true) or only read (false)"
+        required: false
+        default: "true"
+
+concurrency:
+  group: analyze
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      COMPETITION_ID: asiad-2026
+      SNAPSHOT_FLAG: ${{ inputs.snapshot == 'false' && '--no-snapshot' || '--snapshot' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[reports]"
+      - name: Analyse and reconcile with the official table
+        run: |
+          sie analyze --out analysis "$SNAPSHOT_FLAG" \
+            --official tests/fixtures/sources/bornan/ALL_medals_standings.decoded.json
+      - name: Show the manifest
+        if: always()
+        run: cat analysis/manifest.json || true
+      - name: Keep the tables
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis
+          path: analysis
+          retention-days: 14
