@@ -34,7 +34,7 @@ Why first: it lets analytics and the dashboard be built even before automation o
 Tasks: `SourceAdapter` and `SourceParser` protocols, raw store with version semantics, rate limiter with cache, adapter (fetch only) for the chosen primary source, separate parser tested on fixtures, change detection by hash, conflict policy engine and `sie resolve-conflict`, official medal table adapter and parser, reconciliation.
 Acceptance: one command ingests a full day of results; reconciliation report produced; parser failure on a changed fixture produces a clear error.
 
-## Phase 4: Analytics engine  [M]  (status: in progress; this is the immediate engineering priority, ahead of anything in Phase 7)
+## Phase 4: Analytics engine  [M]  (status: built 2026-10-08: metrics, invariants, snapshots and change detection, insights, `sie analyze`; see `ANALYTICS_SPEC.md` section 14 and ADR-033. Acceptance: hand-computed golden country table and invariants are tested; run `sie analyze` against the real database for the final sign-off)
 Tasks: `v_medal_facts`, metric functions per `ANALYTICS_SPEC.md`, invariants tests, snapshots, change detection, exports (CSV, Excel), rule-based insights.
 Acceptance: golden dataset matches expected outputs exactly; invariants pass; `sie analyze` writes all tables listed in the spec.
 

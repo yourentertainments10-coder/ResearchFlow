@@ -104,3 +104,18 @@ Optional LLM step may only rephrase these generated sentences, with the numbers 
 - Division by zero returns null, not zero.
 - Invariants tested: sum of country-sport totals equals total medals in `v_medal_facts`; shares per country sum to 1; sum over genders equals the All value.
 - Changing a formula needs an update to this document and a decision record.
+
+## 14. Implementation notes (Phase 4, built)
+Code: `analytics/metrics.py` (pure metric functions), `invariants.py`, `insights.py`, `snapshots.py`, `analyze.py`. Command: `sie analyze [--out DIR] [--official CAPTURE] [--no-snapshot] [--no-excel]`. Decisions: ADR-033. Analytics version: `1`.
+
+Choices the spec left open:
+- **Ranks.** Standard competition ranking (1, 2, 2, 4). `podium_rank` orders by gold, silver, bronze; `total_rank` by Total only; `points_rank` by Points only.
+- **Tier boundaries (section 8).** A sport is Core while the points of the sports ranked above it are under 60 percent of the country's points, Secondary while under 90 percent, Tail after that, so the sport that crosses 60 percent is still Core. Ties in points are ordered by sport name.
+- **RCA.** Cells with fewer than 2 medals have a null `rca` (hidden); fewer than 3 medals set `small_sample`. The sport's size uses medals (`T_s / T_all`), as in the formula.
+- **Completion.** `events_total` is the events in the database, which equals the official total only once every event is loaded; `partial` is true while `events_completed < events_total`. Per-sport completion over time is not stored in snapshots (they hold medals, not events).
+- **Gender.** Men, Women, Mixed and Open are separate columns; the gender gap needs 3 men's and women's medals together. Women-only tables (`women_*`) are the same functions on women's events.
+- **Insights.** Templates of section 12, only for countries with at least 3 medals; at most two specialisation sentences per country (highest RCA with RCA >= 1.5 and 3+ medals). Each row carries `evidence`, the numbers used.
+- **Changes** (section 10): `medals_gained`, `medals_lost` per country, sport and gender; `new_sport`; `rank_change` (podium rank). The `changes` table is the latest `change` snapshot against the one before it.
+
+Tables written (CSV, one workbook, `manifest.json`): the twelve of section 12, plus `country_discipline`, `discipline_summary`, `women_country_summary`, `women_concentration`, `women_rca`, `insights`, `rank_trajectory`. The manifest carries completeness, reconciliation status (`reconciled`, `mismatch` or `not_run`, never a silent pass), disputed events, unresolved quarantine rows, the HHI and small-sample thresholds, and the snapshot ids.
+
