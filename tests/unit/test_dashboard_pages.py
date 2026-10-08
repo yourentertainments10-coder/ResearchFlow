@@ -54,3 +54,23 @@ def test_aliases_and_unknown_route(page_file):
         page.wait_for_timeout(150)
         assert "Page not found" in page.inner_text("#app")
         browser.close()
+
+
+def test_dashboard_script_is_valid_javascript(tmp_path):
+    """Needs only Node (present on GitHub runners), not a browser: a syntax error blanks every page."""
+    import re
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is not installed")
+    for rel in ("src/sie/web/dashboard.html", "site/index.html"):
+        html = (ROOT / rel).read_text(encoding="utf-8")
+        script = max(re.findall(r"<script[^>]*>(.*?)</script>", html, flags=re.S), key=len)
+        script = script.replace("__DATA__", "[]").replace("__META__", "{}")
+        script = script.replace("__CAPTURED_LABEL__", "x")
+        path = tmp_path / "check.js"
+        path.write_text(script, encoding="utf-8")
+        done = subprocess.run([node, "--check", str(path)], capture_output=True, text=True)  # noqa: S603
+        assert done.returncode == 0, f"{rel}: {done.stderr[:300]}"
