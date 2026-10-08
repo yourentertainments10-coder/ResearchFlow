@@ -359,6 +359,43 @@ def run_summary(run_id: int = typer.Argument(..., help="An ingest_runs id.")) ->
     typer.echo(json.dumps(summary.to_dict(), indent=2))
 
 
+@app.command("conflicts")
+def conflicts_cmd(
+    all_: bool = typer.Option(False, "--all", help="Include conflicts that are already closed."),
+) -> None:
+    """List source conflicts (open ones by default) as JSON."""
+    import json
+
+    from sie.db.conflicts import list_conflicts
+
+    with make_engine(get_settings()).connect() as conn:
+        rows = list_conflicts(conn, status=None if all_ else "needs_review")
+    typer.echo(json.dumps(rows, indent=2, default=str))
+
+
+@app.command("resolve-conflict")
+def resolve_conflict_cmd(
+    conflict_id: int = typer.Argument(..., help="A source_conflicts id (see `sie conflicts`)."),
+    accept: str = typer.Option(..., "--accept", help="The source whose claim becomes the placing."),
+    note: str = typer.Option(..., "--note", help="Why. Stored with the resolution."),
+    by: str = typer.Option("owner", "--by", help="Who decided. Stored with the resolution."),
+) -> None:
+    """Settle an open conflict by hand: apply one source's claim, close the conflict, clear the flag."""
+    from datetime import UTC, datetime
+
+    from sie.db.conflicts import ConflictError, resolve_conflict
+
+    try:
+        with make_engine(get_settings()).begin() as conn:
+            change = resolve_conflict(
+                conn, conflict_id, accept_source=accept, note=note, by=by, now=datetime.now(UTC)
+            )
+    except ConflictError as exc:
+        typer.echo(f"cannot resolve: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    typer.echo(f"conflict {conflict_id} resolved: accepted {accept} ({change})")
+
+
 @app.command("source-status")
 def source_status(
     source: str = typer.Argument(..., help="Source name, for example 'official'."),

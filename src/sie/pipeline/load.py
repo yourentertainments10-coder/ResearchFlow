@@ -13,7 +13,9 @@ from datetime import datetime
 
 from sqlalchemy import Connection, text
 
+from sie.db import conflicts as db
 from sie.db.placings import apply_placing
+from sie.pipeline.conflicts import ConflictPolicy, Rule, decide
 from sie.pipeline.models import CompetitionRef, NormalisedResult, Reason, Rejection
 from sie.pipeline.validate import Placed
 
@@ -27,6 +29,11 @@ class LoadSummary:
     events: int = 0
     placings: dict[str, int] = field(default_factory=dict)
     quarantined: int = 0
+    conflicts: dict[str, int] = field(default_factory=dict)  # policy rule -> rows decided
+    held: int = 0  # claims not applied because the conflict policy held them back
+    refetch_official: bool = (
+        False  # the policy asks for an immediate re-fetch of the official source
+    )
 
 
 def load_placed(
@@ -38,15 +45,30 @@ def load_placed(
     run_id: int,
     source: str,
     now: datetime,
+    policy: ConflictPolicy | None = None,
 ) -> LoadSummary:
+    """Load validated rows. With a ``policy`` every claim is also recorded as an observation and
+    checked against the other sources' latest claims (docs/DATA_PIPELINE.md section 7)."""
     by_event: dict[tuple[int, str, str], list[Placed]] = defaultdict(list)
     for item in placed:
         by_event[item.row.event_key].append(item)
 
     counts: Counter[str] = Counter()
+    conflict_counts: Counter[str] = Counter()
+    held = 0
+    summary_refetch = False
     for items in by_event.values():
         event_id = _upsert_event(conn, competition, [i.row for i in items])
         for item in items:
+            decision = None
+            if policy is not None:
+                decision = _decide(conn, event_id, item, raw_version_id, source, now, policy)
+                if decision.rule is not None:
+                    conflict_counts[decision.rule.value] += 1
+                summary_refetch |= decision.refetch_official
+            if decision is not None and not decision.apply:
+                held += 1
+                continue
             change = apply_placing(
                 conn,
                 event_id=event_id,
@@ -64,9 +86,67 @@ def load_placed(
             )
             _record_source_note(conn, event_id, item, change)
             counts[change] += 1
+        if policy is not None:
+            db.refresh_disputed(conn, event_id)
 
     _check_event_total(conn, competition)
-    return LoadSummary(events=len(by_event), placings=dict(counts))
+    return LoadSummary(
+        events=len(by_event),
+        placings=dict(counts),
+        conflicts=dict(conflict_counts),
+        held=held,
+        refetch_official=summary_refetch,
+    )
+
+
+def _decide(conn, event_id, item, raw_version_id, source, now, policy):
+    """Record the observation, ask the policy, and write the conflict row it asks for."""
+    medal, slot = item.row.medal, item.slot
+    new = db.record_observation(
+        conn,
+        event_id=event_id,
+        medal=medal,
+        slot=slot,
+        country_id=item.row.country_id,
+        source=source,
+        raw_version_id=raw_version_id,
+        observed_at=now,
+    )
+    others = db.latest_claims_of_other_sources(
+        conn, event_id=event_id, medal=medal, slot=slot, source=source
+    )
+    open_id = db.open_conflict_id(conn, event_id=event_id, medal=medal, slot=slot)
+    decision = decide(
+        new,
+        others,
+        has_accepted=db.has_current_placing(conn, event_id=event_id, medal=medal, slot=slot),
+        open_conflict=open_id is not None,
+        policy=policy,
+        now=now,
+    )
+    if decision.rule is Rule.AGREEMENT:
+        db.close_open_conflict(
+            conn,
+            event_id=event_id,
+            medal=medal,
+            slot=slot,
+            note="the sources agree again",
+            by="pipeline",
+            now=now,
+        )
+    elif decision.rule is not None and decision.against is not None and decision.status:
+        db.record_conflict(
+            conn,
+            event_id=event_id,
+            medal=medal,
+            slot=slot,
+            against=decision.against,
+            new=new,
+            rule=decision.rule,
+            status=decision.status,
+            now=now,
+        )
+    return decision
 
 
 def _upsert_event(

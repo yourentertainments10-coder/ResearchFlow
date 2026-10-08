@@ -195,3 +195,10 @@ A healthy source raises nothing. Each alert has a stable `key` (`competition:sou
 **Publish (6D):** `sie publish --out DIR` writes `medals.csv`, `events.csv`, `manifest.json` (counts, `data_as_of`, `data_fingerprint`, per-file SHA-256) from `reporting` views only. Refuses to publish an unknown competition or one with no current placings, leaving the old bundle untouched. The dashboard HTML is still built by `python -m sie.dashboard`.
 
 **Not built (by choice):** entrants and anything from the portal's `entries/...` endpoints (birth dates, participant lists). Nothing in Phase 6 remains open except production setup (`DEPLOYMENT.md`).
+
+## 13. Conflict policy engine (Phase 3, built)
+Code: `pipeline/conflicts.py` (pure `decide`), `db/conflicts.py` (observations, conflicts, disputed flag, resolution), called from `pipeline/load.py`. Commands: `sie conflicts [--all]`, `sie resolve-conflict ID --accept SOURCE --note "..." [--by NAME]`. Rules and consequences: ADR-032.
+
+- Official source = first entry of `SOURCE_PRIORITY`; fresh window = `FRESHNESS_THRESHOLD_MINUTES`. Every row of the section 7 table has a unit test (`tests/unit/test_conflict_policy.py`); the database behaviour is tested in `tests/integration/test_conflicts.py`.
+- `policy_rule` values: `official_fresh`, `official_stale`, `official_still_disagrees`, `non_official`, `agreement`.
+- `LoadSummary.refetch_official` reports that the policy wants an immediate official re-fetch. Acting on it is the scheduler's job (Phase 6, not touched here).

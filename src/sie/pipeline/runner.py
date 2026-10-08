@@ -22,6 +22,7 @@ from pathlib import Path
 from sqlalchemy import Engine, text
 
 from sie.config import Settings
+from sie.pipeline.conflicts import conflict_policy
 from sie.pipeline.failure import FailureCategory, format_error_summary
 from sie.pipeline.load import LoadError, load_placed, write_quarantine
 from sie.pipeline.models import NormalisedResult, Rejection
@@ -125,6 +126,7 @@ def run_ingest(
                 run_id=run_id,
                 source=src.source,
                 now=now,
+                policy=conflict_policy(settings),
             )
             result.events = summary.events
             result.placings = summary.placings
