@@ -279,6 +279,16 @@ def run_analysis(
     return Analysis(tables, manifest), result
 
 
+def _excel_safe(frame: pd.DataFrame) -> pd.DataFrame:
+    """Excel cannot store timezone-aware times: write them as naive UTC (the CSVs keep the offset)."""
+    out = frame.copy()
+    for column in out.columns:
+        values = out[column].dropna()
+        if len(values) and getattr(values.iloc[0], "tzinfo", None) is not None:
+            out[column] = pd.to_datetime(out[column], utc=True).dt.tz_localize(None)
+    return out
+
+
 def write_outputs(analysis: Analysis, out_dir: Path, *, excel: bool = True) -> list[Path]:
     """CSV per table, one workbook, and the manifest (written last)."""
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -297,7 +307,7 @@ def write_outputs(analysis: Analysis, out_dir: Path, *, excel: bool = True) -> l
         workbook = out_dir / "analysis.xlsx"
         with pd.ExcelWriter(workbook, engine="openpyxl") as writer:
             for name, frame in analysis.tables.items():
-                frame.to_excel(writer, sheet_name=name[:31], index=False)
+                _excel_safe(frame).to_excel(writer, sheet_name=name[:31], index=False)
         written.append(workbook)
     manifest = out_dir / "manifest.json"
     manifest.write_text(json.dumps(analysis.manifest, indent=2, default=str), encoding="utf-8")
