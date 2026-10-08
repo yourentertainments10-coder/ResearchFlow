@@ -44,7 +44,7 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 4. Phase 0 (source discovery) is a gate. Nothing else starts until it is done.
 
 ## Status
-Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 sports, 1568 medals, reconciled with the official table (0 mismatches) by the report code. The ingestion foundation (Phase 2) is built for placings; the event-level analytics now read the database (`reporting.medal_facts`), but the committed `site/` and `reports/` were produced before that and have not been regenerated, so the project is **not** end to end yet.
+Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 sports, 1568 medals, reconciled with the official table (0 mismatches) by the report code. The ingestion foundation (Phase 2) is built for placings; the event-level analytics now read the database (`reporting.medal_facts`), and the committed `site/` and `reports/` were regenerated from the full capture on 2026-10-07 (PR #5), so the path from database to dashboard is end to end.
 
 | Part | State |
 |------|-------|

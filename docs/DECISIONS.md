@@ -143,7 +143,7 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Context:** ADR-007 chose Streamlit. The delivered dashboard is a static page (`src/sie/dashboard.py` writes `site/index.html`) served by Cloudflare.
 - **Decision:** Keep the static dashboard for v1. It reads an exported file, not the database, and contains no metric logic beyond display.
 - **Open:** whether the dashboard stays public is still D3 (owner).
-- **Consequence:** the dashboard reads the exported `placings.csv`, which is now produced from `reporting.medal_facts`; it has not been regenerated yet.
+- **Consequence:** the dashboard reads the exported `placings.csv`, which is produced from `reporting.medal_facts`. `site/` and `reports/` were regenerated from the full capture on 2026-10-07 (PR #5).
 
 ## ADR-024: Asian Games is the first dataset, not the product boundary
 
@@ -208,6 +208,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Decision:** Build the fetcher (`sie/sources/bornan/fetch.py`, `sie scheduled-run portal`, `sie fetch-portal`) and schedule `refresh.yml` daily (the Games ended 2026-10-04, so every 30 minutes is not needed). It follows AGENTS.md rule 9: one fixed https host, honest User-Agent with a contact (the placeholder default is refused), at least 2 seconds between requests, no redirects, size cap, only `ALL/disc/data` and `{DISC}/medals/discipline` (never `entries/...`), stop on 429 or 5xx, all or nothing. Two switches stay in the owner's hands: `PORTAL_FETCH_ENABLED` (code and workflow) and the `HTTP_USER_AGENT` variable. The scheduled run also runs `sie health` with the alert state in an Actions cache.
 - **Consequences:** If the organisers later restrict automated access, setting `PORTAL_FETCH_ENABLED` to anything but `true` stops it with no code change. The fetcher was tested against a fake portal and the saved fixtures only: the sandbox this was built in cannot reach the portal, so the first live run must be watched (use `sie fetch-portal --out FILE` first). A change in the portal's wire format fails as a fetch failure and is retried 3 times; it needs a code fix. Alert state in an Actions cache can be evicted; durable storage is still the proper fix (ADR-030).
 - **Decided by:** the owner (2026-10-07).
+
+## ADR-033: Phase 4 analytics engine: pure metrics, invariants before output, snapshots by fingerprint
+
+- **Context:** `ANALYTICS_SPEC.md` listed twelve output tables, snapshot identity rules and rule-based insights, but only part of them existed (in the report builder). Phase 4 acceptance asks for `sie analyze` to write all of them.
+- **Decision:** (1) Every metric is a pure function in `analytics/metrics.py` over the facts-derived frame; the report builder keeps its own functions untouched. (2) `build_tables` checks the invariants of spec section 13 before anything is returned; a violation stops the run (exit 2) and writes nothing. (3) `take_snapshot` follows `DATABASE.md` section 8 with no schema change (migration 002 already added `competition_id`, `local_date` and the daily index): fingerprint over placings by natural key plus event status and disputed flag; `change` snapshot on a new fingerprint or analytics version; one `daily` snapshot per competition-local day. (4) Reconciliation is stored data, a supplied official table (`--official`), or reported as `not_run`; it is never assumed. (5) `sie analyze` takes snapshots by default; `--no-snapshot` is read-only.
+- **Consequences:** Snapshots store medals per country, sport, discipline and gender, so per-sport event completion over time is not available; completion is the current state. Changing a formula needs a spec update, a new `ANALYTICS_VERSION` and therefore a new `change` snapshot. Tier and rank conventions are in `ANALYTICS_SPEC.md` section 14.
+- **Decided by:** the owner's Phase 4 request (2026-10-07); the formulas are the spec's.
 
 ## Open decisions
 | # | Decision | Needed before |

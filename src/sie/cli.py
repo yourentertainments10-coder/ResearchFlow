@@ -301,6 +301,48 @@ def db_roles() -> None:
     typer.echo(f"roles ready: {READER} (reporting views only), {PIPELINE} (no DELETE)")
 
 
+@app.command("analyze")
+def analyze_cmd(
+    out: Path = typer.Option(Path("reports/analysis"), "--out", help="Directory for the tables."),
+    official: Path | None = typer.Option(
+        None, "--official", help="A capture (or the bare all-country list) to reconcile against."
+    ),
+    snapshot: bool = typer.Option(True, "--snapshot/--no-snapshot", help="Take snapshots."),
+    excel: bool = typer.Option(True, "--excel/--no-excel", help="Also write one workbook."),
+) -> None:
+    """Write every table of docs/ANALYTICS_SPEC.md section 12 (CSV, Excel, manifest).
+
+    Medal numbers come from the database facts only. Exits 1 when the reconciliation shows a mismatch.
+    """
+    from datetime import UTC, datetime
+
+    from sie.analytics.analyze import run_analysis, write_outputs
+    from sie.analytics.invariants import InvariantError
+
+    settings = get_settings()
+    try:
+        with make_engine(settings).begin() as conn:
+            analysis, _ = run_analysis(
+                conn,
+                settings.competition_id,
+                now=datetime.now(UTC),
+                official=official,
+                snapshot=snapshot,
+            )
+        written = write_outputs(analysis, out, excel=excel)
+    except (InvariantError, ValueError, RuntimeError) as exc:
+        typer.echo(f"analyze failed: {exc}", err=True)
+        raise typer.Exit(code=2) from exc
+    manifest = analysis.manifest
+    typer.echo(
+        f"wrote {len(written)} files to {out}: {manifest['medals']} medals, "
+        f"{manifest['countries']} countries, reconciliation {manifest['reconciliation']}"
+    )
+    if manifest["reconciliation"] == "mismatch":
+        typer.echo("warning: the facts do not match the official table", err=True)
+        raise typer.Exit(code=1)
+
+
 @app.command("run-summary")
 def run_summary(run_id: int = typer.Argument(..., help="An ingest_runs id.")) -> None:
     """Print the structured summary of one ingestion run as JSON."""
