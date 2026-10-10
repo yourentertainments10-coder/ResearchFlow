@@ -5,6 +5,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Cloudflare preview builds
 - `wrangler.jsonc` gets an empty `"previews": {}` block: `npx wrangler preview` (Workers Builds, non-production branches) refused to run without it. Production deploy settings are unchanged. Test: `tests/test_wrangler_config.py`.
 
+## Alert lifecycle test (ADR-035)
+- `refresh.yml`: the health check and alert-state steps now run after a failed refresh, so an outage sends the alert. New `tests/integration/test_alert_lifecycle.py` (outage, single delivery, persistence across processes, failed-channel retry, interrupted run, recovery, relapse, corrupt state) and `tests/unit/test_refresh_workflow.py`. Operations: `DEPLOYMENT.md` section 7a. No application code change.
+
 ## Dashboard browser smoke test (ADR-036)
 - `tests/dashboard_smoke.py` (reusable, also against a URL) and `tests/unit/test_dashboard_smoke.py`: all routes at desktop and mobile, light and dark, console and network errors, blank-page and overflow detection, figures checked against the data, nine negative cases including the PR #14 syntax error. CI now installs Chromium and sets `REQUIRE_BROWSER=1`. Documentation in `TESTING.md` section 9. No dashboard code change.
 

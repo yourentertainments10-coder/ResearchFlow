@@ -89,6 +89,15 @@ streamlit run dashboard/app.py
 - Source structure alert: daily health check (`TESTING.md`).
 - Database size and raw-blob size on the Data quality page, to catch free-plan limits early.
 
+### 7a. Alert drill and failure test
+**Automated (isolated, runs in CI).** `tests/integration/test_alert_lifecycle.py` runs the whole story in a per-test PostgreSQL copy, with an in-memory fake portal and a local HTTP webhook receiver: healthy, portal outage (3 recorded fetch failures, last good data kept), one alert delivered, no repeat while it holds (also from a separate process, proving the state file persists), channel returning HTTP 500 (alert stays unsent and is retried, then delivered once), an interrupted run (stuck alert; the next run closes it itself and is not skipped; `sie recover-stuck` closes it by hand and leaves a young run alone), recovery (all alerts resolved, nothing sent), the same outage again (alerts again), corrupt state file (set aside, alert repeats, never lost). It touches no production database and no public source.
+
+**What this does not prove.** Delivery is real HTTP to a local receiver, not to Slack, Discord or your chosen service. The "stale" alert is covered by `test_health.py` with a supplied clock because the CLI uses the real time. Evicted Actions cache behaviour is a documented risk (ADR-030), not tested.
+
+**Manual drill against the real channel (owner, no production data touched).** Create a throwaway webhook (for example a private test channel), then in a clone or a fork with a throwaway database: set `NOTIFY_WEBHOOK_URL`, run `sie health --channel webhook` against an empty database with `SCHEDULED_SOURCES=official`; expect one `never_succeeded` message and exit 1. Run it again: no second message. Do not break the production refresh to test alerts.
+
+**Workflow behaviour.** `refresh.yml` runs the health check and the alert-state steps after a failed refresh (`if: !cancelled()`). Before ADR-035 the job stopped at the failed step, so a portal outage produced only the job-failure email and no webhook alert. A test (`tests/unit/test_refresh_workflow.py`) keeps that in place.
+
 ## 8. Rollback
 - Code: revert the commit and redeploy.
 - Schema: `alembic downgrade -1` if the migration supports it, else restore the pre-migration dump.
