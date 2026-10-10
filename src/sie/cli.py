@@ -502,14 +502,48 @@ def backup_cmd(
     verify: bool = typer.Option(
         True, help="Restore the new dump into a scratch database and check it."
     ),
+    encrypt_to: str | None = typer.Option(
+        None, "--encrypt-to", help="age PUBLIC key to encrypt to (default BACKUP_AGE_RECIPIENT)."
+    ),
+    require_encryption: bool = typer.Option(
+        False, "--require-encryption", help="Refuse to write a plaintext dump."
+    ),
+    identity_file: Path | None = typer.Option(
+        None, "--identity-file", help="age private key file; needed to verify an encrypted backup."
+    ),
+    scratch_url: str | None = typer.Option(
+        None,
+        "--scratch-url",
+        help="Scratch server for the restore test (RESTORE_TEST_DATABASE_URL).",
+    ),
 ) -> None:
-    """Dump the database (pg_dump, custom format) with a manifest, then prove it restores. Exit 1 if not."""
+    """Dump the database (pg_dump, custom format) with a manifest, then prove it restores. Exit 1 if not.
+
+    With an age public key the dump is stored only as `*.dump.age`; the restore test then decrypts it
+    with --identity-file and restores into a scratch database (never the production one).
+    """
     import json
     from datetime import UTC, datetime
 
     from sie.ops.backup import BackupError, backup, restore_test
+    from sie.ops.backup_crypto import EncryptionError
 
     settings = get_settings()
+    recipient = encrypt_to or settings.backup_age_recipient
+    if require_encryption and not recipient:
+        typer.echo(
+            "refusing to write a plaintext backup: set BACKUP_AGE_RECIPIENT or --encrypt-to",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    scratch = _scratch_url(settings, scratch_url) if verify else None
+    if verify and recipient and identity_file is None:
+        typer.echo(
+            "cannot verify an encrypted backup without --identity-file; "
+            "pass --no-verify and run `sie restore-test --identity-file ...` separately",
+            err=True,
+        )
+        raise typer.Exit(code=2)
     now = datetime.now(UTC)
     try:
         result = backup(
@@ -519,16 +553,20 @@ def backup_cmd(
             now,
             keep=keep,
             bin_dir=settings.pg_bin_dir,
+            encrypt_to=recipient,
         )
         out = {
             "dump": str(result.dump),
+            "encrypted": result.encrypted,
             "manifest": result.data,
             "pruned": [str(p) for p in result.pruned],
         }
         if verify:
-            report = restore_test(result.dump, settings.database_url, bin_dir=settings.pg_bin_dir)
+            report = restore_test(
+                result.dump, scratch, bin_dir=settings.pg_bin_dir, identity=identity_file
+            )
             out["restore_test"] = report.to_dict()
-    except BackupError as exc:
+    except (BackupError, EncryptionError) as exc:
         typer.echo(f"backup failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(out, indent=2, sort_keys=True))
@@ -536,8 +574,34 @@ def backup_cmd(
         raise typer.Exit(code=1)
 
 
+def _scratch_url(settings, override: str | None) -> str:
+    """The server a restore test may create databases on. Refuses the production database itself."""
+    from sqlalchemy.engine import make_url
+
+    from sie.config import normalise_database_url
+
+    chosen = normalise_database_url(override) if override else settings.restore_test_database_url
+    if not chosen:
+        return settings.database_url  # legacy behaviour: a local, non-production DATABASE_URL
+    same = make_url(chosen).render_as_string(hide_password=True) == make_url(
+        settings.database_url
+    ).render_as_string(hide_password=True)
+    if same:
+        typer.echo("the scratch server must not be the production DATABASE_URL", err=True)
+        raise typer.Exit(code=2)
+    return chosen
+
+
 @app.command("restore-test")
-def restore_test_cmd(dump: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+def restore_test_cmd(
+    dump: Path = typer.Argument(..., exists=True, readable=True),
+    identity_file: Path | None = typer.Option(
+        None, "--identity-file", help="age private key file, for a *.dump.age backup."
+    ),
+    scratch_url: str | None = typer.Option(
+        None, "--scratch-url", help="Scratch server (RESTORE_TEST_DATABASE_URL)."
+    ),
+) -> None:
     """Restore a dump into a scratch database, compare it with its manifest, drop the scratch. Exit 1 on any failed check."""
     import json
 
@@ -545,11 +609,16 @@ def restore_test_cmd(dump: Path = typer.Argument(..., exists=True, readable=True
 
     settings = get_settings()
     try:
-        report = restore_test(dump, settings.database_url, bin_dir=settings.pg_bin_dir)
+        report = restore_test(
+            dump,
+            _scratch_url(settings, scratch_url),
+            bin_dir=settings.pg_bin_dir,
+            identity=identity_file,
+        )
     except BackupError as exc:
         typer.echo(f"restore test failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
-    typer.echo(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+    typer.echo(json.dumps(report.to_dict(), indent=2))
     if not report.ok:
         raise typer.Exit(code=1)
 

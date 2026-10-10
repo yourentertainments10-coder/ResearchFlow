@@ -45,10 +45,39 @@ Alerts: `sie health` (JSON, exit 1 on any alert) is meant to run after each sche
 Nothing below is configured by the code or the workflows; no credentials or storage have been created.
 1. **`DATABASE_URL` secret.** Set it as a GitHub Actions repository secret (or the hosting provider's secret store). `backup.yml` and `refresh.yml` read it. Use a direct (non-pooled) connection; the backup restore test needs a role that can `CREATE DATABASE`. Until it is set, the scheduled `backup` workflow will fail each night.
 2. **Durable alert state.** The workflow keeps the state in an Actions cache, which can be evicted (unused entries expire after about 7 days), after which open alerts are re-sent once. `sie health` keeps its de-duplication state in a JSON file (`ALERT_STATE_PATH`, default `DATA_DIR/alert_state.json`). On an ephemeral runner or container that file is lost on every deploy or restart and every active alert is sent again. Point `ALERT_STATE_PATH` at storage that persists, or move the state to a database table in a later migration (ADR-030).
-3. **Encrypted off-host backup storage.** `sie backup` writes dumps and manifests; the workflow's artifact upload is a stopgap that is not encrypted. Add an encrypt-and-upload step to an object store (or another off-host location) and keep the last 14.
+3. **Backup encryption key pair (required before `backup.yml` can succeed).** The workflow fails closed without it and never uploads a plaintext dump. See section 3a below: generate a key pair, set the repository variable `BACKUP_AGE_RECIPIENT` (public) and the secret `BACKUP_AGE_IDENTITY` (private), and keep an offline copy of the private key. Off-host object storage is still optional; the encrypted artifact (14 days) is the stopgap.
 4. **Repository variables for the scheduled refresh (D1 is cleared, ADR-031).** Set `PORTAL_FETCH_ENABLED` to `true` to switch the schedule on (any other value pauses it) and `HTTP_USER_AGENT` to something like `SIE-research/0.1 (contact: you@example.org)` with a real contact address. Optional secret `NOTIFY_WEBHOOK_URL` delivers alerts; without it they go to the job log and the failed job email.
 5. **Phase 4 acceptance on the production database.** After the first portal refresh has filled the database, run the `analyze` workflow (manual). It runs `sie analyze --official` against `DATABASE_URL`, takes the snapshots and uploads all tables; it fails on any reconciliation mismatch.
 6. **First live run.** The fetcher has not been run against the live portal (the build sandbox cannot reach it). Run `sie fetch-portal --out data/capture.json` from your computer first, check the file, then `sie scheduled-run portal`, then switch the schedule on. 
+
+### 3a. Backup encryption (ADR-034)
+**Why.** The repository is public and Actions artifacts of a public repository can be downloaded by anyone signed in to GitHub. A database dump contains the full dataset and raw evidence, so it must never be uploaded in the clear.
+
+**Audit result (2026-10-10).** `backup.yml` had never produced an artifact: every scheduled run on 8, 9 and 10 Oct failed at `sie backup --out backups` (the CLI option is `--out-dir`, exit 2) and the upload step was skipped. The only artifact in the repository is `analysis` (public derived tables from `sie analyze`, expires 2026-10-24). So **no unencrypted dump was exposed**. The old workflow would have uploaded one had the flag been right; that path is removed.
+
+**How it works now.** `sie backup --encrypt-to <age recipient> --require-encryption` writes the dump into a private temporary directory, encrypts it with `age` to the public recipient, and removes the plaintext. The manifest records the plaintext hash and the ciphertext hash. The workflow then decrypts with the private identity, restores into a scratch PostgreSQL service container (never the production database), compares schema revision, row counts and re-hashes the raw blobs, and only then uploads `*.dump.age` and `*.manifest.json` as artifact `sie-backup-encrypted`. A guard step refuses to upload anything else or any file without the age header.
+
+**One-time setup (owner).**
+```
+age-keygen -o backup-identity.txt        # prints the public key (age1...)
+```
+1. Repository variable `BACKUP_AGE_RECIPIENT` = the `age1...` public key.
+2. Repository secret `BACKUP_AGE_IDENTITY` = the whole contents of `backup-identity.txt` (the `AGE-SECRET-KEY-...` line).
+3. Keep an offline copy of `backup-identity.txt` (password manager). Without it the artifacts cannot be decrypted. Delete the local file when stored.
+
+**Restore by hand.**
+```
+age -d -i backup-identity.txt -o db.dump  sie-backup-<ts>.dump.age
+sie restore-test sie-backup-<ts>.dump.age --identity-file backup-identity.txt --scratch-url <scratch db url>
+pg_restore --no-owner -d <empty database> db.dump
+```
+`--scratch-url` is refused if it equals `DATABASE_URL`. Never restore-test into production.
+
+**Rotation.** Generate a new pair, replace the variable and the secret, keep the old identity offline until the artifacts it protects (14 days) have expired.
+
+**Residual risks.** Anyone who can edit workflows on the default branch or read Actions secrets can obtain the private identity; keep write access minimal and require review for `.github/workflows/`. Artifacts are encrypted but still hold the full dataset, so loss of the key means loss of the backup, not exposure.
+
+**Existing artifacts.** No plaintext dump exists. The `analysis` artifact holds only public derived data and can be left to expire or deleted in Settings, Actions. If a plaintext dump is ever found, delete it, rotate the database password, and treat the contents as disclosed.
 
 ## 4. Environments
 | Env | Database | Purpose |

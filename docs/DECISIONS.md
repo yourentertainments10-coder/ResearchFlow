@@ -223,6 +223,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Snapshots store medals per country, sport, discipline and gender, so per-sport event completion over time is not available; completion is the current state. Changing a formula needs a spec update, a new `ANALYTICS_VERSION` and therefore a new `change` snapshot. Tier and rank conventions are in `ANALYTICS_SPEC.md` section 14.
 - **Decided by:** the owner's Phase 4 request (2026-10-07); the formulas are the spec's.
 
+## ADR-034: Backups are encrypted with age before upload; restore is proven in a scratch database
+
+- **Context:** `backup.yml` uploaded the dump as a plain Actions artifact in a public repository, where artifacts are downloadable by any signed-in GitHub user. Audit (2026-10-10): the workflow had never produced an artifact (it called `sie backup --out`, the option is `--out-dir`; runs failed on 8, 9 and 10 Oct), so no dump was exposed. It also restored into the same server as `DATABASE_URL` (production Neon) with an unmatched client version.
+- **Decision:** `age` (age-encryption.org) public-key encryption through the `age` binary (no Python dependency; BSD-3 licence, maintained, small audited format; alternatives: GPG, heavier and error-prone; symmetric passphrase, which would put the decrypting secret on the same runner as the data). `sie backup --encrypt-to RECIPIENT --require-encryption` encrypts in a 0700 temporary directory and deletes the plaintext; manifest records plaintext and ciphertext hashes and the recipient. The workflow fails closed without `vars.BACKUP_AGE_RECIPIENT` or `secrets.BACKUP_AGE_IDENTITY`, verifies by decrypt and restore into a `postgres` service container (`sie restore-test --identity-file --scratch-url`), refuses to upload anything but `*.dump.age` and manifests, and uploads with `if-no-files-found: error`. `--scratch-url` equal to the production URL exits 2. A test checks that every `sie <command> --flag` used in workflows exists. CI installs `age` and sets `REQUIRE_AGE=1` so the crypto tests cannot silently skip.
+- **Consequences:** The owner must create the key pair and set the variable and secret (`DEPLOYMENT.md` section 3a); until then the nightly backup fails visibly instead of leaking. Losing the private key loses the backups. Someone who can change workflows or read secrets can still obtain the key. `age` is installed from the runner's apt repository. No schema change.
+- **Decided by:** the owner's Phase 6 brief (2026-10-10).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
