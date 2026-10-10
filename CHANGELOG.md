@@ -17,6 +17,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Backup encryption (ADR-034)
 - Security fix: `backup.yml` no longer uploads a plaintext dump. `sie backup` encrypts with age (`--encrypt-to`, `--require-encryption`), `sie restore-test --identity-file --scratch-url` decrypts and verifies in a scratch database, the workflow fails closed without `BACKUP_AGE_RECIPIENT` / `BACKUP_AGE_IDENTITY`, restores into a scratch service container instead of production, and guards the artifact contents. Fixed `--out` vs `--out-dir` (backup runs on 8-10 Oct failed and uploaded nothing). New settings `BACKUP_AGE_RECIPIENT`, `RESTORE_TEST_DATABASE_URL`. Exposure audit: no plaintext dump was ever published.
 
+## Acceptance evidence ledger
+- New `ACCEPTANCE.md`: statuses (PASS, FAIL, NOT RUN, BLOCKED) with GitHub Actions run IDs, commits and times for the official analysis, the three scheduled refreshes (8, 9, 10 Oct, event `schedule`), alert and dashboard tests, Cloudflare builds and backups. Records the failed backup runs and that no unencrypted dump was ever uploaded. Documentation only; no code change.
+
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
 
