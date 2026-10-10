@@ -103,3 +103,6 @@ Passing locally says nothing about the deployment. Only a run of the second comm
 4. Open DevTools Console: no red errors, and the Network tab shows only the page itself.
 
 **Limits.** It does not judge visual quality (the screenshots are for a human to look at), uses Chromium only (no Safari or Firefox), does not exercise every filter combination or tooltip, and cannot see Cloudflare-side problems such as an old deployment unless pointed at the live URL.
+
+## Acceptance command
+`sie acceptance` (read-only, one `REPEATABLE READ` transaction) compares the database with the expected totals and prints JSON; exit 1 on any failed check. `tests/integration/test_acceptance.py` covers it on the test database only (pass on complete data, partial data fails with the reason, stale run fails, empty database and unknown competition fail cleanly, read-only transaction, CLI exit codes). It is not evidence about production until someone runs it there.

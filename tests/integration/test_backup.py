@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 import shutil
+import subprocess
+import tempfile
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -13,7 +17,8 @@ from sqlalchemy import create_engine, text
 from test_ops_foundation import csv_source
 
 from sie.config import Settings
-from sie.ops.backup import SCRATCH_PREFIX, BackupError, backup, prune, restore_test
+from sie.ops.backup import SCRATCH_PREFIX, BackupError, backup, manifest_for, prune, restore_test
+from sie.ops.backup_crypto import AGE_MAGIC, PG_CUSTOM_MAGIC, EncryptionError
 from sie.pipeline.runner import run_ingest
 from sie.reference import seed_reference
 
@@ -145,3 +150,130 @@ def test_missing_tool_and_failed_dump_leave_no_partial(db_url, tmp_path):
     with pytest.raises(Exception):  # noqa: B017  (connection error before pg_dump runs)
         backup(bad, tmp_path / "b", "x", NOW, bin_dir=BIN)
     assert list((tmp_path / "b").glob("*.partial")) == []
+
+
+# --- encrypted backups (ADR-034): nothing readable leaves the host, and the stored file restores ----------
+
+
+@pytest.fixture()
+def keys(tmp_path):
+    if shutil.which("age") is None or shutil.which("age-keygen") is None:
+        if os.environ.get("REQUIRE_AGE"):
+            pytest.fail("age is required in CI: install it (apt-get install age)")
+        pytest.skip("age is not installed")
+    identity = tmp_path / "identity.txt"
+    done = subprocess.run(
+        ["age-keygen", "-o", str(identity)], capture_output=True, text=True, check=True
+    )
+    recipient = re.search(r"(age1[0-9a-z]+)", done.stderr + done.stdout).group(1)
+    return recipient, identity
+
+
+def encrypted(db_url, tmp_path, recipient, **kw):
+    return backup(
+        db_url, tmp_path / "b", "asiad-2026", NOW, bin_dir=BIN, encrypt_to=recipient, **kw
+    )
+
+
+def test_an_encrypted_backup_leaves_only_ciphertext_and_a_manifest(loaded, db_url, tmp_path, keys):
+    recipient, _ = keys
+    result = encrypted(db_url, tmp_path, recipient)
+    files = sorted(p.name for p in (tmp_path / "b").iterdir())
+    assert files == [
+        "sie-asiad-2026-20261006T100000Z.dump.age",
+        "sie-asiad-2026-20261006T100000Z.manifest.json",
+    ]
+    assert result.encrypted and result.dump.name.endswith(".dump.age")
+    head = result.dump.read_bytes()[:64]
+    assert head.startswith(AGE_MAGIC) and PG_CUSTOM_MAGIC not in head
+    assert manifest_for(result.dump) == result.manifest
+    data = json.loads(result.manifest.read_text())
+    assert data["encryption"] == {"tool": "age", "recipient": recipient}
+    assert data["plaintext"]["sha256"] != data["dump"]["sha256"]
+    assert "AGE-SECRET-KEY" not in result.manifest.read_text()
+
+
+def test_the_plaintext_dump_never_outlives_the_call(loaded, db_url, tmp_path, keys, monkeypatch):
+    recipient, _ = keys
+    scratch = tmp_path / "tmp"
+    scratch.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(scratch))
+    encrypted(db_url, tmp_path, recipient)
+    assert list(scratch.iterdir()) == []  # the private working directory is gone
+
+
+def test_decrypt_and_restore_verifies_schema_counts_and_raw_evidence(
+    loaded, db_url, admin_url, tmp_path, keys
+):
+    recipient, identity = keys
+    result = encrypted(db_url, tmp_path, recipient)
+    report = restore_test(result.dump, admin_url, bin_dir=BIN, identity=identity)
+    assert report.ok, report.to_dict()
+    names = [c.name for c in report.checks]
+    assert "decrypts with the identity" in names
+    assert "decrypted dump matches its recorded plaintext hash" in names
+    assert "schema revision matches" in names
+    assert any(n.startswith("row counts match") for n in names)
+    assert any(n.startswith("raw evidence intact") for n in names)
+    assert scratch_dbs(admin_url) == []
+    assert not [p for p in tmp_path.rglob("*.dump")]  # no plaintext dump anywhere under the output
+
+
+def test_an_encrypted_backup_cannot_be_restored_without_the_identity(
+    loaded, db_url, admin_url, tmp_path, keys
+):
+    recipient, _ = keys
+    result = encrypted(db_url, tmp_path, recipient)
+    report = restore_test(result.dump, admin_url, bin_dir=BIN)
+    assert not report.ok and report.checks[-1].name == "decrypts with the identity"
+    assert scratch_dbs(admin_url) == []
+
+
+def test_the_wrong_identity_fails_before_anything_is_restored(
+    loaded, db_url, admin_url, tmp_path, keys
+):
+    recipient, _ = keys
+    other = tmp_path / "other.txt"
+    subprocess.run(["age-keygen", "-o", str(other)], capture_output=True, check=True)
+    result = encrypted(db_url, tmp_path, recipient)
+    report = restore_test(result.dump, admin_url, bin_dir=BIN, identity=other)
+    assert not report.ok and report.checks[-1].name == "decrypts with the identity"
+    assert "AGE-SECRET-KEY" not in json.dumps(report.to_dict())
+    assert scratch_dbs(admin_url) == []
+
+
+def test_a_tampered_ciphertext_is_caught_by_the_recorded_hash(
+    loaded, db_url, admin_url, tmp_path, keys
+):
+    recipient, identity = keys
+    result = encrypted(db_url, tmp_path, recipient)
+    data = bytearray(result.dump.read_bytes())
+    data[len(data) // 2] ^= 0xFF
+    result.dump.write_bytes(bytes(data))
+    report = restore_test(result.dump, admin_url, bin_dir=BIN, identity=identity)
+    assert not report.ok and report.checks[-1].name == "dump matches its recorded hash"
+
+
+def test_a_bad_recipient_fails_before_the_database_is_touched(loaded, db_url, tmp_path, keys):
+    _, identity = keys
+    secret = next(
+        line for line in identity.read_text().splitlines() if line.startswith("AGE-SECRET-KEY")
+    )
+    with pytest.raises(EncryptionError, match="PRIVATE key"):
+        encrypted(db_url, tmp_path, secret)
+    assert not (tmp_path / "b").exists() or list((tmp_path / "b").iterdir()) == []
+
+
+def test_prune_handles_encrypted_dumps_and_their_manifests(loaded, db_url, tmp_path, keys):
+    recipient, _ = keys
+    out = tmp_path / "b"
+    for i in range(3):
+        backup(
+            db_url, out, "asiad-2026", NOW + timedelta(hours=i), keep=2, bin_dir=BIN,
+            encrypt_to=recipient,
+        )  # fmt: skip
+    assert sorted(p.name for p in out.glob("*.dump.age")) == [
+        "sie-asiad-2026-20261006T110000Z.dump.age",
+        "sie-asiad-2026-20261006T120000Z.dump.age",
+    ]
+    assert len(list(out.glob("*.manifest.json"))) == 2

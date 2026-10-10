@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## `sie acceptance` (ADR-037)
+- Read-only database check against 469 events / 1,568 placings (470/469/629), freshness, open conflicts and snapshots; exit 1 on any failed check. Ported from PR #15 onto the encrypted-backup branch; the rest of PR #15 (its own `pyrage` backup encryption, `backup-keygen`, its workflow, `scripts/smoke_dashboard.py`) is superseded by PR #16 (age binary, scratch restore) and PR #19 (browser smoke test, usable against a live URL).
+
 ## Cloudflare preview builds
 - `wrangler.jsonc` gets an empty `"previews": {}` block: `npx wrangler preview` (Workers Builds, non-production branches) refused to run without it. Production deploy settings are unchanged. Test: `tests/test_wrangler_config.py`.
 
@@ -10,6 +13,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 
 ## Dashboard browser smoke test (ADR-036)
 - `tests/dashboard_smoke.py` (reusable, also against a URL) and `tests/unit/test_dashboard_smoke.py`: all routes at desktop and mobile, light and dark, console and network errors, blank-page and overflow detection, figures checked against the data, nine negative cases including the PR #14 syntax error. CI now installs Chromium and sets `REQUIRE_BROWSER=1`. Documentation in `TESTING.md` section 9. No dashboard code change.
+
+## Backup encryption (ADR-034)
+- Security fix: `backup.yml` no longer uploads a plaintext dump. `sie backup` encrypts with age (`--encrypt-to`, `--require-encryption`), `sie restore-test --identity-file --scratch-url` decrypts and verifies in a scratch database, the workflow fails closed without `BACKUP_AGE_RECIPIENT` / `BACKUP_AGE_IDENTITY`, restores into a scratch service container instead of production, and guards the artifact contents. Fixed `--out` vs `--out-dir` (backup runs on 8-10 Oct failed and uploaded nothing). New settings `BACKUP_AGE_RECIPIENT`, `RESTORE_TEST_DATABASE_URL`. Exposure audit: no plaintext dump was ever published.
 
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.

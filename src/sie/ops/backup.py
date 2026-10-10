@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -35,11 +36,20 @@ from typing import Any
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import URL, make_url
 
+from sie.ops.backup_crypto import (
+    ENCRYPTED_SUFFIX,
+    EncryptionError,
+    decrypt_file,
+    encrypt_file,
+    find_age,
+    validate_recipient,
+)
+
 MANIFEST_FORMAT = 1
 DEFAULT_KEEP = 14  # docs/DEPLOYMENT.md: keep the last 14 dumps
 SCHEMAS = ("public", "reporting")
 SCRATCH_PREFIX = "sie_restore_"
-_DUMP_RE = re.compile(r"^sie-(?P<comp>[\w.-]+)-(?P<stamp>\d{8}T\d{6}Z)\.dump$")
+_DUMP_RE = re.compile(r"^sie-(?P<comp>[\w.-]+)-(?P<stamp>\d{8}T\d{6}Z)\.dump(\.age)?$")
 
 
 class BackupError(RuntimeError):
@@ -52,6 +62,7 @@ class BackupResult:
     manifest: Path
     data: dict[str, Any]
     pruned: list[Path] = field(default_factory=list)
+    encrypted: bool = False  # ``dump`` is then ``*.dump.age`` and no plaintext dump was kept
 
 
 @dataclass
@@ -78,6 +89,12 @@ class RestoreReport:
             "checks": [{"name": c.name, "ok": c.ok, "detail": c.detail} for c in self.checks],
             "warnings": self.warnings,
         }
+
+
+def manifest_for(dump: Path) -> Path:
+    """``sie-c-STAMP.dump`` and ``sie-c-STAMP.dump.age`` share ``sie-c-STAMP.manifest.json``."""
+    name = dump.name.removesuffix(ENCRYPTED_SUFFIX).removesuffix(".dump")
+    return dump.with_name(name + ".manifest.json")
 
 
 def find_tool(name: str, bin_dir: Path | None) -> str:
@@ -147,14 +164,46 @@ def backup(
     *,
     keep: int = DEFAULT_KEEP,
     bin_dir: Path | None = None,
+    encrypt_to: str | None = None,
 ) -> BackupResult:
+    """Dump the database to ``out_dir``. With ``encrypt_to`` (an age public key) the dump is written to a
+    private temporary directory, encrypted into ``out_dir`` as ``*.dump.age``, and the plaintext is
+    removed: ``out_dir`` never holds a readable dump."""
     url = make_url(url) if isinstance(url, str) else url
     pg_dump = find_tool("pg_dump", bin_dir)
+    if encrypt_to is not None:
+        encrypt_to = validate_recipient(encrypt_to)  # fail before touching the database
+        find_age()
     out_dir.mkdir(parents=True, exist_ok=True)
     stamp = now.strftime("%Y%m%dT%H%M%SZ")
-    dump = out_dir / f"sie-{competition}-{stamp}.dump"
-    manifest_path = dump.with_suffix(".manifest.json")
-    partial = dump.with_suffix(".dump.partial")
+    stored = out_dir / f"sie-{competition}-{stamp}.dump{ENCRYPTED_SUFFIX if encrypt_to else ''}"
+    manifest_path = manifest_for(stored)
+    workdir = Path(tempfile.mkdtemp(prefix="sie_dump_")) if encrypt_to else out_dir
+    dump = workdir / f"sie-{competition}-{stamp}.dump"
+    partial = workdir / f"sie-{competition}-{stamp}.dump.partial"
+    try:
+        return _backup_into(
+            url, pg_dump, competition, now, dump, partial, stored, manifest_path, out_dir,
+            keep, encrypt_to,
+        )  # fmt: skip
+    finally:
+        if encrypt_to:
+            shutil.rmtree(workdir, ignore_errors=True)  # the plaintext never outlives the call
+
+
+def _backup_into(
+    url: URL,
+    pg_dump: str,
+    competition: str,
+    now: datetime,
+    dump: Path,
+    partial: Path,
+    stored: Path,
+    manifest_path: Path,
+    out_dir: Path,
+    keep: int,
+    encrypt_to: str | None,
+) -> BackupResult:
 
     engine = create_engine(url.set(drivername="postgresql+psycopg"))
     try:
@@ -186,7 +235,11 @@ def backup(
         engine.dispose()
 
     os.replace(partial, dump)
-    digest = hashlib.sha256(dump.read_bytes()).hexdigest()
+    plain_digest = hashlib.sha256(dump.read_bytes()).hexdigest()
+    plain_size = dump.stat().st_size
+    if encrypt_to:
+        encrypt_file(dump, stored, encrypt_to)
+    digest = hashlib.sha256(stored.read_bytes()).hexdigest()
     on_disk = sum(n for backend, n in raw.items() if backend != "db")
     data: dict[str, Any] = {
         "format": MANIFEST_FORMAT,
@@ -198,10 +251,20 @@ def backup(
         "pg_dump_version": _tool_version(pg_dump),
         "tables": counts,
         "raw_versions": {"by_backend": raw, "outside_dump": on_disk},
-        "dump": {"file": dump.name, "size_bytes": dump.stat().st_size, "sha256": digest},
+        "dump": {"file": stored.name, "size_bytes": stored.stat().st_size, "sha256": digest},
     }
+    if encrypt_to:
+        # The stored file is ciphertext; the plaintext hash lets a restore prove what it decrypted.
+        data["plaintext"] = {"size_bytes": plain_size, "sha256": plain_digest}
+        data["encryption"] = {"tool": "age", "recipient": encrypt_to}
     manifest_path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
-    return BackupResult(dump, manifest_path, data, prune(out_dir, competition, keep, protect=dump))
+    return BackupResult(
+        stored,
+        manifest_path,
+        data,
+        prune(out_dir, competition, keep, protect=stored),
+        encrypted=bool(encrypt_to),
+    )
 
 
 def prune(out_dir: Path, competition: str, keep: int, protect: Path | None = None) -> list[Path]:
@@ -218,7 +281,7 @@ def prune(out_dir: Path, competition: str, keep: int, protect: Path | None = Non
     for old in dumps[: max(0, len(dumps) - max(keep, 1))]:
         if old == protect:
             continue
-        for path in (old, old.with_suffix(".manifest.json")):
+        for path in (old, manifest_for(old)):
             if path.exists():
                 path.unlink()
                 removed.append(path)
@@ -246,11 +309,17 @@ def restore_test(
     *,
     manifest: Path | None = None,
     bin_dir: Path | None = None,
+    identity: Path | None = None,
 ) -> RestoreReport:
-    """Restore ``dump`` into a throwaway database on the server of ``admin_url`` and check it."""
+    """Restore ``dump`` into a throwaway database on the server of ``admin_url`` and check it.
+
+    ``admin_url`` must be a scratch server, never the production database. An encrypted dump
+    (``*.dump.age``) needs ``identity`` (the private key file): it is decrypted into a private temporary
+    directory, checked against the manifest's plaintext hash, restored, and the plaintext is removed.
+    """
     admin_url = make_url(admin_url) if isinstance(admin_url, str) else admin_url
     report = RestoreReport(dump)
-    manifest = manifest or dump.with_suffix(".manifest.json")
+    manifest = manifest or manifest_for(dump)
     try:
         data = json.loads(manifest.read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
@@ -270,6 +339,43 @@ def restore_test(
     if actual != expected:
         return report
 
+    if not dump.name.endswith(ENCRYPTED_SUFFIX):
+        return _restore_into_scratch(report, dump, data, admin_url, bin_dir)
+
+    if identity is None:
+        report.checks.append(
+            Check("decrypts with the identity", False, "an encrypted backup needs --identity-file")
+        )
+        return report
+    workdir = Path(tempfile.mkdtemp(prefix="sie_restore_plain_"))
+    try:
+        plain = workdir / dump.name.removesuffix(ENCRYPTED_SUFFIX)
+        try:
+            decrypt_file(dump, plain, identity)
+        except EncryptionError as exc:
+            report.checks.append(Check("decrypts with the identity", False, str(exc)))
+            return report
+        report.checks.append(Check("decrypts with the identity", True, plain.name))
+        same = hashlib.sha256(plain.read_bytes()).hexdigest() == data.get("plaintext", {}).get(
+            "sha256"
+        )
+        report.checks.append(
+            Check(
+                "decrypted dump matches its recorded plaintext hash",
+                same,
+                "" if same else "decrypted bytes differ from what was backed up",
+            )
+        )
+        if not same:
+            return report
+        return _restore_into_scratch(report, plain, data, admin_url, bin_dir)
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+
+def _restore_into_scratch(
+    report: RestoreReport, dump: Path, data: dict[str, Any], admin_url: URL, bin_dir: Path | None
+) -> RestoreReport:
     pg_restore = find_tool("pg_restore", bin_dir)
     scratch = f"{SCRATCH_PREFIX}{uuid.uuid4().hex[:10]}"
     admin = create_engine(
