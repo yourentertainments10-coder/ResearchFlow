@@ -1,9 +1,16 @@
-# Nightly backup with a tested restore (Phase 6C, docs/DEPLOYMENT.md section 3 item 5).
-# The restore test needs a scratch database on the same server, so DATABASE_URL must be a direct
-# (non-pooled) connection by a role that may CREATE DATABASE. If it cannot, run `sie backup --no-verify`
-# here and `sie restore-test` on a machine that can.
-# Encrypt and upload the dump off-host in the last step; the artifact below is only a stopgap
-# (retention 14 days) and is not encrypted, so keep the repository private.
+# Nightly encrypted backup with a tested restore (Phase 6C, docs/DEPLOYMENT.md section 3 item 5).
+#
+# This repository is public, and workflow artifacts of a public repository can be downloaded by anyone,
+# so a plaintext dump must never be uploaded. The job therefore:
+#   1. refuses to run without the repository variable BACKUP_AGE_RECIPIENT (a PUBLIC age key, age1...);
+#   2. dumps, restore-tests the plaintext in a scratch database, encrypts, and deletes the plaintext;
+#   3. fails if anything but *.dump.age / *.manifest.json is in the upload folder, or if any file
+#      looks like a PostgreSQL dump;
+#   4. uploads only that folder (retention 14 days).
+# The private key (identity) is never in GitHub: keep it offline; it is needed only to restore.
+# DATABASE_URL must be a direct (non-pooled) connection by a role that may CREATE DATABASE.
+# Repository variable PG_MAJOR (default 17) must match the server's major version (pg_dump refuses
+# an older client than the server).
 name: backup
 
 on:
@@ -24,8 +31,16 @@ jobs:
     timeout-minutes: 30
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BACKUP_AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+      PG_MAJOR: ${{ vars.PG_MAJOR || '17' }}
       COMPETITION_ID: asiad-2026
     steps:
+      - name: Require an encryption recipient (before anything is dumped)
+        run: |
+          if [ -z "$BACKUP_AGE_RECIPIENT" ]; then
+            echo "::error::Repository variable BACKUP_AGE_RECIPIENT is not set; refusing to make an unencrypted backup. See docs/DEPLOYMENT.md."
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -33,13 +48,36 @@ jobs:
       - name: PostgreSQL client matching the server
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client
-          pg_dump --version
-      - run: pip install -e .
-      - name: Dump and prove it restores
-        run: sie backup --out backups --keep 14
+          sudo apt-get install -y -qq postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -qq "postgresql-client-${PG_MAJOR}"
+          echo "PG_BIN_DIR=/usr/lib/postgresql/${PG_MAJOR}/bin" >> "$GITHUB_ENV"
+          "/usr/lib/postgresql/${PG_MAJOR}/bin/pg_dump" --version
+      - run: pip install -e ".[backup]"
+      - name: Dump, prove it restores, encrypt
+        run: sie backup --out backups --keep 14 --require-encryption
+      - name: Guard - nothing readable may be uploaded
+        if: always()
+        run: |
+          shopt -s nullglob
+          rm -f backups/*.dump backups/*.partial
+          bad=0
+          for f in backups/*; do
+            case "$f" in
+              *.dump.age|*.manifest.json) ;;
+              *) echo "::error::unexpected file in upload folder: $f"; bad=1 ;;
+            esac
+            if head -c 5 "$f" | grep -aq '^PGDMP'; then
+              echo "::error::$f looks like an unencrypted PostgreSQL dump"; bad=1
+            fi
+          done
+          if grep -rlaq 'AGE-SECRET-KEY-' backups 2>/dev/null; then
+            echo "::error::a private key is in the upload folder"; bad=1
+          fi
+          [ "$bad" = 0 ]
       - uses: actions/upload-artifact@v4
         with:
-          name: sie-backup
+          name: sie-backup-encrypted
           path: backups/
           retention-days: 14
+          if-no-files-found: error

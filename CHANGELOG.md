@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Production acceptance and encrypted backups
+- `scripts/smoke_dashboard.py` (Playwright smoke test), `sie acceptance` (read-only database check against 469 events / 1,568 placings), `sie backup --encrypt-to/--require-encryption`, `sie backup-keygen`, `sie restore-test --identity`, `ops/seal.py`; `backup.yml` rewritten (encrypted upload only, plaintext guard). `docs/ACCEPTANCE.md`. ADR-034. New setting `BACKUP_AGE_RECIPIENT`, optional extra `backup`. ADR-032's rule is unchanged.
+
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
 

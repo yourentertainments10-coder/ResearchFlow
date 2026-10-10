@@ -58,6 +58,7 @@ class Settings(BaseSettings):
     # Alert de-duplication: where the state lives, and when to remind about an alert that is still
     # open. 0 means never remind (an alert is sent once until it resolves and returns).
     alert_state_path: Path | None = None
+    backup_age_recipient: str | None = None  # public age key (age1...), not a secret
     alert_renotify_minutes: int = 0
     # Backups and tools: directory of pg_dump/pg_restore (default: found on PATH).
     pg_bin_dir: Path | None = None

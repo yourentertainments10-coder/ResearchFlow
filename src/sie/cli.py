@@ -498,20 +498,40 @@ def backup_cmd(
     out_dir: Path = typer.Option(
         Path("data/backups"), help="Where dumps and manifests are written."
     ),
-    keep: int = typer.Option(14, help="How many dumps to keep (older ones are deleted)."),
+    keep: int = typer.Option(14, help="How many backups to keep (older ones are deleted)."),
     verify: bool = typer.Option(
         True, help="Restore the new dump into a scratch database and check it."
     ),
+    encrypt_to: str | None = typer.Option(
+        None,
+        help="Public age key (age1...) to encrypt to; default BACKUP_AGE_RECIPIENT. "
+        "The plaintext dump is deleted after encryption.",
+    ),
+    require_encryption: bool = typer.Option(
+        False, help="Fail, before dumping anything, if no recipient is configured."
+    ),
 ) -> None:
-    """Dump the database (pg_dump, custom format) with a manifest, then prove it restores. Exit 1 if not."""
+    """Dump the database with a manifest, prove it restores, optionally encrypt it (age). Exit 1 on failure."""
     import json
     from datetime import UTC, datetime
 
     from sie.ops.backup import BackupError, backup, restore_test
+    from sie.ops.seal import parse_recipient, seal_backup
 
     settings = get_settings()
+    recipient = (encrypt_to or settings.backup_age_recipient or "").strip() or None
+    if require_encryption and not recipient:
+        typer.echo(
+            "backup refused: encryption is required but no recipient is set "
+            "(BACKUP_AGE_RECIPIENT or --encrypt-to); nothing was dumped",
+            err=True,
+        )
+        raise typer.Exit(code=1)
     now = datetime.now(UTC)
+    result = None
     try:
+        if recipient:
+            parse_recipient(recipient)  # fail early on a bad key, before touching the database
         result = backup(
             settings.database_url,
             out_dir,
@@ -520,24 +540,38 @@ def backup_cmd(
             keep=keep,
             bin_dir=settings.pg_bin_dir,
         )
-        out = {
-            "dump": str(result.dump),
-            "manifest": result.data,
-            "pruned": [str(p) for p in result.pruned],
-        }
+        out: dict = {"manifest": result.data, "pruned": [str(p) for p in result.pruned]}
+        ok = True
         if verify:
             report = restore_test(result.dump, settings.database_url, bin_dir=settings.pg_bin_dir)
             out["restore_test"] = report.to_dict()
+            ok = report.ok
+        if recipient:
+            if ok:
+                out["dump"] = str(seal_backup(result, recipient))
+                out["encrypted"] = True
+            else:
+                result.dump.unlink(missing_ok=True)  # never leave a plaintext dump behind
+        else:
+            out["dump"] = str(result.dump)
+            out["encrypted"] = False
     except BackupError as exc:
+        if result is not None and recipient:
+            result.dump.unlink(missing_ok=True)
         typer.echo(f"backup failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(out, indent=2, sort_keys=True))
-    if verify and not report.ok:
+    if not ok:
         raise typer.Exit(code=1)
 
 
 @app.command("restore-test")
-def restore_test_cmd(dump: Path = typer.Argument(..., exists=True, readable=True)) -> None:
+def restore_test_cmd(
+    dump: Path = typer.Argument(..., exists=True, readable=True),
+    identity: Path | None = typer.Option(
+        None, "--identity", help="age identity file (private key) for a .dump.age backup."
+    ),
+) -> None:
     """Restore a dump into a scratch database, compare it with its manifest, drop the scratch. Exit 1 on any failed check."""
     import json
 
@@ -545,13 +579,32 @@ def restore_test_cmd(dump: Path = typer.Argument(..., exists=True, readable=True
 
     settings = get_settings()
     try:
-        report = restore_test(dump, settings.database_url, bin_dir=settings.pg_bin_dir)
+        report = restore_test(
+            dump, settings.database_url, bin_dir=settings.pg_bin_dir, identity=identity
+        )
     except BackupError as exc:
         typer.echo(f"restore test failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(report.to_dict(), indent=2, sort_keys=True))
     if not report.ok:
         raise typer.Exit(code=1)
+
+
+@app.command("backup-keygen")
+def backup_keygen_cmd(
+    out: Path = typer.Option(..., "--out", help="New identity file (private key, mode 0600)."),
+) -> None:
+    """Make an age key pair. Prints only the PUBLIC key; the private key goes to --out, never to the terminal."""
+    from sie.ops.backup import BackupError
+    from sie.ops.seal import generate_identity
+
+    try:
+        recipient = generate_identity(out)
+    except BackupError as exc:
+        typer.echo(f"keygen failed: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    typer.echo(f"public key (set as BACKUP_AGE_RECIPIENT): {recipient}")
+    typer.echo(f"private key written to {out}: keep it offline, never commit or upload it")
 
 
 @app.command("publish")
@@ -576,3 +629,39 @@ def publish_cmd(
         typer.echo(f"publish failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(result.manifest, indent=2, sort_keys=True))
+
+
+@app.command("acceptance")
+def acceptance_cmd(
+    events: int = typer.Option(469, help="Expected events."),
+    placings: int = typer.Option(1568, help="Expected current placings."),
+    gold: int = typer.Option(470),
+    silver: int = typer.Option(469),
+    bronze: int = typer.Option(629),
+    countries: int = typer.Option(40, help="Expected countries with a medal."),
+    max_age_minutes: int = typer.Option(
+        26 * 60, help="How recent the last successful official run must be."
+    ),
+) -> None:
+    """Read-only check of the database against the verified Asian Games 2026 figures. Exit 1 if any fails.
+
+    Defaults are the verified figures (docs/SOURCE_DISCOVERY.md section 11); see docs/ACCEPTANCE.md.
+    """
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sie.ops.acceptance import Expected, acceptance_report
+
+    settings = get_settings()
+    report = acceptance_report(
+        make_engine(settings),
+        settings.competition_id,
+        datetime.now(UTC),
+        Expected(
+            events=events, placings=placings, gold=gold, silver=silver, bronze=bronze,
+            countries=countries, max_age=timedelta(minutes=max_age_minutes),
+        ),
+    )  # fmt: skip
+    typer.echo(json.dumps(report.to_dict(), indent=2, default=str))
+    if not report.ok:
+        raise typer.Exit(code=1)

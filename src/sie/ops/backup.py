@@ -39,7 +39,9 @@ MANIFEST_FORMAT = 1
 DEFAULT_KEEP = 14  # docs/DEPLOYMENT.md: keep the last 14 dumps
 SCHEMAS = ("public", "reporting")
 SCRATCH_PREFIX = "sie_restore_"
-_DUMP_RE = re.compile(r"^sie-(?P<comp>[\w.-]+)-(?P<stamp>\d{8}T\d{6}Z)\.dump$")
+_DUMP_RE = re.compile(
+    r"^sie-(?P<comp>[\w.-]+)-(?P<stamp>\d{8}T\d{6}Z)\.(?:dump|dump\.age|manifest\.json)$"
+)
 
 
 class BackupError(RuntimeError):
@@ -205,23 +207,26 @@ def backup(
 
 
 def prune(out_dir: Path, competition: str, keep: int, protect: Path | None = None) -> list[Path]:
-    """Delete the oldest dumps (and their manifests) beyond ``keep``. Touches only our own file names."""
-    dumps = sorted(
-        (
-            p
-            for p in out_dir.iterdir()
-            if (m := _DUMP_RE.match(p.name)) and m["comp"] == competition
-        ),
-        key=lambda p: p.name,
-    )
+    """Delete the oldest backups beyond ``keep``: the dump (plain or encrypted) and its manifest.
+
+    A backup is one timestamp, however many files it has. Only our own file names are touched.
+    """
+    by_stamp: dict[str, list[Path]] = {}
+    for p in out_dir.iterdir():
+        m = _DUMP_RE.match(p.name)
+        if m and m["comp"] == competition:
+            by_stamp.setdefault(m["stamp"], []).append(p)
+    protected = None
+    if protect is not None and (m := _DUMP_RE.match(protect.name)):
+        protected = m["stamp"]
+    stamps = sorted(by_stamp)
     removed: list[Path] = []
-    for old in dumps[: max(0, len(dumps) - max(keep, 1))]:
-        if old == protect:
+    for stamp in stamps[: max(0, len(stamps) - max(keep, 1))]:
+        if stamp == protected:
             continue
-        for path in (old, old.with_suffix(".manifest.json")):
-            if path.exists():
-                path.unlink()
-                removed.append(path)
+        for path in sorted(by_stamp[stamp]):
+            path.unlink()
+            removed.append(path)
     return removed
 
 
@@ -246,8 +251,63 @@ def restore_test(
     *,
     manifest: Path | None = None,
     bin_dir: Path | None = None,
+    identity: Path | None = None,
 ) -> RestoreReport:
-    """Restore ``dump`` into a throwaway database on the server of ``admin_url`` and check it."""
+    """Restore ``dump`` into a throwaway database on the server of ``admin_url`` and check it.
+
+    An encrypted dump (``.dump.age``) needs ``identity``, the private key file; it is decrypted into a
+    private temporary directory that is removed afterwards.
+    """
+    if dump.name.endswith(".dump.age"):
+        return _restore_encrypted(dump, admin_url, manifest, bin_dir, identity)
+    return _restore_plain(dump, admin_url, manifest=manifest, bin_dir=bin_dir)
+
+
+def _restore_encrypted(dump, admin_url, manifest, bin_dir, identity) -> RestoreReport:
+    import tempfile
+
+    from sie.ops.seal import decrypt_file, manifest_for
+
+    report = RestoreReport(dump)
+    manifest = manifest or manifest_for(dump)
+    if identity is None:
+        report.checks.append(
+            Check("identity file given", False, "an encrypted backup needs --identity")
+        )
+        return report
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        report.checks.append(Check("manifest readable", False, str(exc)))
+        return report
+    recorded = data.get("encryption", {}).get("ciphertext_sha256")
+    actual = hashlib.sha256(dump.read_bytes()).hexdigest() if dump.exists() else None
+    report.checks.append(
+        Check("encrypted file matches its recorded hash", actual is not None and actual == recorded)
+    )
+    if actual != recorded:
+        return report
+    with tempfile.TemporaryDirectory(prefix="sie_restore_") as tmp:  # mode 0700
+        plain = Path(tmp) / (dump.name[: -len(".age")])
+        try:
+            decrypt_file(dump, plain, identity)
+        except BackupError as exc:
+            report.checks.append(Check("decrypts with the identity", False, str(exc)))
+            return report
+        report.checks.append(Check("decrypts with the identity", True))
+        inner = _restore_plain(plain, admin_url, manifest=manifest, bin_dir=bin_dir)
+    report.checks += inner.checks
+    report.warnings += inner.warnings
+    return report
+
+
+def _restore_plain(
+    dump: Path,
+    admin_url: URL | str,
+    *,
+    manifest: Path | None = None,
+    bin_dir: Path | None = None,
+) -> RestoreReport:
     admin_url = make_url(admin_url) if isinstance(admin_url, str) else admin_url
     report = RestoreReport(dump)
     manifest = manifest or dump.with_suffix(".manifest.json")

@@ -223,6 +223,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Snapshots store medals per country, sport, discipline and gender, so per-sport event completion over time is not available; completion is the current state. Changing a formula needs a spec update, a new `ANALYTICS_VERSION` and therefore a new `change` snapshot. Tier and rank conventions are in `ANALYTICS_SPEC.md` section 14.
 - **Decided by:** the owner's Phase 4 request (2026-10-07); the formulas are the spec's.
 
+## ADR-034: Backups are encrypted with age before they leave the runner
+
+- **Context:** The repository is public and Actions artifacts of a public repository are downloadable by anyone. `backup.yml` uploaded the dump unencrypted; a successful run would have published the whole database, including raw portal responses.
+- **Decision:** `sie backup` encrypts to a public age recipient (`BACKUP_AGE_RECIPIENT`, a repository variable) using `pyrage` (optional extra `backup`), after the restore test, then deletes the plaintext. `--require-encryption` makes it fail before dumping if there is no recipient. The private identity never reaches GitHub; `sie backup-keygen` writes it to a 0600 file and prints only the public key. `sie restore-test FILE.dump.age --identity KEY` decrypts into a private temporary directory. The manifest records the plaintext hash, the ciphertext hash and the public recipient. The workflow has a guard that fails if a plaintext dump, a stray file or a private key marker is in the upload folder. Retention: 14 backups, artifact 14 days.
+- **Consequences:** Whoever loses the private key loses the backups; key custody is the owner's (docs/ACCEPTANCE.md section 4). Encryption is in memory, fine at free-plan size. The old artifact name `sie-backup` is replaced by `sie-backup-encrypted`.
+- **Decided by:** the owner's production-acceptance brief (2026-10-10).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

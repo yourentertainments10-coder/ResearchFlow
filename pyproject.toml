@@ -30,6 +30,7 @@ dev = [
   "ruff>=0.5",
   "pgserver>=0.1",   # embedded PostgreSQL for local tests when no TEST_DATABASE_URL is set
 ]
+backup = ["pyrage>=1.2"]   # encrypted backups (sie backup --encrypt-to), see docs/DEPLOYMENT.md
 browser = ["playwright>=1.45"]   # optional: renders every dashboard page in tests/unit/test_dashboard_pages.py
 
 [project.scripts]
