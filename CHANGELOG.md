@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Official event total loaded by the seed
+- `data/reference/competitions.csv` gains `official_event_total` (the portal's event list, 469) and `seed_reference` writes it, so `competitions.official_event_total` is no longer NULL. Fixes the `sie acceptance` check "official event total on the competition" (observed null). The load already refused more events than this total. No migration (the column exists since 001); production is repaired by the next `refresh` run, which seeds first.
+
 ## `sie acceptance` (ADR-037)
 - Read-only database check against 469 events / 1,568 placings (470/469/629), freshness, open conflicts and snapshots; exit 1 on any failed check. Ported from PR #15 onto the encrypted-backup branch; the rest of PR #15 (its own `pyrage` backup encryption, `backup-keygen`, its workflow, `scripts/smoke_dashboard.py`) is superseded by PR #16 (age binary, scratch restore) and PR #19 (browser smoke test, usable against a live URL).
 

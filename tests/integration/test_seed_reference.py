@@ -117,10 +117,18 @@ def test_boxing_is_flagged_double_bronze(engine):
         )
 
 
-def test_official_event_total_is_left_unset(engine):
+def test_official_event_total_is_loaded_from_the_reference_file(engine):
+    """Was "left unset until the official figure is confirmed". It is now confirmed (the portal's
+    event list, SOURCE_DISCOVERY section 10), so the seed loads it; the value is read from the CSV.
+    The comparison with the official event list itself is in test_official_event_total.py."""
+    import csv
+
+    with (REAL_REFERENCE / "competitions.csv").open(newline="") as fh:
+        wanted = int(next(csv.DictReader(fh))["official_event_total"])
     with engine.begin() as c:
         seed_reference(c, REAL_REFERENCE)
-        assert c.execute(text("SELECT official_event_total FROM competitions")).scalar_one() is None
+        got = c.execute(text("SELECT official_event_total FROM competitions")).scalar_one()
+    assert got == wanted
 
 
 # --- bad reference files fail loudly and change nothing -----------------------------------------

@@ -141,17 +141,24 @@ def seed_reference(conn: Connection, reference_dir: Path) -> SeedResult:
     sport_alias_map = _unique_aliases(sport_pairs, "sport aliases")
 
     for r in competitions:
+        total = r.get("official_event_total", "")
+        if total and not total.isdigit():
+            raise ReferenceDataError(
+                f"competitions.csv: official_event_total {total!r} is not a whole number"
+            )
         conn.execute(
             text(
                 """
-                INSERT INTO competitions (code, name, timezone, start_date, end_date)
+                INSERT INTO competitions (code, name, timezone, start_date, end_date,
+                                          official_event_total)
                 VALUES (:code, :name, :timezone, NULLIF(:start_date, '')::date,
-                        NULLIF(:end_date, '')::date)
+                        NULLIF(:end_date, '')::date, NULLIF(:official_event_total, '')::integer)
                 ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, timezone = EXCLUDED.timezone,
-                  start_date = EXCLUDED.start_date, end_date = EXCLUDED.end_date
+                  start_date = EXCLUDED.start_date, end_date = EXCLUDED.end_date,
+                  official_event_total = EXCLUDED.official_event_total
                 """
             ),
-            r,
+            {"official_event_total": "", **r},
         )
     for r in countries:
         conn.execute(
