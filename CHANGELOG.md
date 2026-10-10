@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Acceptance evidence ledger
+- New `ACCEPTANCE.md`: statuses (PASS, FAIL, NOT RUN, BLOCKED) with GitHub Actions run IDs, commits and times for the official analysis, the three scheduled refreshes (8, 9, 10 Oct, event `schedule`), alert and dashboard tests, Cloudflare builds and backups. Records the failed backup runs and that no unencrypted dump was ever uploaded. Documentation only; no code change.
+
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
 
