@@ -24,13 +24,17 @@ jobs:
       # The test suite creates and drops its own databases on this server.
       TEST_DATABASE_URL: postgresql://sie:sie@localhost:5432/postgres
       REQUIRE_AGE: "1"
+      REQUIRE_BROWSER: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: pip
-      - run: pip install -e ".[dev,reports]"
+      - run: pip install -e ".[dev,reports,browser]"
+      # Chromium for the dashboard smoke tests (tests/dashboard_smoke.py). REQUIRE_BROWSER=1 makes a
+      # missing browser a failure instead of a skip.
+      - run: playwright install --with-deps chromium
       - run: ruff check .
       - run: ruff format --check .
       # Backup encryption tests (ADR-034) need the age tool; REQUIRE_AGE makes a missing tool a failure.
