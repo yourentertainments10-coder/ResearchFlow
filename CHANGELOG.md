@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Cloudflare preview builds
+- `wrangler.jsonc` gets an empty `"previews": {}` block: `npx wrangler preview` (Workers Builds, non-production branches) refused to run without it. Production deploy settings are unchanged. Test: `tests/test_wrangler_config.py`.
+
 ## Alert lifecycle test (ADR-035)
 - `refresh.yml`: the health check and alert-state steps now run after a failed refresh, so an outage sends the alert. New `tests/integration/test_alert_lifecycle.py` (outage, single delivery, persistence across processes, failed-channel retry, interrupted run, recovery, relapse, corrupt state) and `tests/unit/test_refresh_workflow.py`. Operations: `DEPLOYMENT.md` section 7a. No application code change.
 
