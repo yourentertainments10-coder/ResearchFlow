@@ -1,9 +1,17 @@
-# Nightly backup with a tested restore (Phase 6C, docs/DEPLOYMENT.md section 3 item 5).
-# The restore test needs a scratch database on the same server, so DATABASE_URL must be a direct
-# (non-pooled) connection by a role that may CREATE DATABASE. If it cannot, run `sie backup --no-verify`
-# here and `sie restore-test` on a machine that can.
-# Encrypt and upload the dump off-host in the last step; the artifact below is only a stopgap
-# (retention 14 days) and is not encrypted, so keep the repository private.
+# Nightly encrypted backup with a tested restore (Phase 6C, ADR-034, docs/DEPLOYMENT.md section 3 item 5).
+#
+# This repository is public, so nothing readable may ever be uploaded. The dump is encrypted to an age
+# PUBLIC key before it leaves the job; only ciphertext (*.dump.age) and a manifest are uploaded, and the
+# job refuses to run at all without the key.
+#
+#   repository variable BACKUP_AGE_RECIPIENT   age public key (age1...). Not secret.
+#   repository secret   BACKUP_AGE_IDENTITY    the matching PRIVATE key (AGE-SECRET-KEY-...). Used only to
+#                                              prove the backup decrypts and restores; written to a 0600
+#                                              file in RUNNER_TEMP, removed afterwards, never printed.
+#   repository secret   DATABASE_URL           production database, direct (non-pooled) connection.
+#
+# The restore test runs in a throwaway PostgreSQL service container on the runner, never in the
+# production database. Setup, rotation and the restore procedure: docs/DEPLOYMENT.md "Backup encryption".
 name: backup
 
 on:
@@ -22,24 +30,89 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      scratch:
+        # A newer major than the production server restores older dumps; this server is discarded.
+        image: postgres:18
+        env:
+          POSTGRES_USER: sie
+          POSTGRES_PASSWORD: sie
+          POSTGRES_DB: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U sie"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       COMPETITION_ID: asiad-2026
+      BACKUP_AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+      RESTORE_TEST_DATABASE_URL: postgresql://sie:sie@localhost:5432/postgres
     steps:
+      - name: Refuse to run without the encryption keys
+        env:
+          IDENTITY_PRESENT: ${{ secrets.BACKUP_AGE_IDENTITY != '' }}
+        run: |
+          if [ -z "$BACKUP_AGE_RECIPIENT" ]; then
+            echo "::error::repository variable BACKUP_AGE_RECIPIENT is not set: refusing to create an unencrypted backup"
+            exit 1
+          fi
+          case "$BACKUP_AGE_RECIPIENT" in
+            age1*) ;;
+            *) echo "::error::BACKUP_AGE_RECIPIENT must be an age PUBLIC key (age1...)"; exit 1 ;;
+          esac
+          if [ "$IDENTITY_PRESENT" != "true" ]; then
+            echo "::error::repository secret BACKUP_AGE_IDENTITY is not set: the backup could not be proven restorable"
+            exit 1
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: PostgreSQL client matching the server
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client
-          pg_dump --version
       - run: pip install -e .
-      - name: Dump and prove it restores
-        run: sie backup --out backups --keep 14
+      - name: age and a PostgreSQL client matching the production server
+        run: |
+          set -euo pipefail
+          major=$(python -c "from sqlalchemy import create_engine, text; import os; from sie.config import get_settings; e = create_engine(get_settings().database_url); c = e.connect(); print(int(c.execute(text('SHOW server_version_num')).scalar_one()) // 10000)")
+          echo "production server major version: $major"
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          . /etc/os-release
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq age "postgresql-client-${major}"
+          echo "PG_BIN_DIR=/usr/lib/postgresql/${major}/bin" >> "$GITHUB_ENV"
+          age --version
+      - name: Encrypted backup, then decrypt and restore it into the scratch server
+        env:
+          BACKUP_AGE_IDENTITY: ${{ secrets.BACKUP_AGE_IDENTITY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          identity="$RUNNER_TEMP/backup-identity.txt"
+          trap 'shred -u "$identity" 2>/dev/null || rm -f "$identity"' EXIT
+          printf '%s\n' "$BACKUP_AGE_IDENTITY" > "$identity"
+          sie backup --out-dir backups --keep 14 --require-encryption --identity-file "$identity"
+      - name: Prove only ciphertext and a manifest are about to be uploaded
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          files=(backups/*)
+          [ "${#files[@]}" -gt 0 ] || { echo "::error::no backup files were produced"; exit 1; }
+          for f in "${files[@]}"; do
+            case "$f" in
+              *.dump.age|*.manifest.json) ;;
+              *) echo "::error::unexpected file in backups/: $(basename "$f")"; exit 1 ;;
+            esac
+          done
+          for f in backups/*.dump.age; do
+            head -c 21 "$f" | grep -q '^age-encryption.org/v1' || { echo "::error::$(basename "$f") is not age ciphertext"; exit 1; }
+          done
+          ls -l backups
       - uses: actions/upload-artifact@v4
         with:
-          name: sie-backup
+          name: sie-backup-encrypted
           path: backups/
+          if-no-files-found: error
           retention-days: 14

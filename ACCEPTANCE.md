@@ -1,7 +1,7 @@
 # Acceptance evidence
 
 An evidence ledger, not a plan. Each row says what was checked, with run IDs, commits and times (UTC)
-taken from the GitHub API on 2026-10-10 15:00-15:30 UTC. Statuses: **PASS**, **FAIL**, **NOT RUN**,
+taken from the GitHub API on 2026-10-10 (first pass 15:00-15:30 UTC, updated 17:00-18:00 UTC after PRs #17, #18, #19 and #16 were merged). Statuses: **PASS**, **FAIL**, **NOT RUN**,
 **BLOCKED**. A status is only PASS where the evidence below shows it ran and succeeded. Manual
 workflow dispatches are never counted as unattended scheduled runs.
 
@@ -13,12 +13,12 @@ Run URLs have the form `https://github.com/yourentertainments10-coder/ResearchFl
 |------|--------|----------|
 | Official analysis on production data | PASS (workflow level) | Manual `analyze` run succeeded; counts not independently re-read |
 | Three consecutive unattended scheduled refreshes | PASS (workflow level) | Runs on 8, 9, 10 Oct all `schedule`, all steps success; run logs not readable |
-| Alert lifecycle, isolated | PASS (automated, local receiver) | PR #17, unmerged |
+| Alert lifecycle, isolated | PASS (automated, local receiver) | PR #17 merged (`8e6cf8f`), CI green |
 | Alert delivery to the real channel | NOT RUN | Needs the owner's `NOTIFY_WEBHOOK_URL` |
-| Dashboard smoke test, local and CI | PASS | PR #19, unmerged |
+| Dashboard smoke test, local and CI | PASS | PR #19 merged (`4633cb8`), CI green with `REQUIRE_BROWSER=1` |
 | Dashboard smoke test, deployed site | NOT RUN | Sandbox cannot reach the site |
-| Cloudflare preview build | FAIL on branches, fix proposed | Cause confirmed by PR #18's own build |
-| Encrypted backup workflow | BLOCKED | Never ran; PR #16 unmerged; needs key variable and secret |
+| Cloudflare preview build | PASS on branches since the fix | PR #18 merged (`c2903f8`); branch builds on `91dbda8`, `5d254f7` and later succeed |
+| Encrypted backup workflow | BLOCKED | PR #16 merged (`8d52bd3`) but the workflow never ran in Actions; needs `BACKUP_AGE_RECIPIENT` variable and `BACKUP_AGE_IDENTITY` secret. Until set it fails closed on purpose |
 | Isolated restore test in Actions | BLOCKED | Same |
 | Exposure of an unencrypted dump | PASS (none found) | No dump artifact ever existed |
 
@@ -72,7 +72,7 @@ skipped the health step. They succeeded, so the gap did not matter for them.
 
 | Item | Status | Evidence |
 |------|--------|----------|
-| Isolated lifecycle test: outage, single delivery, persistence across processes, failed-channel retry, interrupted run, recovery, relapse, corrupt state | PASS | PR #17 (unmerged), commit `725f8fc`, CI runs 38060849980 (push) and 38060882323 (pull_request), both success |
+| Isolated lifecycle test: outage, single delivery, persistence across processes, failed-channel retry, interrupted run, recovery, relapse, corrupt state | PASS | PR #17 merged as `8e6cf8f`; branch head `bb00448` (main merged in), CI runs 38065599678 (push) and 38065601766 (pull_request), both success; main CI 38066333962 success |
 | Workflow runs health after a failed refresh | PASS (static test) | `tests/unit/test_refresh_workflow.py`, same CI runs; verified to fail against the old workflow |
 | Delivery to the owner's real webhook | NOT RUN | The test receiver is a local HTTP server; `NOTIFY_WEBHOOK_URL` is the owner's. Manual drill: `docs/DEPLOYMENT.md` 7a (in PR #17) |
 | Intentional failure of the production refresh | NOT RUN | Deliberately not done: production Neon is never broken for a test |
@@ -81,10 +81,10 @@ skipped the health step. They succeeded, so the gap did not matter for them.
 
 | Item | Status | Evidence |
 |------|--------|----------|
-| Smoke test on a locally built page and the committed `site/index.html` (7 routes, desktop and mobile, light and dark, console/network errors, figures vs data) | PASS | PR #19 (unmerged), commit `e150c21`, CI runs 38062429252 and 38062457458, both success with `REQUIRE_BROWSER=1`; also 11/11 run locally in Chromium |
+| Smoke test on a locally built page and the committed `site/index.html` (7 routes, desktop and mobile, light and dark, console/network errors, figures vs data) | PASS | PR #19 merged as `4633cb8`; head `91dbda8`, CI runs 38066594386 and 38066599800 success with `REQUIRE_BROWSER=1` (a missing Chromium fails instead of skipping; also shown locally by hiding the browser); 11/11 also run locally in Chromium after merging main; main CI 38067177461 success |
 | Test fails on a blank page, the PR #14 syntax error, console errors, external requests, mobile overflow, wrong figures | PASS | The nine negative cases in `tests/unit/test_dashboard_smoke.py`, same runs |
 | JavaScript syntax check (PR #14) | PASS | `node --check` test, in CI on every run |
-| Deployed site `https://researchflow.yourentertainments10.workers.dev/` | NOT RUN | Sandbox could not connect (HTTP 000). Run `python tests/dashboard_smoke.py --url <site>` from a machine with internet |
+| Deployed site `https://researchflow.yourentertainments10.workers.dev/` | NOT RUN | Sandbox could not connect (curl HTTP 000, tried again 18:00Z). Run `python tests/dashboard_smoke.py --url https://researchflow.yourentertainments10.workers.dev/ --screenshots shots/` from a machine with internet |
 
 ## 5. Cloudflare Workers Builds
 
@@ -98,7 +98,11 @@ Branch builds ran `wrangler preview`, which stops unless `wrangler.jsonc` has a 
 `main` ran `wrangler deploy`, which does not need it. PR #18 adds `"previews": {}` and its own build is
 the first branch build that passed, which is the evidence. The cause text is from PR #18's reading of the
 wrangler source; the failed builds' own logs are only in the Cloudflare dashboard and were not read.
-Status: **FAIL on every branch until PR #18 merges; production deploys unaffected.**
+Update after the merge: PR #18 merged as `c2903f8` (CI 38063752753, Workers Build success). Every branch
+head pushed after that and checked here has a successful Workers Build: `bb00448` (#17), `91dbda8`
+(#19), `5d254f7` (#16). The earlier failed branch builds stay failed in history.
+Status: **PASS** for branch previews since `c2903f8`; the preview command itself was exercised by
+Cloudflare's own builds, whose logs are only in the Cloudflare dashboard and were not read here.
 
 ## 6. Backups
 
@@ -116,31 +120,27 @@ the option is `--out-dir`, so the command exited 2.
 | Item | Status | Evidence |
 |------|--------|----------|
 | Unencrypted dump exposed | PASS (none) | Repository artifacts: only `analysis` (id 11659793555). No `sie-backup` artifact ever existed; the upload step never ran |
-| Encryption and restore code, tests | PASS in CI and in the sandbox | PR #16 (unmerged), head `69fef31`, CI runs 38027123870 and 38027371348 success; sandbox: 11 crypto unit tests and an end-to-end encrypt, decrypt and `pg_restore` on PostgreSQL 16 with schema, row-count and raw-blob checks |
-| Encrypted backup workflow succeeds in Actions | **BLOCKED** | PR #16 not merged; the owner has not created the age key pair or set `BACKUP_AGE_RECIPIENT` and `BACKUP_AGE_IDENTITY`. The workflow was never run |
+| Encryption and restore code, tests | PASS in CI and in the sandbox | PR #16 merged as `8d52bd3` (head `5d254f7` with main merged in; CI runs 38067606202 and 38067609002 success). `age` is installed in CI and `REQUIRE_AGE=1` makes a missing tool a failure. Sandbox: full suite passed, including an end-to-end encrypt, decrypt and `pg_restore` into a scratch database |
+| Encrypted backup workflow succeeds in Actions | **BLOCKED** | The owner has not created the age key pair or set `BACKUP_AGE_RECIPIENT` and `BACKUP_AGE_IDENTITY`; the workflow has never run since the fix (dispatch it after setting them) |
 | Isolated restore test in Actions | **BLOCKED** | Same; it is a step of that workflow |
 | Backup or restore acceptance | NOT COMPLETE | Not to be marked done until one encrypted backup run and its restore step succeed |
 
-## 7. Open pull requests (none merged by this work)
+## 7. Pull requests
 
-| PR | Branch | Content |
-|----|--------|---------|
-| #16 | `feature/backup-encryption` | Backup encryption, scratch restore (ADR-034 there) |
-| #17 | `feature/alert-failure-test` | Alert lifecycle test, health after failed refresh (ADR-035) |
-| #18 | `fix/wrangler-previews` | Cloudflare preview fix |
-| #19 | `feature/dashboard-smoke` | Browser smoke tests in CI (ADR-036) |
-| #15 | `feature/production-acceptance` | Overlaps #16 and #19 (see below) |
-
-**Conflict to resolve before merging:** PR #15 (opened 04:23Z by another session) also implements
-encrypted backups (it also calls it ADR-034, edits `backup.yml`, `backup.py`, `cli.py`, `config.py`),
-a dashboard smoke script and a `docs/ACCEPTANCE.md`. It and #16 cannot both merge as they are. One
-design has to be chosen.
+| PR | Branch | State | Content |
+|----|--------|-------|---------|
+| #16 | `feature/backup-encryption` | merged `8d52bd3` | Backup encryption, scratch restore (ADR-034), plus the read-only `sie acceptance` command ported from #15 (ADR-037) |
+| #17 | `feature/alert-failure-test` | merged `8e6cf8f` | Alert lifecycle test, health after failed refresh (ADR-035) |
+| #18 | `fix/wrangler-previews` | merged `c2903f8` | Cloudflare preview fix |
+| #19 | `feature/dashboard-smoke` | merged `4633cb8` | Browser smoke tests in CI (ADR-036) |
+| #15 | `feature/production-acceptance` | closed, superseded | Overlapped #16 and #19; its acceptance command was kept in #16, the rest dropped (comment on the PR). Its own backup workflow had the same `--out` defect |
+| #20 | `feature/acceptance-evidence` | open | This ledger |
 
 ## 8. Still pending, for the owner
 
-1. Choose between #15 and #16 for backups, then create the age key pair and set the variable and secret (`docs/DEPLOYMENT.md` section 3a in #16).
+1. Create the age key pair and set the variable and secret (`docs/DEPLOYMENT.md` "Backup encryption"). The private key stays offline apart from the secret.
 2. Run the encrypted backup workflow once by hand, then wait for a scheduled run; record both here.
-3. Merge #18 so branch builds pass; run the deployed-site smoke test and record it.
+3. Run the deployed-site smoke test and record it. Run `sie acceptance` against production from a machine that holds `DATABASE_URL` (read-only) and record the exit code and the JSON.
 4. Provide `NOTIFY_WEBHOOK_URL` and run the manual alert drill against a throwaway channel.
 5. Open one of the scheduled refresh runs and confirm in its log that the portal was fetched.
 6. Note: GitHub moves `ubuntu-latest` to Ubuntu 26 on 2026-10-19; the backup workflow installs the PostgreSQL client and `age` by apt, so check it after that date. Every run also warns that Node 20 actions are forced onto Node 24.

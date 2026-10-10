@@ -61,11 +61,27 @@ class Settings(BaseSettings):
     alert_renotify_minutes: int = 0
     # Backups and tools: directory of pg_dump/pg_restore (default: found on PATH).
     pg_bin_dir: Path | None = None
+    # Backup encryption (docs/DEPLOYMENT.md, ADR-034): the age PUBLIC key dumps are encrypted to. The
+    # private key is never a setting; it is a file given to `sie restore-test --identity-file`.
+    backup_age_recipient: str | None = None
+    # A scratch PostgreSQL server for restore tests. Unset: the restore test uses DATABASE_URL's server,
+    # which must never be production (the workflow always sets this).
+    restore_test_database_url: str | None = None
 
     @field_validator("database_url")
     @classmethod
     def _normalise_url(cls, v: str) -> str:
         return normalise_database_url(v)
+
+    @field_validator("backup_age_recipient", "restore_test_database_url", mode="before")
+    @classmethod
+    def _empty_is_unset(cls, v: str | None) -> str | None:
+        return v.strip() or None if isinstance(v, str) else v
+
+    @field_validator("restore_test_database_url")
+    @classmethod
+    def _normalise_scratch_url(cls, v: str | None) -> str | None:
+        return normalise_database_url(v) if v else v
 
     @property
     def alert_state_file(self) -> Path:

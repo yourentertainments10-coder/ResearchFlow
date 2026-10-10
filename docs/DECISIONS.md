@@ -223,6 +223,32 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Snapshots store medals per country, sport, discipline and gender, so per-sport event completion over time is not available; completion is the current state. Changing a formula needs a spec update, a new `ANALYTICS_VERSION` and therefore a new `change` snapshot. Tier and rank conventions are in `ANALYTICS_SPEC.md` section 14.
 - **Decided by:** the owner's Phase 4 request (2026-10-07); the formulas are the spec's.
 
+## ADR-034: Backups are encrypted with age before upload; restore is proven in a scratch database
+
+- **Context:** `backup.yml` uploaded the dump as a plain Actions artifact in a public repository, where artifacts are downloadable by any signed-in GitHub user. Audit (2026-10-10): the workflow had never produced an artifact (it called `sie backup --out`, the option is `--out-dir`; runs failed on 8, 9 and 10 Oct), so no dump was exposed. It also restored into the same server as `DATABASE_URL` (production Neon) with an unmatched client version.
+- **Decision:** `age` (age-encryption.org) public-key encryption through the `age` binary (no Python dependency; BSD-3 licence, maintained, small audited format; alternatives: GPG, heavier and error-prone; symmetric passphrase, which would put the decrypting secret on the same runner as the data). `sie backup --encrypt-to RECIPIENT --require-encryption` encrypts in a 0700 temporary directory and deletes the plaintext; manifest records plaintext and ciphertext hashes and the recipient. The workflow fails closed without `vars.BACKUP_AGE_RECIPIENT` or `secrets.BACKUP_AGE_IDENTITY`, verifies by decrypt and restore into a `postgres` service container (`sie restore-test --identity-file --scratch-url`), refuses to upload anything but `*.dump.age` and manifests, and uploads with `if-no-files-found: error`. `--scratch-url` equal to the production URL exits 2. A test checks that every `sie <command> --flag` used in workflows exists. CI installs `age` and sets `REQUIRE_AGE=1` so the crypto tests cannot silently skip.
+- **Consequences:** The owner must create the key pair and set the variable and secret (`DEPLOYMENT.md` section 3a); until then the nightly backup fails visibly instead of leaking. Losing the private key loses the backups. Someone who can change workflows or read secrets can still obtain the key. `age` is installed from the runner's apt repository. No schema change.
+
+## ADR-035: Alerts must run after a failed refresh; the alert lifecycle is tested end to end
+
+- **Context:** The alert pieces (health, de-duplication, webhook) had unit and component tests, but no test ran them together, and `refresh.yml` did not run `sie health` when `sie scheduled-run` failed (steps after a failed step are skipped), so the one situation alerts exist for, a failing refresh, sent no webhook message.
+- **Decision:** The restore-state, health and save-state steps use `if: ${{ !cancelled() }}`; the refresh step stays a hard failure. `tests/integration/test_alert_lifecycle.py` drives the lifecycle through the real CLI against an isolated database and a local webhook receiver; `tests/unit/test_refresh_workflow.py` guards the workflow. No schema, dependency or alert-contract change.
+- **Consequences:** After a failed refresh the job still ends red (the health step exits 1 while an alert holds) and now also notifies. A failure before the database is reachable also fails the health step; that is accepted. Delivery to a hosted channel is not tested automatically (see DEPLOYMENT.md 7a).
+- **Decided by:** the owner's Phase 6 brief (2026-10-10).
+
+## ADR-036: CI runs the dashboard in a real browser
+
+- **Context:** The only browser test skipped itself wherever Chromium was missing, which included CI, so a page-blanking script error (PR #14) reached production while CI was green. The `node --check` test caught syntax errors only.
+- **Decision:** CI installs the existing optional `browser` extra (Playwright, already declared in `pyproject.toml`) and Chromium, and sets `REQUIRE_BROWSER=1` so a missing browser fails the build. `tests/dashboard_smoke.py` is a reusable checker (also runnable against a URL); `tests/unit/test_dashboard_smoke.py` proves it fails on broken pages. No runtime dependency and no new package is added to the project.
+- **Consequences:** CI takes longer (browser download, a few minutes of page loads). The smoke test compares the page with `reports/placings.csv`; if the dashboard is rebuilt from newer data, the CSV and `site/index.html` must change together. Deployed-site verification is a separate manual run (TESTING.md section 9).
+
+## ADR-037: `sie acceptance` is a read-only check against fixed expected figures
+
+- **Context:** Production acceptance needs a repeatable answer to "does the production database hold the 469 events and 1,568 placings, fresh, with nothing open?" that does not depend on reading workflow logs.
+- **Decision:** `sie acceptance` (`ops/acceptance.py`) runs in one `REPEATABLE READ`, read-only transaction and checks: migrated schema, 469 events, the official event total, 1,568 current placings (470 gold, 469 silver, 629 bronze), events with a gold, 40 medal countries, 0 disputed events, 0 open conflicts, 0 unresolved quarantined rows, a successful `official` run within 26 hours, no run stuck in `running`, and at least one analytics snapshot. The expected figures are options (defaults are the Asian Games 2026 totals); exit 1 on any failed check. It never writes, so it can run against production; its tests use only the embedded test database. This replaces the overlapping parts of PR #15, which was consolidated into the encrypted-backup PR (ADR-034) because both rewrote the same backup files; PR #16's design (age binary, scratch server, production-URL refusal) is the canonical one.
+- **Consequences:** The check proves the database state, not that the portal still agrees; reconciliation stays in `sie analyze`. Passing it is evidence only when it was actually run against the production database by someone who holds `DATABASE_URL`.
+- **Decided by:** the owner's production-acceptance brief (2026-10-10).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

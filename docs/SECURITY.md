@@ -49,3 +49,4 @@ Treat as a design change with a decision record, and then:
 ## 8. Backups and integrity
 - Raw store plus migrations plus reference CSVs are enough to rebuild the database. Keep copies of `data/raw/` and `data/reference/` outside the working machine (for example a private repository or cloud drive).
 - Test a restore once per phase.
+- Database dumps are never stored or uploaded in the clear. `sie backup --require-encryption` encrypts with `age` to a public recipient (`BACKUP_AGE_RECIPIENT`); the private identity lives only in the `BACKUP_AGE_IDENTITY` secret and an offline copy, never in the repository, logs or artifacts. The repository is public, so artifacts are world-readable by signed-in users: only `*.dump.age` and manifests may be uploaded (enforced by a guard step). Restore tests run in a scratch database and are refused against `DATABASE_URL`. Runbook: `DEPLOYMENT.md` section 3a, ADR-034.

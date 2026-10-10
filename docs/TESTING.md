@@ -78,3 +78,31 @@ A daily job fetches one known stable page per source and checks that the parser 
 
 ## 8. Manual acceptance (end of each phase)
 Run the phase's acceptance steps in `ROADMAP.md` and save the output as evidence in `docs/evidence/`.
+
+## 9. Dashboard smoke test (browser)
+`tests/dashboard_smoke.py` opens the page in Chromium (Playwright) and fails on a blank page, any page or console error, any failed or non-2xx request, any request that leaves the page's own origin, missing headings, horizontal overflow on mobile, and numbers that disagree with `reports/placings.csv`. All expected numbers are derived from that CSV, never typed in. It covers all seven routes at desktop (1280 px) and mobile (390 px, touch) in light and dark colour schemes, checks the navigation, the overview figures, the medal table rows (top 10, 40 countries, 49 sports, first 100 medals in the explorer, each from the data), the top country row, the dark and light background colours, and that the theme toggle flips the theme. `tests/unit/test_dashboard_smoke.py` proves it passes on the real page and fails on nine broken variants (blank page, the PR #14 apostrophe syntax error, runtime error, console error, external request, mobile overflow, wrong numbers, missing section, a dark scheme that is not dark). `test_dashboard_pages.py` and the `node --check` test remain.
+
+**Reproduce locally**
+```
+pip install -e ".[dev,reports,browser]" && playwright install chromium
+python -m sie.dashboard                               # rebuilds site/index.html from reports/
+python tests/dashboard_smoke.py --url file://$PWD/site/index.html --screenshots shots/
+pytest tests/unit/test_dashboard_smoke.py tests/unit/test_dashboard_pages.py
+REQUIRE_BROWSER=1 pytest tests/unit/test_dashboard_smoke.py   # fail instead of skip without a browser
+```
+**Against the deployed site (owner, needs internet)**
+```
+python tests/dashboard_smoke.py --url https://researchflow.yourentertainments10.workers.dev/ --screenshots shots/
+```
+Passing locally says nothing about the deployment. Only a run of the second command, or opening the live URL by hand, verifies the deployed page; record its result in `ACCEPTANCE.md`.
+
+**Manual mobile and dark-mode check (for what a script cannot judge)**
+1. Open the live URL on a phone, or in desktop Chrome DevTools device mode at 390 x 844.
+2. Visit Overview, Countries, Sports, Gender, Timeline, Data Explorer, Methodology (the `#/route` links in the navigation). No page should scroll sideways, text should not be cut off, the medal table columns that hide on narrow screens are expected.
+3. Switch the operating system or browser to dark mode and reload; then press the sun/moon button to flip it. Charts, tables and text must stay readable and the choice must persist on reload.
+4. Open DevTools Console: no red errors, and the Network tab shows only the page itself.
+
+**Limits.** It does not judge visual quality (the screenshots are for a human to look at), uses Chromium only (no Safari or Firefox), does not exercise every filter combination or tooltip, and cannot see Cloudflare-side problems such as an old deployment unless pointed at the live URL.
+
+## Acceptance command
+`sie acceptance` (read-only, one `REPEATABLE READ` transaction) compares the database with the expected totals and prints JSON; exit 1 on any failed check. `tests/integration/test_acceptance.py` covers it on the test database only (pass on complete data, partial data fails with the reason, stale run fails, empty database and unknown competition fail cleanly, read-only transaction, CLI exit codes). It is not evidence about production until someone runs it there.
