@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Dashboard browser smoke test (ADR-036)
+- `tests/dashboard_smoke.py` (reusable, also against a URL) and `tests/unit/test_dashboard_smoke.py`: all routes at desktop and mobile, light and dark, console and network errors, blank-page and overflow detection, figures checked against the data, nine negative cases including the PR #14 syntax error. CI now installs Chromium and sets `REQUIRE_BROWSER=1`. Documentation in `TESTING.md` section 9. No dashboard code change.
+
 ## Portal fetcher and daily refresh
 - `sie scheduled-run portal`, `sie fetch-portal --out FILE`, `sources/bornan/fetch.py`; `refresh.yml` now runs daily and then `sie health`. Guards: `PORTAL_FETCH_ENABLED`, honest User-Agent, 2 s gap, fixed host, no redirects, size cap, all or nothing. New settings `PORTAL_FETCH_ENABLED`, `HTTP_TIMEOUT_SECONDS`. ADR-031. Tested with a fake portal; not yet run against the live portal.
 
