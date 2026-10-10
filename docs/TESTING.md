@@ -78,3 +78,6 @@ A daily job fetches one known stable page per source and checks that the parser 
 
 ## 8. Manual acceptance (end of each phase)
 Run the phase's acceptance steps in `ROADMAP.md` and save the output as evidence in `docs/evidence/`.
+
+## Acceptance command
+`sie acceptance` (read-only, one `REPEATABLE READ` transaction) compares the database with the expected totals and prints JSON; exit 1 on any failed check. `tests/integration/test_acceptance.py` covers it on the test database only (pass on complete data, partial data fails with the reason, stale run fails, empty database and unknown competition fail cleanly, read-only transaction, CLI exit codes). It is not evidence about production until someone runs it there.

@@ -236,6 +236,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** After a failed refresh the job still ends red (the health step exits 1 while an alert holds) and now also notifies. A failure before the database is reachable also fails the health step; that is accepted. Delivery to a hosted channel is not tested automatically (see DEPLOYMENT.md 7a).
 - **Decided by:** the owner's Phase 6 brief (2026-10-10).
 
+## ADR-037: `sie acceptance` is a read-only check against fixed expected figures
+
+- **Context:** Production acceptance needs a repeatable answer to "does the production database hold the 469 events and 1,568 placings, fresh, with nothing open?" that does not depend on reading workflow logs.
+- **Decision:** `sie acceptance` (`ops/acceptance.py`) runs in one `REPEATABLE READ`, read-only transaction and checks: migrated schema, 469 events, the official event total, 1,568 current placings (470 gold, 469 silver, 629 bronze), events with a gold, 40 medal countries, 0 disputed events, 0 open conflicts, 0 unresolved quarantined rows, a successful `official` run within 26 hours, no run stuck in `running`, and at least one analytics snapshot. The expected figures are options (defaults are the Asian Games 2026 totals); exit 1 on any failed check. It never writes, so it can run against production; its tests use only the embedded test database. This replaces the overlapping parts of PR #15, which was consolidated into the encrypted-backup PR (ADR-034) because both rewrote the same backup files; PR #16's design (age binary, scratch server, production-URL refusal) is the canonical one.
+- **Consequences:** The check proves the database state, not that the portal still agrees; reconciliation stays in `sie analyze`. Passing it is evidence only when it was actually run against the production database by someone who holds `DATABASE_URL`.
+- **Decided by:** the owner's production-acceptance brief (2026-10-10).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

@@ -645,3 +645,39 @@ def publish_cmd(
         typer.echo(f"publish failed: {exc}", err=True)
         raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(result.manifest, indent=2, sort_keys=True))
+
+
+@app.command("acceptance")
+def acceptance_cmd(
+    events: int = typer.Option(469, help="Expected events."),
+    placings: int = typer.Option(1568, help="Expected current placings."),
+    gold: int = typer.Option(470),
+    silver: int = typer.Option(469),
+    bronze: int = typer.Option(629),
+    countries: int = typer.Option(40, help="Expected countries with a medal."),
+    max_age_minutes: int = typer.Option(
+        26 * 60, help="How recent the last successful official run must be."
+    ),
+) -> None:
+    """Read-only check of the database against the verified Asian Games 2026 figures. Exit 1 if any fails.
+
+    Defaults are the verified figures (docs/SOURCE_DISCOVERY.md section 11); see docs/ACCEPTANCE.md.
+    """
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sie.ops.acceptance import Expected, acceptance_report
+
+    settings = get_settings()
+    report = acceptance_report(
+        make_engine(settings),
+        settings.competition_id,
+        datetime.now(UTC),
+        Expected(
+            events=events, placings=placings, gold=gold, silver=silver, bronze=bronze,
+            countries=countries, max_age=timedelta(minutes=max_age_minutes),
+        ),
+    )  # fmt: skip
+    typer.echo(json.dumps(report.to_dict(), indent=2, default=str))
+    if not report.ok:
+        raise typer.Exit(code=1)
