@@ -223,6 +223,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Snapshots store medals per country, sport, discipline and gender, so per-sport event completion over time is not available; completion is the current state. Changing a formula needs a spec update, a new `ANALYTICS_VERSION` and therefore a new `change` snapshot. Tier and rank conventions are in `ANALYTICS_SPEC.md` section 14.
 - **Decided by:** the owner's Phase 4 request (2026-10-07); the formulas are the spec's.
 
+## ADR-035: Alerts must run after a failed refresh; the alert lifecycle is tested end to end
+
+- **Context:** The alert pieces (health, de-duplication, webhook) had unit and component tests, but no test ran them together, and `refresh.yml` did not run `sie health` when `sie scheduled-run` failed (steps after a failed step are skipped), so the one situation alerts exist for, a failing refresh, sent no webhook message.
+- **Decision:** The restore-state, health and save-state steps use `if: ${{ !cancelled() }}`; the refresh step stays a hard failure. `tests/integration/test_alert_lifecycle.py` drives the lifecycle through the real CLI against an isolated database and a local webhook receiver; `tests/unit/test_refresh_workflow.py` guards the workflow. No schema, dependency or alert-contract change.
+- **Consequences:** After a failed refresh the job still ends red (the health step exits 1 while an alert holds) and now also notifies. A failure before the database is reachable also fails the health step; that is accepted. Delivery to a hosted channel is not tested automatically (see DEPLOYMENT.md 7a).
+- **Decided by:** the owner's Phase 6 brief (2026-10-10).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

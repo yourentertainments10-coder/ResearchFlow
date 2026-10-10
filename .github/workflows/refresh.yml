@@ -68,13 +68,17 @@ jobs:
         run: sie scheduled-run "$INGEST_KIND" ${INGEST_PATH:+"$INGEST_PATH"}
       # Alert de-duplication state must survive between runs, or every open alert is re-sent daily.
       # The cache is a stopgap for that; see docs/DEPLOYMENT.md "Remaining production setup".
+      # These two steps run even when the refresh step failed: a portal outage is exactly when the
+      # alert must go out (without this the job stopped at the failed step and nobody was notified).
       - name: Restore alert state
+        if: ${{ !cancelled() }}
         uses: actions/cache/restore@v4
         with:
           path: alert-state
           key: alert-state-${{ github.run_id }}
           restore-keys: alert-state-
       - name: Health check and alerts
+        if: ${{ !cancelled() }}
         run: |
           channel=log
           if [ -n "$NOTIFY_WEBHOOK_URL" ]; then channel=webhook; fi
