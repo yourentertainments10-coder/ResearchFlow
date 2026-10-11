@@ -73,3 +73,6 @@ Question to intent to required data to filters to analytical operations to evide
 
 ## Change management
 Every change request follows: requirement, impact analysis (DB, pipeline, analytics, dashboard, tests, docs), design, tests, implementation, review, docs, commit. Major decisions are logged in `DECISIONS.md`. Version tags: `v0.1` after Phase 2, `v0.2` after Phase 4, `v1.0` after Phase 6.
+
+## General research engine (ADR-039, ADR-041)
+Phase 1 (answer contract and number lock, `sie.answer`) done 2026-10-11. Next, each with its own proposal: 2 evidence ledger and uploads in `raw_documents` (migration), 3 project-scoped freshness and health, 4 web research with citations, 5 router and model layer behind the number lock, 6 conversation backend, authentication and quotas. Order and acceptance criteria: the architecture proposal of 2026-10-11 and `GENERALISATION_AUDIT.md` section 8. `sie.datasets` (file analytics) is developed separately on `feature/datasets-library`.

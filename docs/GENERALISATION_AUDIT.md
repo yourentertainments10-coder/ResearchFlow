@@ -27,7 +27,7 @@ Checked by reading the modules: these mention a competition at most, never medal
 | Scheduler with per-source advisory lock and stuck-run recovery | `pipeline/scheduler.py`, `db/locks.py` | Source-agnostic |
 | Freshness, health, alerts, de-duplication, notification channels | `pipeline/freshness.py`, `health.py`, `alerts.py`, `alert_state.py`, `notify.py` | Keyed by source and `competition` id only; "competition" would need to become a generic project/dataset id |
 | Run history, observation of sources | `ingest_runs`, `pipeline/observe.py` | Same |
-| Encrypted backup, restore proof, publish bundle | `ops/backup*.py`, `ops/publish.py` | Database-level, not domain-level |
+| Encrypted backup and restore proof | `ops/backup*.py` | Database-level, not domain-level. (`ops/publish.py` is **not** generic: it reads `reporting.medal_facts` and names sports; corrected 2026-10-11) |
 | Settings, structured logging | `config.py`, `logging_setup.py` | Generic |
 | Engineering rules (traceability, no fabrication, idempotence, quarantine, parametrised SQL) | `AGENTS.md` | These are the product's quality promise; they apply to any domain |
 | Concepts: conflict policy, quarantine, reconciliation against an official figure, snapshots | `pipeline/conflicts.py` (policy), tables `quarantine`, `reconciliation_results`, `analytics_snapshots` | The ideas are generic; the implementations are not (next section) |
