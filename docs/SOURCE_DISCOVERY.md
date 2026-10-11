@@ -10,7 +10,7 @@ Checked: 2026-10-04, using page fetches and web search from the Claude workspace
 | Opening ceremony | 2026-09-19 | OCA page `oca.asia/games/111-aichi-nagoya-2026.html` |
 | Closing ceremony | 2026-10-04 | same page |
 | Sports and disciplines | 47 listed by the OCA page | same page |
-| Medal events | **Not confirmed.** The ChatGPT chat quoted 43 sports and 469 events. Neither figure is verified: the OCA page counts 47 "sports/disciplines", which may be a different level of counting. | Record the official event total in `competitions.official_event_total` only after it is read from an official source |
+| Medal events | **Superseded: confirmed as 469 in the portal's own event list (section 10), loaded into `competitions.official_event_total` by the seed.** Original note (2026-10-04): **not confirmed.** The ChatGPT chat quoted 43 sports and 469 events. Neither figure is verified: the OCA page counts 47 "sports/disciplines", which may be a different level of counting. | Record the official event total in `competitions.official_event_total` only after it is read from an official source |
 | Timezone | Asia/Tokyo | host country |
 
 Time matters: the Games end on the day of this check. A complete, final dataset becomes available instead of a moving one, which makes reconciliation easier. It also means results pages may change layout after the Games.
@@ -24,8 +24,8 @@ Time matters: the Games end on the day of this check. A complete, final dataset 
 | Terms of use | No terms found on the portal. Terms exist only on the main site (see B) |
 | Access method | **JavaScript single-page app.** The server returns an empty shell ("doesn't work properly without JavaScript"). Routes use `#/...` hash paths |
 | Data endpoint | **Unknown.** Not visible in a page fetch. A single-page app like this normally loads JSON from an API; finding it needs the browser's Network tab |
-| Event-level data (sport, discipline, event, gender, medallists) | Very likely, since the portal serves live results and medals, but **not confirmed** |
-| Official medal table (for reconciliation) | Very likely, **not confirmed** |
+| Event-level data (sport, discipline, event, gender, medallists) | **Superseded: confirmed (section 10).** Original note: very likely, **not confirmed** |
+| Official medal table (for reconciliation) | **Superseded: confirmed (sections 9 and 10; 1,568 medals).** Original note: very likely, **not confirmed** |
 | Update frequency, timestamps | Unknown |
 | Stability risk | Medium: structure may change after the Games |
 | Fixtures saved | None yet |
@@ -51,7 +51,7 @@ Olympics.com blocks our fetch tool through robots rules, so it is not to be auto
 
 ## 3. What this means
 1. The only source that can realistically give complete event-level data is **A**.
-2. **Whether it can be collected automatically, and under which terms, is not yet known.** It needs two things only the owner can do: find the data endpoints, and read whatever terms the portal itself shows.
+2. **(Superseded: the endpoints were found, sections 8 to 10, and the owner cleared D1 on 2026-10-07, section 12; the daily fetcher runs, ADR-031.) Original note: whether it can be collected automatically, and under which terms, was not yet known.** It needs two things only the owner can do: find the data endpoints, and read whatever terms the portal itself shows.
 3. Everything after collection (cleaning, loading, analytics, dashboard) does not depend on that answer, because the manual CSV import path is first-class (`DATA_PIPELINE.md` section 9).
 
 ## 4. Owner step: find the data endpoints (about 10 minutes)
@@ -72,7 +72,7 @@ With those samples I can write the parser and the adapter against real data, tes
 ## 6. Decision (provisional, resolves D1 only when step 4 is done)
 | Item | Decision |
 |------|----------|
-| Primary source | `results.asiangames2026.org`, **pending endpoint discovery and terms review** |
+| Primary source | `results.asiangames2026.org` (API host `back.results.asiangames2026.org`). **Superseded: endpoints found and D1 cleared; see sections 8 to 12.** Original note: pending endpoint discovery and terms review |
 | Fallback | Manual CSV import (always available) |
 | Cross-check | Wikipedia per-sport pages (with attribution), news sites for spot checks |
 | Reference data | Sport and discipline lists from the main site's sitemap types and the OCA page; confirm the official event total before analytics are published |
@@ -103,7 +103,7 @@ With those samples I can write the parser and the adapter against real data, tes
 
 **Verified from the Claude workspace:** a page fetch of three of these URLs (`ALL/medals/standings`, `SWM/medals/discipline`, `SWM/disc/data`) returned a body that the fetch tool reported as undecodable binary, not JSON or text.
 
-**Not yet known (do not assume):**
+**Not yet known at that time (superseded: the encoding is ordinary zlib, sections 8 and 9; terms handled by D1, section 12):**
 - How the body is encoded. Candidates: ordinary compression the browser undoes silently (gzip, brotli, deflate), a binary format (for example MessagePack or protobuf), or encryption or obfuscation that the app's JavaScript reverses.
 - What the portal's own terms say about reuse.
 
