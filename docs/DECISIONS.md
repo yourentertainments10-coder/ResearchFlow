@@ -267,6 +267,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences if approved:** a larger scope, new tables and a backend, authentication and cost controls become necessary; the rules in `AGENTS.md` stay in force. If rejected, ADR-024 stands.
 - **Decided by:** the owner (2026-10-11).
 
+## ADR-041: Answer contract with a number lock (Phase 1 of the general research engine)
+
+- **Context:** ADR-039 widened the product; ADR-024 points 4 and 5 keep AI from computing numbers or editing facts. Without one shared answer shape, every later piece (datasets, evidence ledger, web research, model layer) would invent its own, and "no invented numbers" would be a promise instead of a check.
+- **Decision:** New package `sie.answer` (`docs/ANSWER_CONTRACT_DESIGN.md`): layered statements, exact `Figure`s that name their source, `EvidenceRef`, disclosed `Gap`s, `Refusal`. Numbers enter text only through `{F:id}` placeholders; a verifier rejects typed digits, number words, ordinals and other numeric characters unless declared, enforces which layer may cite which source, requires every gap to be disclosed and every answer to carry a limitation, and rendering fails closed. Pure Python, pydantic only, no table, no network, no command. Nothing existing imports it (tested).
+- **Consequences:** Production behaviour is unchanged. The lock covers numbers, not names or truth, and English number words only (stated in the design). ADR number 040 is left for the datasets library (`feature/datasets-library`), which has not merged. The next phases build on this shape: ledger tables, web evidence, router, model layer.
+- **Decided by:** the owner (approved 2026-10-11).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
