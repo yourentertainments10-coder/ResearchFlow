@@ -5,6 +5,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Status docs brought up to date (2026-10-11)
 - `README.md` status table, `docs/ROADMAP.md` phase notes and the `ACCEPTANCE.md` ledger now record: production acceptance 16/16 (owner-reported), encrypted backup runs succeeding, daily refresh running, and what is still open. No code change.
 
+## Status docs: discovery and pipeline (2026-10-11)
+- `docs/SOURCE_DISCOVERY.md`: early "not confirmed / pending" rows marked superseded with a pointer to the resolving section (history kept). `docs/DATA_PIPELINE.md`: backup paragraph describes encrypted backups and current flags. No code change.
+
 ## Seed reference: bounded waits and progress (ADR-038)
 - `sie seed-reference` gets `--lock-timeout`, `--statement-timeout`, `--heartbeat-seconds`, exits 3 on a timeout with the blocking sessions listed; new read-only `sie db-activity`. `db/diagnostics.py`. No change to what the seed writes.
 
