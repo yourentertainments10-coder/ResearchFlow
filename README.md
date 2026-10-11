@@ -44,19 +44,22 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 4. Phase 0 (source discovery) is a gate. Nothing else starts until it is done.
 
 ## Status
-Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 sports, 1568 medals, reconciled with the official table (0 mismatches) by the report code. The ingestion foundation (Phase 2) is built for placings; the event-level analytics now read the database (`reporting.medal_facts`), and the committed `site/` and `reports/` were regenerated from the full capture on 2026-10-07 (PR #5), so the path from database to dashboard is end to end.
+Asian Games 2026 (Aichi-Nagoya) medal data: 469 events, 59 disciplines in 49 sports, 1568 medals, reconciled with the official table (0 mismatches) by the report code. The ingestion foundation (Phase 2) is built for placings; the event-level analytics now read the database (`reporting.medal_facts`), and the committed `site/` and `reports/` were regenerated from the full capture on 2026-10-07 (PR #5), so the path from database to dashboard is end to end. Production (Neon) acceptance passed on 2026-10-11, 16 of 16 checks of `sie acceptance` (469 events, 1,568 placings, 470/469/629, 40 countries; output reported by the owner), see `ACCEPTANCE.md`.
 
 | Part | State |
 |------|-------|
 | PostgreSQL schema, roles, migrations | done (Phase 1) |
 | One ingestion path (`sie load-capture`, `sie import-csv`): raw store, quarantine, validator, `ingest_runs` | done, idempotent, reallocation-aware (ADR-021) |
 | Entrants (names) stored | not built; the portal parser drops names on purpose |
-| Event-level analytics read `v_medal_facts` (`sie.analytics.facts`) | done and regression-tested against the verified report; `site/` and `reports/` not yet regenerated |
+| Event-level analytics read `v_medal_facts` (`sie.analytics.facts`) | done and regression-tested against the verified report; `site/` and `reports/` regenerated 2026-10-07 |
 | Official-table report (`analytics/report.py`) | reads the official standings feed on purpose (it is the reference), not our data |
 | Analytics (country, sport, gender, concentration, specialisation) | done |
 | Static dashboard (`site/index.html`) and Excel/HTML reports (`reports/`) | done |
-| Live fetching from the portal | built, daily schedule gated by `PORTAL_FETCH_ENABLED`; D1 cleared by the owner 2026-10-07 (ADR-031); not yet run against the live portal |
-| Scheduler, backups, conflict engine, hosted Postgres | planned (Phases 3 and 6) |
+| Live fetching from the portal | built and running daily on a schedule (three consecutive scheduled runs succeeded 8 to 10 Oct, step level; logs not read); gated by `PORTAL_FETCH_ENABLED`; D1 cleared by the owner (ADR-031) |
+| Scheduler, health alerts, conflict engine, hosted Postgres (Neon) | done (Phases 3 and 6); alert delivery to the real webhook not yet exercised |
+| Encrypted backup with scratch-database restore test | done; scheduled and manual runs succeeded 10 and 11 Oct; restore with the owner's own key not yet done |
+| Browser smoke test of the dashboard in CI | done (ADR-036); against the deployed site not yet run |
+| Still open | see `ACCEPTANCE.md` section 8: deployed-site smoke test, webhook drill, key-based restore, ADR-032 sticky-resolution decision, Phase 7 |
 
 ### Run it
 ```bash

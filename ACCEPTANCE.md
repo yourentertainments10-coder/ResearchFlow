@@ -1,7 +1,7 @@
 # Acceptance evidence
 
 An evidence ledger, not a plan. Each row says what was checked, with run IDs, commits and times (UTC)
-taken from the GitHub API on 2026-10-10 (first pass 15:00-15:30 UTC, updated 17:00-18:00 UTC after PRs #17, #18, #19 and #16 were merged). Statuses: **PASS**, **FAIL**, **NOT RUN**,
+taken from the GitHub API on 2026-10-10 (first pass 15:00-15:30 UTC, updated 17:00-18:00 UTC after PRs #17, #18, #19 and #16 were merged; backup and acceptance rows updated 2026-10-11 02:30 UTC). Statuses: **PASS**, **FAIL**, **NOT RUN**,
 **BLOCKED**. A status is only PASS where the evidence below shows it ran and succeeded. Manual
 workflow dispatches are never counted as unattended scheduled runs.
 
@@ -11,15 +11,17 @@ Run URLs have the form `https://github.com/yourentertainments10-coder/ResearchFl
 
 | Area | Status | One line |
 |------|--------|----------|
+| Production acceptance (`sie acceptance`) | PASS, owner-reported | 11 Oct: 16 of 16 checks, `ok: true` (469 events, 1,568 placings, 470/469/629, 40 countries, 0 open conflicts, 0 disputed, 0 quarantined, 2 snapshots, last official run 1,048 minutes ago). Output pasted by the owner; **not run by this ledger's author**. It passed after PR #21 (seed loads `official_event_total`) and a `sie seed-reference` run with no migration |
 | Official analysis on production data | PASS (workflow level) | Manual `analyze` run succeeded; counts not independently re-read |
 | Three consecutive unattended scheduled refreshes | PASS (workflow level) | Runs on 8, 9, 10 Oct all `schedule`, all steps success; run logs not readable |
+| `sie seed-reference` seeming hung on Neon | Diagnosed, cause on Neon unknown | PR #22 (ADR-038): reproduced on a local database as 361 round trips plus an unbounded lock wait; timeouts, heartbeat and `sie db-activity` added. The owner later reported the seed completed |
 | Alert lifecycle, isolated | PASS (automated, local receiver) | PR #17 merged (`8e6cf8f`), CI green |
 | Alert delivery to the real channel | NOT RUN | Needs the owner's `NOTIFY_WEBHOOK_URL` |
 | Dashboard smoke test, local and CI | PASS | PR #19 merged (`4633cb8`), CI green with `REQUIRE_BROWSER=1` |
 | Dashboard smoke test, deployed site | NOT RUN | Sandbox cannot reach the site |
 | Cloudflare preview build | PASS on branches since the fix | PR #18 merged (`c2903f8`); branch builds on `91dbda8`, `5d254f7` and later succeed |
-| Encrypted backup workflow | BLOCKED | PR #16 merged (`8d52bd3`) but the workflow never ran in Actions; needs `BACKUP_AGE_RECIPIENT` variable and `BACKUP_AGE_IDENTITY` secret. Until set it fails closed on purpose |
-| Isolated restore test in Actions | BLOCKED | Same |
+| Encrypted backup workflow | PASS (workflow level) | Manual run 38073289248 (10 Oct) and scheduled run 38097824935 (11 Oct, commit `f469d88`) succeeded in every step, including the encrypt-and-restore step and the ciphertext-only guard; artifact `sie-backup-encrypted` exists (ids 11678090578, 11686582418). One earlier manual run, 38072588281, failed in the encrypt-and-restore step (cause not read; later runs pass). Logs not read here |
+| Isolated restore test in Actions | PASS (workflow level) | A step of the same runs; it exits non-zero on any failed check. Restore with the owner's own key from a downloaded artifact: **NOT RUN** |
 | Exposure of an unencrypted dump | PASS (none found) | No dump artifact ever existed |
 
 ## 1. Official analysis (production database)
@@ -121,9 +123,9 @@ the option is `--out-dir`, so the command exited 2.
 |------|--------|----------|
 | Unencrypted dump exposed | PASS (none) | Repository artifacts: only `analysis` (id 11659793555). No `sie-backup` artifact ever existed; the upload step never ran |
 | Encryption and restore code, tests | PASS in CI and in the sandbox | PR #16 merged as `8d52bd3` (head `5d254f7` with main merged in; CI runs 38067606202 and 38067609002 success). `age` is installed in CI and `REQUIRE_AGE=1` makes a missing tool a failure. Sandbox: full suite passed, including an end-to-end encrypt, decrypt and `pg_restore` into a scratch database |
-| Encrypted backup workflow succeeds in Actions | **BLOCKED** | The owner has not created the age key pair or set `BACKUP_AGE_RECIPIENT` and `BACKUP_AGE_IDENTITY`; the workflow has never run since the fix (dispatch it after setting them) |
-| Isolated restore test in Actions | **BLOCKED** | Same; it is a step of that workflow |
-| Backup or restore acceptance | NOT COMPLETE | Not to be marked done until one encrypted backup run and its restore step succeed |
+| Encrypted backup workflow succeeds in Actions | PASS (workflow level) | See summary row: runs 38073289248 and 38097824935. The keys were set by the owner |
+| Isolated restore test in Actions | PASS (workflow level) | A step of those runs. Not done: download an artifact and run `sie restore-test FILE.dump.age --identity-file KEY` with the owner's own private key |
+| Backup or restore acceptance | PARTIAL | Workflow-level PASS twice; complete once the key-based restore check above has been run and recorded |
 
 ## 7. Pull requests
 

@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Status docs brought up to date (2026-10-11)
+- `README.md` status table, `docs/ROADMAP.md` phase notes and the `ACCEPTANCE.md` ledger now record: production acceptance 16/16 (owner-reported), encrypted backup runs succeeding, daily refresh running, and what is still open. No code change.
+
 ## Seed reference: bounded waits and progress (ADR-038)
 - `sie seed-reference` gets `--lock-timeout`, `--statement-timeout`, `--heartbeat-seconds`, exits 3 on a timeout with the blocking sessions listed; new read-only `sie db-activity`. `db/diagnostics.py`. No change to what the seed writes.
 
