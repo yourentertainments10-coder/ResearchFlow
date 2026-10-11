@@ -1,7 +1,7 @@
 # Generalisation audit: from a sports engine to a general research and analytics engine
 
-Status: **audit only, nothing implemented.** Date: 2026-10-11, repository state `main` at `617f8f9`.
-Written for the owner's stated goal (below). Decisions needed are in ADR-039 (Proposed) in `DECISIONS.md`.
+Status: **audit; ADR-039 accepted by the owner on 2026-10-11; nothing implemented yet.** Date: 2026-10-11, repository state `main` at `617f8f9`.
+Written for the owner's stated goal (below). The scope decision is ADR-039 in `DECISIONS.md`; step 2 is designed in `DATASET_ANALYTICS_DESIGN.md`.
 
 ## 1. The goal, as the owner described it
 One input box. The user asks anything (an Asian Games analysis, a sales CSV, an EV market question, a

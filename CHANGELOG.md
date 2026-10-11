@@ -3,7 +3,7 @@
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
 ## Generalisation audit (proposal only)
-- `docs/GENERALISATION_AUDIT.md` and ADR-039 (Proposed): what is generic, what is sports-specific and what is missing for a general research and analytics engine; cost categories; a suggested order. Documentation only; ADR-024 stays in force until the owner decides.
+- `docs/GENERALISATION_AUDIT.md`, ADR-039 (accepted by the owner 2026-10-11; supersedes ADR-024 points 1 and 3) and `docs/DATASET_ANALYTICS_DESIGN.md` (design and test plan for step 2, awaiting approval): what is generic, what is sports-specific and what is missing for a general research and analytics engine; cost categories; a suggested order. Documentation only; ADR-024 stays in force until the owner decides.
 
 ## Status docs brought up to date (2026-10-11)
 - `README.md` status table, `docs/ROADMAP.md` phase notes and the `ACCEPTANCE.md` ledger now record: production acceptance 16/16 (owner-reported), encrypted backup runs succeeding, daily refresh running, and what is still open. No code change.
