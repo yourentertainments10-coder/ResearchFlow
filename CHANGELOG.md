@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Seed reference: bounded waits and progress (ADR-038)
+- `sie seed-reference` gets `--lock-timeout`, `--statement-timeout`, `--heartbeat-seconds`, exits 3 on a timeout with the blocking sessions listed; new read-only `sie db-activity`. `db/diagnostics.py`. No change to what the seed writes.
+
 ## Official event total loaded by the seed
 - `data/reference/competitions.csv` gains `official_event_total` (the portal's event list, 469) and `seed_reference` writes it, so `competitions.official_event_total` is no longer NULL. Fixes the `sie acceptance` check "official event total on the competition" (observed null). The load already refused more events than this total. No migration (the column exists since 001); production is repaired by the next `refresh` run, which seeds first.
 

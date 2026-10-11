@@ -249,6 +249,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** The check proves the database state, not that the portal still agrees; reconciliation stays in `sie analyze`. Passing it is evidence only when it was actually run against the production database by someone who holds `DATABASE_URL`.
 - **Decided by:** the owner's production-acceptance brief (2026-10-10).
 
+## ADR-038: Remote-database commands get bounded waits and visible progress
+
+- **Context:** `sie seed-reference` against Neon printed nothing for minutes and, when interrupted, a psycopg query-cancellation warning. Reproduced on a throwaway PostgreSQL (embedded `pgserver`, never production) behind a TCP proxy that adds latency. Two independent causes, both measured: (1) `seed_reference` issues 361 statements one after another, so the time is 361 x the network round trip: 0.2 s with no latency, 38.8 s at 100 ms, 152.7 s at 400 ms, with no output meanwhile; (2) an upsert waits without limit when another transaction holds the competition row: the blocked statement was the `INSERT INTO competitions ... ON CONFLICT DO UPDATE` (wait event `Lock/transactionid`), the holder an `idle in transaction` session, and the seed finished 0.1 s after the holder rolled back. Which of the two applies to the production database is not known from the sandbox.
+- **Decision:** `sie seed-reference` now runs `SET LOCAL lock_timeout` (default 30 s) and `statement_timeout` (default 300 s) in its one transaction (`db/diagnostics.py`; transaction-scoped, so safe behind a transaction pooler), prints a heartbeat to stderr every 10 s naming the statement in progress (first 90 characters, never a parameter), and on a timeout exits 3 with "Nothing was written" and a read-only list of the other open sessions (`pg_stat_activity`, `pg_blocking_pids`; 5 s limit, read-only session). `sie db-activity` prints the same list on demand from a second terminal. No statement, order or data of the seed changed, and there is no retry.
+- **Consequences:** A blocked seed now fails in 30 s with the blocker's pid, state, age and statement instead of hanging. A merely slow link still takes 361 round trips; sending each table as one batched statement (executemany, which psycopg pipelines) measured 6 statements and 8.7 s at 400 ms and is the remedy for latency, deliberately not part of this change. `pg_stat_activity` shows other sessions' text only for the same role or a superuser.
+- **Decided by:** the owner's request (2026-10-11).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

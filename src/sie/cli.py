@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import typer
+from sqlalchemy.exc import DBAPIError
 
 from sie import __version__
 from sie.config import get_settings
@@ -42,19 +43,73 @@ def migrate(revision: str = "head") -> None:
 @app.command("seed-reference")
 def seed_reference_cmd(
     reference_dir: Path | None = typer.Option(None, help="Defaults to DATA_DIR/reference"),
+    lock_timeout: float = typer.Option(
+        30.0,
+        help="Seconds to wait for a lock held by another session before giving up (0: no limit).",
+    ),
+    statement_timeout: float = typer.Option(
+        300.0, help="Seconds one statement may run before it is cancelled (0: no limit)."
+    ),
+    heartbeat_seconds: float = typer.Option(
+        10.0, help="Print a progress line this often (0: silent)."
+    ),
 ) -> None:
-    """Load countries, sports, aliases and the competition from data/reference/*.csv."""
+    """Load countries, sports, aliases and the competition from data/reference/*.csv.
+
+    One transaction: all of it or none of it. Waiting is bounded, and a progress line names the
+    statement in progress, so a slow or blocked database is visible instead of looking hung.
+    """
+    from contextlib import nullcontext
+
+    from sie.db import diagnostics as diag
+
     settings = get_settings()
     directory = reference_dir or settings.reference_dir
     engine = make_engine(settings)
+
+    def say(message: str) -> None:
+        typer.echo(message, err=True)
+
+    watch = (
+        diag.heartbeat(engine, say, heartbeat_seconds) if heartbeat_seconds > 0 else nullcontext()
+    )
     try:
-        with engine.begin() as conn:  # one transaction: all of it or none of it
+        with watch, engine.begin() as conn:
+            diag.apply_timeouts(conn, lock_timeout, statement_timeout)
             result = seed_reference(conn, directory)
     except ReferenceDataError as exc:
         typer.echo(f"reference data error: {exc}", err=True)
         raise typer.Exit(code=2) from exc
+    except DBAPIError as exc:
+        code = diag.sqlstate(exc)
+        if code not in (diag.LOCK_NOT_AVAILABLE, diag.QUERY_CANCELED):
+            raise
+        what = (
+            f"waited more than {lock_timeout:g}s for a lock held by another session"
+            if code == diag.LOCK_NOT_AVAILABLE
+            else f"a statement ran longer than {statement_timeout:g}s and was cancelled"
+        )
+        say(f"seed-reference stopped: {what}. Nothing was written (the transaction rolled back).")
+        try:
+            for line in diag.format_activity(diag.activity(engine)):
+                say("  " + line)
+        except Exception as inner:  # noqa: BLE001 - diagnostics must never hide the real error
+            say(f"  (could not list sessions: {type(inner).__name__})")
+        raise typer.Exit(code=3) from exc
     for name, count in result.__dict__.items():
         typer.echo(f"{name:>16}: {count}")
+
+
+@app.command("db-activity")
+def db_activity_cmd() -> None:
+    """Read-only: list open or running sessions on the database and which sessions block which.
+
+    Run it from a second terminal while another command seems stuck. Changes nothing.
+    """
+    from sie.db import diagnostics as diag
+
+    for line in diag.format_activity(diag.activity(make_engine(get_settings()))):
+        typer.echo(line)
 
 
 def _ingest(src, settings) -> None:

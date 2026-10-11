@@ -127,6 +127,15 @@ streamlit run dashboard/app.py
 
 **Workflow behaviour.** `refresh.yml` runs the health check and the alert-state steps after a failed refresh (`if: !cancelled()`). Before ADR-035 the job stopped at the failed step, so a portal outage produced only the job-failure email and no webhook alert. A test (`tests/unit/test_refresh_workflow.py`) keeps that in place.
 
+### 7b. A command seems stuck on the database (ADR-038)
+`sie seed-reference` prints a progress line every 10 s on stderr. A line that keeps advancing in "statements done" is a slow link (361 statements, one round trip each), not a hang. A line whose "waiting" time keeps growing on the same statement is a lock wait: it stops by itself after `--lock-timeout` (30 s), exit 3, and lists the other sessions. To look while it runs, from a second terminal (read-only):
+
+```bash
+sie db-activity
+```
+
+A session shown as `idle in transaction` for a long time is the usual blocker (a crashed or interrupted client). Do not kill sessions on production without the owner's decision; that is a manual action outside this tool.
+
 ## 8. Rollback
 - Code: revert the commit and redeploy.
 - Schema: `alembic downgrade -1` if the migration supports it, else restore the pre-migration dump.
