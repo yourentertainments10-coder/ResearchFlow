@@ -256,6 +256,15 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** A blocked seed now fails in 30 s with the blocker's pid, state, age and statement instead of hanging. A merely slow link still takes 361 round trips; sending each table as one batched statement (executemany, which psycopg pipelines) measured 6 statements and 8.7 s at 400 ms and is the remedy for latency, deliberately not part of this change. `pg_stat_activity` shows other sessions' text only for the same role or a superuser.
 - **Decided by:** the owner's request (2026-10-11).
 
+## ADR-039: Widen the product from a sports engine to a general research and analytics engine (PROPOSED, awaiting the owner)
+
+- **Status:** Proposed. Nothing is implemented and nothing changes until the owner approves.
+- **Context:** The owner's goal (2026-10-11) is one input box for any research or analytics question, with data from uploads, the web, APIs and documents, evidence-backed answers and a conversation. ADR-024 fixed the boundary at a competition-agnostic sports engine. `GENERALISATION_AUDIT.md` lists what is generic, what is sports-specific and what is missing.
+- **Proposal:** (1) Replace ADR-024 points 1 and 3 with: the product is a domain-agnostic research engine; sports (Asian Games) is the first domain pack. (2) Keep ADR-024 points 4 and 5 unchanged: layers stay separate, and AI only plans and explains, never computes numbers or edits facts. (3) Web material is stored as cited evidence with its own status, never as verified data. (4) The sports schema, outputs and tests stay as they are; generic capability is added as new modules and new migrations. (5) Build order as in the audit, section 8, starting with generic tabular analytics for uploaded files (no model, no cost). (6) No paid service is adopted without a decision here that states its cost and a spend limit.
+- **Alternatives:** keep the sports boundary and add only the planned research query layer (ADR-024 as written); or build the general engine as a separate repository and keep this one sports-only.
+- **Consequences if approved:** a larger scope, new tables and a backend, authentication and cost controls become necessary; the rules in `AGENTS.md` stay in force. If rejected, ADR-024 stands.
+- **Decided by:** pending the owner.
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
