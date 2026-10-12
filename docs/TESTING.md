@@ -106,3 +106,6 @@ Passing locally says nothing about the deployment. Only a run of the second comm
 
 ## Acceptance command
 `sie acceptance` (read-only, one `REPEATABLE READ` transaction) compares the database with the expected totals and prints JSON; exit 1 on any failed check. `tests/integration/test_acceptance.py` covers it on the test database only (pass on complete data, partial data fails with the reason, stale run fails, empty database and unknown competition fail cleanly, read-only transaction, CLI exit codes). It is not evidence about production until someone runs it there.
+
+## Answer contract (ADR-041)
+`tests/unit/test_answer_contract.py` (41, no database): the number lock in every form, the mutation test (each placeholder replaced by its rendered number must be rejected), layer, orphan, disclosure and refusal rules, deterministic JSON, hash and Markdown, formatting, adapters over the real `metrics.country_summary`, and three import guards (nothing from sports or database code, no new dependency, no existing module imports `sie.answer`).

@@ -5,6 +5,10 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Generalisation audit (proposal only)
 - `docs/GENERALISATION_AUDIT.md`, ADR-039 (accepted by the owner 2026-10-11; supersedes ADR-024 points 1 and 3) and `docs/DATASET_ANALYTICS_DESIGN.md` (design and test plan for step 2, revision 2 with determinism, operation, cleaning, parsing, safety, atomic-publish and type rules and a library-first interface; awaiting approval): what is generic, what is sports-specific and what is missing for a general research and analytics engine; cost categories; a suggested order. Documentation only; ADR-024 stays in force until the owner decides.
 
+## Answer contract and number lock (ADR-041)
+- New library `sie.answer`: layered statements, exact figures with their source, evidence and gap records, refusals, a number lock (digits, number words, ordinals and other numeric characters are rejected unless declared), layer and disclosure rules, fail-closed deterministic rendering. 41 tests. No command, table, dependency or change to existing code. `docs/ANSWER_CONTRACT_DESIGN.md`.
+- `GENERALISATION_AUDIT.md` corrected: `ops/publish.py` is sports-specific (only the backup code is domain-neutral).
+
 ## Status docs brought up to date (2026-10-11)
 - `README.md` status table, `docs/ROADMAP.md` phase notes and the `ACCEPTANCE.md` ledger now record: production acceptance 16/16 (owner-reported), encrypted backup runs succeeding, daily refresh running, and what is still open. No code change.
 
