@@ -28,6 +28,13 @@ APPEND_ONLY = (
     "analytics_snapshots",
     "snapshot_rows",
     "snapshot_changes",
+    # Evidence ledger (migration 005): immutable once written. Only the schema owner may change them,
+    # through the owner-only `sie evidence prune` and `sie project purge`.
+    "project_documents",
+    "evidence_sources",
+    "claims",
+    "claim_reviews",
+    "purge_tombstones",
 )
 # Bookkeeping that only the owner touches.
 OWNER_ONLY = ("alembic_version",)
