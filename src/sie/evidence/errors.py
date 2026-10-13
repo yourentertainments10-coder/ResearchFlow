@@ -37,3 +37,11 @@ class BytesNotRetained(EvidenceError):
 
 class PolicyRefused(EvidenceError):
     """A retention request breaks the recorded-policy rules (docs/EVIDENCE_RETENTION.md)."""
+
+
+class OwnerOnly(EvidenceError):
+    """The operation deletes data and may only run as the schema owner, never as the pipeline role."""
+
+
+class PurgeRefused(EvidenceError):
+    """A purge or prune was refused: missing confirmation, shared rows, or something still referencing the data."""

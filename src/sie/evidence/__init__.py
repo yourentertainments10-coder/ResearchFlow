@@ -34,16 +34,40 @@ from sie.evidence.errors import (
     EvidenceError,
     IngestBusy,
     NotFound,
+    OwnerOnly,
     PolicyRefused,
     ProjectClosed,
+    PurgeRefused,
     UploadRejected,
 )
 from sie.evidence.ingest import IngestResult, ingest_upload, sanitise_filename, upload_url
+from sie.evidence.integrity import IntegrityReport, check_project
+from sie.evidence.purge import PruneReport, PurgeReport, prune_expired, purge_project
+from sie.evidence.retention import (
+    SourcePolicy,
+    load_policies,
+    normalise_url,
+    policy_for,
+    register_fetched_source,
+)
 from sie.evidence.scope import SCOPED_API, ProjectScope, create_project, open_scope
 from sie.evidence.sources import SourceInfo, get_source, list_sources, read_bytes
 from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_claim
 
 __all__ = [
+    "IntegrityReport",
+    "OwnerOnly",
+    "PruneReport",
+    "PurgeRefused",
+    "PurgeReport",
+    "SourcePolicy",
+    "check_project",
+    "load_policies",
+    "normalise_url",
+    "policy_for",
+    "prune_expired",
+    "purge_project",
+    "register_fetched_source",
     "ClaimFigure",
     "ClaimNotUsable",
     "ConflictInfo",

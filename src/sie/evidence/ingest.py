@@ -18,8 +18,6 @@ Logs carry only the project id and a 12-character hash prefix, never file names 
 from __future__ import annotations
 
 import hashlib
-import logging
-import random
 import re
 import time
 import unicodedata
@@ -29,14 +27,12 @@ from datetime import datetime
 from pathlib import Path
 
 from sqlalchemy import Connection, Engine, text
-from sqlalchemy.exc import DBAPIError
 
 from sie.config import get_settings
-from sie.evidence.errors import IngestBusy, ProjectClosed, UploadRejected
+from sie.evidence.errors import UploadRejected
 from sie.evidence.scope import ProjectScope, scoped_api
+from sie.evidence.txn import advisory_lock, preamble, run_ingest_txn
 from sie.pipeline.raw import store_raw
-
-log = logging.getLogger(__name__)
 
 UPLOAD_SOURCE = "upload"
 UPLOAD_TIER = 5  # user-provided (docs/PRODUCT_VISION.md section 6)
@@ -67,8 +63,8 @@ def upload_url(project_id: int, sha256: str) -> str:
 @dataclass(frozen=True)
 class IngestResult:
     source_id: int
-    document_id: int
-    raw_version_id: int
+    document_id: int | None  # None for a source whose bytes are not stored
+    raw_version_id: int | None
     sha256: str
     outcome: str  # new_version (first time for this project) or unchanged
     created_source: bool
@@ -90,23 +86,27 @@ def _one_attempt(
     now: datetime,
     hook: Callable[[str], None] | None,
 ) -> IngestResult:
-    isolation = conn.execute(text("SHOW transaction_isolation")).scalar_one()
-    if isolation != "read committed":  # the serialisation argument below only holds at this level
-        raise IngestBusy(f"ingestion needs READ COMMITTED, the connection is {isolation}")
-    conn.execute(text("SET LOCAL lock_timeout = '10s'"))
-    conn.execute(text("SET LOCAL statement_timeout = '60s'"))
-
-    row = conn.execute(
-        text("SELECT archived_at, purged_at FROM projects WHERE id = :p FOR SHARE"),
-        {"p": scope.project_id},
-    ).one_or_none()
-    if row is None or row.purged_at is not None or row.archived_at is not None:
-        raise ProjectClosed("project is archived or purged and takes no new evidence")
-
-    url = upload_url(scope.project_id, sha)
-    conn.execute(
-        text("SELECT pg_advisory_xact_lock(hashtextextended(:k, 0))"), {"k": _advisory_key(url)}
+    """Preamble plus body, as one callable (the isolation guard is tested through it)."""
+    preamble(conn, scope.project_id)
+    return _body(
+        conn, scope, content, sha, safe_name, claimed_media_type, title, added_by, now, hook
     )
+
+
+def _body(
+    conn: Connection,
+    scope: ProjectScope,
+    content: bytes,
+    sha: str,
+    safe_name: str,
+    claimed_media_type: str | None,
+    title: str,
+    added_by: str | None,
+    now: datetime,
+    hook: Callable[[str], None] | None,
+) -> IngestResult:
+    url = upload_url(scope.project_id, sha)
+    advisory_lock(conn, _advisory_key(url))
     if hook:
         hook("locked")
 
@@ -207,37 +207,18 @@ def ingest_upload(
 
     sha = hashlib.sha256(content).hexdigest()  # outside the transaction: nothing to hold open
     safe_name = sanitise_filename(filename)
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        try:
-            with (
-                engine.connect().execution_options(isolation_level="READ COMMITTED") as conn,
-                conn.begin(),
-            ):
-                result = _one_attempt(
-                    conn, scope, content, sha, safe_name, claimed_media_type, safe_name,
-                    added_by, now, hook,
-                )  # fmt: skip
-            log.info(
-                "upload ingested",
-                extra={
-                    "project_id": scope.project_id,
-                    "sha256_prefix": sha[:12],
-                    "outcome": result.outcome,
-                    "attempt": attempt,
-                },
-            )
-            return result
-        except DBAPIError as exc:
-            state = getattr(exc.orig, "sqlstate", None)
-            if state not in RETRYABLE_SQLSTATES:
-                raise
-            if attempt == MAX_ATTEMPTS:
-                raise IngestBusy(
-                    f"upload kept colliding with concurrent writers ({state}); nothing was written"
-                ) from exc
-            log.warning(
-                "upload retry",
-                extra={"project_id": scope.project_id, "sqlstate": state, "attempt": attempt},
-            )
-            sleep(random.uniform(0.05, 0.2) * attempt)
-    raise AssertionError("unreachable")  # pragma: no cover
+
+    def work(conn: Connection) -> IngestResult:
+        return _body(
+            conn, scope, content, sha, safe_name, claimed_media_type, safe_name, added_by, now, hook
+        )
+
+    result = run_ingest_txn(
+        engine,
+        scope.project_id,
+        work,
+        op="upload ingested",
+        log_extra={"sha256_prefix": sha[:12]},
+        sleep=sleep,
+    )
+    return result

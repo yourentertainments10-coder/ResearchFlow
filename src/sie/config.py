@@ -75,6 +75,9 @@ class Settings(BaseSettings):
     # How long a web page kept in FULL (only allowed under a recorded policy) is retained. The default
     # is 90 days; `sie evidence prune` drops older bytes. Excerpt-only sources have no such clock.
     evidence_full_retention_days: int = 90
+    # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
+    # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
+    evidence_policy_path: Path | None = None
     # What the owner found in the database provider's console about point-in-time history. Unset means
     # NOT VERIFIED, and purge output says so. Never guessed (docs/EVIDENCE_RETENTION.md section 6).
     db_history_window_days: int | None = None
@@ -105,6 +108,10 @@ class Settings(BaseSettings):
     @property
     def alert_state_file(self) -> Path:
         return self.alert_state_path or self.data_dir / "alert_state.json"
+
+    @property
+    def evidence_policy_file(self) -> Path:
+        return self.evidence_policy_path or self.data_dir / "evidence" / "source_policies.csv"
 
     @property
     def scheduled_source_list(self) -> list[str]:
