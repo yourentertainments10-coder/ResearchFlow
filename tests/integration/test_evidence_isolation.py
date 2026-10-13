@@ -20,13 +20,18 @@ from sie.evidence import (
     NotFound,
     add_claim,
     create_project,
+    detect_conflicts,
+    evidence_ref_from_source,
+    figure_from_claim,
     get_claim,
     get_source,
     ingest_upload,
     list_claims,
+    list_conflicts,
     list_sources,
     open_scope,
     read_bytes,
+    resolve_conflict,
     review_claim,
     verify_claim,
 )
@@ -155,7 +160,63 @@ def case_verify_claim(w):
     assert snapshot(w["engine"]) == before
 
 
+def _b_conflict(w):
+    """Give project B a second, disagreeing claim, so it has an open conflict of its own."""
+    other = ClaimInput(
+        subject="s", metric="m", value_text="2", excerpt="2", locator_kind="none", locator={},
+        extraction_method="manual", extractor_version="t",
+    )  # fmt: skip
+    with w["engine"].begin() as c:
+        add_claim(c, w["b"], w["b_src"].source_id, other, now=NOW)
+        (conflict,) = detect_conflicts(c, w["b"], now=NOW)
+    return conflict
+
+
+def case_detect_conflicts(w):
+    _b_conflict(w)  # B has a conflict; A's detection must neither see nor touch it
+    with w["engine"].begin() as c:
+        assert detect_conflicts(c, w["a"], now=NOW) == []
+    with w["engine"].connect() as c:
+        assert list_conflicts(c, w["a"]) == [] and len(list_conflicts(c, w["b"])) == 1
+
+
+def case_list_conflicts(w):
+    _b_conflict(w)
+    with w["engine"].connect() as c:
+        assert list_conflicts(c, w["a"]) == [] and list_conflicts(c, w["a"], "open") == []
+
+
+def case_resolve_conflict(w):
+    foreign = _b_conflict(w)
+    kw = {"status": "dismissed", "note": "n", "resolved_by": "Asha", "now": NOW}
+    with w["engine"].begin() as c, pytest.raises(NotFound) as err:
+        resolve_conflict(c, w["a"], foreign, **kw)
+    with w["engine"].begin() as c, pytest.raises(NotFound) as missing:
+        resolve_conflict(c, w["a"], 10**9, **kw)
+    assert str(err.value) == str(missing.value)
+    with w["engine"].connect() as c:
+        assert list_conflicts(c, w["b"])[0].status == "open"  # B's conflict is untouched
+
+
+def case_evidence_ref_from_source(w):
+    expected = missing_message(w, evidence_ref_from_source)
+    with w["engine"].connect() as c, pytest.raises(NotFound) as err:
+        evidence_ref_from_source(c, w["a"], w["b_src"].source_id)
+    assert str(err.value) == expected
+
+
+def case_figure_from_claim(w):
+    _same_as_missing(
+        w, lambda c, scope, i: figure_from_claim(c, scope, i, figure_id="f", label="l")
+    )
+
+
 CROSS_PROJECT_CASES = {
+    "sie.evidence.conflicts.detect_conflicts": case_detect_conflicts,
+    "sie.evidence.conflicts.list_conflicts": case_list_conflicts,
+    "sie.evidence.conflicts.resolve_conflict": case_resolve_conflict,
+    "sie.evidence.adapters.evidence_ref_from_source": case_evidence_ref_from_source,
+    "sie.evidence.adapters.figure_from_claim": case_figure_from_claim,
     "sie.evidence.claims.add_claim": case_add_claim,
     "sie.evidence.claims.get_claim": case_get_claim,
     "sie.evidence.claims.list_claims": case_list_claims,

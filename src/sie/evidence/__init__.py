@@ -5,6 +5,13 @@ stated place in the stored bytes; ``human_confirmed`` means a named person confi
 its source. Neither is factual verification (docs/EVIDENCE_LEDGER_DESIGN.md section 6).
 """
 
+from sie.evidence.adapters import (
+    ClaimFigure,
+    ClaimNotUsable,
+    assert_single_project,
+    evidence_ref_from_source,
+    figure_from_claim,
+)
 from sie.evidence.claims import (
     STATUSES,
     ClaimInfo,
@@ -15,6 +22,12 @@ from sie.evidence.claims import (
     get_claim,
     list_claims,
     review_claim,
+)
+from sie.evidence.conflicts import (
+    ConflictInfo,
+    detect_conflicts,
+    list_conflicts,
+    resolve_conflict,
 )
 from sie.evidence.errors import (
     BytesNotRetained,
@@ -31,6 +44,15 @@ from sie.evidence.sources import SourceInfo, get_source, list_sources, read_byte
 from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_claim
 
 __all__ = [
+    "ClaimFigure",
+    "ClaimNotUsable",
+    "ConflictInfo",
+    "assert_single_project",
+    "detect_conflicts",
+    "evidence_ref_from_source",
+    "figure_from_claim",
+    "list_conflicts",
+    "resolve_conflict",
     "SCOPED_API",
     "STATUSES",
     "VERIFIER_VERSION",
