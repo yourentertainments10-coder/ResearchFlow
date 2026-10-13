@@ -16,17 +16,27 @@ from sqlalchemy import text
 import sie.evidence  # noqa: F401  (imports register every scoped function)
 from sie.evidence import (
     SCOPED_API,
+    ClaimInput,
     NotFound,
+    add_claim,
     create_project,
+    get_claim,
     get_source,
     ingest_upload,
+    list_claims,
     list_sources,
     open_scope,
     read_bytes,
+    review_claim,
+    verify_claim,
 )
 
 NOW = datetime(2026, 10, 12, 10, 0, tzinfo=UTC)
 SECRET = b"project B's private numbers\n99,100\n"
+CLAIM = ClaimInput(
+    subject="s", metric="m", value_text="1", excerpt="1", locator_kind="none", locator={},
+    extraction_method="manual", extractor_version="t",
+)  # fmt: skip
 
 
 def snapshot(engine):
@@ -50,7 +60,13 @@ def world(engine):
         a, b = open_scope(c, "a", for_write=True), open_scope(c, "b", for_write=True)
     a_src = ingest_upload(engine, a, b"project A data", "a.csv", now=NOW)
     b_src = ingest_upload(engine, b, SECRET, "b.csv", now=NOW)
-    return {"engine": engine, "a": a, "b": b, "a_src": a_src, "b_src": b_src}
+    with engine.begin() as c:
+        a_claim = add_claim(c, a, a_src.source_id, CLAIM, now=NOW).claim_id
+        b_claim = add_claim(c, b, b_src.source_id, CLAIM, now=NOW).claim_id
+    return {
+        "engine": engine, "a": a, "b": b, "a_src": a_src, "b_src": b_src,
+        "a_claim": a_claim, "b_claim": b_claim,
+    }  # fmt: skip
 
 
 def missing_message(world, fn):
@@ -91,7 +107,60 @@ def case_read_bytes(w):
     assert str(err.value) == expected
 
 
+def _same_as_missing(w, call):
+    """Run call(conn, scope, id) for B's id and for a non-existent id; the errors must be identical."""
+    with w["engine"].connect() as c, pytest.raises(NotFound) as missing:
+        call(c, w["a"], 10**9)
+    with w["engine"].connect() as c, pytest.raises(NotFound) as foreign:
+        call(c, w["a"], w["b_claim"])
+    assert str(foreign.value) == str(missing.value)
+
+
+def case_add_claim(w):
+    before = snapshot(w["engine"])
+    with w["engine"].begin() as c, pytest.raises(NotFound) as err:
+        add_claim(c, w["a"], w["b_src"].source_id, CLAIM, now=NOW)  # B's source id, A's scope
+    with w["engine"].begin() as c, pytest.raises(NotFound) as missing:
+        add_claim(c, w["a"], 10**9, CLAIM, now=NOW)
+    assert str(err.value) == str(missing.value)
+    assert snapshot(w["engine"]) == before
+
+
+def case_get_claim(w):
+    _same_as_missing(w, get_claim)
+
+
+def case_list_claims(w):
+    with w["engine"].connect() as c:
+        ids = {x.id for x in list_claims(c, w["a"])}
+        assert ids == {w["a_claim"]} and w["b_claim"] not in ids
+        with pytest.raises(NotFound):
+            list_claims(c, w["a"], w["b_src"].source_id)
+
+
+def case_review_claim(w):
+    before = snapshot(w["engine"])
+
+    def call(c, scope, claim_id):
+        review_claim(c, scope, claim_id, status="disputed", reason="r", actor="Asha", now=NOW)
+
+    with w["engine"].begin() as c, pytest.raises(NotFound):
+        call(c, w["a"], w["b_claim"])
+    assert snapshot(w["engine"]) == before
+
+
+def case_verify_claim(w):
+    before = snapshot(w["engine"])
+    _same_as_missing(w, lambda c, scope, i: verify_claim(c, scope, i, now=NOW))
+    assert snapshot(w["engine"]) == before
+
+
 CROSS_PROJECT_CASES = {
+    "sie.evidence.claims.add_claim": case_add_claim,
+    "sie.evidence.claims.get_claim": case_get_claim,
+    "sie.evidence.claims.list_claims": case_list_claims,
+    "sie.evidence.claims.review_claim": case_review_claim,
+    "sie.evidence.verify.verify_claim": case_verify_claim,
     "sie.evidence.ingest.ingest_upload": case_ingest_upload,
     "sie.evidence.sources.list_sources": case_list_sources,
     "sie.evidence.sources.get_source": case_get_source,

@@ -5,6 +5,17 @@ stated place in the stored bytes; ``human_confirmed`` means a named person confi
 its source. Neither is factual verification (docs/EVIDENCE_LEDGER_DESIGN.md section 6).
 """
 
+from sie.evidence.claims import (
+    STATUSES,
+    ClaimInfo,
+    ClaimInput,
+    ClaimResult,
+    add_claim,
+    claim_hash,
+    get_claim,
+    list_claims,
+    review_claim,
+)
 from sie.evidence.errors import (
     BytesNotRetained,
     EvidenceError,
@@ -17,9 +28,22 @@ from sie.evidence.errors import (
 from sie.evidence.ingest import IngestResult, ingest_upload, sanitise_filename, upload_url
 from sie.evidence.scope import SCOPED_API, ProjectScope, create_project, open_scope
 from sie.evidence.sources import SourceInfo, get_source, list_sources, read_bytes
+from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_claim
 
 __all__ = [
     "SCOPED_API",
+    "STATUSES",
+    "VERIFIER_VERSION",
+    "ClaimInfo",
+    "ClaimInput",
+    "ClaimResult",
+    "VerificationResult",
+    "add_claim",
+    "claim_hash",
+    "get_claim",
+    "list_claims",
+    "review_claim",
+    "verify_claim",
     "BytesNotRetained",
     "EvidenceError",
     "IngestBusy",
