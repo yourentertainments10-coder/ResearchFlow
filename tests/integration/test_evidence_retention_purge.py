@@ -455,7 +455,7 @@ def test_purge_leaves_a_tombstone_and_closes_the_project(world):
         t.purged_by,
         t.backup_retention_days,
         t.db_history_verified,
-        t.db_history_window_days,
+        t.db_history_window_hours,
     ) == ("Asha Rao", 14, False, None)
     assert t.row_counts["claims"] == 1 and t.row_counts["raw_documents"] == 2
     assert (
@@ -492,20 +492,20 @@ def test_the_report_never_claims_erasure_and_is_explicit_about_backups_and_histo
 
 def test_a_verified_history_window_is_reported_as_such_but_still_not_erasure(world, monkeypatch):
     populate(world)
-    monkeypatch.setenv("DB_HISTORY_WINDOW_DAYS", "7")
+    monkeypatch.setenv("DB_HISTORY_WINDOW_HOURS", "6")
     monkeypatch.setenv("BACKUP_RETENTION_DAYS", "30")
     report = purge_project(
         world["engine"], "a", now=NOW, execute=True, confirm="a", purged_by="Asha Rao"
     )
     joined = "\n".join(report.lines)
-    assert "reported by the owner as 7 days" in joined and "up to 30 days" in joined
+    assert "reported by the owner as 6 hours" in joined and "up to 30 days" in joined
     with world["engine"].connect() as c:
         t = c.execute(
             text(
-                "SELECT db_history_verified, db_history_window_days, backup_retention_days FROM purge_tombstones"
+                "SELECT db_history_verified, db_history_window_hours, backup_retention_days FROM purge_tombstones"
             )
         ).one()
-    assert tuple(t) == (True, 7, 30)
+    assert tuple(t) == (True, 6, 30)
     assert "NOT erased from provider history" in joined
 
 

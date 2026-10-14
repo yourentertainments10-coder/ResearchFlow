@@ -9,7 +9,7 @@ What a purge does and does NOT do is stated in the report and in the tombstone, 
   for any ingest that holds the project row;
 * it does NOT erase backups: encrypted dumps keep those bytes until they expire (14 days by default);
 * it does NOT know the database provider's point-in-time history window unless the owner has checked it
-  and set ``DB_HISTORY_WINDOW_DAYS``; until then that is reported as NOT VERIFIED;
+  and set ``DB_HISTORY_WINDOW_HOURS``; until then that is reported as NOT VERIFIED;
 * deleted rows are removed from disk when the database vacuums, not instantly;
 * restoring a backup taken before the purge brings the data back, so the purge must be repeated after
   any restore.
@@ -56,12 +56,12 @@ class PurgeReport:
 def backup_and_history_lines(settings: Settings, now: datetime) -> list[str]:
     days = settings.backup_retention_days
     until = (now + timedelta(days=days)).date().isoformat()
-    window = settings.db_history_window_days
+    window = settings.db_history_window_hours
     history = (
-        f"the database provider's history window was reported by the owner as {window} days"
+        f"the database provider's history window was reported by the owner as {window} hours"
         if window is not None
         else "the database provider's point-in-time history window is NOT VERIFIED "
-        "(check the provider console; set DB_HISTORY_WINDOW_DAYS once known)"
+        "(check the provider console; set DB_HISTORY_WINDOW_HOURS once known)"
     )
     return [
         f"NOT erased from backups: encrypted backups keep these bytes for up to {days} days (until about {until}).",
@@ -258,13 +258,13 @@ def purge_project(
         tombstone = conn.execute(
             text(
                 """INSERT INTO purge_tombstones (project_id, purged_at, purged_by, row_counts,
-                       backup_retention_days, db_history_window_days, db_history_verified, note)
+                       backup_retention_days, db_history_window_hours, db_history_verified, note)
                    VALUES (:p, :t, :by, CAST(:rc AS jsonb), :bd, :hw, :hv, :note) RETURNING id"""
             ),
             {
                 "p": pid, "t": now, "by": purged_by.strip(), "rc": json.dumps(counts),
-                "bd": settings.backup_retention_days, "hw": settings.db_history_window_days,
-                "hv": settings.db_history_window_days is not None, "note": note,
+                "bd": settings.backup_retention_days, "hw": settings.db_history_window_hours,
+                "hv": settings.db_history_window_hours is not None, "note": note,
             },
         ).scalar_one()  # fmt: skip
         conn.execute(

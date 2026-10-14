@@ -150,4 +150,4 @@ Run a final complete ingestion, reconcile against the official final table, free
 2. Merge only after CI is green and with the owner's approval. The next scheduled refresh (02:30 UTC) runs `sie migrate`, which applies 005 (short lock; additive). Check that run's migrate step before relying on it.
 3. Rollback: `alembic downgrade 004` drops the ledger objects, or restore the pre-merge backup.
 4. After **any restore**, re-run `sie project purge` for projects listed in `purge_tombstones` that the restored copy still holds.
-5. Neon history window: not verified. Read it in the console and set `DB_HISTORY_WINDOW_DAYS`.
+5. Neon history window: owner reported 6 hours (2026-10-14). Set `DB_HISTORY_WINDOW_HOURS`.

@@ -28,7 +28,7 @@ CREATE TABLE purge_tombstones (                          -- what a purge did, an
   purged_by              TEXT NOT NULL,
   row_counts             JSONB NOT NULL,
   backup_retention_days  INTEGER NOT NULL CHECK (backup_retention_days >= 0),
-  db_history_window_days INTEGER CHECK (db_history_window_days >= 0),  -- NULL: not checked by the owner
+  db_history_window_hours INTEGER CHECK (db_history_window_hours >= 0),  -- NULL: not checked by the owner
   db_history_verified    BOOLEAN NOT NULL DEFAULT false,
   note                   TEXT NOT NULL
 );

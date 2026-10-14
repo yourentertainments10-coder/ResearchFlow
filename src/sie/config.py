@@ -80,7 +80,7 @@ class Settings(BaseSettings):
     evidence_policy_path: Path | None = None
     # What the owner found in the database provider's console about point-in-time history. Unset means
     # NOT VERIFIED, and purge output says so. Never guessed (docs/EVIDENCE_RETENTION.md section 6).
-    db_history_window_days: int | None = None
+    db_history_window_hours: int | None = None
     # How long encrypted backups are kept (the backup workflow's retention-days). Used only to word
     # what a purge cannot undo.
     backup_retention_days: int = 14
@@ -90,7 +90,7 @@ class Settings(BaseSettings):
     def _normalise_url(cls, v: str) -> str:
         return normalise_database_url(v)
 
-    @field_validator("db_history_window_days", mode="before")
+    @field_validator("db_history_window_hours", mode="before")
     @classmethod
     def _blank_window_is_unset(cls, v):
         return None if isinstance(v, str) and not v.strip() else v

@@ -17,9 +17,9 @@ Allowed only for a host listed in `data/evidence/source_policies.csv` with `allo
 
 ## 4. What purge does NOT do
 - It does **not** erase backups. Encrypted dumps made before the purge keep the data until they expire (`BACKUP_RETENTION_DAYS`, 14 in `backup.yml`).
-- It does **not** erase the database provider's own history. Neon's point-in-time window is **NOT VERIFIED**: the owner must read it in the Neon console and then set `DB_HISTORY_WINDOW_DAYS`. Until then every purge report says so.
+- It does **not** erase the database provider's own history. Neon's point-in-time window: the owner reported **6 hours** for the production branch from the Neon console on 2026-10-14 (owner-reported; this repository cannot check it). Record it by setting `DB_HISTORY_WINDOW_HOURS`. Until then every purge report says so.
 - Restoring a backup taken before a purge brings the data back. After any restore, re-run purge for each project in `purge_tombstones` that is not purged in the restored copy.
 - Nothing in this repository claims complete erasure.
 
 ## 5. Settings
-`EVIDENCE_MAX_UPLOAD_BYTES` (25 MiB), `EVIDENCE_MAX_DECOMPRESSED_BYTES` (200 MiB), `EVIDENCE_FULL_RETENTION_DAYS` (90), `EVIDENCE_POLICY_PATH`, `DB_HISTORY_WINDOW_DAYS` (blank = not verified), `BACKUP_RETENTION_DAYS` (14).
+`EVIDENCE_MAX_UPLOAD_BYTES` (25 MiB), `EVIDENCE_MAX_DECOMPRESSED_BYTES` (200 MiB), `EVIDENCE_FULL_RETENTION_DAYS` (90), `EVIDENCE_POLICY_PATH`, `DB_HISTORY_WINDOW_HOURS` (hours; blank = not verified), `BACKUP_RETENTION_DAYS` (14).
