@@ -158,5 +158,7 @@ def to_typed(series, column_type: str, na_values: tuple[str, ...] = ()):  # noqa
         return pd.Series(pd.array(flags, dtype="boolean"), index=index)
     if column_type in ("date", "datetime"):
         text = [v.strip() if isinstance(v, str) else v for v in values]
-        return pd.to_datetime(pd.Series(text, index=index, dtype=object), errors="raise")
+        return pd.to_datetime(
+            pd.Series(text, index=index, dtype=object), errors="raise", format="ISO8601"
+        )
     return pd.Series(values, index=index, dtype=object)
