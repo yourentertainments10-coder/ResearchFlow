@@ -632,7 +632,7 @@ def run_operation(
     if handler is None:
         raise OperationError(f"not an operation spec: {type(spec).__name__}")
     run = _Run(ds=ds, cache={}, warnings=[], excluded={}, rows_used=0, extra={})
-    table = handler(spec, run)  # type: ignore[operator]
+    table = handler(spec, run)  # type: ignore[operator, arg-type]
     if run.rows_used == 0:
         run.warn("no usable rows: the table is empty or every row was excluded")
     provenance = Provenance(
