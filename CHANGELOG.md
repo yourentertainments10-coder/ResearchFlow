@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Generic dataset analytics library and commands (ADR-040)
+- New library `sie.datasets` (load CSV/XLSX/JSON with limits and ZIP-bomb defence, profile, explicit cleaning plan with rejects and log, six deterministic operations, CSV/XLSX/manifest export with spreadsheet-injection safety by value type, hash-addressed raw copy, atomic idempotent publish) and the commands `sie profile`, `sie clean`, `sie calc`, `sie calc-spec`, `sie operations`. No migration, no new dependency, no change to the sports schema or commands. `docs/DATASET_ANALYTICS_DESIGN.md` is now implemented; see `docs/TESTING.md` for the tests and their limits.
+
 ## Generalisation audit (proposal only)
 - `docs/GENERALISATION_AUDIT.md`, ADR-039 (accepted by the owner 2026-10-11; supersedes ADR-024 points 1 and 3) and `docs/DATASET_ANALYTICS_DESIGN.md` (design and test plan for step 2, revision 2 with determinism, operation, cleaning, parsing, safety, atomic-publish and type rules and a library-first interface; awaiting approval): what is generic, what is sports-specific and what is missing for a general research and analytics engine; cost categories; a suggested order. Documentation only; ADR-024 stays in force until the owner decides.
 

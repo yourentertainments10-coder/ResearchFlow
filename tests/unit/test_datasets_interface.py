@@ -200,3 +200,50 @@ def test_the_package_does_not_print_or_exit():
                 assert node.func.id != "print", f"{path.name} prints"
             if isinstance(node, ast.Attribute) and node.attr == "exit":
                 assert not (isinstance(node.value, ast.Name) and node.value.id == "sys"), path.name
+
+
+# --- architecture boundaries (ADR-040) ----------------------------------------------------------------
+
+SRC = Path(__file__).resolve().parents[2] / "src" / "sie"
+ALLOWED_THIRD_PARTY = {"pandas", "numpy", "openpyxl", "pydantic"}  # all already core dependencies
+
+
+def _imports(path: Path) -> list[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    found: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            found += [a.name for a in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.level == 0:
+            found.append(node.module or "")
+    return found
+
+
+def test_the_package_uses_only_the_standard_library_existing_dependencies_and_itself():
+    import sys
+
+    stdlib = set(sys.stdlib_module_names)
+    for path in PKG.glob("*.py"):
+        for name in _imports(path):
+            root = name.split(".")[0]
+            assert root in stdlib or root in ALLOWED_THIRD_PARTY or root in ("sie", "__future__"), (
+                path.name,
+                name,
+            )
+
+
+def test_only_the_command_adapter_imports_the_datasets_package():
+    for path in SRC.rglob("*.py"):
+        if PKG in path.parents:
+            continue
+        for name in _imports(path):
+            if name == "sie.datasets" or name.startswith("sie.datasets."):
+                assert path.name == "datasets_cli.py", (str(path), name)
+
+
+def test_datasets_and_answer_do_not_import_each_other():
+    answer = SRC / "answer"
+    for path in PKG.glob("*.py"):
+        assert not any(n == "sie.answer" or n.startswith("sie.answer.") for n in _imports(path))
+    for path in answer.rglob("*.py"):
+        assert not any(n == "sie.datasets" or n.startswith("sie.datasets.") for n in _imports(path))
