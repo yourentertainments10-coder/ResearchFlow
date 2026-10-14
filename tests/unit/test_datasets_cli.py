@@ -51,7 +51,7 @@ def test_profile_writes_only_under_out_and_the_uploads_directory(tmp_path: Path)
     assert directory.parent == tmp_path / "out" and (directory / "manifest.json").is_file()
     assert Path(summary["raw_copy"]).read_bytes() == SALES
     created = tree(tmp_path) - before
-    assert all(p.startswith(("out", "data/uploads")) for p in created)
+    assert all(p in ("data", "out") or p.startswith(("out/", "data/uploads")) for p in created)
     assert source.read_bytes() == SALES  # the original is never changed
 
 

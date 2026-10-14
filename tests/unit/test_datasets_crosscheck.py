@@ -128,7 +128,9 @@ def test_correlation_matches_pandas(method):
         ds, {"op": "correlation", "columns": ["units", "price"], "method": method}
     ).table
     frame = oracle()[["units", "price"]].dropna()
-    expected = frame["units"].corr(frame["price"], method=method)
+    # Spearman is Pearson on average ranks; computed without SciPy (pandas needs it only for method=)
+    source = frame.rank() if method == "spearman" else frame
+    expected = source["units"].corr(source["price"])
     _, _, coefficient, n_used = table.values.tolist()[0]
     assert n_used == len(frame) and coefficient == pytest.approx(expected)
 
