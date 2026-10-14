@@ -390,6 +390,11 @@ def test_the_answer_package_imports_nothing_from_the_sports_or_database_code():
         assert _sie_imports(path) <= allowed, (path.name, _sie_imports(path) - allowed)
 
 
+# Phase 2 (ADR-042) is the first adopter. Only this module may import sie.answer; any other new
+# importer still fails the test and needs its own review.
+ANSWER_ADOPTERS = {"evidence/adapters.py"}
+
+
 def test_no_existing_module_imports_the_answer_package_yet():
     users = []
     for path in SRC.rglob("*.py"):
@@ -397,8 +402,8 @@ def test_no_existing_module_imports_the_answer_package_yet():
             continue
         if any(m == "sie.answer" or m.startswith("sie.answer.") for m in _sie_imports(path)):
             users.append(str(path.relative_to(SRC)))
-    assert users == [], (
-        "Phase 1 must not change existing behaviour; adopt the package in a later phase"
+    assert sorted(users) == sorted(ANSWER_ADOPTERS), (
+        "only the evidence adapters may import sie.answer so far; adopt it elsewhere in a later phase"
     )
 
 

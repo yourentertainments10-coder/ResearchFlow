@@ -144,3 +144,10 @@ A session shown as `idle in transaction` for a long time is the usual blocker (a
 
 ## 9. After the competition ends
 Run a final complete ingestion, reconcile against the official final table, freeze the data (tag a release, keep a final dump), and archive the raw versions. The dashboard then serves the final dataset. Later competitions reuse the same system with a new `competition_id` and, if needed, a new adapter and parser (`SCALABILITY.md`).
+
+## 10. Evidence ledger rollout and restore (ADR-042)
+1. Before merging the evidence-ledger PR: take a fresh backup (`backup.yml`, manual dispatch) and confirm its restore-test step passed.
+2. Merge only after CI is green and with the owner's approval. The next scheduled refresh (02:30 UTC) runs `sie migrate`, which applies 005 (short lock; additive). Check that run's migrate step before relying on it.
+3. Rollback: `alembic downgrade 004` drops the ledger objects, or restore the pre-merge backup.
+4. After **any restore**, re-run `sie project purge` for projects listed in `purge_tombstones` that the restored copy still holds.
+5. Neon history window: not verified. Read it in the console and set `DB_HISTORY_WINDOW_DAYS`.

@@ -76,3 +76,5 @@ Every change request follows: requirement, impact analysis (DB, pipeline, analyt
 
 ## General research engine (ADR-039, ADR-041)
 Phase 1 (answer contract and number lock, `sie.answer`) done 2026-10-11. Next, each with its own proposal: 2 evidence ledger and uploads in `raw_documents` (migration), 3 project-scoped freshness and health, 4 web research with citations, 5 router and model layer behind the number lock, 6 conversation backend, authentication and quotas. Order and acceptance criteria: the architecture proposal of 2026-10-11 and `GENERALISATION_AUDIT.md` section 8. `sie.datasets` (file analytics) is developed separately on `feature/datasets-library`.
+
+Phase 2 (evidence ledger and uploads, ADR-042) built on `feature/evidence-ledger`; production migration is gated on the owner's backup and approval (`DEPLOYMENT.md` section 10).

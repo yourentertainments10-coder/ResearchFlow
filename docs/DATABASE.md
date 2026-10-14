@@ -327,3 +327,6 @@ Postgres to Postgres: take a `pg_dump`, restore on the new host, change `DATABAS
 
 ## 14. Test databases
 Tests run against a real PostgreSQL 16 (CI service container; locally Docker or `pgserver`). A template database is built once per session by running the Alembic migrations (so migrations are tested every time). Every test gets its own fresh copy of that template, so tests are fully isolated and need no cleanup. Migration tests start from an empty database instead.
+
+## 15. Evidence ledger (migration 005, ADR-042)
+Additive: `projects`, `purge_tombstones`, `project_documents`, `evidence_sources`, `claims`, `claim_reviews`, `claim_conflicts` and the view `evidence_claims_current`. The authoritative DDL is `src/sie/db/sql/005_evidence_ledger.sql` (not repeated here so it cannot drift). Design: `EVIDENCE_LEDGER_DESIGN.md`. Foreign keys to `raw_documents` and `raw_versions` take a short SHARE ROW EXCLUSIVE lock on those two tables only; the migration sets `lock_timeout` 5 s and `statement_timeout` 60 s. Downgrade drops the new objects; raw rows created by uploads stay and are removed with `sie project purge`. The `pipeline` role cannot update or delete the ledger tables.

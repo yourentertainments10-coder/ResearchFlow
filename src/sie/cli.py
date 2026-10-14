@@ -736,3 +736,136 @@ def acceptance_cmd(
     typer.echo(json.dumps(report.to_dict(), indent=2, default=str))
     if not report.ok:
         raise typer.Exit(code=1)
+
+
+project_app = typer.Typer(help="Research projects (evidence ledger).", no_args_is_help=True)
+evidence_app = typer.Typer(help="Evidence uploads, integrity and retention.", no_args_is_help=True)
+app.add_typer(project_app, name="project")
+app.add_typer(evidence_app, name="evidence")
+
+
+def _fail(message: str, code: int = 2) -> typer.Exit:
+    typer.echo(message, err=True)
+    return typer.Exit(code=code)
+
+
+@project_app.command("create")
+def project_create(
+    slug: str = typer.Argument(..., help="Lower-case letters, digits and hyphens."),
+    name: str = typer.Option(..., "--name", help="Display name."),
+) -> None:
+    """Create an empty project."""
+    from datetime import UTC, datetime
+
+    from sie.evidence import EvidenceError, create_project
+
+    try:
+        with make_engine(get_settings()).begin() as conn:
+            project_id = create_project(conn, slug=slug, name=name, now=datetime.now(UTC))
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(f"created project {slug} (id {project_id})")
+
+
+@project_app.command("list")
+def project_list() -> None:
+    """List projects and their state."""
+    from sqlalchemy import text
+
+    with make_engine(get_settings()).connect() as conn:
+        rows = conn.execute(
+            text("SELECT slug, name, archived_at, purged_at FROM projects ORDER BY id")
+        ).all()
+    for r in rows:
+        state = "purged" if r.purged_at else "archived" if r.archived_at else "open"
+        typer.echo(f"{r.slug}\t{state}\t{r.name}")
+
+
+@project_app.command("purge")
+def project_purge(
+    slug: str = typer.Argument(...),
+    execute: bool = typer.Option(False, "--execute", help="Really delete. Without it: dry run."),
+    confirm: str = typer.Option("", "--confirm", help="Repeat the project slug to confirm."),
+    by: str = typer.Option("", "--by", help="Full name of the person who approved the purge."),
+) -> None:
+    """Delete a project's evidence from the live database (owner only; dry run by default).
+
+    Backups and the provider's history are NOT erased; the report says so.
+    """
+    from datetime import UTC, datetime
+
+    from sie.evidence import EvidenceError, purge_project
+
+    try:
+        report = purge_project(
+            make_engine(get_settings()), slug, now=datetime.now(UTC), execute=execute,
+            confirm=confirm, purged_by=by,
+        )  # fmt: skip
+    except EvidenceError as exc:
+        raise _fail(str(exc), 1) from exc
+    for line in report.lines:
+        typer.echo(line)
+
+
+@evidence_app.command("upload")
+def evidence_upload(
+    project: str = typer.Argument(..., help="Project slug."),
+    path: Path = typer.Argument(..., exists=True, dir_okay=False, readable=True),
+    added_by: str = typer.Option("", "--by", help="Who is adding the file."),
+) -> None:
+    """Store a file as an upload source of a project."""
+    from datetime import UTC, datetime
+
+    from sie.evidence import EvidenceError, ingest_upload, open_scope
+
+    engine = make_engine(get_settings())
+    try:
+        with engine.connect() as conn:
+            scope = open_scope(conn, project, for_write=True)
+        result = ingest_upload(
+            engine, scope, path.read_bytes(), path.name, now=datetime.now(UTC),
+            added_by=added_by or None,
+        )  # fmt: skip
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(f"{result.outcome}: source {result.source_id}")
+
+
+@evidence_app.command("check")
+def evidence_check(project: str = typer.Argument(..., help="Project slug.")) -> None:
+    """Re-hash a project's stored bytes and excerpts (read only)."""
+    from sie.evidence import EvidenceError, check_project, open_scope
+
+    try:
+        with make_engine(get_settings()).connect() as conn:
+            report = check_project(conn, open_scope(conn, project))
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(
+        f"sources {report.sources}, files checked {report.files_checked}, "
+        f"bytes not retained {report.bytes_not_retained}, claims ok {report.claims_ok}"
+    )
+    for problem in report.problems:
+        typer.echo(f"PROBLEM: {problem}", err=True)
+    if not report.ok:
+        raise typer.Exit(code=1)
+
+
+@evidence_app.command("prune")
+def evidence_prune(
+    execute: bool = typer.Option(False, "--execute", help="Really drop expired bytes."),
+    confirm: str = typer.Option("", "--confirm", help='Type "prune" to confirm.'),
+) -> None:
+    """Drop the stored bytes of expired full web copies (owner only; dry run by default)."""
+    from datetime import UTC, datetime
+
+    from sie.evidence import EvidenceError, prune_expired
+
+    try:
+        report = prune_expired(
+            make_engine(get_settings()), now=datetime.now(UTC), execute=execute, confirm=confirm
+        )
+    except EvidenceError as exc:
+        raise _fail(str(exc), 1) from exc
+    for line in report.lines:
+        typer.echo(line)
