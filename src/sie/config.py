@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DRIVER = "postgresql+psycopg"
@@ -80,7 +80,7 @@ class Settings(BaseSettings):
     evidence_policy_path: Path | None = None
     # What the owner found in the database provider's console about point-in-time history. Unset means
     # NOT VERIFIED, and purge output says so. Never guessed (docs/EVIDENCE_RETENTION.md section 6).
-    db_history_window_hours: int | None = None
+    db_history_window_hours: int | None = Field(default=None, ge=0)
     # How long encrypted backups are kept (the backup workflow's retention-days). Used only to word
     # what a purge cannot undo.
     backup_retention_days: int = 14
