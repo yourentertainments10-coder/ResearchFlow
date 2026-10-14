@@ -19,6 +19,7 @@ from sie.evidence import (
     ClaimInput,
     NotFound,
     add_claim,
+    check_project,
     create_project,
     detect_conflicts,
     evidence_ref_from_source,
@@ -31,6 +32,7 @@ from sie.evidence import (
     list_sources,
     open_scope,
     read_bytes,
+    register_fetched_source,
     resolve_conflict,
     review_claim,
     verify_claim,
@@ -211,7 +213,35 @@ def case_figure_from_claim(w):
     )
 
 
+def case_check_project(w):
+    # A tampered B blob must never show up in A's report, and A's report is clean.
+    with w["engine"].begin() as c:
+        c.execute(text("UPDATE claims SET excerpt_sha256 = :h WHERE project_id = :p"),
+                  {"h": "0" * 64, "p": w["b"].project_id})  # fmt: skip
+    with w["engine"].connect() as c:
+        a_report, b_report = check_project(c, w["a"]), check_project(c, w["b"])
+    assert a_report.ok and a_report.sources == 1
+    assert not b_report.ok
+
+
+def case_register_fetched_source(w):
+    before_b = snapshot_for_project(w, "b")
+    r = register_fetched_source(
+        w["engine"],
+        w["a"],
+        content=SECRET,
+        requested_url="https://e.org/x",
+        title="t",
+        tier=2,
+        now=NOW,
+    )
+    assert r.source_id != w["b_src"].source_id and r.created_source  # B's bytes are not an oracle
+    assert snapshot_for_project(w, "b") == before_b
+
+
 CROSS_PROJECT_CASES = {
+    "sie.evidence.integrity.check_project": case_check_project,
+    "sie.evidence.retention.register_fetched_source": case_register_fetched_source,
     "sie.evidence.conflicts.detect_conflicts": case_detect_conflicts,
     "sie.evidence.conflicts.list_conflicts": case_list_conflicts,
     "sie.evidence.conflicts.resolve_conflict": case_resolve_conflict,
