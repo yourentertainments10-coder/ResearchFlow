@@ -2,6 +2,9 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
+## Project-scoped freshness and health (ADR-043)
+- `sie.evidence.health` and `sie project health <slug> [--json]` (read only, no migration): source states `current`, `stale`, `expired`, `pruned`, `upload`; informational `old_upload`; claim counts by status, claims on pruned or expired sources, pending XLSX claims, open conflicts; `gaps_from_health` for `sie.answer`. New settings `EVIDENCE_WEB_MAX_AGE_DAYS` (30) and `EVIDENCE_OLD_UPLOAD_DAYS` (180). Empty project gives an explicit no-sources report.
+
 ## Evidence ledger and upload storage (ADR-042)
 - Migration 005 (additive) and package `sie.evidence`: per-project uploads in the raw store, claims with source locators, append-only reviews (`source_located` and `human_confirmed` never mean "true"), conflicts, adapters to `sie.answer`, retention modes (web default excerpt-only), owner-only dry-run purge and prune with tombstones, integrity check, `sie project` and `sie evidence` commands. XLSX claims stay unverified until the datasets loader exists. Backups and the provider history are not erased by purge; the Neon window is unverified. `EVIDENCE_LEDGER_DESIGN.md`, `EVIDENCE_RETENTION.md`.
 

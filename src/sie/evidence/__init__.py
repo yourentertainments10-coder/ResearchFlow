@@ -40,6 +40,13 @@ from sie.evidence.errors import (
     PurgeRefused,
     UploadRejected,
 )
+from sie.evidence.health import (
+    ProjectHealth,
+    SourceState,
+    classify_source,
+    gaps_from_health,
+    project_health,
+)
 from sie.evidence.ingest import IngestResult, ingest_upload, sanitise_filename, upload_url
 from sie.evidence.integrity import IntegrityReport, check_project
 from sie.evidence.purge import PruneReport, PurgeReport, prune_expired, purge_project
@@ -55,6 +62,11 @@ from sie.evidence.sources import SourceInfo, get_source, list_sources, read_byte
 from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_claim
 
 __all__ = [
+    "ProjectHealth",
+    "SourceState",
+    "classify_source",
+    "gaps_from_health",
+    "project_health",
     "IntegrityReport",
     "OwnerOnly",
     "PruneReport",

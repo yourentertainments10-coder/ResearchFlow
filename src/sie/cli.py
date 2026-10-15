@@ -781,6 +781,48 @@ def project_list() -> None:
         typer.echo(f"{r.slug}\t{state}\t{r.name}")
 
 
+@project_app.command("health")
+def project_health_cmd(
+    project: str = typer.Argument(..., help="Project slug."),
+    as_json: bool = typer.Option(False, "--json", help="Print the report as JSON."),
+) -> None:
+    """Report a project's source freshness and open problems (read only).
+
+    Exit 0: nothing needs attention (an empty project says so and also exits 0; old uploads are
+    informational). Exit 1: a stale, expired or pruned source, or an open conflict. Exit 2: unknown project.
+    """
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sie.evidence import EvidenceError, open_scope, project_health
+
+    settings = get_settings()
+    try:
+        with make_engine(settings).connect() as conn:
+            report = project_health(
+                conn,
+                open_scope(conn, project),
+                datetime.now(UTC),
+                timedelta(days=settings.evidence_web_max_age_days),
+                timedelta(days=settings.evidence_old_upload_days),
+            )
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    if as_json:
+        typer.echo(json.dumps(report.to_dict(), indent=2, sort_keys=True))
+    else:
+        typer.echo(f"project {report.project}: {report.overall}")
+        if report.no_sources:
+            typer.echo("no sources: nothing to check")
+        for item in report.sources:
+            flag = " (old upload, informational)" if item.old_upload else ""
+            typer.echo(f"  source {item.source_id} [{item.kind}] {item.state}{flag}: {item.title}")
+        for line in report.attention:
+            typer.echo(f"ATTENTION: {line}", err=True)
+    if report.attention_needed:
+        raise typer.Exit(code=1)
+
+
 @project_app.command("purge")
 def project_purge(
     slug: str = typer.Argument(...),

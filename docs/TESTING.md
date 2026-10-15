@@ -112,3 +112,5 @@ Passing locally says nothing about the deployment. Only a run of the second comm
 
 ## Evidence ledger (ADR-042)
 Migration 005 (`test_migration_005.py`: additive fingerprint, lock footprint, lock-timeout fail-fast and rollback, downgrade/upgrade with data, CHECK and composite-key rejections, role privileges); ingest and concurrency (8 threads); isolation (one case per scoped function plus a registry guard and a SQL text guard); claims, adapters, locators; retention, purge, prune and integrity; backup and restore with a populated ledger (`test_evidence_backup.py`); CLI; Asian Games regression with uploads present. All on isolated test databases.
+
+Project health (ADR-043): `tests/unit/test_evidence_health_unit.py` (state classification and boundaries, expired versus pruned, old-upload flag, gap mapping, empty project) and `tests/integration/test_evidence_health.py` (mixed project on PostgreSQL, expired not yet pruned, old upload alone is ok, claims on pruned sources, conflicts, read-only and repeatable, other projects never appear, CLI exit codes). One cross-project case in `test_evidence_isolation.py`.

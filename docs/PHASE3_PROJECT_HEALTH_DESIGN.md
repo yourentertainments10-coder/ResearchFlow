@@ -1,6 +1,6 @@
 # Phase 3: Project-scoped freshness and health (design, for owner approval)
 
-Status: **proposed. No code is written until the owner approves.** Branch `feature/phase-3-project-health`, based on PR #28 head `d21dd92` (the ledger is not merged yet). Rules: AGENTS.md sections 1, 2 (rules 2, 5, 6, 7, 12, 15) and 7.
+Status: **approved by the owner 2026-10-15 and implemented** (decisions: web max age 30 days; uploads never stale, informational `old_upload` only; stack on `feature/evidence-ledger`; `expired` = deadline passed, `pruned` = bytes removed; empty project reports no sources). Branch `feature/phase-3-project-health`, based on PR #28 head `d21dd92` (the ledger is not merged yet). Rules: AGENTS.md sections 1, 2 (rules 2, 5, 6, 7, 12, 15) and 7.
 
 ## 1. Requirement (restated)
 `sie health` and `sie source-status` answer "is this competition's source current?" from `ingest_runs`, `raw_fetches` and `raw_versions`, keyed by `competition`. A research project (ADR-042) has no such answer. The owner needs, per project: which sources are old, expired or pruned, which claims are unreviewed, which conflicts are open, and the disclosed `Gap`s an answer must carry because of them (ADR-039, audit section 8 step 3).
@@ -21,7 +21,7 @@ Status: **proposed. No code is written until the owner approves.** Branch `featu
 | `sie.answer` | New adapter `gaps_from_health(report) -> tuple[Gap, ...]` using existing `GapKind` (`stale`, `conflict`, `unverified`, `missing_data`). No change to `sie.answer` models |
 | Config | One new setting, documented in `.env.example` |
 | Tests | Unit (pure classification), integration on PostgreSQL (CI), isolation case per scoped function |
-| Docs | `EVIDENCE_LEDGER_DESIGN.md` section 9, `TESTING.md`, `CHANGELOG`, ADR-043 |
+| Docs | `EVIDENCE_LEDGER_DESIGN.md` section 8, `TESTING.md`, `CHANGELOG`, ADR-043 |
 
 ## 4. Design
 New module `src/sie/evidence/health.py`, public functions take a `ProjectScope` (`@scoped_api`, so the isolation test insists on a cross-project case).
