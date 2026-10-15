@@ -473,3 +473,138 @@ def test_the_ledger_tables_are_append_only_for_the_pipeline_and_invisible_to_the
             c.execute(text(f"SELECT * FROM {table}"))
     pipe.dispose()
     reader.dispose()
+
+
+def test_roles_applied_before_005_do_not_leave_the_pipeline_able_to_edit_the_ledger(
+    alembic_cfg, empty_db_url
+):
+    """Production order: roles exist from earlier, then the refresh workflow applies 005 as the owner.
+
+    ``apply_roles`` sets ALTER DEFAULT PRIVILEGES so that every table the owner creates later gives the
+    pipeline UPDATE. Without a counter-measure that grants UPDATE on the append-only ledger tables until
+    someone re-runs `sie db-roles`.
+    """
+    command.upgrade(alembic_cfg, "004")
+    owner = create_engine(empty_db_url)
+    with owner.begin() as c:
+        apply_roles(c, reader_password="reader pass 1", pipeline_password="pipeline pass 2")
+    command.upgrade(alembic_cfg, "005")  # no apply_roles afterwards
+    with owner.begin() as c:
+        p = _project(c)
+        s = _full_source(c, p)
+        _claim(c, p, s)
+    pipe = create_engine(owner.url.set(username=PIPELINE, password="pipeline pass 2"))
+    try:
+        for table in (
+            "claims",
+            "evidence_sources",
+            "claim_reviews",
+            "project_documents",
+            "purge_tombstones",
+        ):
+            with pipe.connect() as c:
+                allowed = c.execute(
+                    text("SELECT has_table_privilege(current_user, :t, 'UPDATE')"), {"t": table}
+                ).scalar_one()
+            assert not allowed, f"pipeline can UPDATE {table} after 005 without re-running db-roles"
+        with pipe.connect() as c:  # and it can still do its job
+            assert c.execute(
+                text("SELECT has_table_privilege(current_user,'claims','INSERT')")
+            ).scalar_one()
+    finally:
+        pipe.dispose()
+        owner.dispose()
+
+
+LEDGER_PRIVILEGES = {
+    # table: privileges the pipeline role may hold (SELECT is always allowed; DELETE never)
+    "projects": {"SELECT", "INSERT", "UPDATE"},
+    "claim_conflicts": {"SELECT", "INSERT", "UPDATE"},
+    "project_documents": {"SELECT", "INSERT"},
+    "evidence_sources": {"SELECT", "INSERT"},
+    "claims": {"SELECT", "INSERT"},
+    "claim_reviews": {"SELECT", "INSERT"},
+    "purge_tombstones": {"SELECT", "INSERT"},
+}
+
+
+def test_exact_role_privileges_on_every_ledger_object_in_production_order(
+    alembic_cfg, empty_db_url
+):
+    """Roles first (as in production), then 005 as the owner: the exact grant matrix, no re-run of db-roles."""
+    command.upgrade(alembic_cfg, "004")
+    owner = create_engine(empty_db_url)
+    with owner.begin() as c:
+        apply_roles(c, reader_password="reader pass 1", pipeline_password="pipeline pass 2")
+    command.upgrade(alembic_cfg, "005")
+    kinds = ("SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER")
+    with owner.connect() as c:
+        for role, allowed_by_table in (
+            (PIPELINE, LEDGER_PRIVILEGES),
+            (READER, {t: set() for t in LEDGER_PRIVILEGES}),
+        ):
+            for table, allowed in allowed_by_table.items():
+                held = {
+                    k
+                    for k in kinds
+                    if c.execute(
+                        text("SELECT has_table_privilege(:r, :t, :k)"),
+                        {"r": role, "t": f"public.{table}", "k": k},
+                    ).scalar_one()
+                }
+                assert held == allowed, (role, table, held ^ allowed)
+        for role, allowed in ((PIPELINE, {"SELECT"}), (READER, set())):  # the view is read only
+            held = {
+                k
+                for k in kinds
+                if c.execute(
+                    text("SELECT has_table_privilege(:r, 'public.evidence_claims_current', :k)"),
+                    {"r": role, "k": k},
+                ).scalar_one()
+            }
+            assert held == allowed, (role, held ^ allowed)
+        # sequences: the pipeline may insert, the reader has nothing
+        for seq in c.execute(
+            text(
+                "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE n.nspname = 'public' AND c.relkind = 'S' AND c.relname = ANY(:t)"
+            ),
+            {"t": [f"{t}_id_seq" for t in LEDGER_PRIVILEGES]},
+        ).scalars():
+            assert c.execute(
+                text("SELECT has_sequence_privilege(:r, :s, 'USAGE')"), {"r": PIPELINE, "s": seq}
+            ).scalar_one()
+            assert not c.execute(
+                text("SELECT has_sequence_privilege(:r, :s, 'USAGE')"), {"r": READER, "s": seq}
+            ).scalar_one()
+    owner.dispose()
+
+
+def test_db_roles_can_be_applied_before_005_exists(alembic_cfg, empty_db_url):
+    """`sie db-roles` run against an older schema must not fail on tables that do not exist yet."""
+    command.upgrade(alembic_cfg, "004")
+    owner = create_engine(empty_db_url)
+    with owner.begin() as c:
+        apply_roles(c, reader_password="reader pass 1", pipeline_password="pipeline pass 2")
+    owner.dispose()
+
+
+def test_rerunning_db_roles_after_005_keeps_the_ledger_grants_exact(alembic_cfg, empty_db_url):
+    command.upgrade(alembic_cfg, "005")
+    owner = create_engine(empty_db_url)
+    with owner.begin() as c:
+        apply_roles(c, reader_password="reader pass 1", pipeline_password="pipeline pass 2")
+    with owner.begin() as c:  # twice: idempotent
+        apply_roles(c, reader_password="reader pass 1", pipeline_password="pipeline pass 2")
+    with owner.connect() as c:
+        for table, allowed in {**LEDGER_PRIVILEGES, "evidence_claims_current": {"SELECT"}}.items():
+            held = {
+                k
+                for k in ("SELECT", "INSERT", "UPDATE", "DELETE")
+                if c.execute(
+                    text("SELECT has_table_privilege('sie_pipeline', :t, :k)"),
+                    {"t": f"public.{table}", "k": k},
+                ).scalar_one()
+            }
+            assert held == allowed, (table, held ^ allowed)
+    owner.dispose()

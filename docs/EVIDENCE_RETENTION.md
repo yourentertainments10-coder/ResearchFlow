@@ -17,7 +17,9 @@ Allowed only for a host listed in `data/evidence/source_policies.csv` with `allo
 
 ## 4. What purge does NOT do
 - It does **not** erase backups. Encrypted dumps made before the purge keep the data until they expire (`BACKUP_RETENTION_DAYS`, 14 in `backup.yml`).
-- It does **not** erase the database provider's own history. Neon's point-in-time window: the owner reported **6 hours** for the production branch from the Neon console on 2026-10-14 (owner-reported; this repository cannot check it). Record it by setting `DB_HISTORY_WINDOW_HOURS`. Until then every purge report says so.
+- It does **not** erase the database provider's own history. This is separate from the encrypted backups above. Neon's provider history (point-in-time restore, PITR) window was checked by the owner in the Neon Console (ResearchFlow, production, Postgres database, Backup & Restore) on 2026-10-14: **6 hours** (the console shows "past 6 hour history window"). Owner-verified; this repository cannot check it, and it is not a statement about how long backups are kept.
+- The owner has recorded `DB_HISTORY_WINDOW_HOURS=6` as a GitHub Actions repository variable. No workflow reads it today (no workflow runs purge or prune), so it only takes effect where `sie project purge` runs: set `DB_HISTORY_WINDOW_HOURS=6` in that shell. If it is unset, the purge report says the window is NOT VERIFIED.
+- Two different windows, do not mix them up: provider history/PITR = 6 hours (Neon, owner-verified); encrypted backup retention = 14 days (`backup.yml`, `BACKUP_RETENTION_DAYS`). Data removed by a purge can still be restored from either until it ages out.
 - Restoring a backup taken before a purge brings the data back. After any restore, re-run purge for each project in `purge_tombstones` that is not purged in the restored copy.
 - Nothing in this repository claims complete erasure.
 

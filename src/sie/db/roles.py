@@ -88,8 +88,17 @@ def apply_roles(conn: Connection, *, reader_password: str, pipeline_password: st
             "GRANT USAGE, SELECT ON SEQUENCES TO sie_pipeline"
         )
         for table in APPEND_ONLY:
+            # A table that does not exist yet (the schema is older than this code) has nothing to
+            # protect; migration 005 revokes by itself when it creates its tables.
+            cur.execute("SELECT to_regclass(%s)", (f"public.{table}",))
+            if cur.fetchone()[0] is None:
+                continue
             cur.execute(
                 sql.SQL("REVOKE UPDATE ON {} FROM sie_pipeline").format(sql.Identifier(table))
             )
+        # Views the GRANT ... ON ALL TABLES above also reached: read only for the pipeline.
+        cur.execute("SELECT to_regclass('public.evidence_claims_current')")
+        if cur.fetchone()[0] is not None:
+            cur.execute("REVOKE INSERT, UPDATE ON evidence_claims_current FROM sie_pipeline")
         for table in OWNER_ONLY:
             cur.execute(sql.SQL("REVOKE ALL ON {} FROM sie_pipeline").format(sql.Identifier(table)))

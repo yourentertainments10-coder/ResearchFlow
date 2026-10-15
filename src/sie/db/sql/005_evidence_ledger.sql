@@ -156,3 +156,18 @@ CREATE INDEX ix_claims_project_source     ON claims (project_id, source_id);
 CREATE INDEX ix_claims_subject_metric     ON claims (project_id, subject, metric, period);
 CREATE INDEX ix_claim_reviews_claim       ON claim_reviews (claim_id, id DESC);
 CREATE INDEX ix_claim_conflicts_open      ON claim_conflicts (project_id) WHERE status = 'open';
+
+-- [[evidence_pipeline_privileges]]
+-- If the least-privilege roles already exist, ALTER DEFAULT PRIVILEGES (set by `sie db-roles`) has just
+-- given the pipeline role UPDATE on every new table. These tables are append-only for it, so take that
+-- back now rather than waiting for someone to re-run `sie db-roles`. Nothing happens when the role does
+-- not exist (a fresh database, or one that never ran `sie db-roles`).
+DO $$
+BEGIN
+  IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'sie_pipeline') THEN
+    REVOKE UPDATE ON project_documents, evidence_sources, claims, claim_reviews, purge_tombstones
+      FROM sie_pipeline;
+    REVOKE INSERT, UPDATE ON evidence_claims_current FROM sie_pipeline;  -- a view: read only
+  END IF;
+END
+$$;
