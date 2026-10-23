@@ -1,5 +1,10 @@
 # Changelog
 
+## Free-source-first research policy (ADR-045)
+- General research must start with free public catalogues, official/government data sources, documented open APIs and eligible free search options. No paid search provider, billable model or automatic paid fallback is allowed without a separate explicit owner decision.
+- When free quotas are exhausted or coverage is unavailable, report the limitation and use cached evidence, another eligible free source or manual URL/file import.
+- Phase 4 design clarifies public-host fetching: no fixed host allow-list, but generic network safety checks, robots.txt, source terms/licences, rate limits and access controls still apply. Documentation decision only; no provider adapter or Phase 4c code was added in this change.
+
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
 ## Project-scoped freshness and health (ADR-043)
