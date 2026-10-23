@@ -1,4 +1,4 @@
-# Phase 4: Web research with citations (design, for owner approval)
+# Phase 4: Web research with citations (approved design; free-source-first)
 
 Status: **approved by the owner 2026-10-23 with a wider scope, implementation in stages.** Built so far: 4a (safe fetch core) and 4b (discovery and ranking) on `feature/phase-4-web-research`, stacked on Phase 3 and PR #28. Not built: 4c (collection into a normalised dataset, needs the merged `sie.datasets`), a concrete search provider, and everything after (see section 8). Depends on Phase 2 (PR #28, ledger) and Phase 3 (project health). Rules: `AGENTS.md` rule 9 (respect sources), rule 2 (no invented numbers), `SECURITY.md` section 2, ADR-031 (the existing portal fetcher is the model for politeness), ADR-042 (retention).
 
@@ -7,7 +7,7 @@ A user asks a research question; the system discovers candidate sources from fre
 
 ## 2. Assumptions (please confirm or correct)
 1. **Discovery starts with free sources.** Query free search options that have a documented no-cost allowance and public dataset catalogues; prefer official/government sources and open APIs. No paid provider is called, even as a fallback. Do not crawl search-result pages or recursively follow arbitrary links. A provider must declare its free-tier limits and terms in its adapter docs. When the quota is exhausted, fail closed with a clear message and keep any cached leads.
-2. **Allow-list by host.** A host must be listed in a committed file `data/evidence/fetch_hosts.csv` (host, robots checked on, terms reference, contact for the site if any, max requests per run). Unlisted host: refused. This is separate from `source_policies.csv`, which only decides whether full copies may be kept.
+2. **No fixed host allow-list.** Apply the same runtime safety checks to all discovered hosts: HTTPS, public resolved addresses, robots.txt, honest User-Agent, per-host rate limiting, redirect restrictions, content-type and size limits, and stop on refusal/error responses. Respect the source's published terms and licence; never bypass access controls. `source_policies.csv` still separately decides whether full copies may be kept.
 3. **Retention stays as ADR-042**: default `excerpt`; `full` only where `source_policies.csv` allows it.
 4. **No JavaScript rendering, no logins, no paywalls, no CAPTCHA handling.** A page that needs them is a manual upload.
 5. **Extraction is deterministic**: a claim is created by a person or a rule-based extractor with a locator (`char_range`, `json_pointer`, `table_cell` for HTML tables or CSV/JSON endpoints). The language model that proposes claims is Phase 5.
@@ -29,7 +29,7 @@ New module `src/sie/evidence/web.py`, called by `sie evidence fetch <project> <u
 
 Request rules (all enforced in code, all tested without the network):
 - https only; no credentials in the URL; port 443 only unless the allow-list says otherwise; query kept as given.
-- Host must be in `fetch_hosts.csv`. The host name is resolved first and the request is refused if any address is loopback, private, link-local or metadata (SSRF guard); the connection uses the checked address.
+- No host allow-list is required. The host name is resolved first and the request is refused if any address is loopback, private, link-local or metadata (SSRF guard); the connection uses the checked address. The generic rules apply to every host.
 - **robots.txt**: fetched and obeyed per host before the first page; a disallow, a missing-but-unreachable robots file (5xx) or a 401/403 stops the fetch. The result and time are recorded in the source note.
 - Honest `User-Agent` with a contact (the placeholder is refused, as in ADR-031). At least 2 seconds between requests to a host; stop on 403, 429 or 5xx; no retry storm.
 - Redirects: followed at most once and only to the same host; anything else is reported, not followed.
