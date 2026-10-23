@@ -3,10 +3,10 @@
 Status: **approved by the owner 2026-10-23 with a wider scope, implementation in stages.** Built so far: 4a (safe fetch core) and 4b (discovery and ranking) on `feature/phase-4-web-research`, stacked on Phase 3 and PR #28. Not built: 4c (collection into a normalised dataset, needs the merged `sie.datasets`), a concrete search provider, and everything after (see section 8). Depends on Phase 2 (PR #28, ledger) and Phase 3 (project health). Rules: `AGENTS.md` rule 9 (respect sources), rule 2 (no invented numbers), `SECURITY.md` section 2, ADR-031 (the existing portal fetcher is the model for politeness), ADR-042 (retention).
 
 ## 1. Requirement (restated)
-A project owner gives the system a web address (or a small set of official sources). The system fetches the page politely, records it as an `evidence_source` (`kind='web'`) with its terms and retention, lets claims be located in it, and later answers cite it. Web material is evidence with a status, never verified data (ADR-039 point 3). The system never browses freely, never searches the open web on its own, and never runs a model in this phase.
+A user asks a research question; the system discovers candidate sources from free search options and public dataset catalogues first, prioritises official/government sources, fetches accessible public HTML, CSV, JSON and open APIs politely, records evidence and retrieval metadata, normalises data into a reusable dataset, and answers with reproducible analytics and citations. Follow-up questions reuse the collected dataset whenever it contains the needed fields. Web material is evidence with a status, never verified data (ADR-039 point 3). No paid provider, model API, or billable service may be used by default or as an automatic fallback. If free discovery is unavailable or exhausted, report the limitation and offer the file/URL/manual import fallback.
 
 ## 2. Assumptions (please confirm or correct)
-1. **Fetch only addresses the owner supplies** (CLI or later API). No search-engine crawling, no link following. Official sites and open APIs first.
+1. **Discovery starts with free sources.** Query free search options that have a documented no-cost allowance and public dataset catalogues; prefer official/government sources and open APIs. No paid provider is called, even as a fallback. Do not crawl search-result pages or recursively follow arbitrary links. A provider must declare its free-tier limits and terms in its adapter docs. When the quota is exhausted, fail closed with a clear message and keep any cached leads.
 2. **Allow-list by host.** A host must be listed in a committed file `data/evidence/fetch_hosts.csv` (host, robots checked on, terms reference, contact for the site if any, max requests per run). Unlisted host: refused. This is separate from `source_policies.csv`, which only decides whether full copies may be kept.
 3. **Retention stays as ADR-042**: default `excerpt`; `full` only where `source_policies.csv` allows it.
 4. **No JavaScript rendering, no logins, no paywalls, no CAPTCHA handling.** A page that needs them is a manual upload.
@@ -43,13 +43,13 @@ Citations: an answer cites a web claim through its `EvidenceRef` (title, URL, re
 ## 5. Test plan
 Fake HTTP server and an injected `get`; no real network in CI. Unit: URL and host rules, SSRF address classification (loopback, RFC1918, link-local, IPv6, DNS rebinding case), robots parsing (allow, disallow, 5xx, 403, missing), redirect policy, content-type and size caps, rate limit with a fake clock, placeholder User-Agent refused. Integration (PostgreSQL): a fetched page becomes an excerpt source; a policy-allowed host keeps a full copy; same content twice is idempotent; two projects stay isolated; purge removes it; health reports it. Security: a test that no code path requests an unlisted host. Lint, format, the repo's checks.
 
-## 6. Open questions for the owner
-1. Which hosts go on the first allow-list? Suggest only sites whose terms you have read and recorded; I will not add any myself.
-2. Is `excerpt` retention still the right default for fetched pages (so most claims on them stay `unverified`)? Alternative: keep `full` for hosts you mark in `source_policies.csv`.
-3. Per-host interval 2 s and size cap 5 MiB: keep?
-4. Add migration 006 for `robots_checked_at` / `fetch_error` columns, or keep them in the source note text? Recommendation: note text, no migration.
-5. Should the first live fetch be a manual owner run from your machine (as with the portal in ADR-031), since this sandbox cannot reach the web hosts? Recommendation: yes.
-6. Search or discovery of sources (finding URLs) stays out of Phase 4. OK?
+## 6. Operating defaults
+1. Use general network guards in code rather than forcing per-host owner approval for ordinary public sources; always respect robots.txt, published terms, API rules, honest User-Agent, rate limits and source blocks. Never bypass login, paywall, CAPTCHA or access controls.
+2. Keep `excerpt` retention as the default; full copies only under the existing recorded `source_policies.csv` policy.
+3. Keep the 2-second per-host interval and 5 MiB default size cap.
+4. Keep robots/refusal details in source notes; no migration 006 for these fields.
+5. First live fetch is a controlled manual owner run; automate only after that passes.
+6. Discovery is part of Phase 4 and must try free search options and public catalogues before returning a request for manually supplied leads.
 
 ## 7. Out of scope
 Language-model planning and extraction (Phase 5), conversation and authentication (Phase 6), XLSX verification (needs `sie.datasets` loader, separate step after #28), scheduled or automatic fetching, any production action.
@@ -57,7 +57,7 @@ Language-model planning and extraction (Phase 5), conversation and authenticatio
 ## 8. Owner decisions of 2026-10-23 and how they are met
 | Decision | What was built or planned |
 |----------|---------------------------|
-| Source discovery is built in, not a fixed URL list | 4b: `sie.evidence.discovery` ranks leads from a pluggable `SearchProvider`. A leads-file provider ships; **no live search provider is chosen yet** (needs an API key and a cost and spend-limit decision, ADR-039 point 6). Until then leads come from any search tool the owner uses |
+| Source discovery is built in, not a fixed URL list | 4b ranks leads from a pluggable `SearchProvider`; the default implementation must be free-first. Public dataset catalogues and documented free search options are tried before manual lead-file fallback. Never automatically switch to paid APIs. |
 | Trust order: official and government first, Wikipedia and reputable references as secondary | `data/evidence/source_authority.csv` (tiers 1 to 4, longest suffix wins, unknown host = tier 4). Authority dominates the score; relevance and downloadable data follow |
 | Default excerpt plus URL, date and evidence; full copies only by policy | Unchanged from ADR-042; `sie evidence fetch` registers excerpts |
 | 2 s per host, 5 MiB, timeout | Settings `EVIDENCE_FETCH_INTERVAL_SECONDS` (minimum 2), `EVIDENCE_FETCH_MAX_BYTES`, `EVIDENCE_FETCH_TIMEOUT_SECONDS` |
@@ -66,7 +66,8 @@ Language-model planning and extraction (Phase 5), conversation and authenticatio
 | The fixed allow-list is dropped | Replaced by guards that apply to every host: https only, public addresses only, robots.txt obeyed, rate limit, stop on 403/429/5xx, caps. A blocked or unsuitable source is listed with its reason, and the next candidate is used |
 
 ## 9. Still to build (each its own PR and approval where it adds a dependency or cost)
-1. **Search provider**: choose one (cost, key, spend limit, terms) and add an adapter; owner decision.
-2. **4c Collection**: turn fetched CSV, JSON and HTML tables into a normalised dataset with provenance per row, reusing `sie.datasets` (merged in PR #29, not yet in this stack; rebase after #28 merges). Conflicting and missing values are flagged, never filled.
-3. **Analysis, charts and reports** on the collected dataset, and reuse of that dataset for follow-up questions: the model-assisted planner and explainer are Phase 5; the deterministic part can start once 4c exists.
+1. **Free discovery adapters**: add documented free search/catalogue adapters only after checking current terms, quota and access requirements. No new dependency unless justified; use existing HTTP and parsing stack wherever practical. Keep a local catalogue adapter and manual lead-file fallback. If a free provider requires a key, clearly state signup/quotas but never request payment details or make billable calls.
+2. **4c Collection**: turn fetched CSV, JSON and HTML tables into a normalised dataset with provenance per row, reusing `sie.datasets`. Conflicting and missing values are flagged, never filled.
+3. **Analysis, charts and reports** on the collected dataset, with same-dataset follow-up reuse. Deterministic pandas/SQL operations and existing charting dependencies first; no model required for first working analytics loop.
 4. **Metric definitions** for questions such as "how many times has a party won": Lok Sabha seats, assembly seats and governments formed are different metrics and are kept apart, never summed.
+5. **Cost guard**: tests prove that exhausted quotas, timeouts or unavailable providers cannot trigger any paid endpoint; every adapter reports whether access is free, capped or manual.
