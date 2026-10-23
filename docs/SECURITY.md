@@ -50,3 +50,9 @@ Treat as a design change with a decision record, and then:
 - Raw store plus migrations plus reference CSVs are enough to rebuild the database. Keep copies of `data/raw/` and `data/reference/` outside the working machine (for example a private repository or cloud drive).
 - Test a restore once per phase.
 - Database dumps are never stored or uploaded in the clear. `sie backup --require-encryption` encrypts with `age` to a public recipient (`BACKUP_AGE_RECIPIENT`); the private identity lives only in the `BACKUP_AGE_IDENTITY` secret and an offline copy, never in the repository, logs or artifacts. The repository is public, so artifacts are world-readable by signed-in users: only `*.dump.age` and manifests may be uploaded (enforced by a guard step). Restore tests run in a scratch database and are refused against `DATABASE_URL`. Runbook: `DEPLOYMENT.md` section 3a, ADR-034.
+
+## 9. Evidence ledger (ADR-042)
+- Uploads are per-project copies; reads go through a scoped API and composite foreign keys, and a cross-project request is indistinguishable from a missing id.
+- Uploads are limited in size and decompressed size, hashed, and the filename is sanitised before use. Stored bytes are never executed or rendered.
+- Purge and prune are owner-only (database privilege check), dry-run by default and confirmed explicitly. They do not erase backups or provider history; the Neon window is unverified until the owner records it. See `EVIDENCE_RETENTION.md`.
+- Full web copies need a recorded permission; the default keeps an excerpt only.

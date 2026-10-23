@@ -6,6 +6,8 @@ EXPECTED_TABLES = {
     "events", "entrants", "ingest_runs", "raw_documents", "raw_versions", "raw_fetches",
     "placings", "placing_history", "source_observations", "source_conflicts", "quarantine",
     "reconciliation_results", "analytics_snapshots", "snapshot_rows", "snapshot_changes",
+    "projects", "project_documents", "evidence_sources", "claims", "claim_reviews",
+    "claim_conflicts", "purge_tombstones",
 }  # fmt: skip
 
 
@@ -21,7 +23,7 @@ def test_upgrade_creates_every_table_and_the_view(alembic_cfg, empty_db_url):
     command.upgrade(alembic_cfg, "head")
     tables, views = _names(empty_db_url)
     assert tables >= EXPECTED_TABLES
-    assert views == {"v_medal_facts"}
+    assert views == {"v_medal_facts", "evidence_claims_current"}  # 005 adds the claim-status view
 
 
 def test_current_placing_uniqueness_is_a_partial_index(alembic_cfg, empty_db_url):

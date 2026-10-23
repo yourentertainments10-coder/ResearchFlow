@@ -110,15 +110,3 @@ Passing locally says nothing about the deployment. Only a run of the second comm
 ## Answer contract (ADR-041)
 `tests/unit/test_answer_contract.py` (41, no database): the number lock in every form, the mutation test (each placeholder replaced by its rendered number must be rejected), layer, orphan, disclosure and refusal rules, deterministic JSON, hash and Markdown, formatting, adapters over the real `metrics.country_summary`, and three import guards (nothing from sports or database code, no new dependency, no existing module imports `sie.answer`).
 
-## Dataset analytics (ADR-040)
-No database and no network. Run `pytest tests/unit/test_datasets_*.py`.
-- `test_datasets_interface.py`: canonical serialisation and hashing, type inference rules, specs as data (hostile specs rejected), and the architecture boundaries (no CLI, pipeline, analytics, database or sources imports; only standard library, pandas, numpy, openpyxl and pydantic; only `datasets_cli.py` imports the package; independent of `sie.answer`).
-- `test_datasets_store.py`: hostile file names, read-once input (symlink, pipe and oversize refused), hash-addressed raw copy (read-only mode bits, tamper detection), atomic publish with failure injection, idempotence, stale temporary directories.
-- `test_datasets_load.py`: CSV, XLSX and JSON edge cases from design section 8, every limit by name, ZIP-bomb ratio and size limits, macros, nested archives, forged sheet dimensions, formulas never evaluated, strict JSON.
-- `test_datasets_profile.py`, `test_datasets_clean.py`, `test_datasets_calc.py`: expected values worked out by hand in the test (shown in comments), ties, nulls, empty tables, overflow, row-order independence.
-- `test_datasets_export.py`: numbers never altered and formula-like text neutralised in CSV and XLSX (value by value, headers too), byte-identical CSV and manifest across runs, manifest contents, verification of a published directory.
-- `test_datasets_run.py`: one request end to end, idempotence, nothing published on any failure, tampered output or raw copy is an error.
-- `test_datasets_crosscheck.py`: an independent pandas calculation on `tests/fixtures/datasets/sales.csv` reproduces every operation, and CSV, JSON and XLSX give the same results.
-- `test_datasets_cli.py`: exit codes (0, 1, 2), output only under `--out` and `DATA_DIR/uploads`, idempotence, `--no-examples`. Needs `typer`, so it runs in CI.
-
-**Limits.** Parsing is bounded by rows, columns, cells, characters per cell, file size, archive limits and a time budget checked every 10,000 rows; process memory is not capped. A forged ZIP is stopped by the archive limits, not by a memory limit. Floating point results can differ in the last digits between pandas or numpy versions (the manifest records them). The XLSX output is not promised byte-identical. These tests say nothing about a hosted upload service, which does not exist yet.

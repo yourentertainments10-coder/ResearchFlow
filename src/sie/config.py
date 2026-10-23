@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 DRIVER = "postgresql+psycopg"
@@ -67,11 +67,33 @@ class Settings(BaseSettings):
     # A scratch PostgreSQL server for restore tests. Unset: the restore test uses DATABASE_URL's server,
     # which must never be production (the workflow always sets this).
     restore_test_database_url: str | None = None
+    # Evidence ledger (ADR-042, docs/EVIDENCE_RETENTION.md).
+    evidence_max_upload_bytes: int = 25 * 1024 * 1024  # provisional cap (owner decision 2026-10-12)
+    evidence_max_decompressed_bytes: int = (
+        200 * 1024 * 1024
+    )  # ceiling when stored bytes are read back
+    # How long a web page kept in FULL (only allowed under a recorded policy) is retained. The default
+    # is 90 days; `sie evidence prune` drops older bytes. Excerpt-only sources have no such clock.
+    evidence_full_retention_days: int = 90
+    # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
+    # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
+    evidence_policy_path: Path | None = None
+    # What the owner found in the database provider's console about point-in-time history. Unset means
+    # NOT VERIFIED, and purge output says so. Never guessed (docs/EVIDENCE_RETENTION.md section 6).
+    db_history_window_hours: int | None = Field(default=None, ge=0)
+    # How long encrypted backups are kept (the backup workflow's retention-days). Used only to word
+    # what a purge cannot undo.
+    backup_retention_days: int = 14
 
     @field_validator("database_url")
     @classmethod
     def _normalise_url(cls, v: str) -> str:
         return normalise_database_url(v)
+
+    @field_validator("db_history_window_hours", mode="before")
+    @classmethod
+    def _blank_window_is_unset(cls, v):
+        return None if isinstance(v, str) and not v.strip() else v
 
     @field_validator("backup_age_recipient", "restore_test_database_url", mode="before")
     @classmethod
@@ -86,6 +108,10 @@ class Settings(BaseSettings):
     @property
     def alert_state_file(self) -> Path:
         return self.alert_state_path or self.data_dir / "alert_state.json"
+
+    @property
+    def evidence_policy_file(self) -> Path:
+        return self.evidence_policy_path or self.data_dir / "evidence" / "source_policies.csv"
 
     @property
     def scheduled_source_list(self) -> list[str]:
