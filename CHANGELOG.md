@@ -2,8 +2,7 @@
 
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
-## Evidence ledger and upload storage (ADR-042)
-- Migration 005 (additive) and package `sie.evidence`: per-project uploads in the raw store, claims with source locators, append-only reviews (`source_located` and `human_confirmed` never mean "true"), conflicts, adapters to `sie.answer`, retention modes (web default excerpt-only), owner-only dry-run purge and prune with tombstones, integrity check, `sie project` and `sie evidence` commands. XLSX claims stay unverified until the datasets loader exists. Backups and the provider history are not erased by purge; the Neon window is unverified. `EVIDENCE_LEDGER_DESIGN.md`, `EVIDENCE_RETENTION.md`.
+
 
 ## Generalisation audit (proposal only)
 - `docs/GENERALISATION_AUDIT.md`, ADR-039 (accepted by the owner 2026-10-11; supersedes ADR-024 points 1 and 3) and `docs/DATASET_ANALYTICS_DESIGN.md` (design and test plan for step 2, revision 2 with determinism, operation, cleaning, parsing, safety, atomic-publish and type rules and a library-first interface; awaiting approval): what is generic, what is sports-specific and what is missing for a general research and analytics engine; cost categories; a suggested order. Documentation only; ADR-024 stays in force until the owner decides.

@@ -1,0 +1,322 @@
+[
+ {
+  "order_id": 1,
+  "region": "east",
+  "product": "A",
+  "units": 7,
+  "price": 9.5,
+  "ordered_on": "2026-01-27"
+ },
+ {
+  "order_id": 2,
+  "region": "north",
+  "product": "B",
+  "units": 1,
+  "price": 12.25,
+  "ordered_on": "2026-01-03"
+ },
+ {
+  "order_id": 3,
+  "region": "west",
+  "product": "B",
+  "units": 2,
+  "price": 12.25,
+  "ordered_on": "2026-01-18"
+ },
+ {
+  "order_id": 4,
+  "region": "west",
+  "product": "A",
+  "units": 2,
+  "price": 12.25,
+  "ordered_on": "2026-01-19"
+ },
+ {
+  "order_id": 5,
+  "region": null,
+  "product": "B",
+  "units": 3,
+  "price": 12.25,
+  "ordered_on": "2026-02-11"
+ },
+ {
+  "order_id": 6,
+  "region": "west",
+  "product": "A",
+  "units": 9,
+  "price": 9.5,
+  "ordered_on": "2026-03-18"
+ },
+ {
+  "order_id": 7,
+  "region": "south",
+  "product": "A",
+  "units": 4,
+  "price": 20,
+  "ordered_on": "2026-01-18"
+ },
+ {
+  "order_id": 8,
+  "region": "north",
+  "product": "C",
+  "units": 1,
+  "price": 12.25,
+  "ordered_on": "2026-04-22"
+ },
+ {
+  "order_id": 9,
+  "region": "west",
+  "product": "B",
+  "units": 8,
+  "price": 7.75,
+  "ordered_on": "2026-03-10"
+ },
+ {
+  "order_id": 10,
+  "region": "south",
+  "product": "A",
+  "units": 4,
+  "price": 9.5,
+  "ordered_on": "2026-03-17"
+ },
+ {
+  "order_id": 11,
+  "region": "west",
+  "product": "B",
+  "units": 8,
+  "price": 20,
+  "ordered_on": "2026-01-04"
+ },
+ {
+  "order_id": 12,
+  "region": "east",
+  "product": "C",
+  "units": null,
+  "price": 20,
+  "ordered_on": "2026-03-05"
+ },
+ {
+  "order_id": 13,
+  "region": "north",
+  "product": "C",
+  "units": 2,
+  "price": 20,
+  "ordered_on": "2026-03-23"
+ },
+ {
+  "order_id": 14,
+  "region": "east",
+  "product": "C",
+  "units": 8,
+  "price": 7.75,
+  "ordered_on": "2026-01-27"
+ },
+ {
+  "order_id": 15,
+  "region": "north",
+  "product": "B",
+  "units": 8,
+  "price": 9.5,
+  "ordered_on": "2026-01-24"
+ },
+ {
+  "order_id": 16,
+  "region": "east",
+  "product": "C",
+  "units": 8,
+  "price": 20,
+  "ordered_on": "2026-04-22"
+ },
+ {
+  "order_id": 17,
+  "region": "east",
+  "product": "A",
+  "units": 8,
+  "price": 20,
+  "ordered_on": "2026-02-20"
+ },
+ {
+  "order_id": 18,
+  "region": "north",
+  "product": "B",
+  "units": 1,
+  "price": 12.25,
+  "ordered_on": "2026-03-05"
+ },
+ {
+  "order_id": 19,
+  "region": "south",
+  "product": "B",
+  "units": 7,
+  "price": 7.75,
+  "ordered_on": "2026-01-06"
+ },
+ {
+  "order_id": 20,
+  "region": "west",
+  "product": "B",
+  "units": 9,
+  "price": 20,
+  "ordered_on": "2026-02-27"
+ },
+ {
+  "order_id": 21,
+  "region": "west",
+  "product": "A",
+  "units": 4,
+  "price": 7.75,
+  "ordered_on": null
+ },
+ {
+  "order_id": 22,
+  "region": "west",
+  "product": "A",
+  "units": 3,
+  "price": 9.5,
+  "ordered_on": "2026-02-05"
+ },
+ {
+  "order_id": 23,
+  "region": "south",
+  "product": "C",
+  "units": 4,
+  "price": 9.5,
+  "ordered_on": "2026-04-27"
+ },
+ {
+  "order_id": 24,
+  "region": "south",
+  "product": "B",
+  "units": 5,
+  "price": 9.5,
+  "ordered_on": "2026-02-14"
+ },
+ {
+  "order_id": 25,
+  "region": "east",
+  "product": "C",
+  "units": 6,
+  "price": 12.25,
+  "ordered_on": "2026-01-15"
+ },
+ {
+  "order_id": 26,
+  "region": "west",
+  "product": "B",
+  "units": 7,
+  "price": 7.75,
+  "ordered_on": "2026-01-16"
+ },
+ {
+  "order_id": 27,
+  "region": "west",
+  "product": "A",
+  "units": 4,
+  "price": 9.5,
+  "ordered_on": "2026-02-15"
+ },
+ {
+  "order_id": 28,
+  "region": "south",
+  "product": "A",
+  "units": 6,
+  "price": 9.5,
+  "ordered_on": "2026-01-01"
+ },
+ {
+  "order_id": 29,
+  "region": "south",
+  "product": "C",
+  "units": 2,
+  "price": 20,
+  "ordered_on": "2026-01-03"
+ },
+ {
+  "order_id": 30,
+  "region": "south",
+  "product": "C",
+  "units": 7,
+  "price": 12.25,
+  "ordered_on": "2026-03-12"
+ },
+ {
+  "order_id": 31,
+  "region": "east",
+  "product": "B",
+  "units": 2,
+  "price": 9.5,
+  "ordered_on": "2026-04-15"
+ },
+ {
+  "order_id": 32,
+  "region": "west",
+  "product": "B",
+  "units": 5,
+  "price": 9.5,
+  "ordered_on": "2026-02-04"
+ },
+ {
+  "order_id": 33,
+  "region": "east",
+  "product": "C",
+  "units": 5,
+  "price": 7.75,
+  "ordered_on": "2026-02-17"
+ },
+ {
+  "order_id": 34,
+  "region": "north",
+  "product": "A",
+  "units": 9,
+  "price": 20,
+  "ordered_on": "2026-02-23"
+ },
+ {
+  "order_id": 35,
+  "region": "north",
+  "product": "C",
+  "units": 5,
+  "price": 9.5,
+  "ordered_on": "2026-03-17"
+ },
+ {
+  "order_id": 36,
+  "region": "east",
+  "product": "A",
+  "units": 6,
+  "price": 12.25,
+  "ordered_on": "2026-03-21"
+ },
+ {
+  "order_id": 37,
+  "region": "south",
+  "product": "C",
+  "units": 4,
+  "price": 12.25,
+  "ordered_on": "2026-04-24"
+ },
+ {
+  "order_id": 38,
+  "region": "south",
+  "product": "A",
+  "units": 9,
+  "price": 7.75,
+  "ordered_on": "2026-03-24"
+ },
+ {
+  "order_id": 39,
+  "region": "north",
+  "product": "A",
+  "units": 5,
+  "price": 7.75,
+  "ordered_on": "2026-03-07"
+ },
+ {
+  "order_id": 40,
+  "region": "east",
+  "product": "B",
+  "units": 6,
+  "price": 20,
+  "ordered_on": "2026-01-08"
+ }
+]
