@@ -959,3 +959,45 @@ def evidence_fetch(
     typer.echo(
         f"{result.outcome}: source {result.source_id} ({page.status}, {page.content_type}, {len(page.body)} bytes)"
     )
+
+
+@evidence_app.command("discover")
+def evidence_discover(
+    question: str = typer.Argument(..., help="The research question."),
+    leads: Path = typer.Option(
+        ..., "--leads", exists=True, dir_okay=False, help="JSON file of search leads."
+    ),
+    check_robots: bool = typer.Option(
+        False, "--check-robots", help="Pre-check robots.txt (one request per host)."
+    ),
+    limit: int = typer.Option(10, "--limit", min=1, max=50),
+) -> None:
+    """Rank search leads by source authority and relevance, with reasons (no page is fetched)."""
+    import json
+
+    from sie.evidence import EvidenceError, FetchRefused
+    from sie.evidence.discovery import FileProvider, discover, load_authority
+    from sie.evidence.web import WebFetcher
+
+    settings = get_settings()
+    try:
+        fetcher = (
+            WebFetcher(
+                user_agent=settings.http_user_agent,
+                interval=settings.evidence_fetch_interval_seconds,
+                max_bytes=settings.evidence_fetch_max_bytes,
+                timeout=settings.evidence_fetch_timeout_seconds,
+            )
+            if check_robots
+            else None
+        )
+        result = discover(
+            FileProvider(leads), question, rules=load_authority(settings.data_dir / "evidence" / "source_authority.csv"),
+            fetcher=fetcher, limit=limit,
+        )  # fmt: skip
+    except FetchRefused as exc:
+        typer.echo(f"refused ({exc.code}): {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(json.dumps(result.to_dict(), indent=2, sort_keys=True))

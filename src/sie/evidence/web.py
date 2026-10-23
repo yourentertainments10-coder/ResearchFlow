@@ -211,6 +211,12 @@ class WebFetcher:
         return self._robots[host]
 
     # -- public ---------------------------------------------------------------------------------
+    def allowed(self, url: str) -> bool:
+        """Pre-check an address against its host's robots.txt without requesting the page itself."""
+        current, host, port = check_url(url, allow_ports=self._ports)
+        parser, _ = self._robots_for(host, port)
+        return parser.can_fetch(self.user_agent, current)
+
     def fetch(self, url: str) -> FetchedPage:
         """Fetch one page. Raises FetchRefused with a code when any rule says no."""
         current, host, port = check_url(url, allow_ports=self._ports)
