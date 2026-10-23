@@ -303,6 +303,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** No search provider is selected: that needs a key and a stated cost and spend limit. A leads-file provider is included. Authority tiers are a transparent heuristic, not a statement that a source is correct. Collection into datasets (4c), analysis and the model layer are separate steps. The real network function is not exercised by CI (no network there); a controlled live test by the owner is required before any automation. No migration.
 - **Decided by:** the owner (approved 2026-10-23; implementation under review).
 
+## ADR-045: Free-source-first discovery and collection
+
+- **Context:** The owner requires the general research engine to use free sources and free access paths first: public catalogues, public HTML/CSV/JSON, and open APIs. Paid search APIs or billable services must not appear as a hidden dependency or automatic fallback.
+- **Decision:** The default discovery and collection path is free-only. Start with relevant official/government catalogues and documented public dataset APIs, then eligible free search options, then secondary references for context. Catalogue-specific adapters may use documented unauthenticated access or a free key/account only where no payment method or paid plan is needed. Every adapter documents its access requirements, licence/terms, quota and rate limits. Cache results and fetched evidence, avoid repeated calls, use existing libraries/dependencies where possible, and reuse the same normalized dataset for follow-up analytics. When a free quota is exhausted or a provider is unavailable, stop that provider, report the limitation and use cached evidence, another eligible free source, or manual URL/file import. No paid endpoint, automatic paid fallback, billable model call or new dependency is allowed without a separate explicit owner decision. This does not waive source licences, terms, robots.txt or access restrictions; no login/paywall/CAPTCHA/access-control bypass is allowed.
+- **Consequences:** The system cannot promise universal coverage from free sources alone. Missing coverage and confidence must be disclosed instead of silently purchasing access or inventing data. The first working end-to-end loop is deterministic: discover, fetch, preserve provenance, normalize, analyze, report and reuse the dataset for follow-ups.
+- **Status:** Accepted by the owner on 2026-10-23 (request: stick strictly to free sources). Supersedes any ambiguous reading of ADR-044 that a provider must be chosen based on paid pricing or spend limit; ADR-039's no-paid-service-without-decision rule remains in force.
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
