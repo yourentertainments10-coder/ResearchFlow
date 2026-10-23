@@ -45,3 +45,11 @@ class OwnerOnly(EvidenceError):
 
 class PurgeRefused(EvidenceError):
     """A purge or prune was refused: missing confirmation, shared rows, or something still referencing the data."""
+
+
+class FetchRefused(EvidenceError):
+    """A web fetch was refused or stopped on purpose; ``code`` says why (robots, ssrf, status, size ...)."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code

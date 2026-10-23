@@ -32,6 +32,7 @@ from sie.evidence.conflicts import (
 from sie.evidence.errors import (
     BytesNotRetained,
     EvidenceError,
+    FetchRefused,
     IngestBusy,
     NotFound,
     OwnerOnly,
@@ -60,8 +61,13 @@ from sie.evidence.retention import (
 from sie.evidence.scope import SCOPED_API, ProjectScope, create_project, open_scope
 from sie.evidence.sources import SourceInfo, get_source, list_sources, read_bytes
 from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_claim
+from sie.evidence.web import FetchedPage, WebFetcher, check_url, fetch_into_project
 
 __all__ = [
+    "FetchedPage",
+    "WebFetcher",
+    "check_url",
+    "fetch_into_project",
     "ProjectHealth",
     "SourceState",
     "classify_source",
@@ -107,6 +113,7 @@ __all__ = [
     "IngestBusy",
     "IngestResult",
     "NotFound",
+    "FetchRefused",
     "PolicyRefused",
     "ProjectClosed",
     "ProjectScope",
