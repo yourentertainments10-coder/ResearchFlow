@@ -289,6 +289,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Two new settings with defaults. Alerts are not sent by this phase.
 - **Decided by:** the owner (design approved 2026-10-15).
 
+## ADR-044: Web research: safe fetching and source discovery (Phase 4 of the general research engine)
+
+- **Context:** ADR-039 point 3 stores web material as cited evidence, never as verified data. The owner (2026-10-23) wants sources found from a question, not from a fixed list, with official sources preferred and secondary sources used for context.
+- **Decision:** `sie.evidence.web` fetches one page at a time under rules that apply to every host (AGENTS.md rule 9): https only, no credentials, resolved and connected addresses must be public (SSRF guard), robots.txt per host, honest User-Agent with a contact, at least 2 s between requests to a host, stop on 403, 429 or 5xx, at most one same-host redirect, content-type allow-list, byte cap, no compressed bodies. `sie.evidence.discovery` ranks leads from an injected search provider by source authority tier (`data/evidence/source_authority.csv`), relevance and downloadable data, caps results per host, pre-checks robots.txt, and gives a reason for every rejection. No model is used and no number comes from prose. Retention stays as ADR-042 (excerpt by default).
+- **Consequences:** No search provider is selected: that needs a key and a stated cost and spend limit. A leads-file provider is included. Authority tiers are a transparent heuristic, not a statement that a source is correct. Collection into datasets (4c), analysis and the model layer are separate steps. The real network function is not exercised by CI (no network there); a controlled live test by the owner is required before any automation. No migration.
+- **Decided by:** the owner (approved 2026-10-23; implementation under review).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|

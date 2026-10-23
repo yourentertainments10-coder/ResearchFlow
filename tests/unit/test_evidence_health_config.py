@@ -31,3 +31,23 @@ def test_a_value_that_could_mean_never_stale_is_refused(monkeypatch, bad):
     monkeypatch.setenv("EVIDENCE_WEB_MAX_AGE_DAYS", bad)
     with pytest.raises(ValidationError):
         make()
+
+
+@pytest.mark.parametrize("bad", ["1.9", "0", "-1", "fast"])
+def test_the_fetch_interval_cannot_go_below_two_seconds(monkeypatch, bad):
+    monkeypatch.setenv("EVIDENCE_FETCH_INTERVAL_SECONDS", bad)
+    with pytest.raises(ValidationError):
+        make()
+
+
+def test_fetch_defaults(monkeypatch):
+    for k in (
+        "EVIDENCE_FETCH_INTERVAL_SECONDS",
+        "EVIDENCE_FETCH_MAX_BYTES",
+        "EVIDENCE_FETCH_TIMEOUT_SECONDS",
+    ):
+        monkeypatch.delenv(k, raising=False)
+    s = make()
+    assert (s.evidence_fetch_interval_seconds, s.evidence_fetch_max_bytes, s.evidence_fetch_timeout_seconds) == (
+        2.0, 5 * 1024 * 1024, 20.0,
+    )  # fmt: skip

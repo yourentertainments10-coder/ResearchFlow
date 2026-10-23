@@ -5,6 +5,12 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Project-scoped freshness and health (ADR-043)
 - `sie.evidence.health` and `sie project health <slug> [--json]` (read only, no migration): source states `current`, `stale`, `expired`, `pruned`, `upload`; informational `old_upload`; claim counts by status, claims on pruned or expired sources, pending XLSX claims, open conflicts; `gaps_from_health` for `sie.answer`. New settings `EVIDENCE_WEB_MAX_AGE_DAYS` (30) and `EVIDENCE_OLD_UPLOAD_DAYS` (180). Empty project gives an explicit no-sources report.
 
+## Web research: safe fetching and source discovery (ADR-044, Phase 4a and 4b)
+- `sie.evidence.web` (SSRF guard, robots.txt, 2 s interval, stop on 403/429/5xx, one same-host redirect, type and size caps) and `sie.evidence.discovery` (authority-tier ranking with stated reasons, robots pre-check, leads-file provider). New commands `sie evidence fetch` (dry run unless `--execute`) and `sie evidence discover`. No migration, no search provider chosen, no automation. `PHASE4_WEB_RESEARCH_DESIGN.md`.
+
+## Project health (ADR-043)
+- `sie project health` and `sie.evidence.health`: current, stale, expired and pruned sources, claims by status, open conflicts, answer gaps. Read only; old uploads are informational.
+
 ## Evidence ledger and upload storage (ADR-042)
 - Migration 005 (additive) and package `sie.evidence`: per-project uploads in the raw store, claims with source locators, append-only reviews (`source_located` and `human_confirmed` never mean "true"), conflicts, adapters to `sie.answer`, retention modes (web default excerpt-only), owner-only dry-run purge and prune with tombstones, integrity check, `sie project` and `sie evidence` commands. XLSX claims stay unverified until the datasets loader exists. Backups and the provider history are not erased by purge; the Neon window is unverified. `EVIDENCE_LEDGER_DESIGN.md`, `EVIDENCE_RETENTION.md`.
 
