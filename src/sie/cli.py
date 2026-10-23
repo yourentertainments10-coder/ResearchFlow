@@ -9,12 +9,14 @@ from sqlalchemy.exc import DBAPIError
 
 from sie import __version__
 from sie.config import get_settings
+from sie.datasets_cli import register as register_dataset_commands
 from sie.db.roles import PIPELINE, READER, apply_roles
 from sie.db.session import make_engine
 from sie.logging_setup import setup_logging
 from sie.reference import ReferenceDataError, seed_reference
 
 app = typer.Typer(help="Sports Intelligence Engine", no_args_is_help=True)
+register_dataset_commands(app)
 
 
 @app.callback()
