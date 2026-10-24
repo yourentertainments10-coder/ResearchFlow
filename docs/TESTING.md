@@ -117,3 +117,6 @@ Project health (ADR-043): `tests/unit/test_evidence_health_unit.py` (state class
 
 ## Web fetching and discovery (ADR-044)
 `tests/unit/test_evidence_web.py` (offline fake network: address classification, URL rules, SSRF by DNS and by connected peer, robots allow/disallow/unreadable/missing, rate limit with a fake clock, stop on 403/429/5xx, redirects, content type, size, encoding), `tests/unit/test_evidence_discovery.py` (authority rules, ranking, determinism, host cap, rejection reasons, robots pre-check, leads file), `tests/integration/test_evidence_web_fetch.py` (excerpt source, idempotence, project isolation, nothing written on refusal, CLI dry run and refusals). No test makes a real request.
+
+## Collection (ADR-044, Phase 4c)
+`tests/unit/test_evidence_collect.py` (single and several tables, scripts ignored, ten kinds of unreadable table each refused with its reason, a refused table beside a good one is reported, CSV and JSON through the datasets loader, row provenance, determinism).

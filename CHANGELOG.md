@@ -10,6 +10,9 @@ All notable changes to this project and its documentation. Format follows Keep a
 ## Project-scoped freshness and health (ADR-043)
 - `sie.evidence.health` and `sie project health <slug> [--json]` (read only, no migration): source states `current`, `stale`, `expired`, `pruned`, `upload`; informational `old_upload`; claim counts by status, claims on pruned or expired sources, pending XLSX claims, open conflicts; `gaps_from_health` for `sie.answer`. New settings `EVIDENCE_WEB_MAX_AGE_DAYS` (30) and `EVIDENCE_OLD_UPLOAD_DAYS` (180). Empty project gives an explicit no-sources report.
 
+## Collection into tables with provenance (ADR-044, Phase 4c, first part)
+- `sie.evidence.collect`: CSV and JSON go through `sie.datasets` unchanged; HTML tables are read with the standard library and refused, with a stated reason, when they have merged cells, nested tables, no header row, duplicate or empty headers, ragged rows or no data. A page with several usable tables must be told which one (no guessing); empty cells stay missing. `row_provenance` gives URL, retrieval time, page hash, table and row id for any row. No dependency, no migration, no storage yet.
+
 ## Web research: safe fetching and source discovery (ADR-044, Phase 4a and 4b)
 - `sie.evidence.web` (SSRF guard, robots.txt, 2 s interval, stop on 403/429/5xx, one same-host redirect, type and size caps) and `sie.evidence.discovery` (authority-tier ranking with stated reasons, robots pre-check, leads-file provider). New commands `sie evidence fetch` (dry run unless `--execute`) and `sie evidence discover`. No migration, no search provider chosen, no automation. `PHASE4_WEB_RESEARCH_DESIGN.md`.
 
