@@ -78,3 +78,9 @@ Every change request follows: requirement, impact analysis (DB, pipeline, analyt
 Phase 1 (answer contract and number lock, `sie.answer`) done 2026-10-11. Next, each with its own proposal: 2 evidence ledger and uploads in `raw_documents` (migration), 3 project-scoped freshness and health, 4 web research with citations, 5 router and model layer behind the number lock, 6 conversation backend, authentication and quotas. Order and acceptance criteria: the architecture proposal of 2026-10-11 and `GENERALISATION_AUDIT.md` section 8. `sie.datasets` (file analytics) is developed separately on `feature/datasets-library`.
 
 Phase 2 (evidence ledger and uploads, ADR-042) built on `feature/evidence-ledger`; production migration is gated on the owner's backup and approval (`DEPLOYMENT.md` section 10).
+
+Update 2026-10-15: `sie.datasets` (file analytics, ADR-040) merged as PR #29. Phase 1 (#27) merged. Phase 2 is PR #28 (open, owner review). Planned next, each with its own design approval and PR, built one at a time:
+- Phase 3 project-scoped freshness and health: design `PHASE3_PROJECT_HEALTH_DESIGN.md` (awaiting approval).
+- Follow-up after #28 merges: XLSX claim verification through `sie.datasets` (replaces `xlsx_verification_pending_datasets_loader`).
+- Phase 4 web research with citations (fetcher under AGENTS.md rule 9), Phase 5 router and model layer behind the number lock (D4 still open), Phase 6 conversation backend, authentication and quotas.
+- Phase 7 (second competition, cross-competition analytics, Hindi/English reports, Power BI template, athlete-level data) stays optional.

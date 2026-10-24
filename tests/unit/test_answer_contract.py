@@ -390,9 +390,9 @@ def test_the_answer_package_imports_nothing_from_the_sports_or_database_code():
         assert _sie_imports(path) <= allowed, (path.name, _sie_imports(path) - allowed)
 
 
-# Phase 2 (ADR-042) is the first adopter. Only this module may import sie.answer; any other new
+# Phase 2 (ADR-042) adapters and Phase 3 (ADR-043) health map ledger state to answer Gaps. Only these may import sie.answer; any other new
 # importer still fails the test and needs its own review.
-ANSWER_ADOPTERS = {"evidence/adapters.py"}
+ANSWER_ADOPTERS = {"evidence/adapters.py", "evidence/health.py"}
 
 
 def test_no_existing_module_imports_the_answer_package_yet():
@@ -403,7 +403,7 @@ def test_no_existing_module_imports_the_answer_package_yet():
         if any(m == "sie.answer" or m.startswith("sie.answer.") for m in _sie_imports(path)):
             users.append(str(path.relative_to(SRC)))
     assert sorted(users) == sorted(ANSWER_ADOPTERS), (
-        "only the evidence adapters may import sie.answer so far; adopt it elsewhere in a later phase"
+        "only the evidence adapters and health may import sie.answer so far; adopt it elsewhere in a later phase"
     )
 
 

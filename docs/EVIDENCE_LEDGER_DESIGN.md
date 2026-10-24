@@ -1,6 +1,6 @@
 # Evidence Ledger and Upload Storage (ADR-042)
 
-Status: implemented on `feature/evidence-ledger` (Phase 2). Code: `src/sie/evidence/`. DDL: `src/sie/db/sql/005_evidence_ledger.sql`.
+Status: implemented (Phase 3 health added in section 8) on `feature/evidence-ledger` (Phase 2). Code: `src/sie/evidence/`. DDL: `src/sie/db/sql/005_evidence_ledger.sql`.
 
 ## 1. What it is
 A per-project store of **sources** (an uploaded file, or a fetched web page) and **claims** (one stated value taken from a source, with where it came from). It feeds `sie.answer` as `EvidenceRef` and evidence-layer `Figure` objects. It does not change any sports table or view.
@@ -34,5 +34,8 @@ Public functions take a `ProjectScope` obtained from `open_scope`, never a raw i
 ## 7. Commands
 `sie project create|list|purge`, `sie evidence upload|check|prune`. Purge and prune are owner-only (the `pipeline` role is refused), dry-run by default, and need `--execute` plus `--confirm <slug>` (purge, and `--by` naming a person) or `--confirm prune`.
 
-## 8. Not built
+## 8. Project health (Phase 3, ADR-043)
+Read-only; no table, no migration. `sie.evidence.health.project_health(conn, scope, now, web_max_age, old_upload_after)` and `sie project health <slug> [--json]`. Source states: `pruned` (the stored bytes were actually removed; never reported as current), `expired` (the retention deadline `retain_until` has passed, bytes may still be stored until `sie evidence prune`), `stale` (a web source older than `EVIDENCE_WEB_MAX_AGE_DAYS`, default 30: potentially outdated, not necessarily false), `current`, and `upload` (uploads never go stale by age; `old_upload` is an informational flag after `EVIDENCE_OLD_UPLOAD_DAYS`, default 180). The report also gives claims by current status, claims on pruned and expired sources, XLSX claims still unverified, and open conflict ids. Exit code 0 unless a source is pruned, expired or stale or a conflict is open (exit 1); an unknown project exits 2. An empty project prints an explicit `no_sources` report and exits 0; an old upload alone exits 0. `gaps_from_health(report)` turns the problems into `sie.answer` gaps (`stale`, `missing_data`, `conflict`, `unverified`). The 90-day full-copy retention is unchanged. Health says nothing about whether a claim is true.
+
+## 9. Not built
 Web fetching itself (Phase 4; `register_fetched_source` only records what a fetcher passes it), authentication and quotas, XLSX verification, any UI.
