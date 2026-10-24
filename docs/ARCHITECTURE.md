@@ -86,6 +86,13 @@ sie/
 |   |   |-- snapshots.py  changes.py  insights.py
 |   |-- reporting/             (exports.py, excel.py)
 |   |-- llm/                   (optional explainer; off by default)
+|   |-- answer/                (ADR-041: answer contract and number lock; no database, no commands)
+|   |-- datasets/              (ADR-040: generic analytics for one uploaded table; a library)
+|   |   |-- models.py  provenance.py  types.py      (specs as data, canonical hashing, type inference)
+|   |   |-- load.py  profile.py  clean.py  calc.py  (read, describe, cleaning plan, six operations)
+|   |   |-- export.py  store.py  run.py  shorthand.py (outputs and manifest, raw copy and atomic publish,
+|   |   |                                              one-request orchestration, text-to-spec helpers)
+|   |-- datasets_cli.py        (the only importer of sie.datasets: sie profile|clean|calc|calc-spec|operations)
 |   `-- cli.py
 |-- dashboard/
 |   |-- app.py

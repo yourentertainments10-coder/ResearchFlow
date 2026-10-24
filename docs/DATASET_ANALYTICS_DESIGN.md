@@ -1,7 +1,7 @@
 # Design: generic analytics for an uploaded file (step 2 of the generalisation plan)
 
-Status: **proposed design, revision 2, waiting for the owner's approval before any code**
-(`AGENTS.md` section 1.4). Context: ADR-039, `GENERALISATION_AUDIT.md` section 8 step 2.
+Status: **approved by the owner on 2026-10-12 (revision 2); implemented on `feature/datasets-library-impl`**
+(`AGENTS.md` section 1.4). Differences from the text below are listed in section 17. Context: ADR-039, `GENERALISATION_AUDIT.md` section 8 step 2.
 Revision 2 (2026-10-11) adds the owner's seven requirements (sections 5 to 11) and the library-first
 decision (section 4).
 
@@ -373,3 +373,11 @@ in its log, run the deployed-site smoke test.
 Where uploaded files live in step 3 (`raw_documents` or a new table), authentication for uploads, the final
 limit values, which charts to produce, filters on operations, multiple sheets or files, and the research
 planner's own design. Each gets its own proposal.
+
+## 17. Implementation notes (differences and choices made while building)
+- Row ids count every record after the header including blank lines (which are skipped and counted), so a `row_id` always points at the same record in the file.
+- Output files in a run directory: `profile.json`, `profile_columns.csv`, `cleaned.csv`, `rejects.csv`, `duplicates.csv`, `load_rejects.csv` (only when rows were set aside at load), `result_NN_<operation>.csv`, `results.xlsx` and `manifest.json`. `manifest.json` lists every other file with size and SHA-256; `verify_directory` re-checks them.
+- Orchestration is `sie.datasets.run.run_request`; the text forms used by the commands (`COL:DEC:THOU`, `COL:FORMAT`, `--by a,b`) are `sie.datasets.shorthand`. Column names containing `:` or `,` must be given through a JSON spec.
+- Excel merged-range and hidden row/column counts are read from the sheet XML (the read-only reader does not expose them); if the sheet part cannot be read the manifest says so instead of reporting zero.
+- Integers above 2^53 are written to XLSX as text (a spreadsheet number cannot hold them exactly) and counted; time-zone-aware timestamps are written as ISO text and counted; control characters illegal in XML are replaced and counted.
+- `sie profile` writes to `--out`, default `DATA_DIR/analysis`; the other commands require `--out`.
