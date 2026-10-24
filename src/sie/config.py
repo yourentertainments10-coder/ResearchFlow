@@ -86,6 +86,9 @@ class Settings(BaseSettings):
     # Persisted collected datasets (ADR-044): where they live, how long they are kept by default.
     evidence_dataset_path: Path | None = None
     evidence_dataset_retention_days: int = Field(default=90, ge=1)
+    # Free-source research (ADR-045): cache lifetimes. Discovery answers go stale faster than data files.
+    research_discovery_cache_hours: int = Field(default=24, ge=1)
+    research_data_cache_hours: int = Field(default=168, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None
@@ -135,6 +138,10 @@ class Settings(BaseSettings):
     @property
     def source_priority_list(self) -> list[str]:
         return [s.strip() for s in self.source_priority.split(",") if s.strip()]
+
+    @property
+    def research_dir(self) -> Path:
+        return self.data_dir / "research"
 
     @property
     def reference_dir(self) -> Path:

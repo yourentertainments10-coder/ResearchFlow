@@ -392,7 +392,7 @@ def test_the_answer_package_imports_nothing_from_the_sports_or_database_code():
 
 # Phase 2 (ADR-042) adapters and Phase 3 (ADR-043) health map ledger state to answer Gaps. Only these may import sie.answer; any other new
 # importer still fails the test and needs its own review.
-ANSWER_ADOPTERS = {"evidence/adapters.py", "evidence/health.py"}
+ANSWER_ADOPTERS = {"evidence/adapters.py", "evidence/health.py", "research/report.py"}
 
 
 def test_no_existing_module_imports_the_answer_package_yet():

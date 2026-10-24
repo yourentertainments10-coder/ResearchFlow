@@ -1,5 +1,11 @@
 # Changelog
 
+## Free discovery, collection, cache and report (ADR-046, Phase 4c)
+- `sie.research` and `sie research discover|collect|ask|datasets`: registry of free keyless catalogues (data.gov.uk CKAN, OpenAlex), file cache, CSV/JSON/HTML table collection through `sie.datasets` (HTML parsing reuses `sie.evidence.collect`) with row-level provenance and flagged missing, rejected and conflicting values, a content-keyed dataset store reused for follow-ups, deterministic analysis, a number-locked answer with disclosed gaps, SVG chart, markdown report.
+- Cost guard: only `free_no_key` catalogues load; quota exhaustion, timeouts and failures are reported and skipped, never replaced by a paid or unregistered endpoint (tests, simulated network).
+- Fix in `sie.datasets`: group and top-N operations no longer emit a false "no non-null values" warning from their validation probe.
+- Not verified live: no real catalogue was contacted from the build environment. Not built: catalog.data.gov, open.canada.ca, data.gov.in, Wikimedia, Common Crawl, a general web-search provider, and linking collected datasets to the evidence ledger.
+
 ## Free-source-first research policy (ADR-045)
 - General research must start with free public catalogues, official/government data sources, documented open APIs and eligible free search options. No paid search provider, billable model or automatic paid fallback is allowed without a separate explicit owner decision.
 - When free quotas are exhausted or coverage is unavailable, report the limitation and use cached evidence, another eligible free source or manual URL/file import.
@@ -14,7 +20,7 @@ All notable changes to this project and its documentation. Format follows Keep a
 - `sie.evidence.collect`: CSV and JSON go through `sie.datasets` unchanged; HTML tables are read with the standard library and refused, with a stated reason, when they have merged cells, nested tables, no header row, duplicate or empty headers, ragged rows or no data. A page with several usable tables must be told which one (no guessing); empty cells stay missing. `row_provenance` gives URL, retrieval time, page hash, table and row id for any row. No dependency, no migration, no storage yet.
 
 ## Web research: safe fetching and source discovery (ADR-044, Phase 4a and 4b)
-- `sie.evidence.web` (SSRF guard, robots.txt, 2 s interval, stop on 403/429/5xx, one same-host redirect, type and size caps) and `sie.evidence.discovery` (authority-tier ranking with stated reasons, robots pre-check, leads-file provider). New commands `sie evidence fetch` (dry run unless `--execute`) and `sie evidence discover`. No migration, no search provider chosen, no automation. `PHASE4_WEB_RESEARCH_DESIGN.md`.
+- `sie.evidence.web` (SSRF guard, robots.txt, 2 s interval, stop on 403/429/5xx, one same-host redirect, type and size caps) and `sie.evidence.discovery` (authority-tier ranking with stated reasons, robots pre-check, manual leads-file provider). New commands `sie evidence fetch` (dry run unless `--execute`) and `sie evidence discover`. No migration, no real free-search/catalogue adapter yet, no automation. `PHASE4_WEB_RESEARCH_DESIGN.md`.
 
 ## Evidence ledger and upload storage (ADR-042)
 - Migration 005 (additive) and package `sie.evidence`: per-project uploads in the raw store, claims with source locators, append-only reviews (`source_located` and `human_confirmed` never mean "true"), conflicts, adapters to `sie.answer`, retention modes (web default excerpt-only), owner-only dry-run purge and prune with tombstones, integrity check, `sie project` and `sie evidence` commands. XLSX claims stay unverified until the datasets loader exists. Backups and the provider history are not erased by purge; the Neon window is unverified. `EVIDENCE_LEDGER_DESIGN.md`, `EVIDENCE_RETENTION.md`.

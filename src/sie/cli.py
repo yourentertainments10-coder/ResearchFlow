@@ -14,9 +14,11 @@ from sie.db.roles import PIPELINE, READER, apply_roles
 from sie.db.session import make_engine
 from sie.logging_setup import setup_logging
 from sie.reference import ReferenceDataError, seed_reference
+from sie.research_cli import register as register_research_commands
 
 app = typer.Typer(help="Sports Intelligence Engine", no_args_is_help=True)
 register_dataset_commands(app)
+register_research_commands(app)
 
 
 @app.callback()
