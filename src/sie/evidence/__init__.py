@@ -23,11 +23,23 @@ from sie.evidence.claims import (
     list_claims,
     review_claim,
 )
+from sie.evidence.collect import CollectedDataset, collect, row_provenance
 from sie.evidence.conflicts import (
     ConflictInfo,
     detect_conflicts,
     list_conflicts,
     resolve_conflict,
+)
+from sie.evidence.dataset_store import (
+    RowsPermission,
+    delete_dataset,
+    find_cached,
+    list_datasets,
+    load_open_licences,
+    load_row_policies,
+    open_stored,
+    rows_permission,
+    save_dataset,
 )
 from sie.evidence.errors import (
     BytesNotRetained,
@@ -64,6 +76,18 @@ from sie.evidence.verify import VERIFIER_VERSION, VerificationResult, verify_cla
 from sie.evidence.web import FetchedPage, WebFetcher, check_url, fetch_into_project
 
 __all__ = [
+    "CollectedDataset",
+    "RowsPermission",
+    "collect",
+    "delete_dataset",
+    "find_cached",
+    "list_datasets",
+    "load_open_licences",
+    "load_row_policies",
+    "open_stored",
+    "row_provenance",
+    "rows_permission",
+    "save_dataset",
     "FetchedPage",
     "WebFetcher",
     "check_url",

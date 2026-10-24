@@ -83,6 +83,9 @@ class Settings(BaseSettings):
     evidence_fetch_interval_seconds: float = Field(default=2.0, ge=2.0)
     evidence_fetch_max_bytes: int = Field(default=5 * 1024 * 1024, ge=1024)
     evidence_fetch_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
+    # Persisted collected datasets (ADR-044): where they live, how long they are kept by default.
+    evidence_dataset_path: Path | None = None
+    evidence_dataset_retention_days: int = Field(default=90, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None
@@ -120,6 +123,10 @@ class Settings(BaseSettings):
     @property
     def evidence_policy_file(self) -> Path:
         return self.evidence_policy_path or self.data_dir / "evidence" / "source_policies.csv"
+
+    @property
+    def evidence_dataset_dir(self) -> Path:
+        return self.evidence_dataset_path or self.data_dir / "evidence_datasets"
 
     @property
     def scheduled_source_list(self) -> list[str]:
