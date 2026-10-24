@@ -60,6 +60,8 @@ class SearchHit:
     title: str = ""
     snippet: str = ""
     published: str | None = None  # as reported by the provider; informational only
+    licence: str | None = None  # as reported by the catalogue; never checked here
+    source_name: str | None = None  # which free catalogue or provider proposed the lead
 
 
 class SearchProvider(Protocol):
@@ -124,6 +126,8 @@ class Candidate:
     allowed_by_robots: bool | None  # None: not checked
     published: str | None
     reasons: tuple[str, ...]
+    licence: str | None = None
+    source_name: str | None = None
 
 
 @dataclass(frozen=True)
@@ -208,7 +212,8 @@ def discover(
             reasons.append("host not in the authority list: treated as lowest tier")
         kept.append(
             Candidate(url, host, hit.title[:200], tier, category, round(relevance, 4), structured,
-                      score(tier, relevance, structured), None, hit.published, tuple(reasons))
+                      score(tier, relevance, structured), None, hit.published, tuple(reasons),
+                      hit.licence, hit.source_name)
         )  # fmt: skip
     kept.sort(key=lambda c: (-c.score, c.url))
     per_host: dict[str, int] = {}

@@ -34,3 +34,17 @@
 6. Verify each adapter's free-tier boundary with tests: no payment calls, no automatic provider switching to paid endpoints, clear handling for quota exhaustion, caching, duplicate idempotency, provenance, and source-policy violations.
 
 A free-only engine will not find every source for every topic. It must disclose coverage gaps and invite a manual source/file when a free source is unavailable rather than inventing evidence or charging for access.
+
+## Implementation status (2026-10-24, ADR-046)
+| Candidate | Status | Why |
+|---|---|---|
+| data.gov.uk (CKAN) | **Implemented** (`catalogues.csv`) | Guidance states no API key and no rate limits; datasets keep their own licence |
+| OpenAlex | **Implemented**, keyless only | Documentation: keyless basic use, daily budget, HTTP 429 on exhaustion; paid plans exist and are never used |
+| catalog.data.gov, open.canada.ca | Not enabled | Their API terms pages could not be read on this date; the generic CKAN adapter can take them once someone verifies and adds a row |
+| data.gov.in | Not enabled | API use needs a key and its terms are unchecked; use a downloaded file with `sie research collect` meanwhile |
+| Wikimedia | Not enabled | Rate-limit page unreadable on this date; robots.txt rules would also apply to the safe fetcher |
+| Common Crawl, APISetu, Kaggle | Not enabled | As above: individual terms must be checked first |
+| General web search | None added | No keyless search with documented permission for automated use was verified; discovery relies on catalogues, a leads file, and URLs you give |
+
+None of the above was contacted live from the build environment.
+

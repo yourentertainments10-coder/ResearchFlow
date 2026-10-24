@@ -1,5 +1,11 @@
 # Changelog
 
+## Free discovery, collection, cache and report (ADR-046, Phase 4c)
+- `sie.research` and `sie research discover|collect|ask|datasets`: registry of free keyless catalogues (data.gov.uk CKAN, OpenAlex), file cache, CSV/JSON/HTML table collection through `sie.datasets` with row-level provenance and flagged missing, rejected and conflicting values, a content-keyed dataset store reused for follow-ups, deterministic analysis, a number-locked answer with disclosed gaps, SVG chart, markdown report.
+- Cost guard: only `free_no_key` catalogues load; quota exhaustion, timeouts and failures are reported and skipped, never replaced by a paid or unregistered endpoint (tests, simulated network).
+- Fix in `sie.datasets`: group and top-N operations no longer emit a false "no non-null values" warning from their validation probe.
+- Not verified live: no real catalogue was contacted from the build environment. Not built: catalog.data.gov, open.canada.ca, data.gov.in, Wikimedia, Common Crawl, a general web-search provider, and linking collected datasets to the evidence ledger.
+
 ## Free-source-first research policy (ADR-045)
 - General research must start with free public catalogues, official/government data sources, documented open APIs and eligible free search options. No paid search provider, billable model or automatic paid fallback is allowed without a separate explicit owner decision.
 - When free quotas are exhausted or coverage is unavailable, report the limitation and use cached evidence, another eligible free source or manual URL/file import.

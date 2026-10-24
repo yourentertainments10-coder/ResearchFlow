@@ -71,3 +71,7 @@ Language-model planning and extraction (Phase 5), conversation and authenticatio
 3. **Analysis, charts and reports** on the collected dataset, with same-dataset follow-up reuse. Deterministic pandas/SQL operations and existing charting dependencies first; no model required for first working analytics loop.
 4. **Metric definitions** for questions such as "how many times has a party won": Lok Sabha seats, assembly seats and governments formed are different metrics and are kept apart, never summed.
 5. **Cost guard**: tests prove that exhausted quotas, timeouts or unavailable providers cannot trigger any paid endpoint; every adapter reports whether access is free, capped or manual.
+
+## 10. Verification status (2026-10-24)
+Built and tested on a simulated network: free catalogue adapters (data.gov.uk CKAN, OpenAlex keyless), cache, cost guard, 4c collection, dataset store and reuse, analysis, number-locked report, chart, `sie research` commands (ADR-046). **Not done:** a real controlled live fetch (the build environment cannot reach public sites), linking collected datasets to the evidence ledger, the other candidates in `FREE_SOURCE_CATALOGUE.md`, Phase 5 and 6. Metric definitions for questions such as "how many times has a party won" (section 9, item 4) are not encoded: the user chooses the operation and column, and seats, governments formed and wins are never summed by the code.
+

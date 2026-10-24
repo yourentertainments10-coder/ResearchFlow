@@ -83,6 +83,9 @@ class Settings(BaseSettings):
     evidence_fetch_interval_seconds: float = Field(default=2.0, ge=2.0)
     evidence_fetch_max_bytes: int = Field(default=5 * 1024 * 1024, ge=1024)
     evidence_fetch_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
+    # Free-source research (ADR-045): cache lifetimes. Discovery answers go stale faster than data files.
+    research_discovery_cache_hours: int = Field(default=24, ge=1)
+    research_data_cache_hours: int = Field(default=168, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None
@@ -128,6 +131,10 @@ class Settings(BaseSettings):
     @property
     def source_priority_list(self) -> list[str]:
         return [s.strip() for s in self.source_priority.split(",") if s.strip()]
+
+    @property
+    def research_dir(self) -> Path:
+        return self.data_dir / "research"
 
     @property
     def reference_dir(self) -> Path:
