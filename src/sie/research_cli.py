@@ -125,6 +125,7 @@ def research_ask(
         AnalysisItem,
         analyze,
         build_report,
+        default_columns,
         plan_from_dict,
     )
     from sie.research.store import ResearchStore
@@ -163,9 +164,8 @@ def research_ask(
     table = run.tables[0]
     try:
         result = analyze(table, spec, plan)
-        cols = list(result.table.columns)
-        lab = label or (cols[0] if cols else "")
-        val = value or (cols[1] if len(cols) > 1 else lab)
+        default_label, default_value = default_columns(result.table)
+        lab, val = label or default_label, value or default_value
         report = build_report(
             question, run.tables, [AnalysisItem(str(spec.get("op", "operation")), result, lab, val)],
             now=datetime.now(UTC), tiers=run.tiers, stale_urls=run.stale_urls,

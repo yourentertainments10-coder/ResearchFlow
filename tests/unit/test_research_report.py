@@ -12,7 +12,14 @@ from sie.answer import verify
 from sie.evidence.errors import EvidenceError
 from sie.evidence.web import FetchedPage
 from sie.research.collect import collect_page, find_conflicts
-from sie.research.report import AnalysisItem, analyze, build_report, plan_from_dict, svg_bar_chart
+from sie.research.report import (
+    AnalysisItem,
+    analyze,
+    build_report,
+    default_columns,
+    plan_from_dict,
+    svg_bar_chart,
+)
 
 URL = "https://data.example.gov.uk/election/results.csv"
 PLAN = plan_from_dict({"parse_number": [{"column": "seats"}]})
@@ -121,3 +128,13 @@ def test_age_of_the_data_is_stated():
     r = report()
     assert (NOW - timedelta(0)).strftime("%Y-%m-%d %H:%M UTC") in r.markdown
     assert isinstance(r.coverage[0]["rows"], int) and pd is not None
+
+
+def test_default_columns_pick_the_name_and_the_final_metric_for_each_operation():
+    t = table()
+    grouped = analyze(t, SPEC, PLAN).table
+    top = analyze(t, {"op": "top_n", "by": "party", "metric": "seats:sum", "n": 2}, PLAN).table
+    assert default_columns(grouped) == ("party", "seats:sum")  # not the group-size column
+    assert default_columns(top) == ("party", "seats:sum")  # not the rank column
+    with pytest.raises(EvidenceError):
+        default_columns(pd.DataFrame({"only": [1]}))

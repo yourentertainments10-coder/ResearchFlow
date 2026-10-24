@@ -70,6 +70,16 @@ def analyze(table: CollectedTable, spec: dict, plan: CleanPlan | None = None) ->
     return run_operation(cleaned.dataset, spec, cleaning=cleaned)
 
 
+def default_columns(table: pd.DataFrame) -> tuple[str, str]:
+    """(label column, value column) for a result table: the first column that is not a rank, and the last
+    column, which is the final metric in every operation's output. Callers can override both."""
+    cols = [str(c) for c in table.columns]
+    if len(cols) < 2:
+        raise EvidenceError("the result has no value column to report")
+    label = next((c for c in cols if c != "rank"), cols[0])
+    return label, cols[-1]
+
+
 def plan_from_dict(data: dict) -> CleanPlan:
     """A cleaning plan from validated JSON (never code)."""
     try:
