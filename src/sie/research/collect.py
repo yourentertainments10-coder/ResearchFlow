@@ -13,12 +13,12 @@ import csv
 import io
 import json
 from dataclasses import dataclass, field
-from html.parser import HTMLParser
 
 import pandas as pd
 
 from sie.datasets import Dataset, DatasetError, Limits, LoadOptions, open_dataset
 from sie.datasets.provenance import sha256_bytes
+from sie.evidence.collect import html_tables
 from sie.evidence.errors import EvidenceError
 from sie.evidence.web import FetchedPage
 
@@ -61,75 +61,15 @@ class CollectedTable:
         return frame
 
 
-# --- HTML tables ------------------------------------------------------------------------------------
+# --- HTML tables: parsed by sie.evidence.collect (one parser in the code base) -----------------------
 
 
-class _Tables(HTMLParser):
-    def __init__(self) -> None:
-        super().__init__(convert_charrefs=True)
-        self.tables: list[dict] = []
-        self._stack: list[dict] = []
-        self._cell: list[str] | None = None
-        self._row: list[str] | None = None
-        self.nested = 0
-
-    def handle_starttag(self, tag, attrs):
-        a = dict(attrs)
-        if tag == "table":
-            if self._stack:
-                self.nested += 1
-            self._stack.append({"rows": [], "header_row": False, "spans": False})
-        elif not self._stack:
-            return
-        elif tag == "tr":
-            self._row = []
-        elif tag in ("td", "th") and self._row is not None:
-            self._cell = []
-            if tag == "th" and not self._stack[-1]["rows"]:
-                self._stack[-1]["header_row"] = True
-            for span in ("colspan", "rowspan"):
-                if str(a.get(span, "1")).strip() not in ("", "1"):
-                    self._stack[-1]["spans"] = True
-        elif tag == "br" and self._cell is not None:
-            self._cell.append(" ")
-
-    def handle_data(self, data):
-        if self._cell is not None:
-            self._cell.append(data)
-
-    def handle_endtag(self, tag):
-        if not self._stack:
-            return
-        if tag in ("td", "th") and self._cell is not None and self._row is not None:
-            self._row.append(" ".join("".join(self._cell).split()))
-            self._cell = None
-        elif tag == "tr" and self._row is not None:
-            if any(c for c in self._row):
-                self._stack[-1]["rows"].append(self._row)
-            self._row = None
-        elif tag == "table":
-            self.tables.append(self._stack.pop())
-
-
-def html_tables(body: bytes) -> tuple[list[dict], int]:
-    parser = _Tables()
-    parser.feed(body.decode("utf-8", errors="replace"))
-    parser.close()
-    return parser.tables, parser.nested
-
-
-def _csv_bytes(rows: list[list[str]]) -> tuple[bytes, list[str]]:
-    flags: list[str] = []
-    header = list(rows[0])
-    for i, h in enumerate(header):
-        if not h.strip():
-            header[i] = f"column_{i + 1}"
-            flags.append(f"empty_header_named:column_{i + 1}")
+def _csv_bytes(header: list[str], rows: list[list[str]]) -> bytes:
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
     writer.writerow(header)
-    writer.writerows(rows[1:])
-    return buf.getvalue().encode("utf-8"), flags
+    writer.writerows(rows)
+    return buf.getvalue().encode("utf-8")
 
 
 # --- JSON -------------------------------------------------------------------------------------------
@@ -202,26 +142,28 @@ def collect_page(
         data = page.body if where == "$" else json.dumps(records, sort_keys=False).encode("utf-8")
         return [build("json", "page.json", data, LoadOptions(rename_duplicates=True), extra)]
     if ctype == "text/html":
-        tables, nested = html_tables(page.body)
-        usable = [t for t in tables if len(t["rows"]) >= 2 and max(map(len, t["rows"])) >= 2]
+        tables = html_tables(page.body)
+        usable = [t for t in tables if t.refusal is None]
+        refused = [f"table_refused:{t.index}:{t.refusal}" for t in tables if t.refusal is not None]
         if not usable:
             raise NothingCollected(
-                f"the page has no usable HTML table ({len(tables)} found, none with a header and a row)"
+                f"the page has no usable HTML table ({len(tables)} found"
+                + (f"; {'; '.join(refused)}" if refused else "")
+                + ")"
             )
-        out = []
-        skipped = len(usable) - max_tables
-        for i, t in enumerate(usable[:max_tables], start=1):
-            data, extra = _csv_bytes(t["rows"])
-            if not t["header_row"]:
-                extra.append("header_assumed_first_row")
-            if t["spans"]:
-                extra.append("merged_cells_present")
-            if nested:
-                extra.append(f"nested_tables_on_page:{nested}")
-            if skipped > 0:
-                extra.append(f"tables_not_collected:{skipped}")
-            out.append(build(f"table-{i}", f"table-{i}.csv", data, CSV_OPTIONS, extra))
-        return out
+        extra = list(refused)
+        if len(usable) > max_tables:
+            extra.append(f"tables_not_collected:{len(usable) - max_tables}")
+        return [
+            build(
+                f"table-{t.index}",
+                f"table-{t.index}.csv",
+                _csv_bytes(t.header, t.rows),
+                CSV_OPTIONS,
+                extra,
+            )
+            for t in usable[:max_tables]
+        ]
     raise NothingCollected(f"content type {ctype} cannot be collected")
 
 

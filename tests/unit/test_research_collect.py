@@ -75,28 +75,43 @@ HTML = """<html><body><table><tr><td>layout only</td></tr></table>
 <table><caption>Results</caption>
 <tr><th>Party</th><th>Seats</th></tr>
 <tr><td>Alpha</td><td>300</td></tr>
-<tr><td>Beta</td><td>150</td></tr>
-<tr><td>Gamma</td></tr>
+<tr><td>Beta</td><td></td></tr>
 </table></body></html>"""
 
 
-def test_an_html_table_is_read_with_the_standard_library_and_ragged_rows_are_rejected():
+def test_an_html_table_is_read_and_a_refused_table_beside_it_is_disclosed():
     (t,) = collect_page(page(HTML, "text/html"))
     assert t.label == "table-1" and t.rows == 2
     assert list(t.dataset.frame.columns) == ["Party", "Seats"]
-    assert len(t.dataset.rejects) == 1 and "rejected_rows:1" in t.flags
-    assert t.dataset.frame["Seats"].tolist() == ["300", "150"]
+    assert any(f.startswith("table_refused:0:has no header row") for f in t.flags)
+    assert coverage(t)["missing_values_by_column"] == {"Seats": 1}  # the empty cell stays missing
 
 
-def test_html_flags_headerless_merged_duplicate_and_empty_headers():
-    html = (
-        "<table><tr><td colspan='2'>x</td><td>y</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table>"
-        "<table><tr><th>a</th><th>a</th><th></th></tr><tr><td>1</td><td>2</td><td>3</td></tr></table>"
-    )
-    first, second = collect_page(page(html, "text/html"))
-    assert "header_assumed_first_row" in first.flags and "merged_cells_present" in first.flags
-    assert any(f.startswith("empty_header_named:column_3") for f in second.flags)
-    assert len(set(second.dataset.frame.columns)) == 3  # the duplicate header was renamed, not lost
+@pytest.mark.parametrize(
+    ("html", "reason"),
+    [
+        (
+            "<table><tr><th colspan='2'>x</th></tr><tr><td>1</td><td>2</td></tr></table>",
+            "merged cells",
+        ),
+        ("<table><tr><th>a</th><th>a</th></tr><tr><td>1</td><td>2</td></tr></table>", "duplicate"),
+        (
+            "<table><tr><th>a</th><th></th></tr><tr><td>1</td><td>2</td></tr></table>",
+            "empty column header",
+        ),
+        (
+            "<table><tr><th>a</th><th>b</th></tr><tr><td>1</td></tr></table>",
+            "different number of cells",
+        ),
+        (
+            "<table><tr><td>a</td><td>b</td></tr><tr><td>1</td><td>2</td></tr></table>",
+            "no header row",
+        ),
+    ],
+)
+def test_an_unreadable_html_table_is_refused_with_its_reason_never_repaired(html, reason):
+    with pytest.raises(NothingCollected, match=reason):
+        collect_page(page(html, "text/html"))
 
 
 def test_html_without_a_usable_table_is_an_explicit_nothing():
@@ -116,14 +131,14 @@ def test_plain_text_is_read_only_when_the_address_says_csv():
         collect_page(page("a,b\n1,2\n", "text/plain", url="https://x.example.gov.uk/f.txt"))
 
 
-def test_no_row_is_lost_between_the_html_and_the_table():
+def test_every_html_row_reaches_the_table():
     body = (
         "<table><tr><th>a</th><th>b</th></tr>"
         + "".join(f"<tr><td>{i}</td><td>{i}</td></tr>" for i in range(50))
-        + "<tr><td>only</td></tr></table>"
+        + "</table>"
     )
     (t,) = collect_page(page(body, "text/html"))
-    assert t.rows + len(t.dataset.rejects) == 51
+    assert t.rows == 50 and t.dataset.frame.index.tolist() == list(range(1, 51))
 
 
 def conflict_tables():
