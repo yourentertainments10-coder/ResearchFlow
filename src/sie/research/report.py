@@ -153,6 +153,7 @@ def build_report(
     stale_datasets: Sequence[str] = (),
     not_saved: Sequence[str] = (),
     agreement_note: str = "",
+    lead_limitations: dict[str, Sequence[str]] | None = None,
 ) -> Report:
     if not tables or not analyses:
         raise EvidenceError("a report needs at least one table and one analysis")
@@ -253,6 +254,11 @@ def build_report(
         statements.append(Statement(layer=Layer.LIMITATION, text=text, declared_literals=lits))
     elif agreement_note:
         gap(GapKind.UNVERIFIED, f"Agreement between sources was not checked: {agreement_note}.")
+    for t_url, notes in (lead_limitations or {}).items():
+        if t_url not in seen:
+            continue
+        for note in notes:  # one gap per note, so a long address never truncates a limitation away
+            gap(GapKind.UNVERIFIED, f"{t_url} was chosen from a search lead and not verified against the question: {note}.")  # fmt: skip
     for item in stale_datasets:
         gap(
             GapKind.STALE,

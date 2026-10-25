@@ -1,5 +1,12 @@
 # Changelog
 
+## Live discovery review fixes (ADR-046 amendment, 2026-10-25)
+- Ranking judges topic, place and year separately: a US or 2011 dataset no longer answers a "UK 2024" question (rejected with `mismatch`); weak topic overlap is `low_relevance`; unstated place or year is a disclosed limitation. Academic papers are references (`role: reference`), never collected, ranked below structured datasets.
+- robots.txt may redirect up to 5 times with every hop validated (https, public address, port, pacing, loop check); anything unsafe or 403/5xx fails closed.
+- Discovery output says `robots_status: not_checked` until permission was looked up; leads are never called verified.
+- Lead limitations become UNVERIFIED gaps in the report. New tests: robots redirects, end-to-end regression (simulated network).
+- Not run: a live-source smoke test (the build environment cannot reach public sites).
+
 ## Phase 4 review fixes (ADR-046 amendment)
 - One dataset store: `sie research` now saves through `sie.evidence.dataset_store` (project label via `--project`; only normalised table + manifest; rows only where an open licence or recorded policy permits; expires after `EVIDENCE_DATASET_RETENTION_DAYS`, default 90). Replaces the earlier content-keyed store that kept source files without scope, licence or expiry.
 - The fetch cache is short-lived (`RESEARCH_CACHE_RETENTION_DAYS`, default 7) and keeps bodies only for catalogue API answers and hosts with a recorded policy; `sie research prune` removes expired data and cache files.

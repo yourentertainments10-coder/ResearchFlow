@@ -49,6 +49,10 @@ class ResearchRun:
     not_saved: list[str] = field(default_factory=list)  # tables used this run but not kept, and why
     reuse_rejected: list[ReuseDecision] = field(default_factory=list)
     tiers: dict[str, int] = field(default_factory=dict)
+    lead_limitations: dict[str, tuple[str, ...]] = field(
+        default_factory=dict
+    )  # url -> what was not checked
+    references: list[str] = field(default_factory=list)  # papers found: context, never collected
 
     @property
     def needs_manual_input(self) -> bool:
@@ -181,10 +185,15 @@ def run_research(
         question, discovery_fetcher, catalogues_path, authority_path, limit=limit
     )
     run.discovery = result
+    run.references = [f"{c.title} ({c.url})" for c in result.references]
     for c in result.usable:
         if len(run.tables) >= max_fetch:
             break
         run.tiers[c.url] = c.tier
+        run.lead_limitations[c.url] = (
+            "matched to the question by its title, description and address only, not by its contents",
+            *c.limitations,
+        )
         try:
             saved, tables, stale = collect_url(
                 c.url,

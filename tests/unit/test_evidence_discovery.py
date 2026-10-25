@@ -203,3 +203,18 @@ def test_file_provider_reads_leads_and_refuses_bad_files(tmp_path):
             FileProvider(f).search("q", 5)
     with pytest.raises(EvidenceError):
         FileProvider(tmp_path / "missing.json").search("q", 5)
+
+
+def test_geography_and_year_are_separated_from_the_topic():
+    from sie.evidence.discovery import assess_lead, geographies, topic_terms, years
+
+    q = "UK general election 2024 constituency results"
+    assert topic_terms(q) == {"general", "election", "constituency", "results"}
+    assert geographies("Scotland and Wales turnout") == {"united kingdom"}
+    assert geographies("U.S. Census 2011") == {"united states"}
+    assert geographies("Business results") == frozenset()  # 'us' must be a whole word
+    assert years("Results 2024 and 1999, id 20245") == {"2024", "1999"}
+    rel, limits, bad = assess_lead(q, "US general election 2011 constituency results")
+    assert rel == 1.0 and len(bad) == 2  # all topic words match, yet place and year both disagree
+    rel, limits, bad = assess_lead(q, "General election constituency results")
+    assert bad == () and len(limits) == 2

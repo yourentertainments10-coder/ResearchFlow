@@ -224,7 +224,7 @@ def research_ask(
             question, run.tables, [AnalysisItem(str(spec.get("op", "operation")), result, lab, val)],
             now=datetime.now(UTC), tiers=run.tiers, stale_urls=run.stale_urls,
             stale_datasets=run.stale_datasets, not_saved=run.not_saved,
-            conflicts=conflicts, agreement_note=agreement,
+            conflicts=conflicts, agreement_note=agreement, lead_limitations=run.lead_limitations,
             provider_notes=[f"{o.provider}: {o.status}" for o in run.outcomes if o.status != "ok"],
         )  # fmt: skip
     except (*ANALYSIS_ERRORS, EvidenceError, ValueError, KeyError) as exc:

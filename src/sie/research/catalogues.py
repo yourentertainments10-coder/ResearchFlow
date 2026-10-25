@@ -144,7 +144,9 @@ class CkanCatalogue:
                 if fmt in DATA_FORMATS and isinstance(res.get("url"), str):
                     label = str(res.get("name") or fmt.upper())
                     hits.append(
-                        SearchHit(res["url"], f"{ds['title']} - {label}", snippet, **common)
+                        SearchHit(
+                            res["url"], f"{ds['title']} - {label}", snippet, format=fmt, **common
+                        )
                     )
                     added = True
             if not added and isinstance(ds.get("name"), str):
@@ -197,6 +199,7 @@ class OpenAlexCatalogue:
                         work.get("publication_date"),
                         None,
                         self.entry.name,
+                        "paper",
                     )
                 )
         return hits

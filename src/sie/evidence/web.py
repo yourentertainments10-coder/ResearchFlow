@@ -6,7 +6,8 @@ Rules, all enforced here:
 * the host is resolved first and every address must be globally routable (no loopback, private,
   link-local, multicast, reserved or metadata addresses); the address actually connected to is checked
   again, which closes the DNS-rebinding gap;
-* ``robots.txt`` is fetched and obeyed per host; an unreachable or forbidden robots file stops the fetch;
+* ``robots.txt`` is fetched and obeyed per host; up to 5 redirects of the robots file are followed, each hop
+  validated like any request; an unreachable, forbidden or unsafely redirected robots file stops the fetch;
 * honest User-Agent with a contact (the placeholder is refused); at least ``interval`` seconds between
   requests to one host; a 403, 429 or 5xx stops at once, nothing is retried here;
 * at most one redirect, and only to the same host (re-validated like any other URL);
@@ -34,6 +35,8 @@ from sie.evidence.errors import FetchRefused
 PLACEHOLDER_UA = "set HTTP_USER_AGENT"
 ALLOWED_TYPES = ("text/html", "text/plain", "text/csv", "application/json", "application/csv")
 MAX_URL_CHARS = 2000
+MAX_ROBOTS_REDIRECTS = 5  # RFC 9309 asks crawlers to follow at least five
+REDIRECT_STATUSES = (301, 302, 303, 307, 308)
 
 
 @dataclass(frozen=True)
@@ -186,13 +189,52 @@ class WebFetcher:
         return resp
 
     # -- robots ---------------------------------------------------------------------------------
+    def _read_robots(self, host: str, port: int) -> RawResponse:
+        """GET robots.txt, following a bounded number of validated redirects (RFC 9309 section 2.3.1.2).
+
+        Every hop is held to the rules of any other request: https only, no credentials, port allow-list,
+        public addresses only, per-host pacing, and a 403/429/5xx stops that host. A redirect to http, to a
+        private address, to a loop or past ``MAX_ROBOTS_REDIRECTS`` hops fails closed; it is never read as
+        "no robots file, everything allowed"."""
+        url = f"https://{host}/robots.txt"
+        seen = {url}
+        for hop in range(MAX_ROBOTS_REDIRECTS + 1):
+            _, current_host, current_port = check_url(url, allow_ports=self._ports)
+            try:
+                resp = self._request(url, current_host, current_port, "text/plain")
+            except FetchRefused as exc:
+                if hop == 0:
+                    raise
+                raise FetchRefused(
+                    "robots", f"robots.txt redirect hop {hop} refused ({exc.code}): {exc}"
+                ) from exc
+            if resp.status not in REDIRECT_STATUSES:
+                return resp
+            if hop == MAX_ROBOTS_REDIRECTS:
+                raise FetchRefused(
+                    "robots", f"robots.txt redirected more than {MAX_ROBOTS_REDIRECTS} times"
+                )
+            location = resp.headers.get("location", "").strip()
+            if not location:
+                raise FetchRefused("robots", "robots.txt redirected without a location")
+            try:
+                target, _, _ = check_url(urljoin(url, location), allow_ports=self._ports)
+            except FetchRefused as exc:
+                raise FetchRefused(
+                    "robots", f"robots.txt redirect refused ({exc.code}): {exc}"
+                ) from exc
+            if target in seen:
+                raise FetchRefused("robots", "robots.txt redirects in a loop")
+            seen.add(target)
+            url = target
+        raise FetchRefused("robots", "robots.txt redirect limit")  # pragma: no cover
+
     def _robots_for(self, host: str, port: int) -> tuple[RobotFileParser, datetime]:
         if host in self._robots:
             return self._robots[host]
-        url = f"https://{host}/robots.txt"
         parser = RobotFileParser()
         try:
-            resp = self._request(url, host, port, "text/plain")
+            resp = self._read_robots(host, port)
         except FetchRefused as exc:
             if exc.code == "status":
                 raise FetchRefused(
@@ -227,7 +269,7 @@ class WebFetcher:
             if not parser.can_fetch(self.user_agent, current):
                 raise FetchRefused("robots", "robots.txt disallows this URL for automated clients")
             resp = self._request(current, host, port, ", ".join(ALLOWED_TYPES))
-            if resp.status in (301, 302, 303, 307, 308):
+            if resp.status in REDIRECT_STATUSES:
                 if hop == 1:
                     raise FetchRefused("redirect", "more than one redirect")
                 target = urljoin(current, resp.headers.get("location", ""))

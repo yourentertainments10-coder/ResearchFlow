@@ -53,6 +53,81 @@ STOP = frozenset(
 )
 DATA_SUFFIXES = (".csv", ".json")
 
+DATA_FORMATS = frozenset(["csv", "json"])  # the collector parses these (and HTML tables)
+MIN_TOPIC_RELEVANCE = 0.5  # share of the question's topic words a lead must show to be kept
+_YEAR = re.compile(r"(?<![0-9])(19[5-9][0-9]|20[0-9]{2})(?![0-9])")
+
+# Geography groups: a question that names one group is not answered by a lead that names a different one.
+# Small and explicit on purpose; a place not listed here is simply not checked (and that is disclosed).
+GEOGRAPHIES: dict[str, tuple[str, ...]] = {
+    "united kingdom": ("uk", "u.k.", "united kingdom", "britain", "great britain", "british",
+                       "england", "scotland", "wales", "northern ireland", "gb"),
+    "united states": ("us", "u.s.", "usa", "united states", "america", "american"),
+    "india": ("india", "indian"),
+    "canada": ("canada", "canadian"),
+    "australia": ("australia", "australian"),
+    "ireland": ("ireland", "irish"),
+    "france": ("france", "french"),
+    "germany": ("germany", "german"),
+    "new zealand": ("new zealand",),
+}  # fmt: skip
+
+
+def geographies(text: str) -> frozenset[str]:
+    """The geography groups a text names (whole words or phrases only)."""
+    low = f" {' '.join(_WORD.findall(text.lower().replace('u.s.', 'us').replace('u.k.', 'uk')))} "
+    found = set()
+    for group, names in GEOGRAPHIES.items():
+        for name in names:
+            plain = " ".join(_WORD.findall(name.replace("u.s.", "us").replace("u.k.", "uk")))
+            if f" {plain} " in low:
+                found.add(group)
+    return frozenset(found)
+
+
+def years(text: str) -> frozenset[str]:
+    return frozenset(_YEAR.findall(text))
+
+
+def _geo_words(text: str) -> frozenset[str]:
+    low = text.lower().replace("u.s.", "us").replace("u.k.", "uk")
+    words = set()
+    for names in GEOGRAPHIES.values():
+        for name in names:
+            words.update(_WORD.findall(name.replace("u.s.", "us").replace("u.k.", "uk")))
+    return frozenset(w for w in _WORD.findall(low) if w in words)
+
+
+def topic_terms(question: str) -> frozenset[str]:
+    """The question's words once geography words and years are taken out: what the data must be about."""
+    geo = _geo_words(question)
+    return frozenset(w for w in terms(question) if w not in geo and not _YEAR.fullmatch(w))
+
+
+def assess_lead(question: str, text: str) -> tuple[float, tuple[str, ...], tuple[str, ...]]:
+    """(topic relevance, limitations, mismatches) of a lead's text against the question.
+
+    A mismatch means the lead is about another place or another year than the one asked for. A limitation
+    is something the lead does not state (so it could not be checked). Nothing is guessed."""
+    wanted = topic_terms(question)
+    have = terms(text)
+    relevance = len(wanted & have) / len(wanted) if wanted else 1.0
+    limits: list[str] = []
+    bad: list[str] = []
+    want_geo, have_geo = geographies(question), geographies(text)
+    if want_geo:
+        if have_geo and not (want_geo & have_geo):
+            bad.append(f"geography mismatch: asked for {', '.join(sorted(want_geo))}, lead names {', '.join(sorted(have_geo))}")  # fmt: skip
+        elif not have_geo:
+            limits.append("geography not stated by the lead; not checked against the question")
+    want_years, have_years = years(question), years(text)
+    if want_years:
+        if have_years and not (want_years & have_years):
+            bad.append(f"year mismatch: asked for {', '.join(sorted(want_years))}, lead names {', '.join(sorted(have_years))}")  # fmt: skip
+        elif not have_years:
+            limits.append("year not stated by the lead; not checked against the question")
+    return relevance, tuple(limits), tuple(bad)
+
 
 @dataclass(frozen=True)
 class SearchHit:
@@ -62,6 +137,10 @@ class SearchHit:
     published: str | None = None  # as reported by the provider; informational only
     licence: str | None = None  # as reported by the catalogue; never checked here
     source_name: str | None = None  # which free catalogue or provider proposed the lead
+    kind: str = (
+        "dataset"  # "dataset": may hold usable data; "paper": a reference to read, never data
+    )
+    format: str | None = None  # file format the catalogue declares (csv, json, ...), if any
 
 
 class SearchProvider(Protocol):
@@ -128,6 +207,16 @@ class Candidate:
     reasons: tuple[str, ...]
     licence: str | None = None
     source_name: str | None = None
+    kind: str = "dataset"  # "paper" is a reference to read, never a data source
+    format: str | None = None
+    limitations: tuple[str, ...] = ()  # what the lead does not show; carried into the report
+
+    @property
+    def robots_status(self) -> str:
+        """``not_checked`` until robots.txt was read for this host; never "verified" or "fetchable"."""
+        if self.allowed_by_robots is None:
+            return "not_checked"
+        return "allowed" if self.allowed_by_robots else "disallowed"
 
 
 @dataclass(frozen=True)
@@ -145,19 +234,41 @@ class DiscoveryResult:
 
     @property
     def usable(self) -> tuple[Candidate, ...]:
-        return tuple(c for c in self.candidates if c.allowed_by_robots is not False)
+        """Dataset leads robots.txt has not forbidden. Still unverified until fetched and parsed."""
+        return tuple(
+            c for c in self.candidates if c.kind == "dataset" and c.allowed_by_robots is not False
+        )
+
+    @property
+    def references(self) -> tuple[Candidate, ...]:
+        """Papers and other references: context to read, never collected as data."""
+        return tuple(c for c in self.candidates if c.kind != "dataset")
 
     def to_dict(self) -> dict:
         return {
             "query": self.query,
-            "candidates": [c.__dict__ | {"reasons": list(c.reasons)} for c in self.candidates],
+            "note": "A lead is not evidence. robots_status 'not_checked' means fetch permission has not "
+            "been looked up; nothing here is verified, fetched or known to contain the answer.",
+            "candidates": [
+                c.__dict__
+                | {
+                    "reasons": list(c.reasons),
+                    "limitations": list(c.limitations),
+                    "robots_status": c.robots_status,
+                    "role": "reference" if c.kind != "dataset" else "data_lead",
+                }
+                for c in self.candidates
+            ],
             "rejected": [r.__dict__ for r in self.rejected],
         }
 
 
-def score(tier: int, relevance: float, structured: bool) -> float:
-    """Authority dominates, then relevance, then a small preference for downloadable data."""
-    return round((5 - tier) * 10 + relevance * 5 + (1.0 if structured else 0.0), 6)
+def score(tier: int, relevance: float, structured: bool, *, reference: bool = False) -> float:
+    """Authority dominates, then relevance, then a small preference for downloadable data.
+
+    A reference (paper) never outranks a structured data lead of the same relevance."""
+    base = (5 - tier) * 10 + relevance * 5 + (1.0 if structured else 0.0)
+    return round(base - (3.0 if reference else 0.0), 6)
 
 
 def discover(
@@ -174,47 +285,71 @@ def discover(
     With a ``fetcher``, each kept lead is pre-checked against robots.txt (one robots request per host,
     no page request). A host that forbids automated access is listed as not allowed, never worked around.
     """
-    wanted = terms(query)
-    if not wanted:
+    if not terms(query):
         raise EvidenceError("the question has no searchable words")
+    wanted_topic = topic_terms(query)
     if not 1 <= limit <= 50:
         raise EvidenceError("limit must be between 1 and 50")
     rejected: list[Rejected] = []
     kept: list[Candidate] = []
-    seen: set[str] = set()
+    best: dict[str, tuple[tuple[float, str], SearchHit]] = {}
+    unique: list[tuple[str, str, SearchHit]] = []
     for hit in provider.search(query, limit * 3):
         try:
             url, host, _ = check_url(hit.url)
         except FetchRefused as exc:
             rejected.append(Rejected(hit.url[:200], exc.code, str(exc)))
             continue
-        if url in seen:
+        rank = (assess_lead(query, f"{hit.title} {hit.snippet}")[0], hit.title)
+        if url in best:  # one address listed twice: the better-matching listing is kept, any order
             rejected.append(Rejected(url, "duplicate", "the same address was already listed"))
+            if rank > best[url][0]:
+                best[url] = (rank, hit)
             continue
-        seen.add(url)
+        best[url] = (rank, hit)
+        unique.append((url, host, hit))
+    for url, host, _first in unique:
+        hit = best[url][1]
         tier, category = authority_for(rules, host)
-        have = terms(f"{hit.title} {hit.snippet} {urlsplit(url).path.replace('/', ' ')}")
-        relevance = len(wanted & have) / len(wanted)
-        if relevance == 0:
+        path_text = urlsplit(url).path.replace("/", " ").replace("_", " ").replace("-", " ")
+        relevance, limits, mismatches = assess_lead(query, f"{hit.title} {hit.snippet} {path_text}")
+        if mismatches:
+            rejected.append(Rejected(url, "mismatch", "; ".join(mismatches)))
+            continue
+        if wanted_topic and relevance < MIN_TOPIC_RELEVANCE:
             rejected.append(
                 Rejected(
                     url,
-                    "irrelevant",
-                    "no word of the question appears in the title, snippet or path",
+                    "irrelevant" if relevance == 0 else "low_relevance",
+                    f"only {relevance:.0%} of the question's topic words appear in the title, snippet "
+                    f"or path (at least {MIN_TOPIC_RELEVANCE:.0%} needed)",
                 )
             )
             continue
-        structured = urlsplit(url).path.lower().endswith(DATA_SUFFIXES)
-        reasons = [f"tier {tier} ({category})", f"matches {relevance:.0%} of the question's words"]
-        if structured:
+        reference = hit.kind != "dataset"
+        fmt = (hit.format or "").strip().lower() or None
+        structured = (
+            urlsplit(url).path.lower().endswith(DATA_SUFFIXES) or fmt in DATA_FORMATS
+        ) and not reference
+        reasons = [f"tier {tier} ({category})", f"matches {relevance:.0%} of the question's topic words"]  # fmt: skip
+        if reference:
+            reasons.append("academic reference: context to read, not a data source")
+            limits = (
+                *limits,
+                "an academic reference, not a structured dataset; it is not collected",
+            )
+        elif structured:
             reasons.append("downloadable data file")
+        else:
+            limits = (*limits, "no downloadable CSV/JSON file declared; a page may hold no usable table")  # fmt: skip
         if tier == DEFAULT_TIER:
             reasons.append("host not in the authority list: treated as lowest tier")
-        kept.append(
+        cand = (
             Candidate(url, host, hit.title[:200], tier, category, round(relevance, 4), structured,
-                      score(tier, relevance, structured), None, hit.published, tuple(reasons),
-                      hit.licence, hit.source_name)
+                      score(tier, relevance, structured, reference=reference), None, hit.published,
+                      tuple(reasons), hit.licence, hit.source_name, hit.kind, fmt, limits)
         )  # fmt: skip
+        kept.append(cand)
     kept.sort(key=lambda c: (-c.score, c.url))
     per_host: dict[str, int] = {}
     final: list[Candidate] = []
