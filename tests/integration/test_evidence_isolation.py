@@ -31,6 +31,7 @@ from sie.evidence import (
     list_conflicts,
     list_sources,
     open_scope,
+    project_health,
     read_bytes,
     register_fetched_source,
     resolve_conflict,
@@ -174,6 +175,17 @@ def _b_conflict(w):
     return conflict
 
 
+def case_project_health(w):
+    """A's health report counts only A's rows, even though B has a source, a claim and a conflict."""
+    from datetime import timedelta
+
+    _b_conflict(w)
+    with w["engine"].connect() as c:
+        r = project_health(c, w["a"], NOW, timedelta(days=30), timedelta(days=180))
+    assert [i.source_id for i in r.sources] == [w["a_src"].source_id]
+    assert sum(r.claims_by_status.values()) == 1 and r.open_conflict_ids == ()
+
+
 def case_detect_conflicts(w):
     _b_conflict(w)  # B has a conflict; A's detection must neither see nor touch it
     with w["engine"].begin() as c:
@@ -240,6 +252,7 @@ def case_register_fetched_source(w):
 
 
 CROSS_PROJECT_CASES = {
+    "sie.evidence.health.project_health": case_project_health,
     "sie.evidence.integrity.check_project": case_check_project,
     "sie.evidence.retention.register_fetched_source": case_register_fetched_source,
     "sie.evidence.conflicts.detect_conflicts": case_detect_conflicts,

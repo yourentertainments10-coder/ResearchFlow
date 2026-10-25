@@ -75,6 +75,10 @@ class Settings(BaseSettings):
     # How long a web page kept in FULL (only allowed under a recorded policy) is retained. The default
     # is 90 days; `sie evidence prune` drops older bytes. Excerpt-only sources have no such clock.
     evidence_full_retention_days: int = 90
+    # Project health (ADR-043). A web source older than this is `stale` (potentially outdated, not false).
+    evidence_web_max_age_days: int = Field(default=30, ge=1)
+    # An upload older than this gets an informational `old_upload` flag. It never fails a health check.
+    evidence_old_upload_days: int = Field(default=180, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None

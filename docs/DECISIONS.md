@@ -289,6 +289,13 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 - **Consequences:** Backups taken before a purge still contain the data (up to `BACKUP_RETENTION_DAYS`, 14 on the workflow); the provider's point-in-time history window is **not verified** and is reported as such until the owner sets `DB_HISTORY_WINDOW_HOURS`. Nothing here claims complete erasure. Restoring a backup requires re-running purge for projects listed in `purge_tombstones`. The first scheduled refresh after merge applies migration 005 to production; the migration sets 5 s lock and 60 s statement timeouts and locks only `raw_documents` and `raw_versions` (share row exclusive) while the foreign keys are added.
 - **Decided by:** the owner (design approved 2026-10-12; implementation under review).
 
+## ADR-043: Project-scoped freshness and health (Phase 3 of the general research engine)
+
+- **Context:** `sie health` and `sie source-status` answer for a competition's source. A research project (ADR-042) needs the same question answered for its own sources, and answers need disclosed gaps when sources are old or gone.
+- **Decision:** Read-only module `sie.evidence.health` and command `sie project health` (`docs/EVIDENCE_LEDGER_DESIGN.md` section 8; design `docs/PHASE3_PROJECT_HEALTH_DESIGN.md`). No migration, table or dependency; the sports freshness and health code is unchanged. `pruned` means the bytes were removed, `expired` means the retention deadline passed, `stale` means a web source older than `EVIDENCE_WEB_MAX_AGE_DAYS` (30; potentially outdated, not false). Uploads never become stale by age; an `old_upload` flag is informational and never fails the command. The 90-day full-copy retention is unchanged.
+- **Consequences:** Two new settings with defaults. Alerts are not sent by this phase.
+- **Decided by:** the owner (design approved 2026-10-15).
+
 ## Open decisions
 | # | Decision | Needed before |
 |---|----------|---------------|
