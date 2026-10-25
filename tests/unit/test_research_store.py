@@ -61,9 +61,7 @@ def test_reload_round_trips_rows_provenance_and_licence(tmp_path):
     assert back.label == "csv"
 
     # Pin the shared dataset-store manifest contract, not the removed research-only format.
-    manifest = json.loads(
-        (tmp_path / "r-default" / saved.id / "manifest.json").read_text()
-    )
+    manifest = json.loads((tmp_path / "r-default" / saved.id / "manifest.json").read_text())
     assert manifest["format_version"] == 1
     assert manifest["licence"] == "uk-ogl"
     assert manifest["permission_basis"] == "open_licence: uk-ogl"
