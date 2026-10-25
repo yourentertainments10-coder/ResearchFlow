@@ -40,10 +40,17 @@ class CatalogueEntry:
     verified_on: str
     terms_ref: str
     quota_note: str
+    redirect_hosts: str = (
+        ""  # optional: hosts this catalogue's API is known to redirect to (; separated)
+    )
 
     @property
     def host(self) -> str:
         return urlsplit(self.base_url).hostname or ""
+
+    @property
+    def redirect_host_list(self) -> tuple[str, ...]:
+        return tuple(h.strip().lower() for h in self.redirect_hosts.split(";") if h.strip())
 
 
 def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
@@ -51,11 +58,12 @@ def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
         return ()
     with path.open(encoding="utf-8", newline="") as fh:
         reader = csv.DictReader(fh)
-        if reader.fieldnames != COLUMNS:
+        names = reader.fieldnames
+        if names not in (COLUMNS, [*COLUMNS, "redirect_hosts"]):
             raise EvidenceError(f"catalogues.csv must have columns {','.join(COLUMNS)}")
         entries = []
         for row in reader:
-            entry = CatalogueEntry(**{c: (row[c] or "").strip() for c in COLUMNS})
+            entry = CatalogueEntry(**{c: (row.get(c) or "").strip() for c in names})
             if entry.access != FREE_ACCESS:
                 raise PaidAccessRefused(
                     f"catalogue {entry.name!r}: access {entry.access!r} is refused; only "
@@ -70,6 +78,10 @@ def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
             _, host, _ = check_url(entry.base_url)
             if all(part.isdigit() for part in host.split(".")) or ":" in host:
                 raise EvidenceError(f"catalogue {entry.name!r}: use a host name, not an IP address")
+            for rh in entry.redirect_host_list:
+                _, rhost, _ = check_url(f"https://{rh}/")
+                if all(part.isdigit() for part in rhost.split(".")) or ":" in rhost or rh != rhost:
+                    raise EvidenceError(f"catalogue {entry.name!r}: bad redirect host {rh!r}")
             if "?" in entry.base_url or "key" in entry.base_url.lower():
                 raise PaidAccessRefused(f"catalogue {entry.name!r}: no query or key in base_url")
             entries.append(entry)

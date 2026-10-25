@@ -354,3 +354,27 @@ def test_a_related_host_that_resolves_to_a_private_address_is_refused():
     with pytest.raises(FetchRefused) as e:
         f.fetch(U)
     assert e.value.code == "ssrf" and www not in site.requests
+
+
+def test_a_redirect_host_named_for_the_origin_is_followed_and_scoped_to_that_origin():
+    target = "https://ckan.example.gov.uk/api/x"
+    routes = {U: page(status=301, location=target), target: page(b"ok")}
+    ok = fetcher(Site(routes), redirect_hosts={"data.example.org": ["ckan.example.gov.uk"]})
+    assert ok.fetch(U).final_url == target
+    with pytest.raises(FetchRefused, match="another host"):  # no entry: still refused
+        fetcher(Site(routes)).fetch(U)
+    with pytest.raises(FetchRefused, match="another host"):  # an entry for a different origin
+        fetcher(Site(routes), redirect_hosts={"other.example.org": ["ckan.example.gov.uk"]}).fetch(U)  # fmt: skip
+
+
+def test_a_named_redirect_host_is_still_checked_for_robots_and_private_addresses():
+    target = "https://ckan.example.gov.uk/api/x"
+    allow = {"data.example.org": ["ckan.example.gov.uk"]}
+    site = Site({U: page(status=301, location=target), target: page(b"ok")})
+    f = fetcher(site, resolver=lambda h, p: ["10.0.0.9"] if h.startswith("ckan.") else ["93.184.216.34"], redirect_hosts=allow)  # fmt: skip
+    with pytest.raises(FetchRefused) as e:
+        f.fetch(U)
+    assert e.value.code == "ssrf" and target not in site.requests
+    seen = Site({U: page(status=301, location=target), target: page(b"ok")})
+    fetcher(seen, redirect_hosts=allow).fetch(U)
+    assert "https://ckan.example.gov.uk/robots.txt" in seen.requests

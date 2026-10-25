@@ -275,3 +275,40 @@ def test_a_report_needs_collected_data(tmp_path):
     assert run.tables == [] and run.needs_manual_input
     with pytest.raises(EvidenceError):
         build_report(QUESTION, run.tables, [], now=NOW)
+
+
+def redirecting_world(tmp_path, target, **kw):
+    """data.gov.uk's API redirects (as seen live); fetchers are built with the committed redirect hosts."""
+    from sie.research.catalogues import load_catalogues
+
+    entries = load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")
+    hosts = {e.host: e.redirect_host_list for e in entries if e.redirect_host_list}
+    site, disc, data, store = world(
+        tmp_path, ckan=RawResponse(301, {"location": target}, b""), **kw
+    )
+    live = web_fetcher(site, Ticker(), redirect_hosts=hosts)
+    cache = FetchCache(tmp_path / "cache2", now=lambda: NOW)
+    disc = CachedFetcher(live, cache, max_age=timedelta(hours=24), now=lambda: NOW)
+    data = CachedFetcher(live, cache, max_age=timedelta(days=7), now=lambda: NOW)
+    return site, disc, data, store
+
+
+def test_data_gov_uk_redirecting_to_its_ckan_host_still_yields_the_dataset(tmp_path):
+    """Live run 2026-10-25: the API answers with a redirect to ckan.publishing.service.gov.uk. That host
+    is named in catalogues.csv, so it is followed (robots and address checks included)."""
+    real = "https://ckan.publishing.service.gov.uk/api/action/package_search"
+    site, disc, data, store = redirecting_world(
+        tmp_path, real + "?q=x&rows=30", pages={UK_URL: csv_page(RESULTS_CSV)}
+    )
+    site.pages[real] = json_page(ckan_result(dataset("UK general election 2024 constituency results", UK_URL)))  # fmt: skip
+    run = go(disc, data, store)
+    assert [t.url for t in run.tables] == [UK_URL]
+    assert "https://ckan.publishing.service.gov.uk/robots.txt" in site.requests
+
+
+def test_a_redirect_to_an_unnamed_host_is_a_provider_failure_naming_the_host(tmp_path):
+    site, disc, data, store = redirecting_world(tmp_path, "https://evil.example.net/x")
+    run = go(disc, data, store)
+    assert run.needs_manual_input
+    assert any("evil.example.net" in o.detail for o in run.outcomes if o.status != "ok")
+    assert not any("evil" in u for u in site.requests)

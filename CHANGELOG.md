@@ -1,5 +1,10 @@
 # Changelog
 
+## Third live run: data.gov.uk redirect host (Phase 4)
+- Observed live (owner, 2026-10-25): `https://data.gov.uk/api/action/package_search` redirects to `ckan.publishing.service.gov.uk`. Cross-host redirects stay refused unless the owner names the target in the new optional `redirect_hosts` column of `data/evidence/catalogues.csv` (plain host names, scoped to that catalogue; robots.txt, address and interval checks still apply). data.gov.uk now lists that host.
+- Network failures name the host (`the request to <host> failed: TimeoutError`). A timeout can be raised with `EVIDENCE_FETCH_TIMEOUT_SECONDS` (default 20, max 120).
+- Not yet confirmed live: that discovery now returns a structured dataset.
+
 ## Second live run: redirects, reuse and scope (Phase 4)
 - data.gov.uk's API answered with more than one redirect: a page may now follow up to 3, each hop re-validated (https, public address, robots.txt and interval for its host, same host or `www.`/sub-domain only, loops refused); a refusal lists the hosts in the chain.
 - Saved data is no longer reused when its own title/address names another year or country; a place or year it does not state is disclosed. Datasets added with `sie research collect <url>` are marked "supplied by URL, not found by discovery" and that note travels into every report that reuses them.

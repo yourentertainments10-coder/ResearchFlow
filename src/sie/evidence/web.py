@@ -25,7 +25,7 @@ import ipaddress
 import socket
 import ssl
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Collection, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from urllib.parse import urljoin, urlsplit
@@ -140,7 +140,9 @@ def urllib_getter(url: str, headers: dict[str, str], timeout: float, max_bytes: 
         body = resp.read(max_bytes + 1)
         return RawResponse(resp.status, {k.lower(): v for k, v in resp.getheaders()}, body, peer)
     except (OSError, http.client.HTTPException) as exc:
-        raise FetchRefused("network", f"the request failed: {type(exc).__name__}") from exc
+        raise FetchRefused(
+            "network", f"the request to {parts.hostname} failed: {type(exc).__name__}"
+        ) from exc
     finally:
         conn.close()
 
@@ -162,8 +164,11 @@ class WebFetcher:
         sleep: Callable[[float], None] = time.sleep,
         now: Callable[[], datetime] = lambda: datetime.now(UTC),
         allow_ports: tuple[int, ...] = (443,),
+        redirect_hosts: Mapping[str, Collection[str]] | None = None,
     ) -> None:
         check_user_agent(user_agent)
+        # origin host -> hosts a redirect from it may go to, named by the owner in catalogues.csv
+        self._redirect_hosts = {k: frozenset(v) for k, v in (redirect_hosts or {}).items()}
         if interval < 2.0:
             raise ValueError("the interval between requests to one host is at least 2 seconds")
         self.user_agent, self._get, self._resolve = user_agent, get, resolver
@@ -288,11 +293,15 @@ class WebFetcher:
                 target = urljoin(current, resp.headers.get("location", ""))
                 nxt, nhost, _ = check_url(target, allow_ports=self._ports)
                 if nhost != host:
-                    if not related_host(host, nhost):
+                    origin = urlsplit(original).hostname or ""
+                    if not related_host(host, nhost) and nhost not in self._redirect_hosts.get(
+                        origin, ()
+                    ):
                         raise FetchRefused(
                             "redirect",
                             f"redirect to another host ({nhost}) is not followed; only www. and "
-                            "sub-domain variants of the same host are",
+                            "sub-domain variants, or a host named for this source in catalogues.csv "
+                            "(redirect_hosts), are",
                         )
                     notes.append(f"redirected to the related host {nhost}")
                     host = nhost  # robots.txt, the interval and the address checks apply to it

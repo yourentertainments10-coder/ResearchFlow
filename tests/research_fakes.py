@@ -68,7 +68,7 @@ class Site:
         return [u for u in self.requests if not u.endswith("/robots.txt")]
 
 
-def web_fetcher(site: Site, ticker: Ticker | None = None) -> WebFetcher:
+def web_fetcher(site: Site, ticker: Ticker | None = None, redirect_hosts=None) -> WebFetcher:
     clock = ticker or Ticker()
     return WebFetcher(
         user_agent=UA,
@@ -77,6 +77,7 @@ def web_fetcher(site: Site, ticker: Ticker | None = None) -> WebFetcher:
         clock=clock,
         sleep=clock.sleep,
         now=lambda: NOW,
+        redirect_hosts=redirect_hosts,
     )
 
 

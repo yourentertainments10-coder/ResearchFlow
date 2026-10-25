@@ -231,3 +231,27 @@ def test_the_data_gov_uk_request_is_the_documented_package_search_get(tmp_path):
     assert site.api_requests() == [
         "https://data.gov.uk/api/action/package_search?q=general%20election&rows=7"
     ]
+
+
+def test_redirect_hosts_are_optional_and_must_be_plain_host_names(tmp_path):
+    head = "name,kind,base_url,access,verified_on,terms_ref,quota_note"
+    row = "x,ckan,https://data.example.gov.uk/api/action,free_no_key,2026-10-24,https://t.example/terms,none"
+    old = tmp_path / "old.csv"
+    old.write_text(f"{head}\n{row}\n")
+    assert load_catalogues(old)[0].redirect_host_list == ()
+    good = tmp_path / "good.csv"
+    good.write_text(f"{head},redirect_hosts\n{row},ckan.example.gov.uk;www.example.gov.uk\n")
+    assert load_catalogues(good)[0].redirect_host_list == (
+        "ckan.example.gov.uk",
+        "www.example.gov.uk",
+    )
+    for bad in ("10.0.0.5", "https://x.example.gov.uk", "localhost", "a.example.gov.uk/path"):
+        f = tmp_path / "bad.csv"
+        f.write_text(f"{head},redirect_hosts\n{row},{bad}\n")
+        with pytest.raises(EvidenceError):
+            load_catalogues(f)
+
+
+def test_the_committed_data_gov_uk_entry_names_the_host_its_api_redirects_to():
+    entry = {e.name: e for e in load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")}
+    assert entry["data.gov.uk"].redirect_host_list == ("ckan.publishing.service.gov.uk",)
