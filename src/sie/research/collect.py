@@ -49,6 +49,9 @@ class CollectedTable:
     catalogue: str = ""  # the catalogue that listed this source
     stored_id: str | None = None  # set when this table was reopened from the store
     expires_at: str | None = None
+    lead_limitations: tuple[
+        str, ...
+    ] = ()  # what the search lead did not state (kept with the data)
 
     @property
     def rows(self) -> int:

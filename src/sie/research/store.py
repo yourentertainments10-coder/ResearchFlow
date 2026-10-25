@@ -69,7 +69,7 @@ def _extra(table: CollectedTable, title: str) -> dict:
     return {
         "label": table.label, "content_type": table.content_type, "source_name": table.source_name,
         "flags": list(table.flags), "catalogue": table.catalogue, "reported_licence": table.licence,
-        "title": title or table.label,
+        "title": title or table.label, "lead_limitations": list(table.lead_limitations),
     }  # fmt: skip
 
 
@@ -120,6 +120,7 @@ class ResearchStore:
             prov["retrieved_at"], x.get("content_type", ""), x.get("source_name", ""), b"",
             tuple(x.get("flags", [])), x.get("reported_licence") or m.get("licence"),
             m.get("terms_ref") or "", x.get("catalogue", ""), ds_id, m["expires_at"],
+            tuple(x.get("lead_limitations", [])),
         )  # fmt: skip
 
     def list_datasets(self, *, include_expired: bool = False) -> list[dict]:

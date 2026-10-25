@@ -61,6 +61,10 @@ def research_discover(
         raise typer.Exit(code=1)
 
 
+MANUAL_NOTE = (
+    "supplied by URL, not found by discovery: whether it matches the question's place, year and "
+    "scope was not assessed"
+)
 PROJECT = typer.Option("default", "--project", help="Research project label (own saved data).")
 
 
@@ -81,6 +85,7 @@ def research_collect(
         stored, tables, stale = collect_url(
             url, data_fetcher, make_store(settings, project), title=title,
             licence=licence or None,
+            limitations=(MANUAL_NOTE,),
         )  # fmt: skip
     except FetchRefused as exc:
         raise _fail(f"refused ({exc.code}): {exc}", 1) from exc

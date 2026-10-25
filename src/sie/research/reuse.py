@@ -19,7 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from sie.evidence.discovery import terms
+from sie.evidence.discovery import assess_lead, terms
 
 _COLUMN_KEYS = (
     "by", "column", "columns", "value", "values", "label", "metric", "metrics",
@@ -75,6 +75,13 @@ def assess(
         return None
     reasons: list[str] = []
     stale = False
+    # Place and year, judged on what the saved data states about itself (title, address, caption).
+    _, unstated, mismatches = assess_lead(question, " ".join(
+        [str(meta.get("page_url") or ""), str((meta.get("extra") or {}).get("title", "")),
+         str(meta.get("table_caption") or "")]))  # fmt: skip
+    if mismatches:
+        reasons.extend(mismatches)
+        return ReuseDecision(meta["key"], share, False, False, tuple(reasons))
     retrieved = meta.get("retrieved_at")
     if retrieved:
         age = now - datetime.fromisoformat(retrieved)
@@ -89,6 +96,8 @@ def assess(
         reasons.append("lacks column(s) the operation needs: " + ", ".join(missing))
     sufficient = not stale and not missing
     flags = (meta.get("extra") or {}).get("flags") or []
+    if sufficient and unstated:
+        reasons.extend(unstated)
     if sufficient and flags:
         reasons.append("disclosed limitations: " + ", ".join(flags))
     return ReuseDecision(meta["key"], share, sufficient, stale, tuple(reasons))

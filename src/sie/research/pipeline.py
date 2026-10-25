@@ -111,6 +111,7 @@ def collect_url(
     title: str = "",
     licence: str | None = None,
     catalogue: str = "",
+    limitations: Sequence[str] = (),
 ) -> tuple[list[SaveResult], list[CollectedTable], bool]:
     """Fetch one URL (cache first), collect its tables and keep the permitted ones.
 
@@ -118,7 +119,9 @@ def collect_url(
     table into the manifest and the report. Returns (save results, tables, stale)."""
     fetched = fetcher.fetch(url)
     tables = [
-        dataclasses.replace(t, licence=licence, catalogue=catalogue)
+        dataclasses.replace(
+            t, licence=licence, catalogue=catalogue, lead_limitations=tuple(limitations)
+        )
         for t in collect_page(fetched.page)
     ]
     saved = [store.save(t, title=title or t.label) for t in tables]
@@ -175,6 +178,8 @@ def run_research(
         if good:
             run.reused = True
             run.tables += [store.load(d.id) for d in good[:max_fetch]]
+            for t in run.tables:
+                run.lead_limitations[t.url] = t.lead_limitations
             return run
         run.reuse_rejected = [d for d in decisions if not d.sufficient]
         fallback = sorted(
@@ -202,6 +207,7 @@ def run_research(
                 title=c.title,
                 licence=c.licence,
                 catalogue=c.source_name,
+                limitations=c.limitations,
             )
         except (FetchRefused, NothingCollected, EvidenceError) as exc:
             run.problems.append(f"{c.url}: {exc}")

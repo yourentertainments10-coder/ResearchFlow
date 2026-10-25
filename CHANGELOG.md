@@ -1,5 +1,11 @@
 # Changelog
 
+## Second live run: redirects, reuse and scope (Phase 4)
+- data.gov.uk's API answered with more than one redirect: a page may now follow up to 3, each hop re-validated (https, public address, robots.txt and interval for its host, same host or `www.`/sub-domain only, loops refused); a refusal lists the hosts in the chain.
+- Saved data is no longer reused when its own title/address names another year or country; a place or year it does not state is disclosed. Datasets added with `sie research collect <url>` are marked "supplied by URL, not found by discovery" and that note travels into every report that reuses them.
+- Every report now says that whether the table covers the question's full scope (for example every constituency) was not checked, with its row count. (Live run: a council's two-constituency file had been reported without this.)
+- Live smoke test: collect and report worked on the owner's machine with a user-supplied URL; discovery from data.gov.uk still unverified.
+
 ## Fixes from the first live run (Phase 4)
 - A page or API redirect may now go to the `www.` variant or a sub-domain of the same host (data.gov.uk's API answered with a redirect to another host and was refused); the new host's robots.txt, interval and address checks apply, any other host is still refused and the refusal names it.
 - Windows: saving a dataset crashed in `os.fsync` (EBADF on a read-only descriptor, directories cannot be opened). Files are now opened read-write there and directory sync is skipped; the rename that publishes the dataset is still atomic.

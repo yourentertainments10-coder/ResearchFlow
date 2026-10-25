@@ -259,6 +259,11 @@ def build_report(
             continue
         for note in notes:  # one gap per note, so a long address never truncates a limitation away
             gap(GapKind.UNVERIFIED, f"{t_url} was chosen from a search lead and not verified against the question: {note}.")  # fmt: skip
+    scope_text, lits = _text(
+        "Whether the collected table covers everything the question asks about (for example every "
+        f"constituency or every year) was not checked; it has {sum(c['rows'] for c in cov)} rows in total."
+    )
+    statements.append(Statement(layer=Layer.LIMITATION, text=scope_text, declared_literals=lits))
     for item in stale_datasets:
         gap(
             GapKind.STALE,

@@ -213,3 +213,18 @@ def test_ask_with_sources_sharing_no_column_discloses_that_agreement_was_not_che
     )
     assert result.exit_code == 0, result.output
     assert "Agreement between sources was not checked" in (out / "report.md").read_text()
+
+
+def test_a_url_supplied_by_hand_is_flagged_as_unassessed_and_the_report_says_the_scope_was_not_checked(
+    env,
+):
+    """The first live run: a council's 2-constituency file stood in for 'UK constituency results'."""
+    runner.invoke(app, ["research", "collect", DATA_URL, "--licence", "uk-ogl"])
+    out = env["tmp"] / "out"
+    result = runner.invoke(
+        app, ["research", "ask", QUESTION, "--op", OP, "--clean", PLAN, "--out", str(out)]
+    )
+    assert result.exit_code == 0 and "reused stored data" in result.output
+    report = (out / "report.md").read_text()
+    assert "supplied by URL, not found by discovery" in report
+    assert "covers everything the question asks about" in report and "rows in total" in report

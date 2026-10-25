@@ -10,7 +10,8 @@ Rules, all enforced here:
   validated like any request; an unreachable, forbidden or unsafely redirected robots file stops the fetch;
 * honest User-Agent with a contact (the placeholder is refused); at least ``interval`` seconds between
   requests to one host; a 403, 429 or 5xx stops at once, nothing is retried here;
-* at most one redirect, and only to the same host (re-validated like any other URL);
+* a page may redirect up to 3 times (``MAX_PAGE_REDIRECTS``), only to the same host or its www. / sub-domain
+  variant; every hop is re-validated, robots-checked for its host and rate-limited; loops are refused;
 * identity encoding only, a content-type allow-list, a byte cap and a timeout;
 * nothing is executed or rendered; no JavaScript, no logins, no paywalls.
 
@@ -144,6 +145,9 @@ def urllib_getter(url: str, headers: dict[str, str], timeout: float, max_bytes: 
         conn.close()
 
 
+MAX_PAGE_REDIRECTS = 3
+
+
 class WebFetcher:
     def __init__(
         self,
@@ -269,14 +273,18 @@ class WebFetcher:
         current, host, port = check_url(url, allow_ports=self._ports)
         original = current
         notes: list[str] = []
-        for hop in range(2):  # the page, then at most one same-host redirect
+        chain = [current]
+        for hop in range(MAX_PAGE_REDIRECTS + 1):  # the page, then a bounded number of redirects
             parser, checked_at = self._robots_for(host, port)
             if not parser.can_fetch(self.user_agent, current):
                 raise FetchRefused("robots", "robots.txt disallows this URL for automated clients")
             resp = self._request(current, host, port, ", ".join(ALLOWED_TYPES))
             if resp.status in REDIRECT_STATUSES:
-                if hop == 1:
-                    raise FetchRefused("redirect", "more than one redirect")
+                path = " -> ".join(urlsplit(u).hostname or "?" for u in chain)
+                if hop == MAX_PAGE_REDIRECTS:
+                    raise FetchRefused(
+                        "redirect", f"more than {MAX_PAGE_REDIRECTS} redirects (hosts: {path})"
+                    )
                 target = urljoin(current, resp.headers.get("location", ""))
                 nxt, nhost, _ = check_url(target, allow_ports=self._ports)
                 if nhost != host:
@@ -288,7 +296,10 @@ class WebFetcher:
                         )
                     notes.append(f"redirected to the related host {nhost}")
                     host = nhost  # robots.txt, the interval and the address checks apply to it
-                notes.append(f"redirected once to {nxt}")
+                if nxt in chain:
+                    raise FetchRefused("redirect", f"redirect loop (hosts: {path})")
+                chain.append(nxt)
+                notes.append(f"redirected to {nxt}")
                 current = nxt
                 continue
             if not 200 <= resp.status < 300:

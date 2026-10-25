@@ -60,3 +60,26 @@ def test_disclosed_limitations_travel_with_a_sufficient_dataset():
     m = {**META, "extra": {"title": "General election results", "flags": ["rejected_rows:2"]}}
     d = assess(m, Q, {"op": "describe"}, now=NOW, max_age_days=30)
     assert d.sufficient and "rejected_rows:2" in d.reasons[-1]
+
+
+def test_saved_data_that_names_another_year_or_country_is_not_reused():
+    q = "UK general election 2024 constituency results"
+    old = {**META, "page_url": "https://x.example.gov.uk/ge-2019-constituency-results.csv",
+           "extra": {"title": "UK general election 2019 constituency results", "flags": []}}  # fmt: skip
+    d = assess(old, q, {"op": "describe"}, now=NOW, max_age_days=30)
+    assert d and not d.sufficient and "year mismatch" in d.reasons[0]
+    us = {**old, "page_url": "https://x.example.org/us-ge-2024-constituency-results.csv",
+          "extra": {"title": "US general election 2024 constituency results", "flags": []}}  # fmt: skip
+    d = assess(us, q, {"op": "describe"}, now=NOW, max_age_days=30)
+    assert d and not d.sufficient and "geography mismatch" in d.reasons[0]
+
+
+def test_saved_data_that_does_not_state_place_or_year_is_reused_with_that_disclosed():
+    q = "UK general election 2024 constituency results"
+    m = {**META, "columns": ["constituency", "party", "votes"],
+         "page_url": "https://x.example.org/election-results.csv",
+         "extra": {"title": "csv", "flags": []}}  # fmt: skip
+    d = assess(m, q, {"op": "describe"}, now=NOW, max_age_days=30)
+    assert d and d.sufficient
+    assert any("geography not stated" in r for r in d.reasons)
+    assert any("year not stated" in r for r in d.reasons)

@@ -250,16 +250,41 @@ def test_a_redirect_to_http_or_a_private_literal_is_refused():
             fetcher(site).fetch(U)
 
 
-def test_a_second_redirect_is_refused():
-    site = Site(
-        {
-            U: page(status=302, location="/a"),
-            "https://data.example.org/a": page(status=302, location="/b"),
-        }
-    )
-    with pytest.raises(FetchRefused) as e:
+def _chain(n, final=True):
+    pages = {U: page(status=302, location="/h1")}
+    for i in range(1, n):
+        pages[f"https://data.example.org/h{i}"] = page(status=302, location=f"/h{i + 1}")
+    if final:
+        pages[f"https://data.example.org/h{n}"] = page(b"ok")
+    return pages
+
+
+def test_up_to_three_redirects_are_followed_and_recorded():
+    got = fetcher(Site(_chain(3))).fetch(U)
+    assert got.final_url.endswith("/h3") and len(got.notes) == 3
+
+
+def test_a_fourth_redirect_is_refused_and_the_message_lists_the_hosts():
+    site = Site(_chain(4))
+    with pytest.raises(FetchRefused, match="more than 3 redirects") as e:
         fetcher(site).fetch(U)
-    assert e.value.code == "redirect"
+    assert e.value.code == "redirect" and "data.example.org -> data.example.org" in str(e.value)
+    assert "https://data.example.org/h4" not in site.requests
+
+
+def test_a_redirect_loop_is_refused():
+    site = Site({U: page(status=302, location="/a"),
+                 "https://data.example.org/a": page(status=302, location=U)})  # fmt: skip
+    with pytest.raises(FetchRefused, match="loop"):
+        fetcher(site).fetch(U)
+
+
+def test_a_multi_hop_chain_through_the_www_host_checks_robots_for_each_host():
+    www = "https://www.data.example.org/x"
+    site = Site({U: page(status=301, location=www), www: page(status=302, location="/y"),
+                 "https://www.data.example.org/y": page(b"ok")})  # fmt: skip
+    assert fetcher(site).fetch(U).final_url.endswith("/y")
+    assert site.requests.count("https://www.data.example.org/robots.txt") == 1
 
 
 @pytest.mark.parametrize(
