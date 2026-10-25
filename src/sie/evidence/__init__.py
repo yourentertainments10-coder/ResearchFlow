@@ -32,7 +32,6 @@ from sie.evidence.conflicts import (
 )
 from sie.evidence.dataset_store import (
     RowsPermission,
-    delete_dataset,
     find_cached,
     list_datasets,
     load_open_licences,
@@ -79,7 +78,6 @@ __all__ = [
     "CollectedDataset",
     "RowsPermission",
     "collect",
-    "delete_dataset",
     "find_cached",
     "list_datasets",
     "load_open_licences",

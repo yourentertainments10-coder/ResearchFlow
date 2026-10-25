@@ -104,9 +104,7 @@ def test_ckan_gives_one_lead_per_csv_or_json_resource_with_licence(tmp_path):
     provider, _ = ckan(tmp_path, site)
     hits = provider.search("general election results", 10)
     assert [h.url for h in hits] == ["https://data.example.gov.uk/election/results.csv"]
-    assert (
-        hits[0].licence == "Open Government Licence v3.0" and hits[0].source_name == "data.gov.uk"
-    )
+    assert hits[0].licence == "uk-ogl" and hits[0].source_name == "data.gov.uk"
     assert hits[0].title == "General election results by party - Results"
     api = site.api_requests()[0]
     q = parse_qs(urlsplit(api).query)
@@ -212,7 +210,7 @@ def test_discovery_over_free_catalogues_ranks_the_official_data_file_first(tmp_p
         0
     ] == "https://data.example.gov.uk/election/results.csv"
     top = result.candidates[0]
-    assert top.tier == 1 and top.structured and top.licence == "Open Government Licence v3.0"
+    assert top.tier == 1 and top.structured and top.licence == "uk-ogl"
     assert {o.status for o in adapter.outcomes} == {"ok"}
 
 
@@ -221,3 +219,15 @@ def test_catalogue_entry_exposes_its_host():
         "n", "ckan", "https://data.gov.uk/api/action", "free_no_key", "d", "https://t", "q"
     )
     assert e.host == "data.gov.uk"
+
+
+def test_the_data_gov_uk_request_is_the_documented_package_search_get(tmp_path):
+    """Pinned to the examples in https://guidance.data.gov.uk/get_data/api_documentation/ (read
+    2026-10-24): base ``https://data.gov.uk/api/action/``, ``package_search`` with ``q`` and ``rows``,
+    as a GET. The page also says "post a JSON dictionary"; every example on it is a GET, and CKAN serves
+    both. The safe fetcher only does GET, so this is checked in the controlled live test."""
+    site = Site({CKAN: json_page(ckan_result())})
+    CkanCatalogue(entries()[0], cached(tmp_path, site)).search("general election", 7)
+    assert site.api_requests() == [
+        "https://data.gov.uk/api/action/package_search?q=general%20election&rows=7"
+    ]

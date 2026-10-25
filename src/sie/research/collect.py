@@ -42,6 +42,13 @@ class CollectedTable:
     source_name: str  # the file name handed to the loader (.csv or .json)
     source_bytes: bytes  # exactly what the loader read (the page itself, or the derived CSV/JSON)
     flags: tuple[str, ...] = field(default_factory=tuple)
+    licence: str | None = (
+        None  # as reported by the catalogue that listed this source (never guessed)
+    )
+    terms_ref: str = ""  # where the terms were recorded, when a policy or licence permitted saving
+    catalogue: str = ""  # the catalogue that listed this source
+    stored_id: str | None = None  # set when this table was reopened from the store
+    expires_at: str | None = None
 
     @property
     def rows(self) -> int:
@@ -222,7 +229,39 @@ def find_conflicts(
                     continue
                 seen.setdefault(_norm(v), (v, f"{r['_source']} row {r['_row_id']}"))
             if len(seen) > 1:
-                (va, sa), (vb, sb) = list(seen.values())[:2]
-                out.append({**{k: group.iloc[0][k] for k in key}, "column": col,
-                            "value_a": va, "source_a": sa, "value_b": vb, "source_b": sb})  # fmt: skip
+                first, *others = list(seen.values())  # every other distinct value, none dropped
+                for vb, sb in others:
+                    out.append({**{k: group.iloc[0][k] for k in key}, "column": col,
+                                "value_a": first[0], "source_a": first[1],
+                                "value_b": vb, "source_b": sb})  # fmt: skip
     return pd.DataFrame(out, columns=[*key, "column", "value_a", "source_a", "value_b", "source_b"])
+
+
+def check_agreement(
+    tables: list[CollectedTable],
+    key: list[str] | None = None,
+    values: list[str] | None = None,
+) -> tuple[pd.DataFrame | None, str]:
+    """Compare tables from different sources. Returns (conflicts or None, a plain note).
+
+    Needs at least two distinct source URLs. Without an explicit key the first column that every table
+    shares is the key and the other shared columns are compared; the note says exactly what was compared,
+    so a wrong guess is visible. ``None`` with a note means the check could not run (never "no conflicts").
+    """
+    if len({t.url for t in tables}) < 2:
+        return None, ""
+    shared = [c for c in map(str, tables[0].dataset.frame.columns)
+              if all(c in map(str, t.dataset.frame.columns) for t in tables[1:])]  # fmt: skip
+    use_key = key or shared[:1]
+    use_values = values or [c for c in shared if c not in use_key]
+    if not use_key or not use_values:
+        return None, (
+            f"{len({t.url for t in tables})} sources were collected but they share no column to "
+            "compare, so whether they agree could not be checked"
+        )
+    conflicts = find_conflicts(tables, list(use_key), list(use_values))
+    what = f"key {', '.join(use_key)}; compared {', '.join(use_values)}"
+    return conflicts, (
+        f"Compared {len({t.url for t in tables})} sources on {what}"
+        + ("" if key else " (columns chosen automatically: first shared column is the key)")
+    )

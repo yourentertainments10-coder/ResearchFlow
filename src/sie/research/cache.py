@@ -1,8 +1,12 @@
-"""A file cache for fetched pages: one entry per URL, one blob per distinct content.
+"""A short-lived file cache for fetched responses: one entry per URL, one blob per distinct content.
 
-Entries are written once and atomically (temp file, then rename); a blob is never rewritten, so what was
-fetched stays exactly as received (AGENTS.md rule 4). Reading verifies the blob against its recorded hash
-and fails loudly on a mismatch. No database table and no migration.
+This is a courtesy cache (fewer requests to free hosts), not the store. It does not hold pages beyond a
+retention window, and it only holds a body when ``cacheable(url)`` says the source may be kept: catalogue
+API answers (metadata) and hosts with a recorded retention policy. Data pages from any other host are never
+written here; what is kept of them is the normalised, permitted table in ``ResearchStore`` (ADR-042).
+Entries are written atomically (temp file, then rename); reading verifies the blob against its recorded
+hash and fails loudly on a mismatch; entries past the window are treated as absent and removed by
+``prune``. No database table and no migration.
 """
 
 from __future__ import annotations
@@ -39,8 +43,10 @@ def _atomic_write(path: Path, data: bytes) -> None:
 
 
 class FetchCache:
-    def __init__(self, root: Path) -> None:
-        self.root = root
+    def __init__(
+        self, root: Path, *, retention: timedelta = timedelta(days=7), now=lambda: datetime.now(UTC)
+    ) -> None:
+        self.root, self.retention, self._now = root, retention, now
 
     def _entry(self, key: str) -> Path:
         return self.root / "index" / f"{key}.json"
@@ -71,11 +77,14 @@ class FetchCache:
         return sha
 
     def get(self, url: str) -> FetchedPage | None:
-        """The cached page for a URL whatever its age, or None. Raises when the blob was altered."""
+        """The cached page for a URL if it is inside the retention window, else None. Raises when the
+        blob was altered."""
         entry = self._entry(url_key(url))
         if not entry.exists():
             return None
         meta = json.loads(entry.read_text(encoding="utf-8"))
+        if self._now() - datetime.fromisoformat(meta["retrieved_at"]) > self.retention:
+            return None  # past the window: gone as far as callers are concerned; prune() removes it
         blob = self._blob(meta["sha256"])
         if not blob.exists():
             raise EvidenceError(f"cache entry for {meta['requested_url']} lost its content")
@@ -94,6 +103,28 @@ class FetchCache:
             datetime.fromisoformat(meta["robots_checked_at"]),
             tuple(meta["notes"]),
         )
+
+    def prune(self) -> int:
+        """Delete entries past the retention window and blobs nothing points to. Returns files removed."""
+        removed, live = 0, set()
+        index = self.root / "index"
+        for entry in sorted(index.glob("*.json")) if index.is_dir() else []:
+            try:
+                meta = json.loads(entry.read_text(encoding="utf-8"))
+                old = self._now() - datetime.fromisoformat(meta["retrieved_at"]) > self.retention
+            except (OSError, ValueError, KeyError):
+                old, meta = True, {}
+            if old:
+                entry.unlink(missing_ok=True)
+                removed += 1
+            else:
+                live.add(meta["sha256"])
+        blobs = self.root / "blobs"
+        for blob in sorted(blobs.glob("*.bin")) if blobs.is_dir() else []:
+            if blob.stem not in live:
+                blob.unlink(missing_ok=True)
+                removed += 1
+        return removed
 
 
 @dataclass(frozen=True)
@@ -118,15 +149,17 @@ class CachedFetcher:
         max_age: timedelta,
         now=lambda: datetime.now(UTC),
         use_stale_on_failure: bool = True,
+        cacheable=lambda url: True,
     ) -> None:
         self.fetcher, self.cache, self.max_age = fetcher, cache, max_age
-        self._now, self._stale_ok = now, use_stale_on_failure
+        self._now, self._stale_ok, self._cacheable = now, use_stale_on_failure, cacheable
 
     def allowed(self, url: str) -> bool:
         return self.fetcher.allowed(url)
 
     def fetch(self, url: str) -> Fetched:
-        cached = self.cache.get(url)
+        keep = self._cacheable(url)
+        cached = self.cache.get(url) if keep else None
         if cached is not None and self._now() - cached.retrieved_at <= self.max_age:
             return Fetched(cached, True, False, "fresh cache hit")
         try:
@@ -137,5 +170,6 @@ class CachedFetcher:
                     cached, True, True, f"live fetch failed ({exc.code}); using the cached copy"
                 )
             raise
-        self.cache.put(page)
-        return Fetched(page, False, False, "fetched live")
+        if keep:
+            self.cache.put(page)
+        return Fetched(page, False, False, "fetched live" if keep else "fetched live (not cached)")

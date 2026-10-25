@@ -239,8 +239,9 @@ DATASETS_IMPORTERS = {
     "evidence/collect.py",
     # Free research (ADR-046): collection of fetched tables, the stored-table reload, and analysis.
     "research/collect.py",
-    "research/store.py",
     "research/report.py",
+    # The one dataset store (ADR-044, amended ADR-046): atomic publish of a normalised table.
+    "evidence/dataset_store.py",
 }
 
 

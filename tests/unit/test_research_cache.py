@@ -15,9 +15,10 @@ URL = "https://data.example.gov.uk/a.csv"
 DAY = timedelta(days=1)
 
 
-def make(tmp_path, site, *, clock=None, **kw):
-    cache = FetchCache(tmp_path / "cache")
+def make(tmp_path, site, *, clock=None, cache_kw=None, **kw):
+    cache_kw = cache_kw or {}
     now = clock or [NOW]
+    cache = FetchCache(tmp_path / "cache", now=lambda: now[0], **cache_kw)
     return (
         CachedFetcher(web_fetcher(site), cache, max_age=DAY, now=lambda: now[0], **kw),
         cache,
@@ -49,7 +50,7 @@ def test_a_failed_live_fetch_falls_back_to_the_old_copy_and_says_so(tmp_path):
     site = Site({URL: csv_page("a,b\n1,2\n")})
     fetcher, _, clock = make(tmp_path, site)
     fetcher.fetch(URL)
-    clock[0] = NOW + timedelta(days=9)
+    clock[0] = NOW + timedelta(days=5)  # older than max_age, inside the 7-day retention
     site.pages[URL] = RawResponse(500, {}, b"down")
     # a fresh fetcher: the first one stopped this host after nothing, but the second sees the 500
     fetcher2 = CachedFetcher(web_fetcher(site), fetcher.cache, max_age=DAY, now=lambda: clock[0])
@@ -69,7 +70,7 @@ def test_stale_fallback_can_be_switched_off(tmp_path):
     site = Site({URL: csv_page("a\n1\n")})
     fetcher, cache, clock = make(tmp_path, site, use_stale_on_failure=False)
     fetcher.fetch(URL)
-    clock[0] = NOW + timedelta(days=9)
+    clock[0] = NOW + timedelta(days=5)  # older than max_age, inside the 7-day retention
     site.pages[URL] = RawResponse(500, {}, b"down")
     strict = CachedFetcher(
         web_fetcher(site), cache, max_age=DAY, now=lambda: clock[0], use_stale_on_failure=False
@@ -108,3 +109,36 @@ def test_no_temp_files_are_left_behind(tmp_path):
     fetcher.fetch(URL)
     leftovers = [p for p in cache.root.rglob(".tmp-*")]
     assert leftovers == []
+
+
+def test_a_body_is_not_written_when_the_source_may_not_be_kept(tmp_path):
+    site = Site({URL: csv_page("a,b\n1,2\n")})
+    fetcher, cache, _ = make(tmp_path, site, cacheable=lambda url: False)
+    first = fetcher.fetch(URL)
+    assert first.reason.endswith("(not cached)")
+    assert not (tmp_path / "cache").exists() or not list((tmp_path / "cache").rglob("*.bin"))
+    assert not fetcher.fetch(URL).from_cache  # every call goes to the network
+
+
+def test_nothing_survives_past_the_retention_window_and_prune_removes_it(tmp_path):
+    site = Site({URL: csv_page("a,b\n1,2\n")})
+    fetcher, cache, clock = make(tmp_path, site, cache_kw={"retention": timedelta(days=3)})
+    fetcher.fetch(URL)
+    clock[0] = NOW + timedelta(days=4)
+    assert cache.get(URL) is None  # past the window: not even a stale fallback
+    assert cache.prune() == 2  # the entry and its blob
+    assert not list((tmp_path / "cache").rglob("*.bin")) and not list(
+        (tmp_path / "cache").rglob("*.json")
+    )
+
+
+def test_a_stale_fallback_only_inside_the_retention_window(tmp_path):
+    site = Site({URL: csv_page("a,b\n1,2\n")})
+    fetcher, _, clock = make(tmp_path, site, cache_kw={"retention": timedelta(days=3)})
+    fetcher.fetch(URL)
+    site.pages[URL] = RawResponse(503, {}, b"down")
+    clock[0] = NOW + timedelta(days=2)
+    assert fetcher.fetch(URL).stale
+    clock[0] = NOW + timedelta(days=5)
+    with pytest.raises(FetchRefused):
+        fetcher.fetch(URL)

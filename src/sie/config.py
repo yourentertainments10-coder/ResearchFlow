@@ -89,6 +89,8 @@ class Settings(BaseSettings):
     # Free-source research (ADR-045): cache lifetimes. Discovery answers go stale faster than data files.
     research_discovery_cache_hours: int = Field(default=24, ge=1)
     research_data_cache_hours: int = Field(default=168, ge=1)
+    # The fetch cache is not an archive: nothing in it lives longer than this (ADR-042, ADR-046).
+    research_cache_retention_days: int = Field(default=7, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None

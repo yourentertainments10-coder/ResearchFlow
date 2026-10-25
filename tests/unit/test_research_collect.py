@@ -177,3 +177,35 @@ def test_conflict_detection_names_a_missing_column():
     t = collect_page(page("k,v\nx,1\n"))[0]
     with pytest.raises(EvidenceError, match="no column"):
         find_conflicts([t], ["k"], ["nope"])
+
+
+def _t(body, url):
+    import dataclasses
+
+    from research_fakes import NOW
+    from sie.evidence.web import FetchedPage
+    from sie.research.collect import collect_page
+
+    page = FetchedPage(url, url, 200, "text/csv", body.encode(), NOW, NOW)
+    return dataclasses.replace(collect_page(page)[0])
+
+
+def test_every_distinct_value_is_reported_not_just_the_first_two():
+    from sie.research.collect import find_conflicts
+
+    ts = [_t(f"k,v\nA,{v}\n", f"https://h{v}.example.gov.uk/d.csv") for v in (1, 2, 3)]
+    out = find_conflicts(ts, ["k"], ["v"])
+    assert sorted(out["value_b"].astype(str)) == ["2", "3"]
+
+
+def test_agreement_needs_two_sources_and_says_when_it_cannot_compare():
+    from sie.research.collect import check_agreement
+
+    a = _t("k,v\nA,1\n", "https://a.example.gov.uk/d.csv")
+    b = _t("x,y\nA,1\n", "https://b.example.gov.uk/d.csv")
+    assert check_agreement([a]) == (None, "")
+    conflicts, note = check_agreement([a, b])
+    assert conflicts is None and "share no column" in note
+    c = _t("k,v\nA,2\n", "https://c.example.gov.uk/d.csv")
+    conflicts, note = check_agreement([a, c])
+    assert len(conflicts) == 1 and "key k" in note and "chosen automatically" in note

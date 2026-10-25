@@ -129,7 +129,9 @@ class CkanCatalogue:
         for ds in result["results"]:
             if not isinstance(ds, dict) or not isinstance(ds.get("title"), str):
                 raise EvidenceError(f"{self.entry.name}: a dataset has no title")
-            licence = ds.get("license_title") or ds.get("license_id")
+            licence = ds.get("license_id") or ds.get(
+                "license_title"
+            )  # the id is what open_licences.csv lists
             common = {
                 "published": ds.get("metadata_modified"),
                 "licence": licence if isinstance(licence, str) else None,

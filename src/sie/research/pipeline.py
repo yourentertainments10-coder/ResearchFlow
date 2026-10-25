@@ -8,11 +8,14 @@ fall back to. When nothing usable is found it says so and asks for a URL or file
 
 from __future__ import annotations
 
+import dataclasses
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from urllib.parse import urlsplit
 
+from sie.evidence.dataset_store import rows_permission
 from sie.evidence.discovery import (
     Candidate,
     DiscoveryResult,
@@ -26,7 +29,8 @@ from sie.research.cache import CachedFetcher, FetchCache
 from sie.research.catalogues import build_providers, load_catalogues
 from sie.research.collect import CollectedTable, NothingCollected, collect_page
 from sie.research.guard import ProviderOutcome, SearchProviderAdapter
-from sie.research.store import ResearchStore, StoredDataset
+from sie.research.reuse import ReuseDecision, assess
+from sie.research.store import ResearchStore, SaveResult, StoreRules
 
 
 @dataclass
@@ -34,11 +38,16 @@ class ResearchRun:
     question: str
     reused: bool = False
     tables: list[CollectedTable] = field(default_factory=list)
-    stored: list[StoredDataset] = field(default_factory=list)
+    stored: list[SaveResult] = field(default_factory=list)
     discovery: DiscoveryResult | None = None
     outcomes: list[ProviderOutcome] = field(default_factory=list)
     problems: list[str] = field(default_factory=list)  # one plain line per skipped lead or failure
-    stale_urls: list[str] = field(default_factory=list)
+    stale_urls: list[str] = field(
+        default_factory=list
+    )  # cached copy used because a live fetch failed
+    stale_datasets: list[str] = field(default_factory=list)  # saved data past the freshness limit
+    not_saved: list[str] = field(default_factory=list)  # tables used this run but not kept, and why
+    reuse_rejected: list[ReuseDecision] = field(default_factory=list)
     tiers: dict[str, int] = field(default_factory=dict)
 
     @property
@@ -46,30 +55,70 @@ class ResearchRun:
         return not self.tables
 
 
+def make_store(settings, project: str = "default", *, now=None) -> ResearchStore:
+    """The one dataset store: configurable location (never committed), per-project, with the rules."""
+    rules = StoreRules.load(settings.data_dir / "evidence", settings.evidence_policy_file)
+    kw = {} if now is None else {"now": now}
+    return ResearchStore(
+        settings.evidence_dataset_dir, project=project, rules=rules,
+        retention_days=settings.evidence_dataset_retention_days, **kw,
+    )  # fmt: skip
+
+
 def build_fetchers(settings, *, now=None) -> tuple[CachedFetcher, CachedFetcher]:
-    """(discovery fetcher, data fetcher): same safe fetcher and cache, different cache lifetimes."""
+    """(discovery fetcher, data fetcher): same safe fetcher, cache lifetimes differ.
+
+    Only catalogue answers and hosts with a recorded policy are cached at all (see ``FetchCache``)."""
     live = WebFetcher(
         user_agent=settings.http_user_agent,
         interval=settings.evidence_fetch_interval_seconds,
         max_bytes=settings.evidence_fetch_max_bytes,
         timeout=settings.evidence_fetch_timeout_seconds,
     )
-    cache = FetchCache(settings.research_dir / "cache")
     kw = {} if now is None else {"now": now}
+    cache = FetchCache(
+        settings.research_dir / "cache",
+        retention=timedelta(days=settings.research_cache_retention_days), **kw,
+    )  # fmt: skip
+    evidence_dir = settings.data_dir / "evidence"
+    catalogue_hosts = {e.host for e in load_catalogues(evidence_dir / "catalogues.csv")}
+    rules = StoreRules.load(evidence_dir, settings.evidence_policy_file)
+
+    def metadata_only(url: str) -> bool:
+        return (urlsplit(url).hostname or "") in catalogue_hosts
+
+    def keepable(url: str) -> bool:
+        return rows_permission(
+            kind="web", url=url, licence=None, row_policies=rules.row_policies,
+            open_licences={}, source_policies=rules.source_policies,
+        ).allowed  # fmt: skip
+
     return (
-        CachedFetcher(live, cache, max_age=timedelta(hours=settings.research_discovery_cache_hours), **kw),
-        CachedFetcher(live, cache, max_age=timedelta(hours=settings.research_data_cache_hours), **kw),
+        CachedFetcher(live, cache, max_age=timedelta(hours=settings.research_discovery_cache_hours), cacheable=metadata_only, **kw),
+        CachedFetcher(live, cache, max_age=timedelta(hours=settings.research_data_cache_hours), cacheable=keepable, **kw),
     )  # fmt: skip
 
 
 def collect_url(
-    url: str, fetcher: CachedFetcher, store: ResearchStore, *, title: str = ""
-) -> tuple[list[StoredDataset], list[CollectedTable], bool]:
-    """Fetch one URL (cache first), collect its tables and store them. Returns (stored, tables, stale)."""
+    url: str,
+    fetcher: CachedFetcher,
+    store: ResearchStore,
+    *,
+    title: str = "",
+    licence: str | None = None,
+    catalogue: str = "",
+) -> tuple[list[SaveResult], list[CollectedTable], bool]:
+    """Fetch one URL (cache first), collect its tables and keep the permitted ones.
+
+    ``licence`` and ``catalogue`` come from the catalogue entry that listed the URL and travel with every
+    table into the manifest and the report. Returns (save results, tables, stale)."""
     fetched = fetcher.fetch(url)
-    tables = collect_page(fetched.page)
-    stored = [store.save(t, title=title or t.label) for t in tables]
-    return stored, tables, fetched.stale
+    tables = [
+        dataclasses.replace(t, licence=licence, catalogue=catalogue)
+        for t in collect_page(fetched.page)
+    ]
+    saved = [store.save(t, title=title or t.label) for t in tables]
+    return saved, tables, fetched.stale
 
 
 def discover_free(
@@ -95,18 +144,39 @@ def run_research(
     data_fetcher: CachedFetcher,
     catalogues_path: Path,
     authority_path: Path,
+    spec: dict | None = None,
     refresh: bool = False,
     max_fetch: int = 3,
     limit: int = 10,
+    max_age_days: int = 30,
+    check_columns: bool = True,
+    now: datetime | None = None,
 ) -> ResearchRun:
+    """Saved data first, but only if it can really answer; otherwise discover and collect more.
+
+    Saved data is used when it passes ``reuse.assess`` (fresh, covers the question, has the columns the
+    operation needs). Stale but otherwise fitting data is a disclosed last resort."""
     run = ResearchRun(question)
+    spec = spec or {"op": "describe"}
+    when = now or datetime.now(UTC)
+    fallback: list[ReuseDecision] = []
     if not refresh:
-        matches = store.reuse(question)
-        if matches:
+        decisions = [
+            d
+            for m in store.list_datasets()
+            if (d := assess(m, question, spec, now=when, max_age_days=max_age_days,
+                            check_columns=check_columns)) is not None
+        ]  # fmt: skip
+        good = sorted((d for d in decisions if d.sufficient), key=lambda d: (-d.share, d.id))
+        if good:
             run.reused = True
-            for meta, _share in matches[:max_fetch]:
-                run.tables.append(store.load(meta["id"]))
+            run.tables += [store.load(d.id) for d in good[:max_fetch]]
             return run
+        run.reuse_rejected = [d for d in decisions if not d.sufficient]
+        fallback = sorted(
+            (d for d in run.reuse_rejected if d.stale and not any("lacks" in r for r in d.reasons)),
+            key=lambda d: (-d.share, d.id),
+        )
     result, run.outcomes = discover_free(
         question, discovery_fetcher, catalogues_path, authority_path, limit=limit
     )
@@ -116,17 +186,30 @@ def run_research(
             break
         run.tiers[c.url] = c.tier
         try:
-            stored, tables, stale = collect_url(c.url, data_fetcher, store, title=c.title)
-        except (FetchRefused, NothingCollected) as exc:
+            saved, tables, stale = collect_url(
+                c.url,
+                data_fetcher,
+                store,
+                title=c.title,
+                licence=c.licence,
+                catalogue=c.source_name,
+            )
+        except (FetchRefused, NothingCollected, EvidenceError) as exc:
             run.problems.append(f"{c.url}: {exc}")
             continue
-        except EvidenceError as exc:
-            run.problems.append(f"{c.url}: {exc}")
-            continue
-        run.stored += stored
+        run.stored += saved
         run.tables += tables
+        run.not_saved += [
+            f"{r.table.url} ({r.table.label}): {r.basis}" for r in saved if not r.stored
+        ]
         if stale:
             run.stale_urls.append(c.url)
+    if not run.tables and fallback:
+        for d in fallback[:max_fetch]:
+            table = store.load(d.id)
+            run.tables.append(table)
+            run.stale_datasets.append(f"{table.url} (retrieved {table.retrieved_at})")
+        run.reused = True
     return run
 
 
@@ -143,5 +226,6 @@ __all__ = [
     "build_fetchers",
     "collect_url",
     "discover_free",
+    "make_store",
     "run_research",
 ]

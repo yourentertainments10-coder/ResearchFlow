@@ -88,7 +88,8 @@ ELECTION_DATASET = {
     "name": "general-election-results",
     "title": "General election results by party",
     "notes": "Seats won by each party in the general election",
-    "license_title": "Open Government Licence v3.0",
+    "license_id": "uk-ogl",
+    "license_title": "UK Open Government Licence (OGL)",
     "metadata_modified": "2026-05-01T00:00:00",
     "resources": [
         {

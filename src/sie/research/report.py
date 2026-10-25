@@ -150,6 +150,9 @@ def build_report(
     conflicts: pd.DataFrame | None = None,
     provider_notes: Sequence[str] = (),
     stale_urls: Sequence[str] = (),
+    stale_datasets: Sequence[str] = (),
+    not_saved: Sequence[str] = (),
+    agreement_note: str = "",
 ) -> Report:
     if not tables or not analyses:
         raise EvidenceError("a report needs at least one table and one analysis")
@@ -172,7 +175,12 @@ def build_report(
                 retrieved_at=datetime.fromisoformat(t.retrieved_at), tier=tiers.get(t.url, 4),
             )
         )  # fmt: skip
-        text, lits = _text(f"Data was taken from {t.url} (table {t.label}).")
+        lic = (
+            f"licence as reported by {t.catalogue or 'the source'}: {t.licence}"
+            if t.licence
+            else "no licence stated by the catalogue"
+        )
+        text, lits = _text(f"Data was taken from {t.url} (table {t.label}); {lic}.")
         statements.append(
             Statement(
                 layer=Layer.EXTERNAL_EVIDENCE, text=text, evidence=(eid,), declared_literals=lits
@@ -230,8 +238,29 @@ def build_report(
             gap(GapKind.PARTIAL_DATA, f"Parsing flags for {c['table']} at {c['url']}: " + ", ".join(c["flags"]))  # fmt: skip
     for w in res.warnings:
         gap(GapKind.PARTIAL_DATA, f"Operation warning: {w}")
+    unlicensed: set[str] = set()
+    for t in tables:
+        if not t.licence and t.url not in unlicensed:
+            gap(GapKind.UNVERIFIED, f"No licence or terms were stated for {t.url}; check them before reusing the data.")  # fmt: skip
+            unlicensed.add(t.url)  # one disclosure per source
     if conflicts is not None and len(conflicts):
         gap(GapKind.CONFLICT, f"{len(conflicts)} values conflict between sources; none was chosen over another (see the conflicts table).")  # fmt: skip
+        if agreement_note:
+            text, lits = _text(f"{agreement_note}.")
+            statements.append(Statement(layer=Layer.LIMITATION, text=text, declared_literals=lits))
+    elif conflicts is not None:
+        text, lits = _text(f"{agreement_note}: no conflicting values were found.")
+        statements.append(Statement(layer=Layer.LIMITATION, text=text, declared_literals=lits))
+    elif agreement_note:
+        gap(GapKind.UNVERIFIED, f"Agreement between sources was not checked: {agreement_note}.")
+    for item in stale_datasets:
+        gap(
+            GapKind.STALE,
+            f"Saved data from {item} is older than the freshness limit and no newer data could be collected.",
+        )
+    for item in not_saved:
+        text, lits = _text(f"Not saved for reuse, a follow-up will fetch it again: {item}.")
+        statements.append(Statement(layer=Layer.LIMITATION, text=text, declared_literals=lits))
     for url in stale_urls:
         gap(
             GapKind.STALE,
@@ -257,10 +286,11 @@ def build_report(
         for w in a.result.limitations:
             lines.append(f"- {w}")
         lines.append("")
+    lic_by_url = {t.url: t.licence for t in tables}
     lines += ["## Sources and coverage", ""]
     for c in cov:
         lines.append(
-            f"- {c['url']} ({c['table']}): retrieved {c['retrieved_at']}, sha256 {c['raw_sha256']}, "
+            f"- {c['url']} ({c['table']}): licence {lic_by_url.get(c['url']) or 'not stated'}, retrieved {c['retrieved_at']}, sha256 {c['raw_sha256']}, "
             f"{c['rows']} rows, {c['rejected_rows']} rejected, flags: {', '.join(c['flags']) or 'none'}"
         )
     if conflicts is not None and len(conflicts):

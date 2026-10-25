@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import shutil
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -165,8 +166,19 @@ class OpenedDataset:
     manifest: dict[str, Any]
 
 
-def _root(root: Path, project_id: int) -> Path:
-    return root / f"p{project_id}"
+Namespace = int | str  # a database project id ("p<id>"), or a research project label (as given)
+LABEL_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
+
+
+def research_namespace(label: str) -> str:
+    """The directory name for a database-free research project. Cannot collide with ``p<id>``."""
+    if not LABEL_RE.match(label):
+        raise EvidenceError("project label must match [a-z0-9][a-z0-9-]{0,62}")
+    return f"r-{label}"
+
+
+def _root(root: Path, ns: Namespace) -> Path:
+    return root / (f"p{ns}" if isinstance(ns, int) else ns)
 
 
 def _jsonable(value: Any) -> Any:
@@ -192,8 +204,29 @@ def save_dataset(
     default_retention_days: int = 90,
     evidence_source_id: int | None = None,
     kind: str = "web",
+    extra: dict[str, Any] | None = None,
 ) -> StoredDataset:
     """Persist one collected table. Raises RowsNotPermitted when nothing permits it."""
+    return save_in(
+        root, scope.project_id, collected, now=now, permission=permission,
+        default_retention_days=default_retention_days, evidence_source_id=evidence_source_id,
+        kind=kind, extra=extra,
+    )  # fmt: skip
+
+
+def save_in(
+    root: Path,
+    ns: Namespace,
+    collected: CollectedDataset,
+    *,
+    now: datetime,
+    permission: RowsPermission,
+    default_retention_days: int = 90,
+    evidence_source_id: int | None = None,
+    kind: str = "web",
+    extra: dict[str, Any] | None = None,
+) -> StoredDataset:
+    """The one writer, for a database project (via ``save_dataset``) or a research project label."""
     if not permission.allowed:
         raise RowsNotPermitted(permission.basis)
     ds = collected.dataset
@@ -213,7 +246,7 @@ def save_dataset(
         "table_caption": collected.table_caption, "retrieved_at": collected.retrieved_at,
     }  # fmt: skip
     key = run_name(thash, sha256_bytes(json.dumps(provenance, sort_keys=True).encode()))
-    project_dir = _root(root, scope.project_id)
+    project_dir = _root(root, ns)
     existing = project_dir / key
     if existing.exists():
         try:
@@ -225,13 +258,14 @@ def save_dataset(
         _remove(existing)  # expired or damaged: store afresh with a new expiry
     expires = now + timedelta(days=days)
     manifest = {
-        "format_version": FORMAT_VERSION, "project_id": scope.project_id, "key": key, "kind": kind,
+        "format_version": FORMAT_VERSION, "project_id": ns, "key": key, "kind": kind,
         "created_at": _stamp(now), "expires_at": _stamp(expires), "retention_days": days,
         "table_sha256": thash, "rows": len(rows), "columns": columns,
         "source": _jsonable(ds.source.model_dump()), "provenance": provenance,
         "evidence_source_id": evidence_source_id,
         "licence": permission.licence, "terms_ref": permission.terms_ref, "permission_basis": permission.basis,
         "skipped_tables": _jsonable(list(collected.skipped_tables)), "loader_notes": _jsonable(ds.notes),
+        "extra": _jsonable(extra or {}),
     }  # fmt: skip
     body = json.dumps({"columns": columns, "rows": rows}, allow_nan=False, ensure_ascii=False)
     if len(body.encode()) > MAX_STORED_BYTES:
@@ -253,7 +287,7 @@ def _remove(path: Path) -> None:
     _remove_tree(path)
 
 
-def _load(root: Path, project_id: int, key: str) -> tuple[Path, dict[str, Any]]:
+def _load(root: Path, project_id: Namespace, key: str) -> tuple[Path, dict[str, Any]]:
     if not key or "/" in key or "\\" in key or key.startswith("."):
         raise NotFound("no such dataset")
     path = _root(root, project_id) / key
@@ -271,7 +305,13 @@ def open_stored(
     root: Path, scope: ProjectScope, key: str, *, now: datetime, allow_expired: bool = False
 ) -> OpenedDataset:
     """Reopen a stored dataset. Re-hashes the table; an altered file is refused, an expired one too."""
-    path, manifest = _load(root, scope.project_id, key)
+    return open_in(root, scope.project_id, key, now=now, allow_expired=allow_expired)
+
+
+def open_in(
+    root: Path, ns: Namespace, key: str, *, now: datetime, allow_expired: bool = False
+) -> OpenedDataset:
+    path, manifest = _load(root, ns, key)
     if not allow_expired and _parse(manifest["expires_at"]) <= now:
         raise DatasetExpired("the stored dataset passed its retention date; collect it again")
     try:
@@ -291,21 +331,27 @@ def open_stored(
 
 @scoped_api
 def list_datasets(root: Path, scope: ProjectScope, *, now: datetime) -> list[dict[str, Any]]:
+    return list_in(root, scope.project_id, now=now)
+
+
+def list_in(root: Path, ns: Namespace, *, now: datetime) -> list[dict[str, Any]]:
     out = []
-    base = _root(root, scope.project_id)
+    base = _root(root, ns)
     if not base.is_dir():
         return out
     for entry in sorted(base.iterdir(), key=lambda p: p.name):
         if entry.name.startswith("."):
             continue
         try:
-            _, m = _load(root, scope.project_id, entry.name)
+            _, m = _load(root, ns, entry.name)
         except NotFound:
             continue
         out.append({
             "key": m["key"], "rows": m["rows"], "columns": m["columns"], "page_url": m["provenance"]["page_url"],
             "retrieved_at": m["provenance"]["retrieved_at"], "expires_at": m["expires_at"],
             "state": "expired" if _parse(m["expires_at"]) <= now else "active",
+            "licence": m.get("licence"), "terms_ref": m.get("terms_ref"), "extra": m.get("extra", {}),
+            "table_caption": m["provenance"].get("table_caption"),
         })  # fmt: skip
     return out
 
@@ -324,7 +370,11 @@ def find_cached(root: Path, scope: ProjectScope, *, page_url: str, now: datetime
 
 @scoped_api
 def delete_dataset(root: Path, scope: ProjectScope, key: str) -> None:
-    path, _ = _load(root, scope.project_id, key)
+    delete_in(root, scope.project_id, key)
+
+
+def delete_in(root: Path, ns: Namespace, key: str) -> None:
+    path, _ = _load(root, ns, key)
     _remove(path)
 
 
@@ -359,7 +409,7 @@ def prune_expired(
     found: list[str] = []
     if root.is_dir():
         for pdir in sorted(root.iterdir()):
-            if not pdir.is_dir() or not pdir.name.startswith("p"):
+            if not pdir.is_dir() or pdir.name.startswith("."):
                 continue
             for entry in sorted(pdir.iterdir()):
                 if entry.name.startswith("."):

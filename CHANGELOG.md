@@ -1,5 +1,13 @@
 # Changelog
 
+## Phase 4 review fixes (ADR-046 amendment)
+- One dataset store: `sie research` now saves through `sie.evidence.dataset_store` (project label via `--project`; only normalised table + manifest; rows only where an open licence or recorded policy permits; expires after `EVIDENCE_DATASET_RETENTION_DAYS`, default 90). Replaces the earlier content-keyed store that kept source files without scope, licence or expiry.
+- The fetch cache is short-lived (`RESEARCH_CACHE_RETENTION_DAYS`, default 7) and keeps bodies only for catalogue API answers and hosts with a recorded policy; `sie research prune` removes expired data and cache files.
+- Reuse checks freshness, project, question coverage and the columns the operation needs; stale data is a disclosed last resort; otherwise it asks for a URL or file.
+- `sie research ask` compares shared columns across two or more sources (or `--conflict-key/--conflict-values`) and the report lists all conflicting values (previously only two per key), states what was compared, or says agreement could not be checked.
+- Catalogue licence id travels lead -> manifest -> report; missing licence is a disclosed gap. Data.gov.uk request pinned to the documented `package_search` GET; live behaviour still unverified.
+- Still unfinished: metric definitions, natural-language query planning, live test.
+
 ## Free discovery, collection, cache and report (ADR-046, Phase 4c)
 - `sie.research` and `sie research discover|collect|ask|datasets`: registry of free keyless catalogues (data.gov.uk CKAN, OpenAlex), file cache, CSV/JSON/HTML table collection through `sie.datasets` (HTML parsing reuses `sie.evidence.collect`) with row-level provenance and flagged missing, rejected and conflicting values, a content-keyed dataset store reused for follow-ups, deterministic analysis, a number-locked answer with disclosed gaps, SVG chart, markdown report.
 - Cost guard: only `free_no_key` catalogues load; quota exhaustion, timeouts and failures are reported and skipped, never replaced by a paid or unregistered endpoint (tests, simulated network).

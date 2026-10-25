@@ -1,137 +1,139 @@
-"""Collected datasets on disk: written once, deduplicated by content, reused for follow-up questions.
+"""Collected datasets for ``sie research``: one storage mechanism, shared with the evidence ledger.
 
-The id is a hash of the page's content hash, the table label and the exact bytes given to the loader, so
-collecting the same page again never creates a second copy and never changes the first. Files are plain
-and read-only: ``source.csv|json`` (what the loader read) and ``meta.json`` (where it came from and what
-was flagged). Loading re-hashes the source and refuses a changed file. No database and no migration.
+This is a thin door onto ``sie.evidence.dataset_store`` (which builds on ``sie.datasets.store``): the same
+atomic publish, hash check, expiry and permission rules. A research *project label* (``--project``) takes
+the place of a database project id, so the research commands stay free of the database. What is kept is
+only the normalised table and its manifest (source URL, retrieval time, page hash, table label, schema,
+licence and terms as reported by the catalogue and as permitted, retention); never the page itself
+(ADR-042, ADR-044). Rows are written only when a recorded policy or an open licence permits it; otherwise
+the table is used for this run and not saved, and the report says so.
 """
 
 from __future__ import annotations
 
-import hashlib
-import json
-import os
-import shutil
-import stat
-import tempfile
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
 
-from sie.datasets import LoadOptions, open_dataset
-from sie.datasets.provenance import sha256_bytes
-from sie.evidence.discovery import terms
-from sie.evidence.errors import EvidenceError
-from sie.research.collect import CSV_OPTIONS, CollectedTable
-
-JSON_OPTIONS = LoadOptions(rename_duplicates=True)
+from sie.evidence.collect import CollectedDataset
+from sie.evidence.dataset_store import (
+    RowPolicy,
+    delete_in,
+    list_in,
+    load_open_licences,
+    load_row_policies,
+    open_in,
+    prune_expired,
+    research_namespace,
+    rows_permission,
+    save_in,
+)
+from sie.evidence.errors import DatasetExpired, EvidenceError
+from sie.evidence.retention import SourcePolicy, load_policies
+from sie.research.collect import CollectedTable
 
 
 @dataclass(frozen=True)
-class StoredDataset:
-    id: str
-    path: Path
+class StoreRules:
+    open_licences: dict[str, str]
+    row_policies: dict[str, RowPolicy]
+    source_policies: dict[str, SourcePolicy]
+
+    @classmethod
+    def load(cls, evidence_dir: Path, source_policies: Path | None = None) -> StoreRules:
+        return cls(
+            load_open_licences(evidence_dir / "open_licences.csv"),
+            load_row_policies(evidence_dir / "dataset_policies.csv"),
+            load_policies(source_policies or evidence_dir / "source_policies.csv"),
+        )
+
+    @classmethod
+    def empty(cls) -> StoreRules:
+        return cls({}, {}, {})
+
+
+@dataclass(frozen=True)
+class SaveResult:
+    table: CollectedTable
+    id: str | None  # None: the rows were not saved
     already_present: bool
-    meta: dict
+    expires_at: datetime | None
+    basis: str  # why it may be kept, or why it was not saved
+
+    @property
+    def stored(self) -> bool:
+        return self.id is not None
 
 
-def dataset_id(table: CollectedTable) -> str:
-    text = "|".join([table.raw_sha256, table.label, sha256_bytes(table.source_bytes)])
-    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:16]
+def _extra(table: CollectedTable, title: str) -> dict:
+    return {
+        "label": table.label, "content_type": table.content_type, "source_name": table.source_name,
+        "flags": list(table.flags), "catalogue": table.catalogue, "reported_licence": table.licence,
+        "title": title or table.label,
+    }  # fmt: skip
 
 
 class ResearchStore:
-    def __init__(self, root: Path) -> None:
-        self.root = root
+    def __init__(
+        self,
+        root: Path,
+        *,
+        project: str = "default",
+        rules: StoreRules | None = None,
+        retention_days: int = 90,
+        now=lambda: datetime.now(UTC),
+    ) -> None:
+        self.root, self.project = root, project
+        self.ns = research_namespace(project)
+        self.rules = rules or StoreRules.empty()
+        self.retention_days, self._now = retention_days, now
 
-    def _dir(self, ds_id: str) -> Path:
-        if not ds_id.isalnum() or len(ds_id) != 16:
-            raise EvidenceError("bad dataset id")
-        return self.root / "datasets" / ds_id
-
-    def save(self, table: CollectedTable, *, title: str = "") -> StoredDataset:
-        ds_id = dataset_id(table)
-        final = self._dir(ds_id)
-        if final.exists():
-            return StoredDataset(ds_id, final, True, json.loads((final / "meta.json").read_text()))
-        suffix = Path(table.source_name).suffix
-        meta: dict[str, Any] = {
-            "id": ds_id,
-            "title": title or table.label,
-            "url": table.url,
-            "retrieved_at": table.retrieved_at,
-            "content_type": table.content_type,
-            "raw_sha256": table.raw_sha256,
-            "label": table.label,
-            "source_file": f"source{suffix}",
-            "source_sha256": sha256_bytes(table.source_bytes),
-            "rows": table.rows,
-            "columns": [str(c) for c in table.dataset.frame.columns],
-            "flags": list(table.flags),
-        }
-        final.parent.mkdir(parents=True, exist_ok=True)
-        tmp = Path(tempfile.mkdtemp(dir=final.parent, prefix=".tmp-"))
-        try:
-            (tmp / meta["source_file"]).write_bytes(table.source_bytes)
-            (tmp / "meta.json").write_text(
-                json.dumps(meta, indent=2, sort_keys=True), encoding="utf-8"
-            )
-            for f in tmp.iterdir():
-                os.chmod(f, stat.S_IREAD)
-            try:
-                os.rename(tmp, final)
-            except OSError:
-                if not final.exists():
-                    raise
-                shutil.rmtree(tmp, ignore_errors=True)  # a concurrent writer won: same content
-                return StoredDataset(
-                    ds_id, final, True, json.loads((final / "meta.json").read_text())
-                )
-        except BaseException:
-            shutil.rmtree(tmp, ignore_errors=True)
-            raise
-        return StoredDataset(ds_id, final, False, meta)
-
-    def meta(self, ds_id: str) -> dict:
-        path = self._dir(ds_id) / "meta.json"
-        if not path.exists():
-            raise EvidenceError(f"no stored dataset {ds_id}")
-        return json.loads(path.read_text(encoding="utf-8"))
+    def save(self, table: CollectedTable, *, title: str = "") -> SaveResult:
+        """Keep the normalised table if its source's terms allow it; otherwise say why not."""
+        perm = rows_permission(
+            kind="web",
+            url=table.url,
+            licence=table.licence,
+            row_policies=self.rules.row_policies,
+            open_licences=self.rules.open_licences,
+            source_policies=self.rules.source_policies,
+        )
+        if not perm.allowed:
+            return SaveResult(table, None, False, None, perm.basis)
+        collected = CollectedDataset(
+            table.dataset, table.raw_sha256, table.url, table.retrieved_at, None, table.label
+        )
+        stored = save_in(
+            self.root, self.ns, collected, now=self._now(), permission=perm,
+            default_retention_days=self.retention_days,
+            extra=_extra(table, title),
+        )  # fmt: skip
+        return SaveResult(table, stored.key, not stored.created, stored.expires_at, perm.basis)
 
     def load(self, ds_id: str) -> CollectedTable:
-        meta = self.meta(ds_id)
-        data = (self._dir(ds_id) / meta["source_file"]).read_bytes()
-        if sha256_bytes(data) != meta["source_sha256"]:
-            raise EvidenceError(f"stored dataset {ds_id} no longer matches its recorded hash")
-        options = JSON_OPTIONS if meta["source_file"].endswith(".json") else CSV_OPTIONS
-        name = f"page{Path(meta['source_file']).suffix}"
-        ds = open_dataset(
-            data, name, options, kind="fetched", url=meta["url"], retrieved_at=meta["retrieved_at"]
-        )
+        opened = open_in(self.root, self.ns, ds_id, now=self._now())
+        m = opened.manifest
+        x = m.get("extra", {})
+        prov = m["provenance"]
         return CollectedTable(
-            ds, meta["label"], meta["raw_sha256"], meta["url"], meta["retrieved_at"],
-            meta["content_type"], name, data, tuple(meta["flags"]),
+            opened.dataset, x.get("label", ""), prov["page_sha256"], prov["page_url"],
+            prov["retrieved_at"], x.get("content_type", ""), x.get("source_name", ""), b"",
+            tuple(x.get("flags", [])), x.get("reported_licence") or m.get("licence"),
+            m.get("terms_ref") or "", x.get("catalogue", ""), ds_id, m["expires_at"],
         )  # fmt: skip
 
-    def list_datasets(self) -> list[dict]:
-        base = self.root / "datasets"
-        if not base.exists():
-            return []
-        return [
-            json.loads((d / "meta.json").read_text(encoding="utf-8"))
-            for d in sorted(base.iterdir())
-            if d.is_dir() and not d.name.startswith(".tmp-") and (d / "meta.json").exists()
-        ]
+    def list_datasets(self, *, include_expired: bool = False) -> list[dict]:
+        rows = list_in(self.root, self.ns, now=self._now())
+        return rows if include_expired else [r for r in rows if r["state"] == "active"]
 
-    def reuse(self, question: str, *, min_share: float = 0.5) -> list[tuple[dict, float]]:
-        """Stored datasets whose title, address or column names cover enough of the question's words."""
-        wanted = terms(question)
-        if not wanted:
-            return []
-        scored = []
-        for meta in self.list_datasets():
-            have = terms(" ".join([meta["title"], meta["url"], *meta["columns"]]))
-            share = len(wanted & have) / len(wanted)
-            if share >= min_share:
-                scored.append((meta, round(share, 4)))
-        return sorted(scored, key=lambda x: (-x[1], x[0]["id"]))
+    def delete(self, ds_id: str) -> None:
+        delete_in(self.root, self.ns, ds_id)
+
+    def prune(self, *, execute: bool = False):
+        """Expired datasets of every project under this root (dry run unless ``execute``)."""
+        return prune_expired(
+            self.root, now=self._now(), execute=execute, confirm="prune" if execute else ""
+        )
+
+
+__all__ = ["DatasetExpired", "EvidenceError", "ResearchStore", "SaveResult", "StoreRules"]

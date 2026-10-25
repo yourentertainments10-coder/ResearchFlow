@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 from datetime import timedelta
 
 import pandas as pd
@@ -53,8 +54,12 @@ def test_provenance_and_sources_are_listed_with_url_time_and_hash():
 
 
 def test_a_complete_table_has_only_the_standing_limitation_and_no_false_warning():
-    r = report()
+    t = table()
+    t = dataclasses.replace(t, licence="uk-ogl", catalogue="data.gov.uk")
+    result = analyze(t, SPEC, PLAN)
+    r = build_report("q", [t], [AnalysisItem("seats", result, "party", "seats:sum")], now=NOW)
     assert [g.kind.value for g in r.answer.gaps] == []
+    assert "uk-ogl" in r.markdown and "data.gov.uk" in r.markdown
     assert "free public sources" in r.markdown
 
 
