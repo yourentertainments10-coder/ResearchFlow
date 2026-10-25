@@ -97,6 +97,11 @@ def check_url(url: str, *, allow_ports: tuple[int, ...] = (443,)) -> tuple[str, 
     return clean, host, port
 
 
+def related_host(host: str, other: str) -> bool:
+    """True for the ``www.`` variant of the same host, or a sub-domain of it. Nothing broader."""
+    return other == f"www.{host}" or host == f"www.{other}" or other.endswith(f".{host}")
+
+
 def system_resolver(host: str, port: int) -> list[str]:
     try:
         return sorted(
@@ -275,7 +280,14 @@ class WebFetcher:
                 target = urljoin(current, resp.headers.get("location", ""))
                 nxt, nhost, _ = check_url(target, allow_ports=self._ports)
                 if nhost != host:
-                    raise FetchRefused("redirect", "redirect to another host is not followed")
+                    if not related_host(host, nhost):
+                        raise FetchRefused(
+                            "redirect",
+                            f"redirect to another host ({nhost}) is not followed; only www. and "
+                            "sub-domain variants of the same host are",
+                        )
+                    notes.append(f"redirected to the related host {nhost}")
+                    host = nhost  # robots.txt, the interval and the address checks apply to it
                 notes.append(f"redirected once to {nxt}")
                 current = nxt
                 continue

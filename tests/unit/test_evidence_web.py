@@ -292,3 +292,40 @@ def test_an_unresolvable_host_is_a_clean_refusal():
     with pytest.raises(FetchRefused) as e:
         fetcher(Site()).__class__(user_agent=UA, get=Site().get, resolver=nxdomain).fetch(U)
     assert e.value.code == "dns"
+
+
+def test_a_redirect_to_the_www_variant_is_followed_and_its_robots_file_is_read():
+    www = "https://www.data.example.org/final"
+    seen = []
+
+    class Net(Site):
+        def get(self, url, headers, timeout, max_bytes):
+            seen.append(url)
+            return super().get(url, headers, timeout, max_bytes)
+
+    site = Net({U: page(status=301, location=www), www: page(b"ok")})
+    got = fetcher(site).fetch(U)
+    assert got.final_url == www and any("related host" in n for n in got.notes)
+    assert "https://www.data.example.org/robots.txt" in seen  # the new host's rules were consulted
+
+
+def test_a_redirect_to_a_subdomain_is_followed_but_lookalikes_are_not():
+    sub = "https://api.data.example.org/x"
+    assert (
+        fetcher(Site({U: page(status=302, location=sub), sub: page(b"ok")})).fetch(U).status == 200
+    )
+    for bad in ("https://evildata.example.org/x", "https://data.example.org.evil.net/x",
+                "https://example.org/x"):  # fmt: skip
+        site = Site({U: page(status=302, location=bad)})
+        with pytest.raises(FetchRefused, match="another host") as e:
+            fetcher(site).fetch(U)
+        assert e.value.code == "redirect" and bad not in site.requests
+
+
+def test_a_related_host_that_resolves_to_a_private_address_is_refused():
+    www = "https://www.data.example.org/final"
+    site = Site({U: page(status=301, location=www), www: page(b"ok")})
+    f = fetcher(site, resolver=lambda h, p: ["10.0.0.9"] if h.startswith("www.") else ["93.184.216.34"])  # fmt: skip
+    with pytest.raises(FetchRefused) as e:
+        f.fetch(U)
+    assert e.value.code == "ssrf" and www not in site.requests

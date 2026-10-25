@@ -1,5 +1,10 @@
 # Changelog
 
+## Fixes from the first live run (Phase 4)
+- A page or API redirect may now go to the `www.` variant or a sub-domain of the same host (data.gov.uk's API answered with a redirect to another host and was refused); the new host's robots.txt, interval and address checks apply, any other host is still refused and the refusal names it.
+- Windows: saving a dataset crashed in `os.fsync` (EBADF on a read-only descriptor, directories cannot be opened). Files are now opened read-write there and directory sync is skipped; the rename that publishes the dataset is still atomic.
+- Live smoke test is still not passed: see PR #31.
+
 ## Live discovery review fixes (ADR-046 amendment, 2026-10-25)
 - Ranking judges topic, place and year separately: a US or 2011 dataset no longer answers a "UK 2024" question (rejected with `mismatch`); weak topic overlap is `low_relevance`; unstated place or year is a disclosed limitation. Academic papers are references (`role: reference`), never collected, ranked below structured datasets.
 - robots.txt may redirect up to 5 times with every hop validated (https, public address, port, pacing, loop check); anything unsafe or 403/5xx fails closed.
