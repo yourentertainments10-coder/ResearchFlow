@@ -277,7 +277,7 @@ def test_a_report_needs_collected_data(tmp_path):
         build_report(QUESTION, run.tables, [], now=NOW)
 
 
-def redirecting_world(tmp_path, target, **kw):
+def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
     """data.gov.uk's API redirects (as seen live); fetchers are built with the committed redirect hosts."""
     from sie.research.catalogues import load_catalogues
 
@@ -286,6 +286,15 @@ def redirecting_world(tmp_path, target, **kw):
     site, disc, data, store = world(
         tmp_path, ckan=RawResponse(301, {"location": target}, b""), **kw
     )
+    plain_get = site.get
+
+    def get(url, headers, timeout, max_bytes):  # only the redirect target has its own robots.txt
+        if ckan_robots is not None and url == "https://ckan.publishing.service.gov.uk/robots.txt":
+            site.requests.append(url)
+            return RawResponse(200, {"content-type": "text/plain"}, ckan_robots.encode())
+        return plain_get(url, headers, timeout, max_bytes)
+
+    site.get = get
     live = web_fetcher(site, Ticker(), redirect_hosts=hosts)
     cache = FetchCache(tmp_path / "cache2", now=lambda: NOW)
     disc = CachedFetcher(live, cache, max_age=timedelta(hours=24), now=lambda: NOW)
@@ -312,3 +321,19 @@ def test_a_redirect_to_an_unnamed_host_is_a_provider_failure_naming_the_host(tmp
     assert run.needs_manual_input
     assert any("evil.example.net" in o.detail for o in run.outcomes if o.status != "ok")
     assert not any("evil" in u for u in site.requests)
+
+
+def test_a_redirect_target_whose_robots_txt_forbids_the_api_is_respected_and_named(tmp_path):
+    """Live run 2026-10-25: after the redirect, ckan.publishing.service.gov.uk's robots.txt refused the
+    request. That is final: no retry on another path, no paid or unregistered fallback."""
+    real = "https://ckan.publishing.service.gov.uk/api/action/package_search"
+    site, disc, data, store = redirecting_world(
+        tmp_path, real + "?q=x&rows=30", ckan_robots="User-agent: *\nDisallow: /api/\n"
+    )
+    run = go(disc, data, store)
+    assert run.needs_manual_input
+    detail = " ".join(o.detail for o in run.outcomes if o.status != "ok")
+    assert "ckan.publishing.service.gov.uk disallows /api/action/package_search" in detail
+    assert not [
+        u for u in site.api_requests() if u.startswith(real)
+    ]  # the API path was never requested

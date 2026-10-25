@@ -282,7 +282,11 @@ class WebFetcher:
         for hop in range(MAX_PAGE_REDIRECTS + 1):  # the page, then a bounded number of redirects
             parser, checked_at = self._robots_for(host, port)
             if not parser.can_fetch(self.user_agent, current):
-                raise FetchRefused("robots", "robots.txt disallows this URL for automated clients")
+                raise FetchRefused(
+                    "robots",
+                    f"robots.txt of {host} disallows {urlsplit(current).path or '/'} for automated "
+                    "clients (not bypassed)",
+                )
             resp = self._request(current, host, port, ", ".join(ALLOWED_TYPES))
             if resp.status in REDIRECT_STATUSES:
                 path = " -> ".join(urlsplit(u).hostname or "?" for u in chain)

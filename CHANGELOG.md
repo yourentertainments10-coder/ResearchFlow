@@ -1,5 +1,9 @@
 # Changelog
 
+## Fourth live run: robots.txt of the data.gov.uk API host (Phase 4)
+- Live (owner, 2026-10-25): after the named redirect, the robots.txt of `ckan.publishing.service.gov.uk` disallows the API request for our client. That is respected, not bypassed; the refusal now names the host and path. **The data.gov.uk catalogue API is therefore not usable by this fetcher until the owner decides how to proceed** (read the robots.txt and the service's terms, contact the publisher, or use another free source or a URL/file).
+- Live smoke test: NOT passed (no structured dataset was discovered).
+
 ## Third live run: data.gov.uk redirect host (Phase 4)
 - Observed live (owner, 2026-10-25): `https://data.gov.uk/api/action/package_search` redirects to `ckan.publishing.service.gov.uk`. Cross-host redirects stay refused unless the owner names the target in the new optional `redirect_hosts` column of `data/evidence/catalogues.csv` (plain host names, scoped to that catalogue; robots.txt, address and interval checks still apply). data.gov.uk now lists that host.
 - Network failures name the host (`the request to <host> failed: TimeoutError`). A timeout can be raised with `EVIDENCE_FETCH_TIMEOUT_SECONDS` (default 20, max 120).
