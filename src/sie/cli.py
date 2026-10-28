@@ -14,9 +14,11 @@ from sie.db.roles import PIPELINE, READER, apply_roles
 from sie.db.session import make_engine
 from sie.logging_setup import setup_logging
 from sie.reference import ReferenceDataError, seed_reference
+from sie.research_cli import register as register_research_commands
 
 app = typer.Typer(help="Sports Intelligence Engine", no_args_is_help=True)
 register_dataset_commands(app)
+register_research_commands(app)
 
 
 @app.callback()
@@ -913,3 +915,93 @@ def evidence_prune(
         raise _fail(str(exc), 1) from exc
     for line in report.lines:
         typer.echo(line)
+
+
+@evidence_app.command("fetch")
+def evidence_fetch(
+    project: str = typer.Argument(..., help="Project slug."),
+    url: str = typer.Argument(..., help="https URL to fetch."),
+    title: str = typer.Option(..., "--title", help="Short source title."),
+    tier: int = typer.Option(3, "--tier", min=1, max=4, help="Source tier 1 (official) to 4."),
+    execute: bool = typer.Option(False, "--execute", help="Really fetch. Without it: check only."),
+) -> None:
+    """Fetch one web page politely and record it as evidence (excerpt only by default)."""
+    from datetime import UTC, datetime
+
+    from sie.evidence import (
+        EvidenceError,
+        FetchRefused,
+        WebFetcher,
+        check_url,
+        fetch_into_project,
+        open_scope,
+    )
+
+    settings = get_settings()
+    try:
+        clean, host, _ = check_url(url)
+        if not execute:
+            typer.echo(f"dry run: would fetch {clean} (host {host}) after checking robots.txt")
+            return
+        fetcher = WebFetcher(
+            user_agent=settings.http_user_agent,
+            interval=settings.evidence_fetch_interval_seconds,
+            max_bytes=settings.evidence_fetch_max_bytes,
+            timeout=settings.evidence_fetch_timeout_seconds,
+        )
+        engine = make_engine(settings)
+        with engine.connect() as conn:
+            scope = open_scope(conn, project, for_write=True)
+        page, result = fetch_into_project(
+            engine, scope, fetcher, clean, title=title, tier=tier, now=datetime.now(UTC)
+        )
+    except FetchRefused as exc:
+        typer.echo(f"refused ({exc.code}): {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(
+        f"{result.outcome}: source {result.source_id} ({page.status}, {page.content_type}, {len(page.body)} bytes)"
+    )
+
+
+@evidence_app.command("discover")
+def evidence_discover(
+    question: str = typer.Argument(..., help="The research question."),
+    leads: Path = typer.Option(
+        ..., "--leads", exists=True, dir_okay=False, help="JSON file of search leads."
+    ),
+    check_robots: bool = typer.Option(
+        False, "--check-robots", help="Pre-check robots.txt (one request per host)."
+    ),
+    limit: int = typer.Option(10, "--limit", min=1, max=50),
+) -> None:
+    """Rank search leads by source authority and relevance, with reasons (no page is fetched)."""
+    import json
+
+    from sie.evidence import EvidenceError, FetchRefused
+    from sie.evidence.discovery import FileProvider, discover, load_authority
+    from sie.evidence.web import WebFetcher
+
+    settings = get_settings()
+    try:
+        fetcher = (
+            WebFetcher(
+                user_agent=settings.http_user_agent,
+                interval=settings.evidence_fetch_interval_seconds,
+                max_bytes=settings.evidence_fetch_max_bytes,
+                timeout=settings.evidence_fetch_timeout_seconds,
+            )
+            if check_robots
+            else None
+        )
+        result = discover(
+            FileProvider(leads), question, rules=load_authority(settings.data_dir / "evidence" / "source_authority.csv"),
+            fetcher=fetcher, limit=limit,
+        )  # fmt: skip
+    except FetchRefused as exc:
+        typer.echo(f"refused ({exc.code}): {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+    except EvidenceError as exc:
+        raise _fail(str(exc)) from exc
+    typer.echo(json.dumps(result.to_dict(), indent=2, sort_keys=True))

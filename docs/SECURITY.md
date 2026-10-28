@@ -56,3 +56,9 @@ Treat as a design change with a decision record, and then:
 - Uploads are limited in size and decompressed size, hashed, and the filename is sanitised before use. Stored bytes are never executed or rendered.
 - Purge and prune are owner-only (database privilege check), dry-run by default and confirmed explicitly. They do not erase backups or provider history; the Neon window is unverified until the owner records it. See `EVIDENCE_RETENTION.md`.
 - Full web copies need a recorded permission; the default keeps an excerpt only.
+
+## 10. Web fetching (ADR-044)
+- Only https; a URL with credentials is refused. The host name must resolve to public addresses only and the connected address is checked again (loopback, private, link-local, multicast and metadata addresses are refused).
+- robots.txt is read per host and obeyed; if it cannot be read the fetch stops. At least 2 seconds between requests to a host; a 403, 429 or 5xx stops the host for the run.
+- One redirect at most, to the same host only. Content type and size are limited and compressed responses are refused. Nothing fetched is executed or rendered.
+- The real network function is not run in CI; the owner does the first live test. No workflow fetches anything.

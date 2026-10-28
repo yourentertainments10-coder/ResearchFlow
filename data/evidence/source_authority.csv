@@ -1,0 +1,14 @@
+pattern,tier,category,note
+.gov.in,1,government,Indian government domains
+.nic.in,1,government,National Informatics Centre hosted government sites
+.gov,1,government,US government
+.gov.uk,1,government,UK government
+.europa.eu,1,government,European Union institutions
+.int,1,intergovernmental,Treaty organisations
+.un.org,1,intergovernmental,United Nations
+.worldbank.org,2,intergovernmental,World Bank open data
+.edu,2,academic,US higher education
+.ac.in,2,academic,Indian higher education
+.ac.uk,2,academic,UK higher education
+.wikipedia.org,3,reference,Secondary: useful for context and cross-checks, not a primary record
+.wikimedia.org,3,reference,Secondary

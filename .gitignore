@@ -58,3 +58,6 @@ data/.pipeline.lock
 data/alert_state.json*
 data/backups/
 data/publish/
+
+# --- collected research datasets (ADR-044): rows extracted from third-party sources, never committed ---
+data/evidence_datasets/

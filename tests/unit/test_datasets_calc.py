@@ -111,6 +111,15 @@ def test_group_aggregate_sums_means_counts_and_keeps_the_null_group():
     assert result.provenance.rows_in == 5 and result.provenance.rows_used == 5
 
 
+def test_a_complete_metric_gives_no_false_no_non_null_warning():
+    """Regression: the validation probe on an empty group used to leak 'no non-null values'."""
+    text = "party,seats\nA,3\nB,4\nA,5\n"
+    agg = run({"op": "group_aggregate", "by": ["party"], "metrics": ["seats:sum"]}, text)
+    top = run({"op": "top_n", "by": "party", "metric": "seats:sum", "n": 2}, text)
+    assert agg.warnings == [] and top.warnings == []
+    assert rows(agg) == [["A", 2, 8], ["B", 1, 4]]
+
+
 def test_group_aggregate_sort_by_metric_descending_with_key_tiebreak():
     result = run(
         {"op": "group_aggregate", "by": ["region"], "metrics": ["amount:sum"], "sort": "amount:sum"}

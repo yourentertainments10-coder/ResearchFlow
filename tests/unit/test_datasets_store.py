@@ -304,3 +304,22 @@ def test_remove_stale_temp_only_removes_old_tmp_directories(tmp_path: Path):
 
 def test_remove_stale_temp_handles_a_missing_root(tmp_path: Path):
     assert remove_stale_temp(tmp_path / "nope") == []
+
+
+def test_fsync_on_windows_opens_files_read_write_and_skips_directories(tmp_path, monkeypatch):
+    """Windows refuses fsync on a read-only descriptor (EBADF) and cannot open a directory."""
+    import os
+
+    from sie.datasets import store
+
+    opened = []
+    monkeypatch.setattr(os, "open", lambda p, flags: opened.append(flags) or 3)
+    monkeypatch.setattr(os, "fsync", lambda fd: None)
+    monkeypatch.setattr(os, "close", lambda fd: None)
+    f = tmp_path / "a.txt"
+    f.write_text("x")
+    store._fsync_path(f, windows=True)
+    store._fsync_path(tmp_path, windows=True)
+    assert len(opened) == 1 and opened[0] & os.O_RDWR
+    store._fsync_path(f, windows=False)
+    assert opened[1] == os.O_RDONLY

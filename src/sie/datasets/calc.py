@@ -330,12 +330,15 @@ def _group(run: _Run, by: list[str]) -> tuple[list[_Col], dict[Any, list[int]]]:
     return key_cols, groups
 
 
-def _metric_values(run: _Run, label: str, positions: list[int]) -> tuple[Any, _Col]:
+def _metric_values(
+    run: _Run, label: str, positions: list[int], *, warn: bool = True
+) -> tuple[Any, _Col]:
     column, function = parse_metric(label)
     col = run.col(column)
     values = [col.values[p] for p in positions if col.values[p] is not None]
     value, warning = _aggregate(function, values, col)
-    run.warn(warning)
+    if warn:
+        run.warn(warning)
     return value, col
 
 
@@ -354,7 +357,9 @@ def _grouped_rows(
     columns = [*by, "rows", *labels]
     _check_unique(columns, "output columns")
     for label in labels:
-        _metric_values(run, label, [])  # validates the column and function before any work
+        _metric_values(
+            run, label, [], warn=False
+        )  # validates only; an empty probe is not a finding
     rows: list[list[Any]] = []
     sort_keys: list[tuple[Any, ...]] = []
     for positions in groups.values():
