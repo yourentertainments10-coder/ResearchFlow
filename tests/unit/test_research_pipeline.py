@@ -103,6 +103,7 @@ def test_the_same_data_after_expiry_is_still_not_ingested_twice(tmp_path):
     go(disc, data, store)
     later = CachedFetcher(web_fetcher(site, Ticker()), FetchCache(tmp_path / "cache", now=lambda: NOW + timedelta(days=30)),
                           max_age=timedelta(seconds=1), now=lambda: NOW + timedelta(days=30))  # fmt: skip
+    later.catalogues_path = disc.catalogues_path
     go(later, later, store, refresh=True)
     assert len(store.list_datasets()) == 1
 
