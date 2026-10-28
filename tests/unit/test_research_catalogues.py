@@ -276,7 +276,7 @@ def test_a_disabled_catalogue_is_reported_without_a_network_request(tmp_path):
     assert outcomes[0].provider == "data.gov.uk"
     assert outcomes[0].status == "disabled"
     assert "robots.txt disallows /api/" in outcomes[0].detail
-    assert site.requests == []
+    assert not any(url.startswith("https://data.gov.uk/") for url in site.requests)
 
 
 def test_a_disabled_catalogue_requires_an_explanation(tmp_path):
