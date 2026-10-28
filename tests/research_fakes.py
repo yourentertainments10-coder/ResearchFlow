@@ -111,7 +111,6 @@ ELECTION_DATASET = {
 RESULTS_CSV = "party,seats,votes\nAlpha,300,1000\nBeta,150,800\nGamma,90,400\nAlpha,10,50\n"
 
 
-
 def write_test_catalogues(path, *, redirect_hosts=()):
     """Enable the synthetic CKAN fixture without changing the production source registry."""
     from sie.research.catalogues import load_catalogues
