@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import csv
 import json
-from pathlib import Path
 from datetime import UTC, datetime
+from pathlib import Path
 from urllib.parse import urlsplit
 
 from sie.evidence.web import RawResponse, WebFetcher

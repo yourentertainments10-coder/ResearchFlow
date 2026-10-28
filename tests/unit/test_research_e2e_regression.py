@@ -284,8 +284,6 @@ def test_a_report_needs_collected_data(tmp_path):
 
 def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
     """Exercise a redirect using an explicitly configured host in the temporary test registry."""
-    from sie.research.catalogues import load_catalogues
-
     site, disc, data, store = world(
         tmp_path, ckan=RawResponse(301, {"location": target}, b""), allow_redirects=True, **kw
     )

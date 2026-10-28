@@ -40,7 +40,7 @@ A free-only engine will not find every source for every topic. It must disclose 
 |---|---|---|
 | data.gov.uk (CKAN) | **Implemented but disabled** | The API redirects to `ckan.publishing.service.gov.uk`; its robots.txt disallows `/api/`. The provider remains in code but is blocked by the production registry, and no request is sent while disabled. |
 | OpenAlex | **Active**, keyless only | Returns scholarly works, not a general structured-dataset search. Keyless use has a daily budget and HTTP 429 stops that provider for the run; no paid fallback. |
-| [catalog.data.gov](https://catalog.data.gov/) | Not enabled | Its robots.txt specifies a 10-second crawl delay. The exact search endpoint, client access terms and any authentication requirements still need validation through the safe fetcher before enabling it. |
+| [catalog.data.gov](https://catalog.data.gov/) | Not enabled | Its robots.txt specifies a 10-second crawl delay. The [current official Catalog API guide](https://resources.data.gov/catalog-api/) says the new v4 API replaces the prior CKAN API and requires an api.data.gov key; the old CKAN API is read-only for existing integrations. It therefore does not qualify for this keyless registry. |
 | open.canada.ca / data.europa.eu | Not enabled | Automated access and API path compatibility have not been confirmed end to end. Do not enable based on a CKAN-compatible interface alone. |
 | data.gov.in | Not enabled | API use and its terms need confirmation for the selected endpoint; user-downloaded files remain supported. |
 | Wikimedia, Common Crawl, APISetu, Kaggle | Not enabled | Each candidate needs an individual policy, endpoint, licence and rate-limit review. |
