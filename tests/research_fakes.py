@@ -118,8 +118,16 @@ def write_test_catalogues(path, *, redirect_hosts=()):
 
     path.parent.mkdir(parents=True, exist_ok=True)
     columns = [
-        "name", "kind", "base_url", "access", "verified_on", "terms_ref", "quota_note",
-        "redirect_hosts", "status", "status_note",
+        "name",
+        "kind",
+        "base_url",
+        "access",
+        "verified_on",
+        "terms_ref",
+        "quota_note",
+        "redirect_hosts",
+        "status",
+        "status_note",
     ]
     source_registry = Path(__file__).resolve().parents[1] / "data" / "evidence" / "catalogues.csv"
     rows = []

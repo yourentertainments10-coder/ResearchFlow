@@ -380,7 +380,6 @@ def test_a_named_redirect_host_is_still_checked_for_robots_and_private_addresses
     assert "https://ckan.example.gov.uk/robots.txt" in seen.requests
 
 
-
 def test_a_crawl_delay_longer_than_the_default_interval_is_obeyed():
     site = Site(
         {U: page()},

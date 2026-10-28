@@ -41,7 +41,10 @@ def env(tmp_path, monkeypatch):
     data = tmp_path / "data"
     (data / "evidence").mkdir(parents=True)
     for name in (
-        "source_authority.csv", "open_licences.csv", "dataset_policies.csv", "source_policies.csv",
+        "source_authority.csv",
+        "open_licences.csv",
+        "dataset_policies.csv",
+        "source_policies.csv",
     ):
         shutil.copy(ROOT / "data" / "evidence" / name, data / "evidence" / name)
     write_test_catalogues(data / "evidence" / "catalogues.csv")

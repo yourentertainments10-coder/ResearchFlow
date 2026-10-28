@@ -23,7 +23,11 @@ from sie.research.cache import Fetched
 
 FREE_ACCESS = "free_no_key"
 COLUMNS = ["name", "kind", "base_url", "access", "verified_on", "terms_ref", "quota_note"]
-COLUMN_SETS = (COLUMNS, [*COLUMNS, "redirect_hosts"], [*COLUMNS, "redirect_hosts", "status", "status_note"])
+COLUMN_SETS = (
+    COLUMNS,
+    [*COLUMNS, "redirect_hosts"],
+    [*COLUMNS, "redirect_hosts", "status", "status_note"],
+)
 STATUSES = ("active", "disabled")
 DATA_FORMATS = {"csv", "json"}
 KINDS = ("ckan", "openalex")

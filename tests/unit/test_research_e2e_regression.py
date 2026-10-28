@@ -288,6 +288,7 @@ def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
         tmp_path, ckan=RawResponse(301, {"location": target}, b""), allow_redirects=True, **kw
     )
     from sie.research.catalogues import load_catalogues
+
     entries = load_catalogues(disc.catalogues_path)
     hosts = {e.host: e.redirect_host_list for e in entries if e.redirect_host_list}
     plain_get = site.get

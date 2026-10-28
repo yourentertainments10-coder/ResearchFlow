@@ -81,7 +81,9 @@ def build_fetchers(settings, *, now=None) -> tuple[CachedFetcher, CachedFetcher]
         interval=settings.evidence_fetch_interval_seconds,
         max_bytes=settings.evidence_fetch_max_bytes,
         timeout=settings.evidence_fetch_timeout_seconds,
-        redirect_hosts={e.host: e.redirect_host_list for e in active_entries if e.redirect_host_list},
+        redirect_hosts={
+            e.host: e.redirect_host_list for e in active_entries if e.redirect_host_list
+        },
     )
     kw = {} if now is None else {"now": now}
     cache = FetchCache(
