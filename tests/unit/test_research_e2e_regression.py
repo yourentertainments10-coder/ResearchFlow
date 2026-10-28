@@ -304,6 +304,7 @@ def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
     cache = FetchCache(tmp_path / "cache2", now=lambda: NOW)
     disc = CachedFetcher(live, cache, max_age=timedelta(hours=24), now=lambda: NOW)
     data = CachedFetcher(live, cache, max_age=timedelta(days=7), now=lambda: NOW)
+    disc.catalogues_path = tmp_path / "catalogues.csv"
     return site, disc, data, store
 
 

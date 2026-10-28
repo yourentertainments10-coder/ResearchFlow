@@ -23,6 +23,7 @@ from research_fakes import (
     csv_page,
     json_page,
     web_fetcher,
+    write_test_catalogues,
 )
 from sie.answer import verify
 from sie.evidence.web import RawResponse
@@ -48,6 +49,7 @@ def world(tmp_path):
     cache = FetchCache(tmp_path / "cache", now=lambda: NOW)
     live = web_fetcher(site, Ticker())
     disc = CachedFetcher(live, cache, max_age=timedelta(hours=24), now=lambda: NOW)
+    disc.catalogues_path = write_test_catalogues(tmp_path / "catalogues.csv")
     data = CachedFetcher(live, cache, max_age=timedelta(days=7), now=lambda: NOW)
     rules = StoreRules.load(ROOT / "data" / "evidence")
     return site, disc, data, ResearchStore(tmp_path / "store", rules=rules, now=lambda: NOW)
@@ -59,7 +61,7 @@ def go(disc, data, store, **kw):
         store=store,
         discovery_fetcher=disc,
         data_fetcher=data,
-        catalogues_path=ROOT / "data" / "evidence" / "catalogues.csv",
+        catalogues_path=disc.catalogues_path,
         authority_path=ROOT / "data" / "evidence" / "source_authority.csv",
         now=NOW,
         **kw,

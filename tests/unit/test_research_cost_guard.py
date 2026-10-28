@@ -145,7 +145,7 @@ def test_a_data_fetch_timeout_skips_the_lead_and_names_it(tmp_path):
         store=ResearchStore(tmp_path / "store"),
         discovery_fetcher=fetcher,
         data_fetcher=fetcher,
-        catalogues_path=ROOT / "data" / "evidence" / "catalogues.csv",
+        catalogues_path=fetcher.catalogues_path,
         authority_path=ROOT / "data" / "evidence" / "source_authority.csv",
     )
     assert run.needs_manual_input
