@@ -36,6 +36,7 @@ from sie.evidence.errors import FetchRefused
 PLACEHOLDER_UA = "set HTTP_USER_AGENT"
 ALLOWED_TYPES = ("text/html", "text/plain", "text/csv", "application/json", "application/csv")
 MAX_URL_CHARS = 2000
+MAX_CRAWL_DELAY = 60.0  # seconds; a longer Crawl-delay means no fetch from that host
 MAX_ROBOTS_REDIRECTS = 5  # RFC 9309 asks crawlers to follow at least five
 REDIRECT_STATUSES = (301, 302, 303, 307, 308)
 
@@ -176,6 +177,7 @@ class WebFetcher:
         self._clock, self._sleep, self._now, self._ports = clock, sleep, now, allow_ports
         self._last: dict[str, float] = {}
         self._robots: dict[str, tuple[RobotFileParser, datetime]] = {}
+        self._delays: dict[str, float] = {}  # host -> Crawl-delay from its robots.txt
         self._stopped: dict[str, str] = {}  # host -> code, after a 403, 429 or 5xx
 
     # -- one request ---------------------------------------------------------------------------
@@ -187,7 +189,8 @@ class WebFetcher:
         addresses = self._resolve(host, port)
         if not addresses or not all(is_public_address(a) for a in addresses):
             raise FetchRefused("ssrf", "the host resolves to a non-public address")
-        wait = self._last.get(host, float("-inf")) + self.interval - self._clock()
+        gap = max(self.interval, self._delays.get(host, 0.0))
+        wait = self._last.get(host, float("-inf")) + gap - self._clock()
         if wait > 0:
             self._sleep(wait)
         self._last[host] = self._clock()
@@ -243,6 +246,19 @@ class WebFetcher:
             url = target
         raise FetchRefused("robots", "robots.txt redirect limit")  # pragma: no cover
 
+    def _honour_crawl_delay(self, parser: RobotFileParser, host: str) -> None:
+        """A ``Crawl-delay`` above our own interval is obeyed; one above the cap stops the fetch."""
+        raw = parser.crawl_delay(self.user_agent)
+        if raw is None:
+            return
+        delay = float(raw)
+        if delay > MAX_CRAWL_DELAY:
+            raise FetchRefused(
+                "robots",
+                f"{host} asks for a crawl delay of {delay:g} s, above our {MAX_CRAWL_DELAY:g} s cap",
+            )
+        self._delays[host] = delay
+
     def _robots_for(self, host: str, port: int) -> tuple[RobotFileParser, datetime]:
         if host in self._robots:
             return self._robots[host]
@@ -281,6 +297,7 @@ class WebFetcher:
         chain = [current]
         for hop in range(MAX_PAGE_REDIRECTS + 1):  # the page, then a bounded number of redirects
             parser, checked_at = self._robots_for(host, port)
+            self._honour_crawl_delay(parser, host)
             if not parser.can_fetch(self.user_agent, current):
                 raise FetchRefused(
                     "robots",

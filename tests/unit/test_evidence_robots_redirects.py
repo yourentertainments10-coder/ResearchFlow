@@ -160,3 +160,29 @@ def test_a_page_redirect_to_another_host_is_still_refused():
     with pytest.raises(FetchRefused) as e:
         fetcher(net).fetch(PAGE)
     assert e.value.code == "redirect"
+
+
+def _delay_net(delay):
+    rules = f"User-agent: *\nCrawl-delay: {delay}\nAllow: /\n".encode()
+    return Net(
+        {
+            ROBOTS: RawResponse(200, {"content-type": "text/plain"}, rules),
+            PAGE: CSV,
+            PAGE + "2": CSV,
+        }
+    )
+
+
+def test_a_crawl_delay_above_our_interval_is_obeyed():
+    f = fetcher(_delay_net(10))
+    f.fetch(PAGE)
+    t0 = f._clock()
+    f.fetch(PAGE + "2")
+    assert f._clock() - t0 >= 10
+
+
+def test_a_crawl_delay_above_the_cap_stops_the_fetch():
+    net = _delay_net(300)
+    with pytest.raises(FetchRefused) as e:
+        fetcher(net).fetch(PAGE)
+    assert e.value.code == "robots" and PAGE not in net.requests
