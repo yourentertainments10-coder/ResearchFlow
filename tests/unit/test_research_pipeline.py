@@ -156,7 +156,7 @@ def test_stale_saved_data_is_a_disclosed_last_resort_only_when_nothing_newer_is_
                          now=lambda: later_now)  # fmt: skip
     later = run_research(
         QUESTION, store=store, discovery_fetcher=live, data_fetcher=live,
-        catalogues_path=ROOT / "data" / "evidence" / "catalogues.csv",
+        catalogues_path=disc.catalogues_path,
         authority_path=ROOT / "data" / "evidence" / "source_authority.csv",
         now=later_now,
     )  # fmt: skip
