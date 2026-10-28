@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-28: Provider status controls and robots-compliant discovery
+- Added explicit `active` / `disabled` catalogue status with a required reason for disabled entries, retaining support for existing registry column layouts.
+- Disabled catalogue providers remain visible in results but never make network calls; inactive hosts no longer receive redirect allowances or discovery-cache treatment.
+- Disabled the data.gov.uk CKAN provider in production after its redirected endpoint was observed to disallow `/api/` under robots.txt. Removed its redirect-host exception; no robots rule is bypassed.
+- Added explicit Crawl-delay tests and isolated test registries that activate CKAN only for simulated-network regression tests.
+- Reconciled source/vision/roadmap docs. OpenAlex remains a paper/reference provider only; a replacement structured-data provider and live end-to-end smoke test remain open. PR #31 is not merge-ready.
+
+
 ## Fourth live run: robots.txt of the data.gov.uk API host (Phase 4)
 - Live (owner, 2026-10-25): after the named redirect, the robots.txt of `ckan.publishing.service.gov.uk` disallows the API request for our client. That is respected, not bypassed; the refusal now names the host and path. **The data.gov.uk catalogue API is therefore not usable by this fetcher until the owner decides how to proceed** (read the robots.txt and the service's terms, contact the publisher, or use another free source or a URL/file).
 - Live smoke test: NOT passed (no structured dataset was discovered).

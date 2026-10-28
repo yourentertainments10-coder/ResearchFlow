@@ -1,6 +1,6 @@
 # Free-source catalogue for ResearchFlow
 
-**Reviewed:** 2026-10-23  
+**Reviewed:** 2026-10-28  
 **Policy:** ADR-045. Free access only by default. This shortlist is a set of candidates, not a promise that every record or endpoint is unrestricted. Recheck terms, licence, authentication and quota before each adapter is implemented.
 
 ## Discovery-first candidates
@@ -8,7 +8,7 @@
 | Candidate | Best fit | Access / cost notes | How ResearchFlow should use it |
 |---|---|---|---|
 | [Open Government Data Platform India](https://data.gov.in/) and [Government Open Data License - India](https://data.gov.in/Godl) | Indian government statistics, open datasets and public services | The portal says published resources are licensed under G.O.D.L.-India, with attribution requirements. The portal may be under maintenance; endpoint access, dataset-specific notes and API-key requirements must be checked per resource. | Top-tier discovery candidate for Indian public data. Prefer the publishing ministry/agency's own dataset/API and record attribution, URL, retrieval time and the applicable licence. |
-| [Data.gov.uk API documentation](https://guidance.data.gov.uk/get_data/api_documentation/) | UK government dataset catalogue | Official guidance says the catalogue API needs no API key and has no rate limits. This is a catalogue API, not a guarantee that every linked dataset is reusable or hosted by the catalogue. | Good early candidate for a public catalogue adapter. Read result metadata and follow the licence and access conditions of the actual dataset. Recheck current guidance when implementing. |
+| [Data.gov.uk API documentation](https://guidance.data.gov.uk/get_data/api_documentation/) | UK government dataset catalogue | Keyless CKAN metadata search was implemented, but a live request redirected to `ckan.publishing.service.gov.uk`, whose robots.txt disallows the `/api/` path for this client (owner-observed 2026-10-25). | **Disabled for automated discovery.** Do not retry through another route or bypass robots. Re-enable only after the publisher confirms a permitted endpoint and a live smoke test passes. |
 | [OpenAlex API](https://help.openalex.org/api/) and [authentication/rate limits](https://help.openalex.org/api/authentication/) | Scholarly works, authors, institutions and topics | Basic API use is free without a key; a free key increases the allowance. Larger-scale use may be paid, so the application must never use a paid option or automatic paid fallback. | Optional specialised adapter for research/science queries, not a universal web search. Use conservative quotas, cache, and keep provider-reported usage metadata where available. |
 | [Wikimedia API access policy](https://www.mediawiki.org/wiki/Wikimedia_APIs/Access_policy), [current rate limits](https://www.mediawiki.org/wiki/Wikimedia_APIs/Rate_limits) | Encyclopaedic context and cross-checks | Public APIs are accessible, but usage is rate-limited; limits are being rolled out/adjusted in 2026. Include a descriptive User-Agent with contact information, cache responses and respect Retry-After. Content licences vary by project. | Tier-3 secondary/reference material. Never use Wikipedia/Wikimedia to displace an available official primary record. Verify every dataset/page's attribution and licence. |
 | [Common Crawl](https://commoncrawl.org/get-started), [index FAQ](https://commoncrawl.org/faq) | Historical URL discovery and archived public-web content | The corpus and HTTP(S) downloads are free to access, but the index API is rate-limited. The archive is a sample of the web, can be stale, and is not a live general-purpose search engine. Avoid cloud processing paths that may incur external infrastructure costs. | Optional later-stage discovery source. Use the public HTTPS index conservatively, cache queries, record crawl date, and then re-fetch the live source under ResearchFlow's web policy before treating it as current evidence. |
@@ -35,16 +35,16 @@
 
 A free-only engine will not find every source for every topic. It must disclose coverage gaps and invite a manual source/file when a free source is unavailable rather than inventing evidence or charging for access.
 
-## Implementation status (2026-10-24, ADR-046)
+## Implementation status (2026-10-28, ADR-047)
 | Candidate | Status | Why |
 |---|---|---|
-| data.gov.uk (CKAN) | **Implemented** (`catalogues.csv`) | Guidance states no API key and no rate limits; datasets keep their own licence |
-| OpenAlex | **Implemented**, keyless only | Documentation: keyless basic use, daily budget, HTTP 429 on exhaustion; paid plans exist and are never used |
-| catalog.data.gov, open.canada.ca | Not enabled | Their API terms pages could not be read on this date; the generic CKAN adapter can take them once someone verifies and adds a row |
-| data.gov.in | Not enabled | API use needs a key and its terms are unchecked; use a downloaded file with `sie research collect` meanwhile |
-| Wikimedia | Not enabled | Rate-limit page unreadable on this date; robots.txt rules would also apply to the safe fetcher |
-| Common Crawl, APISetu, Kaggle | Not enabled | As above: individual terms must be checked first |
-| General web search | None added | No keyless search with documented permission for automated use was verified; discovery relies on catalogues, a leads file, and URLs you give |
+| data.gov.uk (CKAN) | **Implemented but disabled** | The API redirects to `ckan.publishing.service.gov.uk`; its robots.txt disallows `/api/`. The provider remains in code but is blocked by the production registry, and no request is sent while disabled. |
+| OpenAlex | **Active**, keyless only | Returns scholarly works, not a general structured-dataset search. Keyless use has a daily budget and HTTP 429 stops that provider for the run; no paid fallback. |
+| [catalog.data.gov](https://catalog.data.gov/) | Not enabled | Its robots.txt specifies a 10-second crawl delay. The exact search endpoint, client access terms and any authentication requirements still need validation through the safe fetcher before enabling it. |
+| open.canada.ca / data.europa.eu | Not enabled | Automated access and API path compatibility have not been confirmed end to end. Do not enable based on a CKAN-compatible interface alone. |
+| data.gov.in | Not enabled | API use and its terms need confirmation for the selected endpoint; user-downloaded files remain supported. |
+| Wikimedia, Common Crawl, APISetu, Kaggle | Not enabled | Each candidate needs an individual policy, endpoint, licence and rate-limit review. |
+| General web search | None added | No currently verified keyless provider meeting the documented permission and access rules is enabled. |
 
-None of the above was contacted live from the build environment.
+No replacement source has passed the controlled live smoke test. The current active provider is useful for paper references only; structured-data discovery is therefore not yet operational from registered catalogues.
 

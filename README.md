@@ -4,7 +4,7 @@ ResearchFlow is being built as a **competition-agnostic sports research and inte
 
 **Asian Games 2026 (Aichi-Nagoya) is the first production dataset and validation target, not the product boundary.** The design keeps competitions separate by `competition_id`, so another competition is meant to be added through its own adapter, parser configuration and reference mappings, not by changing the core. That second competition and the proof it needs are **planned, not built** (see `docs/PRODUCT_VISION.md`).
 
-**Not yet supported:** answering arbitrary research questions, multiple competitions, and any LLM layer. Today the system provides the verified Asian Games 2026 data, deterministic analytics and a fixed-page dashboard. The immediate engineering priority is Phase 4 (analytics).
+**Not yet supported on `main`:** answering arbitrary research questions, multiple competitions, and any LLM layer. Today the default product still provides verified Asian Games 2026 data, deterministic analytics and a fixed-page dashboard. A separate Phase 4 research prototype lives on draft PR #31; it implements free-source discovery, collection and deterministic reports, but the end-to-end live source acceptance gate has not passed and it is not merged. Current provider limitations are documented in `docs/GENERAL_RESEARCH_ENGINE_VISION.md` and `docs/FREE_SOURCE_CATALOGUE.md`.
 
 ## What it answers
 - Which country wins medals in which sports (full matrix, not only a top 10).

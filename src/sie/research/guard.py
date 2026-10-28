@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 from sie.evidence.discovery import SearchHit
 from sie.evidence.errors import EvidenceError, FetchRefused
+from sie.research.catalogues import ProviderDisabled
 
 NEXT_STEP = (
     "Nothing was bought or switched to a paid service. Use cached results, another free source, or "
@@ -23,7 +24,7 @@ NEXT_STEP = (
 @dataclass(frozen=True)
 class ProviderOutcome:
     provider: str
-    status: str  # ok, quota_exhausted, unavailable, refused, bad_response
+    status: str  # ok, disabled, quota_exhausted, unavailable, refused, bad_response
     detail: str = ""
     hits: int = 0
 
@@ -37,6 +38,8 @@ class ProviderOutcome:
 
 
 def classify_failure(exc: Exception) -> tuple[str, str]:
+    if isinstance(exc, ProviderDisabled):
+        return "disabled", str(exc)
     if isinstance(exc, FetchRefused):
         text = str(exc)
         if exc.code == "status" and "HTTP 429" in text:

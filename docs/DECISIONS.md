@@ -327,3 +327,12 @@ Format: Decision, Context, Options, Why, Consequences, Status. Add a new record 
 | D2 | Where data lives between scheduled runs | Resolved by ADR-016 |
 | D3 | Public or private dashboard | Phase 5 |
 | D4 | Include LLM explainer | Phase 7 (constraints fixed by ADR-024) |
+
+
+## ADR-047: Catalogue status is explicit and blocked providers fail closed
+
+- **Context:** The Phase 4 free-source registry still listed the data.gov.uk CKAN adapter as active after an owner-run live request redirected to `ckan.publishing.service.gov.uk`, whose robots.txt disallowed the `/api/` path. OpenAlex is useful for scholarly references but does not replace structured-data discovery. Simulated CI results cannot establish live source availability.
+- **Decision:** Add optional `status` (`active` or `disabled`) and `status_note` columns to the catalogue registry, while accepting the older column layouts for backwards compatibility. A disabled entry must give a reason, is surfaced as a `disabled` provider outcome, and never makes a network request or contributes redirect/cache allowances. Disable the blocked data.gov.uk route and remove its redirect exception. Keep OpenAlex active for papers only. No alternative provider is enabled until its access method, robots rules, terms and rate limits are verified for the exact endpoint.
+- **Rate limits:** Keep the existing safe-fetch policy; honor the `Crawl-delay` reported by robots.txt, subject to the existing 60-second safety cap, as well as the minimum two-second inter-request interval. Add simulated tests for 10 seconds and above-cap refusal.
+- **Consequences:** The automated research flow still lacks an active registered provider for structured datasets, so it must disclose the gap and accept a user-supplied URL/file. No schema change, new dependency, paid service or automatic paid fallback. Feature-branch CI is necessary but not sufficient: the controlled live smoke test and Windows save/reuse check remain merge gates.
+- **Status:** Implemented on `feature/phase-4-web-research`; live acceptance remains open. (2026-10-28)

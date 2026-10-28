@@ -25,6 +25,7 @@ from research_fakes import (
     csv_page,
     json_page,
     web_fetcher,
+    write_test_catalogues,
 )
 from sie.answer import verify
 from sie.evidence.discovery import SearchHit, discover, load_authority
@@ -54,7 +55,7 @@ def paper(title, doi):
     return {"title": title, "doi": doi, "publication_date": "2024-01-01"}
 
 
-def world(tmp_path, ckan=None, openalex=None, pages=None):
+def world(tmp_path, ckan=None, openalex=None, pages=None, *, allow_redirects=False):
     site = Site({
         CKAN: ckan if ckan is not None else json_page(ckan_result()),
         OPENALEX: openalex if openalex is not None else json_page({"results": []}),
@@ -64,6 +65,10 @@ def world(tmp_path, ckan=None, openalex=None, pages=None):
     live = web_fetcher(site, Ticker())
     disc = CachedFetcher(live, cache, max_age=timedelta(hours=24), now=lambda: NOW)
     data = CachedFetcher(live, cache, max_age=timedelta(days=7), now=lambda: NOW)
+    disc.catalogues_path = write_test_catalogues(
+        tmp_path / "catalogues.csv",
+        redirect_hosts=("ckan.publishing.service.gov.uk",) if allow_redirects else (),
+    )
     rules = StoreRules.load(ROOT / "data" / "evidence")
     store = ResearchStore(tmp_path / "store", rules=rules, now=lambda: NOW)
     return site, disc, data, store
@@ -72,7 +77,7 @@ def world(tmp_path, ckan=None, openalex=None, pages=None):
 def go(disc, data, store, question=QUESTION):
     return run_research(
         question, store=store, discovery_fetcher=disc, data_fetcher=data,
-        catalogues_path=ROOT / "data" / "evidence" / "catalogues.csv",
+        catalogues_path=disc.catalogues_path,
         authority_path=ROOT / "data" / "evidence" / "source_authority.csv", now=NOW,
     )  # fmt: skip
 
@@ -278,14 +283,15 @@ def test_a_report_needs_collected_data(tmp_path):
 
 
 def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
-    """data.gov.uk's API redirects (as seen live); fetchers are built with the committed redirect hosts."""
+    """Exercise a redirect using an explicitly configured host in the temporary test registry."""
     from sie.research.catalogues import load_catalogues
 
-    entries = load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")
-    hosts = {e.host: e.redirect_host_list for e in entries if e.redirect_host_list}
     site, disc, data, store = world(
-        tmp_path, ckan=RawResponse(301, {"location": target}, b""), **kw
+        tmp_path, ckan=RawResponse(301, {"location": target}, b""), allow_redirects=True, **kw
     )
+    from sie.research.catalogues import load_catalogues
+    entries = load_catalogues(disc.catalogues_path)
+    hosts = {e.host: e.redirect_host_list for e in entries if e.redirect_host_list}
     plain_get = site.get
 
     def get(url, headers, timeout, max_bytes):  # only the redirect target has its own robots.txt
@@ -303,8 +309,7 @@ def redirecting_world(tmp_path, target, ckan_robots=None, **kw):
 
 
 def test_data_gov_uk_redirecting_to_its_ckan_host_still_yields_the_dataset(tmp_path):
-    """Live run 2026-10-25: the API answers with a redirect to ckan.publishing.service.gov.uk. That host
-    is named in catalogues.csv, so it is followed (robots and address checks included)."""
+    """A test-only registry can exercise a permitted redirect without enabling it in production."""
     real = "https://ckan.publishing.service.gov.uk/api/action/package_search"
     site, disc, data, store = redirecting_world(
         tmp_path, real + "?q=x&rows=30", pages={UK_URL: csv_page(RESULTS_CSV)}

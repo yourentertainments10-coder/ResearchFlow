@@ -22,6 +22,7 @@ from research_fakes import (
     csv_page,
     json_page,
     web_fetcher,
+    write_test_catalogues,
 )
 from sie.cli import app
 from sie.evidence.web import RawResponse
@@ -40,10 +41,10 @@ def env(tmp_path, monkeypatch):
     data = tmp_path / "data"
     (data / "evidence").mkdir(parents=True)
     for name in (
-        "catalogues.csv", "source_authority.csv", "open_licences.csv", "dataset_policies.csv",
-        "source_policies.csv",
-    ):  # fmt: skip
+        "source_authority.csv", "open_licences.csv", "dataset_policies.csv", "source_policies.csv",
+    ):
         shutil.copy(ROOT / "data" / "evidence" / name, data / "evidence" / name)
+    write_test_catalogues(data / "evidence" / "catalogues.csv")
     monkeypatch.setenv("DATA_DIR", str(data))
     monkeypatch.setenv("EVIDENCE_WEB_MAX_AGE_DAYS", "100000")  # the fake pages carry a fixed date
     monkeypatch.setenv("DATABASE_URL", "postgresql://u:p@localhost/none")

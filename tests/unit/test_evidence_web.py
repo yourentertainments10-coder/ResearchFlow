@@ -378,3 +378,27 @@ def test_a_named_redirect_host_is_still_checked_for_robots_and_private_addresses
     seen = Site({U: page(status=301, location=target), target: page(b"ok")})
     fetcher(seen, redirect_hosts=allow).fetch(U)
     assert "https://ckan.example.gov.uk/robots.txt" in seen.requests
+
+
+
+def test_a_crawl_delay_longer_than_the_default_interval_is_obeyed():
+    site = Site(
+        {U: page()},
+        robots="User-agent: *\nAllow: /\nCrawl-delay: 10\n",
+    )
+    clock = Ticker()
+    got = fetcher(site, clock=clock).fetch(U)
+    assert got.status == 200
+    assert clock.slept == [10.0]
+    assert site.requests == ["https://data.example.org/robots.txt", U]
+
+
+def test_a_crawl_delay_above_the_safety_cap_refuses_the_page():
+    site = Site(
+        {U: page()},
+        robots="User-agent: *\nAllow: /\nCrawl-delay: 61\n",
+    )
+    with pytest.raises(FetchRefused, match="above our 60 s cap") as err:
+        fetcher(site).fetch(U)
+    assert err.value.code == "robots"
+    assert site.requests == ["https://data.example.org/robots.txt"]

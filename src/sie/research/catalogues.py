@@ -23,6 +23,8 @@ from sie.research.cache import Fetched
 
 FREE_ACCESS = "free_no_key"
 COLUMNS = ["name", "kind", "base_url", "access", "verified_on", "terms_ref", "quota_note"]
+COLUMN_SETS = (COLUMNS, [*COLUMNS, "redirect_hosts"], [*COLUMNS, "redirect_hosts", "status", "status_note"])
+STATUSES = ("active", "disabled")
 DATA_FORMATS = {"csv", "json"}
 KINDS = ("ckan", "openalex")
 
@@ -43,6 +45,8 @@ class CatalogueEntry:
     redirect_hosts: str = (
         ""  # optional: hosts this catalogue's API is known to redirect to (; separated)
     )
+    status: str = "active"
+    status_note: str = ""
 
     @property
     def host(self) -> str:
@@ -59,11 +63,15 @@ def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
     with path.open(encoding="utf-8", newline="") as fh:
         reader = csv.DictReader(fh)
         names = reader.fieldnames
-        if names not in (COLUMNS, [*COLUMNS, "redirect_hosts"]):
-            raise EvidenceError(f"catalogues.csv must have columns {','.join(COLUMNS)}")
+        if names not in COLUMN_SETS:
+            expected = f"{','.join(COLUMNS)}[,redirect_hosts[,status,status_note]]"
+            raise EvidenceError(f"catalogues.csv must have columns {expected}")
         entries = []
         for row in reader:
-            entry = CatalogueEntry(**{c: (row.get(c) or "").strip() for c in names})
+            values = {c: (row.get(c) or "").strip() for c in names}
+            if not values.get("status"):
+                values["status"] = "active"
+            entry = CatalogueEntry(**values)
             if entry.access != FREE_ACCESS:
                 raise PaidAccessRefused(
                     f"catalogue {entry.name!r}: access {entry.access!r} is refused; only "
@@ -71,6 +79,10 @@ def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
                 )
             if entry.kind not in KINDS:
                 raise EvidenceError(f"catalogue {entry.name!r}: unknown kind {entry.kind!r}")
+            if entry.status not in STATUSES:
+                raise EvidenceError(f"catalogue {entry.name!r}: unknown status {entry.status!r}")
+            if entry.status == "disabled" and not entry.status_note:
+                raise EvidenceError(f"catalogue {entry.name!r}: a disabled entry needs status_note")
             if not entry.verified_on or not entry.terms_ref.startswith("https://"):
                 raise EvidenceError(
                     f"catalogue {entry.name!r} needs verified_on and a terms_ref link"
@@ -92,10 +104,10 @@ def load_catalogues(path: Path) -> tuple[CatalogueEntry, ...]:
 
 
 class RegisteredHostFetcher:
-    """Lets provider calls reach only the hosts of registered free catalogues."""
+    """Lets provider calls reach only active, registered free catalogue hosts."""
 
     def __init__(self, inner, entries: Sequence[CatalogueEntry]) -> None:
-        self.inner, self.hosts = inner, {e.host for e in entries}
+        self.inner, self.hosts = inner, {e.host for e in entries if e.status == "active"}
 
     def fetch(self, url: str) -> Fetched:
         host = urlsplit(url).hostname or ""
@@ -116,6 +128,20 @@ def _json(fetched: Fetched, who: str) -> dict:
     if not isinstance(data, dict):
         raise EvidenceError(f"{who}: unexpected response shape")
     return data
+
+
+class ProviderDisabled(EvidenceError):
+    """A catalogue is deliberately disabled because its access rules or service are unsuitable."""
+
+
+class DisabledCatalogue:
+    """Keeps a disabled catalogue visible in status output without making a network request."""
+
+    def __init__(self, entry: CatalogueEntry) -> None:
+        self.entry = entry
+
+    def search(self, query: str, limit: int) -> Sequence[SearchHit]:
+        raise ProviderDisabled(f"{self.entry.name} is disabled: {self.entry.status_note}")
 
 
 class CkanCatalogue:
@@ -221,6 +247,10 @@ ADAPTERS: dict[str, Callable] = {"ckan": CkanCatalogue, "openalex": OpenAlexCata
 
 
 def build_providers(entries: Sequence[CatalogueEntry], fetcher) -> list:
-    """One provider per registered catalogue, all restricted to registered hosts."""
-    guarded = RegisteredHostFetcher(fetcher, entries)
-    return [ADAPTERS[e.kind](e, guarded) for e in entries]
+    """One visible provider per registry row; disabled entries cannot make network requests."""
+    active = [e for e in entries if e.status == "active"]
+    guarded = RegisteredHostFetcher(fetcher, active)
+    return [
+        DisabledCatalogue(e) if e.status == "disabled" else ADAPTERS[e.kind](e, guarded)
+        for e in entries
+    ]

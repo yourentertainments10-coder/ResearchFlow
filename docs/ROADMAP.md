@@ -98,3 +98,11 @@ Update 2026-10-15: `sie.datasets` (file analytics, ADR-040) merged as PR #29. Ph
 - **Not done:** controlled live fetch by the owner; linking collected datasets to the evidence ledger (no migration was added); other free catalogues pending a terms check (see `FREE_SOURCE_CATALOGUE.md`); metric definitions for questions like party wins; Phase 5 (router and model layer, D4 still open) and Phase 6 (conversation backend, authentication, quotas). Phase 7 stays optional.
 - **PRs:** none opened; nothing merged. Phase 3 is contained in this branch's history.
 
+
+
+## Update 2026-10-28: Phase 4 catalogue safety and acceptance status (ADR-047)
+
+- The production catalogue registry now distinguishes active and disabled providers. The data.gov.uk CKAN route is disabled because its redirect target's robots.txt disallows `/api/`; this is not bypassed. OpenAlex remains active for scholarly references only.
+- The existing safe fetcher honors published Crawl-delay (minimum 2 seconds between requests, with the current 60-second upper safety cap); explicit tests cover a 10-second delay and a delay above the cap.
+- Test fixtures re-enable data.gov.uk only in an isolated temporary registry for simulated CKAN ranking/redirect/cost-guard tests. Production config remains closed.
+- Remaining acceptance gates: identify and verify at least one permitted free structured-data catalogue; run live discover -> fetch -> collect -> save -> analyse -> report/reuse; confirm save/reuse on the target Windows machine. PR #31 is not merge-ready until these pass.

@@ -219,7 +219,7 @@ This section is a snapshot and should be updated as implementation changes.
 ### Present in the Phase 4 branch
 
 - Safe HTTP fetching with HTTPS, public-IP/SSRF checks, redirect validation, robots.txt checks, pacing, timeouts, response caps and refusal handling.
-- Free catalogue adapters for data.gov.uk CKAN and OpenAlex.
+- A provider registry with explicit active/disabled status, a keyless OpenAlex adapter, and a CKAN adapter retained for test/possible future use.
 - Discovery ranking and explicit lead limitations, including topic/geography/year mismatches and a distinction between papers and structured data leads.
 - Collection of supported CSV, JSON and HTML tables.
 - Project-scoped, expiring dataset storage with licence/policy checks, cache and dataset reuse checks.
@@ -228,13 +228,13 @@ This section is a snapshot and should be updated as implementation changes.
 
 ### Verified versus not verified
 
-- The latest branch commit reported for this snapshot is eff91178bd26bd5f53edc896b6fc6c8e2a2e378f; CI runs #192 and #193 completed successfully, including Ruff and pytest.
+- PR #31 is the active implementation branch. Automated CI runs are simulated-network checks and do not prove that a live source works; the branch's CI must be checked again after each new commit.
 - CI uses simulated network tests. A passing CI run does not prove live source availability.
-- Live OpenAlex discovery has returned results, but those results were academic references, not a suitable structured election dataset.
-- The live data.gov.uk CKAN request was redirected to ckan.publishing.service.gov.uk. The observed robots.txt for that host disallows /api/ and declares Crawl-Delay: 10; the adapter's API request was refused. Do not bypass this restriction. The proposed next step is to mark this API adapter manual-only/unavailable for automated discovery until a permitted path is verified.
+- Live OpenAlex discovery has returned academic references, not suitable structured election datasets. It remains active for scholarly context only.
+- The live data.gov.uk CKAN request was redirected to ckan.publishing.service.gov.uk. The observed robots.txt for that host disallows /api/ and declares Crawl-Delay: 10; the API request was refused. The production catalogue row is now explicitly disabled and the redirect allowance removed. Disabled providers are reported without making network requests.
 - A real CSV fetch reached the collection/save path on Windows, but saving failed with OSError: [Errno 9] Bad file descriptor during os.fsync. A Windows portability fix has since been pushed and covered in CI; a successful save on the actual Windows machine still needs confirmation.
 - The full live workflow—relevant data source discovered, lawfully fetched, stored, analyzed, reported and then reused—has **not yet been marked PASS**.
-- PR #31 remains Draft and unmerged at the time of this snapshot.
+- PR #31 remains Draft and unmerged. The live workflow gate remains open because no registered structured-data provider has passed the controlled live smoke test.
 
 ### Known not-yet-complete capabilities
 
@@ -250,12 +250,12 @@ This section is a snapshot and should be updated as implementation changes.
 
 - Ensure Windows and supported operating systems can save and atomically publish datasets.
 - Make provider failure, quota exhaustion, timeout, robots refusal, redirect refusal and storage errors clear to users.
-- Honor Crawl-delay and minimum per-host pacing.
+- Honor Crawl-delay and minimum per-host pacing. Unit tests explicitly cover a 10-second Crawl-delay and fail-closed behaviour above the 60-second safety cap.
 - Keep all tests, lint and formatting checks green.
 
 ### Gate B — relevant free-source discovery
 
-- Mark the blocked data.gov.uk API route manual-only for automated discovery unless a permitted endpoint is proven.
+- Keep the blocked data.gov.uk API route disabled for automated discovery unless a permitted endpoint is proven.
 - Add documented free sources that return useful structured datasets, not only papers or snippets.
 - Test country/year/topic mismatch, academic-reference handling, format declarations, provider failure and licence provenance.
 - Clearly state which sources require registration or have quotas.

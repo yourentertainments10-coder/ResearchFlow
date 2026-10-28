@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
@@ -30,7 +31,7 @@ from sie.research.catalogues import (
     build_providers,
     load_catalogues,
 )
-from sie.research.guard import SearchProviderAdapter
+from sie.research.guard import SearchProviderAdapter, search_all
 
 ROOT = Path(__file__).resolve().parents[2]
 HEADER = "name,kind,base_url,access,verified_on,terms_ref,quota_note\n"
@@ -50,11 +51,14 @@ def entries():
     return load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")
 
 
-def test_the_shipped_registry_lists_only_free_keyless_catalogues_with_a_terms_link():
-    loaded = entries()
-    assert {e.name for e in loaded} == {"data.gov.uk", "openalex"}
-    for e in loaded:
+def test_the_shipped_registry_lists_only_free_keyless_catalogues_with_explicit_status():
+    loaded = {e.name: e for e in entries()}
+    assert set(loaded) == {"data.gov.uk", "openalex"}
+    for e in loaded.values():
         assert e.access == "free_no_key" and e.verified_on and e.terms_ref.startswith("https://")
+    assert loaded["data.gov.uk"].status == "disabled"
+    assert "disallows /api/" in loaded["data.gov.uk"].status_note
+    assert loaded["openalex"].status == "active"
 
 
 @pytest.mark.parametrize("access", ["paid", "free_with_key", "key", "free", "", "paid_fallback"])
@@ -202,7 +206,11 @@ def test_discovery_over_free_catalogues_ranks_the_official_data_file_first(tmp_p
             ),
         }
     )
-    providers = build_providers(entries(), cached(tmp_path, site))
+    test_entries = tuple(
+        replace(e, status="active", status_note="") if e.name == "data.gov.uk" else e
+        for e in entries()
+    )
+    providers = build_providers(test_entries, cached(tmp_path, site))
     adapter = SearchProviderAdapter(providers)
     rules = load_authority(ROOT / "data" / "evidence" / "source_authority.csv")
     result = discover(adapter, "general election results", rules=rules, limit=5)
@@ -252,6 +260,32 @@ def test_redirect_hosts_are_optional_and_must_be_plain_host_names(tmp_path):
             load_catalogues(f)
 
 
-def test_the_committed_data_gov_uk_entry_names_the_host_its_api_redirects_to():
-    entry = {e.name: e for e in load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")}
-    assert entry["data.gov.uk"].redirect_host_list == ("ckan.publishing.service.gov.uk",)
+def test_the_blocked_data_gov_uk_provider_is_disabled_and_has_no_redirect_allowance():
+    entry = {e.name: e for e in entries()}["data.gov.uk"]
+    assert entry.status == "disabled"
+    assert entry.redirect_host_list == ()
+    assert "disallows /api/" in entry.status_note
+
+
+def test_a_disabled_catalogue_is_reported_without_a_network_request(tmp_path):
+    site = Site({CKAN: json_page(ckan_result(ELECTION_DATASET))})
+    providers = build_providers(entries(), cached(tmp_path, site))
+    provider = next(p for p in providers if p.entry.name == "data.gov.uk")
+    hits, outcomes = search_all([provider], "general election results", 5)
+    assert hits == []
+    assert outcomes[0].provider == "data.gov.uk"
+    assert outcomes[0].status == "disabled"
+    assert "robots.txt disallows /api/" in outcomes[0].detail
+    assert site.requests == []
+
+
+def test_a_disabled_catalogue_requires_an_explanation(tmp_path):
+    path = tmp_path / "disabled.csv"
+    path.write_text(
+        "name,kind,base_url,access,verified_on,terms_ref,quota_note,redirect_hosts,status,status_note\n"
+        "x,ckan,https://data.example.org/api/action,free_no_key,2026-10-24,"
+        "https://example.org/terms,none,,disabled,\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(EvidenceError, match="status_note"):
+        load_catalogues(path)

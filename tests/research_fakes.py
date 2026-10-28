@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import csv
 import json
+from pathlib import Path
 from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
@@ -107,3 +109,29 @@ ELECTION_DATASET = {
 }
 
 RESULTS_CSV = "party,seats,votes\nAlpha,300,1000\nBeta,150,800\nGamma,90,400\nAlpha,10,50\n"
+
+
+
+def write_test_catalogues(path, *, redirect_hosts=()):
+    """Enable the synthetic CKAN fixture without changing the production source registry."""
+    from sie.research.catalogues import load_catalogues
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    columns = [
+        "name", "kind", "base_url", "access", "verified_on", "terms_ref", "quota_note",
+        "redirect_hosts", "status", "status_note",
+    ]
+    source_registry = Path(__file__).resolve().parents[1] / "data" / "evidence" / "catalogues.csv"
+    rows = []
+    for entry in load_catalogues(source_registry):
+        row = {name: getattr(entry, name) for name in columns}
+        if entry.name == "data.gov.uk":
+            row["status"] = "active"
+            row["status_note"] = ""
+            row["redirect_hosts"] = ";".join(redirect_hosts)
+        rows.append(row)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+        writer.writerows(rows)
+    return path

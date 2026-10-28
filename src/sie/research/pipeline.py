@@ -75,19 +75,20 @@ def build_fetchers(settings, *, now=None) -> tuple[CachedFetcher, CachedFetcher]
     Only catalogue answers and hosts with a recorded policy are cached at all (see ``FetchCache``)."""
     evidence_dir = settings.data_dir / "evidence"
     entries = load_catalogues(evidence_dir / "catalogues.csv")
+    active_entries = [e for e in entries if e.status == "active"]
     live = WebFetcher(
         user_agent=settings.http_user_agent,
         interval=settings.evidence_fetch_interval_seconds,
         max_bytes=settings.evidence_fetch_max_bytes,
         timeout=settings.evidence_fetch_timeout_seconds,
-        redirect_hosts={e.host: e.redirect_host_list for e in entries if e.redirect_host_list},
+        redirect_hosts={e.host: e.redirect_host_list for e in active_entries if e.redirect_host_list},
     )
     kw = {} if now is None else {"now": now}
     cache = FetchCache(
         settings.research_dir / "cache",
         retention=timedelta(days=settings.research_cache_retention_days), **kw,
     )  # fmt: skip
-    catalogue_hosts = {e.host for e in entries}
+    catalogue_hosts = {e.host for e in active_entries}
     rules = StoreRules.load(evidence_dir, settings.evidence_policy_file)
 
     def metadata_only(url: str) -> bool:

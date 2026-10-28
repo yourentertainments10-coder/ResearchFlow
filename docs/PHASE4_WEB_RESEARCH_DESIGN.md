@@ -77,3 +77,15 @@ Built and tested on a simulated network only: catalogue adapters, cost guard, co
 - **Data.gov.uk request:** the adapter sends `GET https://data.gov.uk/api/action/package_search?q=<query>&rows=<n>`. The guidance page (https://guidance.data.gov.uk/get_data/api_documentation/, read 2026-10-24) says to "post a JSON dictionary in a HTTP POST request" but every `package_search` example on it is a GET with query parameters (`q`, `fq`, `rows`). The code follows the examples; the safe fetcher issues GET only. Whether the live service answers this exact GET is **not verified** until the controlled live test.
 - **Not done:** a real controlled live fetch (the build environment cannot reach public sites), linking collected datasets to the evidence ledger, the other candidates in `FREE_SOURCE_CATALOGUE.md`, Phase 5 and 6.
 - **Unfinished, by design:** metric definitions for questions such as "how many times has a party won" (section 9, item 4) are not encoded: the user chooses the operation and column, and seats, governments formed and wins are never summed by the code. Natural-language query planning (turning a question into an operation) is not built either.
+
+
+## 11. Follow-up status (2026-10-28, ADR-047)
+
+The collection, deterministic analysis and report pipeline exists on the Phase 4 feature branch, but the complete live workflow has not passed its acceptance gate.
+
+- The production registry supports `status=active|disabled` and a required `status_note` for disabled providers. Existing registry formats remain accepted; absent status defaults to active for compatibility.
+- `data.gov.uk` is disabled in the production registry because its redirected host `ckan.publishing.service.gov.uk` disallows `/api/` in robots.txt (owner-observed 2026-10-25). The redirect-host exception was removed. A disabled entry remains visible in provider outcomes but cannot make a network request.
+- OpenAlex remains active for paper/reference discovery. It is not treated as a structured-data provider. No replacement catalogue has been enabled because the candidate's own endpoint access rules have not yet passed the live verification gate.
+- `WebFetcher` already applies robots Crawl-delay. Regression tests now explicitly check a 10-second delay and refusal above the configured 60-second maximum.
+- Test fixtures explicitly create a temporary registry that re-enables CKAN only for synthetic-network tests. This preserves ranking, redirects, quota and failure-path coverage without reopening the production endpoint.
+- Automated CI covers simulated network behaviour only. Do not merge PR #31 until a permitted live structured-data discovery/collect/save/report smoke test passes in an environment with outbound access, and a save/reuse check passes on the target Windows environment.

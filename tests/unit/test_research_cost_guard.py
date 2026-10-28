@@ -24,6 +24,7 @@ from research_fakes import (
     csv_page,
     json_page,
     web_fetcher,
+    write_test_catalogues,
 )
 from sie.evidence.errors import FetchRefused
 from sie.evidence.web import RawResponse
@@ -45,7 +46,9 @@ def setup(tmp_path, site, *, clock=None):
         max_age=timedelta(hours=24),
         now=lambda: (clock or [NOW])[0],
     )
-    entries = load_catalogues(ROOT / "data" / "evidence" / "catalogues.csv")
+    catalogues_path = write_test_catalogues(tmp_path / "catalogues.csv")
+    fetcher.catalogues_path = catalogues_path
+    entries = load_catalogues(catalogues_path)
     return fetcher, build_providers(entries, fetcher)
 
 
@@ -120,7 +123,7 @@ def test_when_every_free_source_fails_the_run_asks_for_manual_input(tmp_path):
         store=ResearchStore(tmp_path / "store"),
         discovery_fetcher=fetcher,
         data_fetcher=fetcher,
-        catalogues_path=ROOT / "data" / "evidence" / "catalogues.csv",
+        catalogues_path=fetcher.catalogues_path,
         authority_path=ROOT / "data" / "evidence" / "source_authority.csv",
     )
     assert run.needs_manual_input and not run.tables
