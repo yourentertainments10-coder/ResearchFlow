@@ -1,6 +1,8 @@
 # Phase 3: Project-scoped freshness and health (design, for owner approval)
 
-Status: **design approved 2026-10-15; implementation/status must be verified against the current target branch and PR history.** The paragraph below preserves the original design context and branch snapshot; its old branch/PR note is historical, not current status. Decisions: web max age 30 days; uploads never stale, informational `old_upload` only; `expired` = deadline passed, `pruned` = bytes removed; empty project reports no sources. Rules: AGENTS.md sections 1, 2 (rules 2, 5, 6, 7, 12, 15) and 7.
+> **Current implementation correction (2026-10-30):** Project-scoped health is implemented in `src/sie/evidence/health.py` and covered by tests. The original design questions and branch sequencing below are retained as historical context. XLSX claim verification remains pending in `src/sie/evidence/verify.py` (`PENDING_XLSX`); do not describe the whole document as unimplemented.
+
+Status: **design approved 2026-10-15; project-health implementation merged.** The original design text below preserves the initial proposal; check the current code and tests for implementation status. Decisions: web max age 30 days; uploads never stale, informational `old_upload` only; `expired` = deadline passed, `pruned` = bytes removed; empty project reports no sources. Rules: AGENTS.md sections 1, 2 (rules 2, 5, 6, 7, 12, 15) and 7.
 
 ## 1. Requirement (restated)
 `sie health` and `sie source-status` answer "is this competition's source current?" from `ingest_runs`, `raw_fetches` and `raw_versions`, keyed by `competition`. A research project (ADR-042) has no such answer. The owner needs, per project: which sources are old, expired or pruned, which claims are unreviewed, which conflicts are open, and the disclosed `Gap`s an answer must carry because of them (ADR-039, audit section 8 step 3).
@@ -41,4 +43,4 @@ Unit: classification table (every state and boundary, including exactly at max a
 3. PR target: stack on `feature/evidence-ledger` (so the diff shows only Phase 3) or wait for #28 to merge? Recommendation: stack, retarget to `main` after #28 merges.
 
 ## 7. Datasets (merged in PR #29) and XLSX claim verification
-Not part of Phase 3. Planned as its own step after #28 merges: the claim verifier calls `sie.datasets.load` for XLSX instead of a second reader, with an explicit rule for cached values versus formulas. Until then XLSX claims stay `unverified` and health lists them.
+**Still pending:** the current claim verifier returns `PENDING_XLSX` for `xlsx_cell` locators. XLSX claim verification needs a separately reviewed implementation using the shared dataset loader, with explicit cached-value/formula rules. Until implemented and tested, XLSX claims stay unverified.
