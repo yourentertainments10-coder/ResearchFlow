@@ -121,7 +121,9 @@ question → query planner → research/data tools → canonical database
 
 An LLM must not: invent statistics, modify database facts, replace deterministic analytics, hide source conflicts, or present guesses as verified facts. If evidence is insufficient the system says so. Any generated text that contains a number is checked against the verified result before it is shown (the "number lock" in `ROADMAP.md`). This keeps the project principle "code computes, the LLM only explains".
 
-## 8. Phasing
+## 8. Phasing (historical sports/general-research phase plan)
+
+For the current owner-approved product delivery order, use `WORKSPACE_PRODUCT_DIRECTION.md`. The phase plan below records prior sports and general-research sequencing and should not override the CSV-first visual-workspace milestone.
 
 The roadmap numbering in `ROADMAP.md` is unchanged.
 
