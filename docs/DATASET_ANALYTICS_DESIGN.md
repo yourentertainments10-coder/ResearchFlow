@@ -1,3 +1,5 @@
+> **Product journey link (2026-10-29):** This library is a foundation for the CSV-first workspace milestone, but a library/CLI is not the complete user journey. The acceptance target also includes a visual UI, multiple initial charts, validated natural-language refinement, result verification and export. See `WORKSPACE_PRODUCT_DIRECTION.md`.
+
 # Design: generic analytics for an uploaded file (step 2 of the generalisation plan)
 
 Status: **approved by the owner on 2026-10-12 (revision 2); implemented on `feature/datasets-library-impl`**
