@@ -31,18 +31,18 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 |---|------|---------|
 | 0 | `docs/WORKSPACE_PRODUCT_DIRECTION.md` | Current product source of truth: visual workspace, CSV-first journey, source fallback, privacy, exports and roadmap |
 | 1 | `docs/PRODUCT_VISION.md` | Sports-domain vision and historical status; subordinate to current workspace direction |
-| 1 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
-| 2 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
-| 3 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
-| 4 | `docs/DATA_PIPELINE.md` | Sources, discovery, collection, versioning, cleaning, validation, conflicts |
-| 5 | `docs/DATABASE.md` | Schema, versioning, snapshots, migrations |
-| 6 | `docs/ANALYTICS_SPEC.md` | Exact metric definitions and outputs |
-| 7 | `docs/TESTING.md` | Test strategy and quality gates |
-| 8 | `docs/SECURITY.md` | Secrets, scraping ethics, future auth rules |
-| 9 | `docs/DEPLOYMENT.md` | Where data lives, free hosting and automation |
-| 10 | `docs/ROADMAP.md` | Phases, design-freeze gate, acceptance criteria |
-| 11 | `docs/AI_PROMPTS.md` | Ready prompts for an AI coding agent |
-| 12 | `docs/DECISIONS.md` | Architecture decision records |
+| 2 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
+| 3 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
+| 4 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
+| 5 | `docs/DATA_PIPELINE.md` | Sources, discovery, collection, versioning, cleaning, validation, conflicts |
+| 6 | `docs/DATABASE.md` | Schema, versioning, snapshots, migrations |
+| 7 | `docs/ANALYTICS_SPEC.md` | Exact metric definitions and outputs |
+| 8 | `docs/TESTING.md` | Test strategy and quality gates |
+| 9 | `docs/SECURITY.md` | Secrets, scraping ethics, future auth rules |
+| 10 | `docs/DEPLOYMENT.md` | Where data lives, free hosting and automation |
+| 11 | `docs/ROADMAP.md` | Phases, design-freeze gate, acceptance criteria |
+| 12 | `docs/AI_PROMPTS.md` | Ready prompts for an AI coding agent |
+| 13 | `docs/DECISIONS.md` | Architecture decision records |
 | - | `AGENTS.md` | Engineering rules every AI agent must follow |
 | - | `CHANGELOG.md` | History of changes to the project and its docs |
 
