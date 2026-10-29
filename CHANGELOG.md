@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — product direction alignment (2026-10-29)
+- Added `docs/WORKSPACE_PRODUCT_DIRECTION.md` as the product-level source of truth for the visual research-and-analytics workspace, CSV-first acceptance journey, source selection/fallback behaviour, privacy, licence-aware exports and delivery sequence.
+- Aligned README, product vision, requirements, roadmap, architecture, security, testing and coding-agent prompts with the approved direction.
+- Recorded ADR-048. This is a documentation-only change; no product capability is claimed as implemented and no code behaviour is changed.
+
 ## 2026-10-28: Provider status controls and robots-compliant discovery
 - Added explicit `active` / `disabled` catalogue status with a required reason for disabled entries, retaining support for existing registry column layouts.
 - Disabled catalogue providers remain visible in results but never make network calls; inactive hosts no longer receive redirect allowances or discovery-cache treatment.
