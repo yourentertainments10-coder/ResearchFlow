@@ -1,5 +1,7 @@
 # Repository audit — 2026-10-30
 
+> **Audit snapshot, not a live status page.** Branch names and ahead/behind comparisons were captured at the time of writing. Recheck current branch/PR state before closing or deleting branches; current product direction is in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md) and current delivery gates in [ROADMAP.md](ROADMAP.md).
+
 ## Scope and method
 
 Audit baseline: `main` at `9f115f34483d6c3d005682ed8c34bac09c167746`. Recursive Git tree returned 291 entries, `truncated=false`, including 30 Markdown files. This is a repository/branch comparison audit, not a claim that every runtime acceptance test was executed locally. The environment used for this audit could not clone GitHub directly, so file contents, tree metadata, branch comparisons, PR metadata and GitHub Actions results were checked through the GitHub integration.
