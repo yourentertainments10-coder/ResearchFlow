@@ -1,3 +1,5 @@
+> **Direction alignment (2026-10-29):** The current product-level direction is in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md). ResearchFlow is intended to become a general research and visual data-analysis workspace, not only a sports engine and not a chat-window clone. The existing Asian Games system remains the first domain-specific workflow and must retain its verified outputs. The sections below preserve sports-domain architecture, current capability status and historical constraints; they are not the complete long-term product requirements. The broader CSV-first delivery sequence, visual workspace, source-selection/fallback rules, privacy, export and web-research requirements are defined in the linked direction document.
+
 # Product Vision
 
 > Status legend used in this file: **Built** (in the repository and tested), **Planned** (designed here, not built), **Not planned yet** (an idea, no design commitment).
@@ -119,7 +121,9 @@ question → query planner → research/data tools → canonical database
 
 An LLM must not: invent statistics, modify database facts, replace deterministic analytics, hide source conflicts, or present guesses as verified facts. If evidence is insufficient the system says so. Any generated text that contains a number is checked against the verified result before it is shown (the "number lock" in `ROADMAP.md`). This keeps the project principle "code computes, the LLM only explains".
 
-## 8. Phasing
+## 8. Phasing (historical sports/general-research phase plan)
+
+For the current owner-approved product delivery order, use `WORKSPACE_PRODUCT_DIRECTION.md`. The phase plan below records prior sports and general-research sequencing and should not override the CSV-first visual-workspace milestone.
 
 The roadmap numbering in `ROADMAP.md` is unchanged.
 
