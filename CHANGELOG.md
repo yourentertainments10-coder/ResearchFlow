@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-30: Prevent false null warnings in grouped analytics
+- The validation-only pass for `group_aggregate` and `top_n` no longer emits a misleading "no non-null values" warning before the real groups are evaluated.
+- Added regression coverage proving valid groups stay warning-free while a group with genuinely missing metric values still reports the warning.
+
 
 ## 2026-10-30: Explicit source permission checks and fallback alternatives
 - Documented three independent checks: user source approval, permission for automated access, and permission for analysis/retention/export/redistribution.
