@@ -113,3 +113,20 @@ The existing main branch is primarily the Asian Games sports pipeline and fixed 
 ## 12. Definition of done
 
 A capability is done only when its code, docs and tests agree; it has deterministic and security-focused tests; its end-to-end acceptance path has been demonstrated; failure states are visible; and no claim of live access, privacy, export or cross-source support is made without evidence.
+
+## 6A. Required permission checks and permitted alternatives
+
+Run and record these as three separate checks for every source and intended use. Do not collapse them into one generic "permission" flag:
+
+1. **User authorisation / source choice:** Has the user selected or approved this source, or explicitly enabled global discovery? In selected-source mode, do not silently switch sources. If the selected source is unsuitable, explain what was checked and what is missing, then ask whether global discovery is allowed. A previously enabled, visible and changeable global-fallback preference permits searching other eligible sources without asking each time.
+2. **Automated-access permission:** Do the endpoint's documented API rules, terms and applicable access controls permit this automated request? A public URL or user approval does not override source rules. If automation is disallowed, or login/paywall/CAPTCHA/robots/terms restrictions or a blocking response prevent access, do not bypass them. Stop the blocked route and explain the specific reason.
+3. **Use, retention and redistribution permission:** Does the source's licence or policy permit the intended analysis, retention, transformation, export, sharing and redistribution? These are distinct rights. Record the licence/policy evidence and uncertainty; do not infer unrestricted reuse from public availability.
+
+### Alternatives when a check fails
+
+- **User/source choice unavailable:** Stay within the selected sources and report the gap. Ask for approval to use global discovery; if that preference is already enabled, search other eligible sources and disclose each source used. Offer manual upload or a user-supplied URL where appropriate.
+- **Automated access unavailable:** Prefer an official documented API or permitted download; validate an alternative documented endpoint or supported CSV/JSON/HTML-table format; paginate according to documentation; use bounded backoff only for transient failures and within published limits; compare another eligible source only when the user's source mode permits it; or ask the user to upload a file / provide a permitted URL. Never evade login, paywall, CAPTCHA, 403/429 blocks, robots rules or rate limits with identity rotation, proxies or aggressive retries.
+- **Raw-data redistribution unavailable:** Do not include restricted raw rows/files in exports or public shares. If the licence permits it, offer derived aggregate statistics, charts, brief attributed facts and source links, with methods and limitations. Check derived outputs too; aggregation does not automatically make redistribution lawful. If the licence is unclear, limit processing to the clearly permitted purpose, pause broader retention/sharing, and ask for clarification or switch to a clearly permitted alternative dataset.
+- **No suitable permitted source:** State that a reliable result cannot be produced from the sources available. Show the missing coverage, conflict or freshness issue; request an approved file/source or narrow the question. Do not invent values, silently substitute a metric/dataset, or present a partial result as complete.
+
+For every attempt, distinguish source discovery, access success, parse/validation success, freshness, scope coverage and export permission. Record provenance and limitations. Alternatives improve the chance of success but do not guarantee every request can be fulfilled.
