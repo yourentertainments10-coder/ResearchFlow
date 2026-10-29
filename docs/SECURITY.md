@@ -74,3 +74,11 @@ The product-level rules are in `WORKSPACE_PRODUCT_DIRECTION.md`. Apply them to e
 - If analysis is allowed but redistribution is restricted, do not include restricted raw data in public exports. Check derived-output permissions too. If licence/use is unclear, pause broader retention or redistribution until clarified.
 - Private uploads must not be sent to public websites or unrelated providers/models without explicit disclosure and consent.
 - Never claim universal fetch success. Track discovery, fetch, parse/validation and end-to-end completion separately; show clear failure reasons.
+
+## 11. Three independent source-permission checks and fallbacks
+Before a source is fetched, reused or exported, record separately:
+1. **User source choice:** the user selected/approved the source or enabled global discovery. Do not silently change sources in selected-source mode.
+2. **Automated access:** documented API rules, source terms, robots guidance and access controls permit the intended request. User approval does not override these restrictions.
+3. **Intended use:** the licence/policy permits the specific analysis, retention, transformation, export, sharing or redistribution. Public availability alone is not a reuse licence.
+
+If user source approval is missing, explain what was checked and ask whether global discovery is allowed; use other sources automatically only if the explicit global-fallback preference is enabled. If automated access is blocked, stop that route and offer an official permitted API/download, documented alternate format/endpoint, correctly paginated access, bounded retry for transient failures, another eligible source when source mode allows it, or manual upload. Never bypass login, paywall, CAPTCHA, robots/terms restrictions, 403/429 blocks or rate limits. If raw redistribution is not allowed, exclude raw rows/files from exports; only offer attributed aggregates/charts if both the licence and the derived-output context permit sharing. If licence terms are unclear, pause broader retention/redistribution and request clarification or use a clearly permitted alternative. If no permitted source supports a reliable answer, report the gap rather than fabricate or silently substitute data.
