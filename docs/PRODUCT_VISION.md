@@ -1,3 +1,5 @@
+> **Direction alignment (2026-10-29):** The current product-level direction is in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md). ResearchFlow is intended to become a general research and visual data-analysis workspace, not only a sports engine and not a chat-window clone. The existing Asian Games system remains the first domain-specific workflow and must retain its verified outputs. The sections below preserve sports-domain architecture, current capability status and historical constraints; they are not the complete long-term product requirements. The broader CSV-first delivery sequence, visual workspace, source-selection/fallback rules, privacy, export and web-research requirements are defined in the linked direction document.
+
 # Product Vision
 
 > Status legend used in this file: **Built** (in the repository and tested), **Planned** (designed here, not built), **Not planned yet** (an idea, no design commitment).
