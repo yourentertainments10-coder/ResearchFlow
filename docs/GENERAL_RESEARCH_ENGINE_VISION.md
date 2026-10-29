@@ -1,3 +1,5 @@
+> **Product experience update (2026-10-29):** Use [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md) as the current product-level source of truth. The intended UI is a visual analysis workspace, not a chat clone, and the first generic acceptance journey is CSV → profile → multiple charts → validated natural-language refinement → deterministic verification → export. This research-engine vision remains useful for discovery, provenance, source safety and reuse; implementation status must be checked against the live branch/PR rather than inferred from this vision.
+
 # ResearchFlow: General Research Engine Vision
 
 **Status:** Product-direction document, written 2026-10-28  
