@@ -2,6 +2,8 @@
 
 # Source Discovery (Phase 0)
 
+> **Historical snapshot:** This document records the Asian Games source investigation in October 2026. Early sections intentionally preserve unresolved questions from before the owner capture and 2026-10-07 D1 decision; use the later dated findings in sections 8–12 for the resolution. This is not the current general web-research source catalogue.
+
 Status: **complete.** The data API was located, its encoding identified (ordinary zlib compression, sections 8 and 9), and event-level data was confirmed from an owner capture (section 10). The portal publishes no terms of use; the owner cleared D1 on 2026-10-07 (section 12).
 Checked: 2026-10-04, using page fetches and web search from the Claude workspace. This workspace cannot run a browser, inspect network calls or reach arbitrary sites from its shell, so the checks below are limited to what a page fetch shows.
 
