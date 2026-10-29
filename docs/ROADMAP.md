@@ -1,5 +1,10 @@
 # Roadmap
 
+> **Product-level roadmap alignment (2026-10-29):** The phase history below contains the original sports-engine plan and intermediate general-research phases. The owner-approved current delivery order is in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md): (1) reconcile documentation, (2) complete the CSV upload → profiling → multiple charts → natural-language refinement → verification → export journey, (3) build the visual workspace, (4) implement source-choice/fallback controls, (5) prove free-first live web research, (6) connect research results to the workspace, and (7) harden end-to-end security/accessibility/export tests. Do not mark a phase complete based only on design documents or simulated CI.
+
+**Current gate:** Phase 4 web research remains on draft PR #31. Live structured-data discover → permitted fetch → collect/save → deterministic analysis → report/reuse, and target-Windows save/reuse, have not yet passed acceptance. The complete generic visual workspace is not built. Preserve the existing sports acceptance baseline.
+
+
 Work phase by phase. A phase is finished only when its acceptance criteria are met and evidence is saved. Sizes are relative effort (S, M, L), not promises.
 
 ## Phase 0: Source discovery (gate)  [M]  (status: done, 2026-10-04; D1 cleared by the owner 2026-10-07; API found, decodable, and event-level data confirmed with 469 events, see `SOURCE_DISCOVERY.md` sections 8 to 10. The live fetcher was built in Phase 6, ADR-031)
