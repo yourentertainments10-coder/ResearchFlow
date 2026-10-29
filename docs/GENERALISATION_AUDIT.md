@@ -2,6 +2,8 @@
 
 # Generalisation audit: from a sports engine to a general research and analytics engine
 
+> **Historical status correction (2026-10-30):** The dated status statement below describes the repository snapshot from 2026-10-11 and is not current. Generic dataset analytics and the answer-contract/evidence-ledger/project-health foundations were subsequently implemented in stages; the Phase 4 web-research code remains unmerged and the visual CSV workspace is still incomplete. Use [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md) and [ROADMAP.md](ROADMAP.md) for current product direction and gates.
+
 Status: **audit; ADR-039 accepted by the owner on 2026-10-11; nothing implemented yet.** Date: 2026-10-11, repository state `main` at `617f8f9`.
 Written for the owner's stated goal (below). The scope decision is ADR-039 in `DECISIONS.md`; step 2 is designed in `DATASET_ANALYTICS_DESIGN.md`.
 

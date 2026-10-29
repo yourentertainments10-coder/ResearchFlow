@@ -1,5 +1,7 @@
 # Phase 4: Web research with citations (approved design; free-source-first)
 
+> **Navigation/status:** This is the design for the unmerged Phase 4 research branch, not proof of a production-ready feature. Live-source and target-Windows save/reuse acceptance remain open. See [ROADMAP.md](ROADMAP.md), [FREE_SOURCE_CATALOGUE.md](FREE_SOURCE_CATALOGUE.md), and [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md).
+
 Status: **approved by the owner 2026-10-23 with a wider scope; implemented in stages on `feature/phase-4-web-research` (stacked on Phase 3, draft PR, not merged).** Built: 4a safe fetch, 4b discovery and ranking, 4c collection into normalised tables, free catalogue adapters (data.gov.uk CKAN, OpenAlex), project-scoped expiring dataset store with licence-aware permission, short-lived fetch cache, reuse-sufficiency check, deterministic analysis, number-locked cited report with conflict and licence disclosure, `sie research` commands (ADR-045, ADR-046). **Not built:** a controlled live fetch (see section 10), metric definitions (section 9 item 4) and natural-language query planning (the user still names the operation and columns), linking collected datasets to the evidence ledger, other catalogues in `FREE_SOURCE_CATALOGUE.md`, Phase 5 and 6. Rules: `AGENTS.md` rule 9 (respect sources), rule 2 (no invented numbers), `SECURITY.md` section 2, ADR-031 (politeness), ADR-042 (retention).
 
 ## 1. Requirement (restated)

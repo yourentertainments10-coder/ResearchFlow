@@ -3,6 +3,20 @@
 > **Scope note (2026-10-29):** This file records the original sports-engine requirements and acceptance criteria. The owner-approved broader product requirements are in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md): visual analysis workspace, CSV-first complete journey, deterministic natural-language refinement, source-selection and fallback controls, privacy, provenance and portable exports. Do not treat the sports-specific requirements below as the full product boundary. Existing sports outputs remain a regression baseline.
 
 
+## 1A. Current broader workspace acceptance requirements
+The requirements in this section are a concise acceptance contract for the next product milestone; the sports-domain requirements below remain valid for the existing Asian Games workflow.
+
+| ID | Requirement | Acceptance evidence |
+|---|---|---|
+| WS-01 | Upload CSV and safely parse it | Valid files succeed; malformed, oversized and unsupported files fail clearly without partial results or unsafe execution. |
+| WS-02 | Profile and show data quality | Row/column counts, inferred types, missing values, duplicates and suspicious values are visible and reproducible. |
+| WS-03 | Render a useful visual workspace | Multiple relevant charts, tables, KPI cards and findings are computed from the uploaded dataset, not hard-coded examples. |
+| WS-04 | Refine analysis with natural language | Request maps to a validated supported operation; ambiguous or unsupported requests ask for clarification or explain limits. |
+| WS-05 | Preserve numeric correctness | Deterministic engine calculates all displayed values; results can be traced to source dataset and applied operations. |
+| WS-06 | Export results | CSV and supported Excel exports match displayed table data; export errors are surfaced. |
+| WS-07 | Preserve existing product | Existing Asian Games acceptance figures and dashboard regression tests continue to pass. |
+| WS-08 | Keep research-source policy safe | Source choice, automated access and licence/use are checked separately; blocked access is never bypassed. |
+
 ## 1. Problem
 Medal tallies show only totals per country. They do not show *which sports* produce a country's medals, how men and women contribute, or how concentrated or diversified a country is. Answering this needs event-level data (every event with its gold, silver and bronze winners), plus a repeatable way to collect, clean and analyse it as a competition is still running.
 

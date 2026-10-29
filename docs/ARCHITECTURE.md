@@ -1,5 +1,7 @@
 # Architecture
 
+> **Current implementation boundary (2026-10-30):** This document primarily describes the existing Asian Games pipeline and static dashboard. The generic dataset engine is available as a Python library/CLI, but the browser-based CSV upload workspace, its serving/API boundary, and the complete CSV-to-export journey are not implemented. The workspace target and delivery gates are defined in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md). Do not interpret the future layers below as shipped capabilities.
+
 ## 1. Overview
 A batch data pipeline plus an analytics layer plus a read-only dashboard. No web backend with user accounts is needed in v1.
 

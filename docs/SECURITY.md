@@ -1,5 +1,7 @@
 # Security and Compliance
 
+> **Scope update (2026-10-30):** The initial no-upload/read-only dashboard rules below describe the existing sports dashboard, not permission to build an unsafe general workspace. Any future CSV upload UI must implement size/decompression limits, defensive parsing, project/session isolation, explicit retention/deletion behaviour, safe exports, and no external sharing of private uploads without informed consent. The product-level requirements are in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md).
+
 v1 has no user accounts, no payments and no personal data beyond public athlete names, so the attack surface is small. The rules below keep it that way, and define what must change if authentication is ever added.
 
 ## 1. Secrets
