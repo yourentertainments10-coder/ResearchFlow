@@ -62,3 +62,15 @@ Treat as a design change with a decision record, and then:
 - robots.txt is read per host and obeyed; if it cannot be read the fetch stops. At least 2 seconds between requests to a host; a 403, 429 or 5xx stops the host for the run.
 - One redirect at most, to the same host only. Content type and size are limited and compressed responses are refused. Nothing fetched is executed or rendered.
 - The real network function is not run in CI; the owner does the first live test. No workflow fetches anything.
+
+
+## 10. ResearchFlow workspace and source-policy requirements (2026-10-29)
+The product-level rules are in `WORKSPACE_PRODUCT_DIRECTION.md`. Apply them to every source adapter and future UI:
+
+- Separate user approval from technical access, source terms, licence/allowed use, privacy, and retention. A user approving a URL never overrides source restrictions.
+- In selected-source mode, do not silently switch to another source. If the selected source has no suitable data, tell the user and ask whether global discovery may be used, unless the user has explicitly enabled global fallback in settings.
+- In global-discovery mode or with previously enabled fallback, try other eligible sources without repeated prompts, but apply the same access, licence, privacy and retention checks to every source.
+- Do not bypass login, paywall, CAPTCHA, 403/429 restrictions or rate limits. Stop that route and offer an eligible alternative source or manual upload. Only transient errors may be retried under bounded backoff and source limits.
+- If analysis is allowed but redistribution is restricted, do not include restricted raw data in public exports. Check derived-output permissions too. If licence/use is unclear, pause broader retention or redistribution until clarified.
+- Private uploads must not be sent to public websites or unrelated providers/models without explicit disclosure and consent.
+- Never claim universal fetch success. Track discovery, fetch, parse/validation and end-to-end completion separately; show clear failure reasons.
