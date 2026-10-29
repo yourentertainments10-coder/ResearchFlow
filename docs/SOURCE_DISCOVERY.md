@@ -1,3 +1,5 @@
+> **Scope note (2026-10-29):** This file is a historical source-discovery record for the Asian Games sports workflow only. It is not the global web-research source catalogue and does not define product-wide source fallback. Current source selection, fallback, access, licence and retention rules are in `WORKSPACE_PRODUCT_DIRECTION.md`; active research provider status is documented in `FREE_SOURCE_CATALOGUE.md` and `PHASE4_WEB_RESEARCH_DESIGN.md` on the Phase 4 branch.
+
 # Source Discovery (Phase 0)
 
 Status: **complete.** The data API was located, its encoding identified (ordinary zlib compression, sections 8 and 9), and event-level data was confirmed from an owner capture (section 10). The portal publishes no terms of use; the owner cleared D1 on 2026-10-07 (section 12).
