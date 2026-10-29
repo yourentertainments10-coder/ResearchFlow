@@ -29,7 +29,8 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 ## Documents (read in this order)
 | # | File | Purpose |
 |---|------|---------|
-| 0 | `docs/PRODUCT_VISION.md` | Long-term direction: multi-competition, research queries, evidence, role of AI (planned vs built) |
+| 0 | `docs/WORKSPACE_PRODUCT_DIRECTION.md` | Current product source of truth: visual workspace, CSV-first journey, source fallback, privacy, exports and roadmap |
+| 1 | `docs/PRODUCT_VISION.md` | Sports-domain vision and historical status; subordinate to current workspace direction |
 | 1 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
 | 2 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
 | 3 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
