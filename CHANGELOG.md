@@ -214,3 +214,8 @@ Design review round. No code yet.
 
 ## [docs-0.1.0] - 2026-10-01
 Initial planning pack: README, AGENTS.md, product requirements, architecture, data pipeline, database, analytics specification, testing, security, deployment, roadmap, AI prompts, decisions.
+
+## 2026-10-30: Explicit source permission checks and fallback alternatives
+- Documented three independent checks: user source approval, permission for automated access, and permission for analysis/retention/export/redistribution.
+- Added permitted alternatives for each failure mode, including approved global discovery, official APIs/downloads, documented formats and pagination, bounded transient retries, eligible alternate sources, manual upload, and licence-aware aggregate exports.
+- Clarified that alternatives cannot bypass access controls or licences, and that unavailable/insufficient evidence must be reported rather than fabricated.
