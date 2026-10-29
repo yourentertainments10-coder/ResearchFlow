@@ -1,9 +1,74 @@
 # Changelog
 
+## Unreleased — product direction alignment (2026-10-29)
+- Added `docs/WORKSPACE_PRODUCT_DIRECTION.md` as the product-level source of truth for the visual research-and-analytics workspace, CSV-first acceptance journey, source selection/fallback behaviour, privacy, licence-aware exports and delivery sequence.
+- Aligned README, product vision, requirements, roadmap, architecture, security, testing and coding-agent prompts with the approved direction.
+- Recorded ADR-048. This is a documentation-only change; no product capability is claimed as implemented and no code behaviour is changed.
+
+## 2026-10-28: Provider status controls and robots-compliant discovery
+- Added explicit `active` / `disabled` catalogue status with a required reason for disabled entries, retaining support for existing registry column layouts.
+- Disabled catalogue providers remain visible in results but never make network calls; inactive hosts no longer receive redirect allowances or discovery-cache treatment.
+- Disabled the data.gov.uk CKAN provider in production after its redirected endpoint was observed to disallow `/api/` under robots.txt. Removed its redirect-host exception; no robots rule is bypassed.
+- Added explicit Crawl-delay tests and isolated test registries that activate CKAN only for simulated-network regression tests.
+- Reconciled source/vision/roadmap docs. OpenAlex remains a paper/reference provider only; a replacement structured-data provider and live end-to-end smoke test remain open. PR #31 is not merge-ready.
+
+
+## Fourth live run: robots.txt of the data.gov.uk API host (Phase 4)
+- Live (owner, 2026-10-25): after the named redirect, the robots.txt of `ckan.publishing.service.gov.uk` disallows the API request for our client. That is respected, not bypassed; the refusal now names the host and path. **The data.gov.uk catalogue API is therefore not usable by this fetcher until the owner decides how to proceed** (read the robots.txt and the service's terms, contact the publisher, or use another free source or a URL/file).
+- Live smoke test: NOT passed (no structured dataset was discovered).
+
+## Third live run: data.gov.uk redirect host (Phase 4)
+- Observed live (owner, 2026-10-25): `https://data.gov.uk/api/action/package_search` redirects to `ckan.publishing.service.gov.uk`. Cross-host redirects stay refused unless the owner names the target in the new optional `redirect_hosts` column of `data/evidence/catalogues.csv` (plain host names, scoped to that catalogue; robots.txt, address and interval checks still apply). data.gov.uk now lists that host.
+- Network failures name the host (`the request to <host> failed: TimeoutError`). A timeout can be raised with `EVIDENCE_FETCH_TIMEOUT_SECONDS` (default 20, max 120).
+- Not yet confirmed live: that discovery now returns a structured dataset.
+
+## Second live run: redirects, reuse and scope (Phase 4)
+- data.gov.uk's API answered with more than one redirect: a page may now follow up to 3, each hop re-validated (https, public address, robots.txt and interval for its host, same host or `www.`/sub-domain only, loops refused); a refusal lists the hosts in the chain.
+- Saved data is no longer reused when its own title/address names another year or country; a place or year it does not state is disclosed. Datasets added with `sie research collect <url>` are marked "supplied by URL, not found by discovery" and that note travels into every report that reuses them.
+- Every report now says that whether the table covers the question's full scope (for example every constituency) was not checked, with its row count. (Live run: a council's two-constituency file had been reported without this.)
+- Live smoke test: collect and report worked on the owner's machine with a user-supplied URL; discovery from data.gov.uk still unverified.
+
+## Fixes from the first live run (Phase 4)
+- A page or API redirect may now go to the `www.` variant or a sub-domain of the same host (data.gov.uk's API answered with a redirect to another host and was refused); the new host's robots.txt, interval and address checks apply, any other host is still refused and the refusal names it.
+- Windows: saving a dataset crashed in `os.fsync` (EBADF on a read-only descriptor, directories cannot be opened). Files are now opened read-write there and directory sync is skipped; the rename that publishes the dataset is still atomic.
+- Live smoke test is still not passed: see PR #31.
+
+## Live discovery review fixes (ADR-046 amendment, 2026-10-25)
+- Ranking judges topic, place and year separately: a US or 2011 dataset no longer answers a "UK 2024" question (rejected with `mismatch`); weak topic overlap is `low_relevance`; unstated place or year is a disclosed limitation. Academic papers are references (`role: reference`), never collected, ranked below structured datasets.
+- robots.txt may redirect up to 5 times with every hop validated (https, public address, port, pacing, loop check); anything unsafe or 403/5xx fails closed.
+- Discovery output says `robots_status: not_checked` until permission was looked up; leads are never called verified.
+- Lead limitations become UNVERIFIED gaps in the report. New tests: robots redirects, end-to-end regression (simulated network).
+- Not run: a live-source smoke test (the build environment cannot reach public sites).
+
+## Phase 4 review fixes (ADR-046 amendment)
+- One dataset store: `sie research` now saves through `sie.evidence.dataset_store` (project label via `--project`; only normalised table + manifest; rows only where an open licence or recorded policy permits; expires after `EVIDENCE_DATASET_RETENTION_DAYS`, default 90). Replaces the earlier content-keyed store that kept source files without scope, licence or expiry.
+- The fetch cache is short-lived (`RESEARCH_CACHE_RETENTION_DAYS`, default 7) and keeps bodies only for catalogue API answers and hosts with a recorded policy; `sie research prune` removes expired data and cache files.
+- Reuse checks freshness, project, question coverage and the columns the operation needs; stale data is a disclosed last resort; otherwise it asks for a URL or file.
+- `sie research ask` compares shared columns across two or more sources (or `--conflict-key/--conflict-values`) and the report lists all conflicting values (previously only two per key), states what was compared, or says agreement could not be checked.
+- Catalogue licence id travels lead -> manifest -> report; missing licence is a disclosed gap. Data.gov.uk request pinned to the documented `package_search` GET; live behaviour still unverified.
+- Still unfinished: metric definitions, natural-language query planning, live test.
+
+## Free discovery, collection, cache and report (ADR-046, Phase 4c)
+- `sie.research` and `sie research discover|collect|ask|datasets`: registry of free keyless catalogues (data.gov.uk CKAN, OpenAlex), file cache, CSV/JSON/HTML table collection through `sie.datasets` (HTML parsing reuses `sie.evidence.collect`) with row-level provenance and flagged missing, rejected and conflicting values, a content-keyed dataset store reused for follow-ups, deterministic analysis, a number-locked answer with disclosed gaps, SVG chart, markdown report.
+- Cost guard: only `free_no_key` catalogues load; quota exhaustion, timeouts and failures are reported and skipped, never replaced by a paid or unregistered endpoint (tests, simulated network).
+- Fix in `sie.datasets`: group and top-N operations no longer emit a false "no non-null values" warning from their validation probe.
+- Not verified live: no real catalogue was contacted from the build environment. Not built: catalog.data.gov, open.canada.ca, data.gov.in, Wikimedia, Common Crawl, a general web-search provider, and linking collected datasets to the evidence ledger.
+
+## Free-source-first research policy (ADR-045)
+- General research must start with free public catalogues, official/government data sources, documented open APIs and eligible free search options. No paid search provider, billable model or automatic paid fallback is allowed without a separate explicit owner decision.
+- When free quotas are exhausted or coverage is unavailable, report the limitation and use cached evidence, another eligible free source or manual URL/file import.
+- Phase 4 design clarifies public-host fetching: no fixed host allow-list, but generic network safety checks, robots.txt, source terms/licences, rate limits and access controls still apply. The candidate catalogue is documented in docs/FREE_SOURCE_CATALOGUE.md. Documentation decision only; no provider adapter or Phase 4c code was added in this change.
+
 All notable changes to this project and its documentation. Format follows Keep a Changelog. Versions of the planning pack use `docs-x.y.z` until code exists.
 
 ## Project-scoped freshness and health (ADR-043)
 - `sie.evidence.health` and `sie project health <slug> [--json]` (read only, no migration): source states `current`, `stale`, `expired`, `pruned`, `upload`; informational `old_upload`; claim counts by status, claims on pruned or expired sources, pending XLSX claims, open conflicts; `gaps_from_health` for `sie.answer`. New settings `EVIDENCE_WEB_MAX_AGE_DAYS` (30) and `EVIDENCE_OLD_UPLOAD_DAYS` (180). Empty project gives an explicit no-sources report.
+
+## Collection into tables with provenance (ADR-044, Phase 4c, first part)
+- `sie.evidence.collect`: CSV and JSON go through `sie.datasets` unchanged; HTML tables are read with the standard library and refused, with a stated reason, when they have merged cells, nested tables, no header row, duplicate or empty headers, ragged rows or no data. A page with several usable tables must be told which one (no guessing); empty cells stay missing. `row_provenance` gives URL, retrieval time, page hash, table and row id for any row. No dependency, no migration, no storage yet.
+
+## Web research: safe fetching and source discovery (ADR-044, Phase 4a and 4b)
+- `sie.evidence.web` (SSRF guard, robots.txt, 2 s interval, stop on 403/429/5xx, one same-host redirect, type and size caps) and `sie.evidence.discovery` (authority-tier ranking with stated reasons, robots pre-check, manual leads-file provider). New commands `sie evidence fetch` (dry run unless `--execute`) and `sie evidence discover`. No migration, no real free-search/catalogue adapter yet, no automation. `PHASE4_WEB_RESEARCH_DESIGN.md`.
 
 ## Evidence ledger and upload storage (ADR-042)
 - Migration 005 (additive) and package `sie.evidence`: per-project uploads in the raw store, claims with source locators, append-only reviews (`source_located` and `human_confirmed` never mean "true"), conflicts, adapters to `sie.answer`, retention modes (web default excerpt-only), owner-only dry-run purge and prune with tombstones, integrity check, `sie project` and `sie evidence` commands. XLSX claims stay unverified until the datasets loader exists. Backups and the provider history are not erased by purge; the Neon window is unverified. `EVIDENCE_LEDGER_DESIGN.md`, `EVIDENCE_RETENTION.md`.
@@ -149,3 +214,8 @@ Design review round. No code yet.
 
 ## [docs-0.1.0] - 2026-10-01
 Initial planning pack: README, AGENTS.md, product requirements, architecture, data pipeline, database, analytics specification, testing, security, deployment, roadmap, AI prompts, decisions.
+
+## 2026-10-30: Explicit source permission checks and fallback alternatives
+- Documented three independent checks: user source approval, permission for automated access, and permission for analysis/retention/export/redistribution.
+- Added permitted alternatives for each failure mode, including approved global discovery, official APIs/downloads, documented formats and pagination, bounded transient retries, eligible alternate sources, manual upload, and licence-aware aggregate exports.
+- Clarified that alternatives cannot bypass access controls or licences, and that unavailable/insufficient evidence must be reported rather than fabricated.
