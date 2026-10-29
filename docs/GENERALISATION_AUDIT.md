@@ -1,3 +1,5 @@
+> **Status correction (2026-10-29):** This audit is historical architecture analysis, not a current implementation status report. The product direction and agreed delivery sequence are now in `WORKSPACE_PRODUCT_DIRECTION.md`. Its original suggestion to build generic tabular analytics before broad web research is consistent with the newly agreed CSV-first end-to-end journey. Verify each capability against the current branch and tests before calling it built.
+
 # Generalisation audit: from a sports engine to a general research and analytics engine
 
 Status: **audit; ADR-039 accepted by the owner on 2026-10-11; nothing implemented yet.** Date: 2026-10-11, repository state `main` at `617f8f9`.
