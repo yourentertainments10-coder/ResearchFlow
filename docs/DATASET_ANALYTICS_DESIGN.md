@@ -2,7 +2,7 @@
 
 # Design: generic analytics for an uploaded file (step 2 of the generalisation plan)
 
-Status: **approved by the owner on 2026-10-12 (revision 2); implemented on `feature/datasets-library-impl`**
+Status: **approved by the owner on 2026-10-12 (revision 2); implemented in `main` via merged PR #29**
 (`AGENTS.md` section 1.4). Differences from the text below are listed in section 17. Context: ADR-039, `GENERALISATION_AUDIT.md` section 8 step 2.
 Revision 2 (2026-10-11) adds the owner's seven requirements (sections 5 to 11) and the library-first
 decision (section 4).
