@@ -26,6 +26,10 @@ ResearchFlow is being built as a **competition-agnostic sports research and inte
 ## Cost
 Everything in the core system is free: Python, pandas, PostgreSQL (Neon free plan or any Postgres), Streamlit, GitHub, GitHub Actions. Free plans have limits, see `docs/DEPLOYMENT.md`. Optional extras (LLM API, paid sports-data API, custom domain) are clearly marked optional.
 
+## Documentation navigation
+
+Use [`docs/README.md`](docs/README.md) for the full documentation map, which explains each file's responsibility and which documents are historical versus current.
+
 ## Documents (read in this order)
 | # | File | Purpose |
 |---|------|---------|
