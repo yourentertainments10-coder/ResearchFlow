@@ -1,10 +1,18 @@
-# Sports Intelligence Engine (SIE)
+# ResearchFlow
+
+**Product direction (2026-10-29):** ResearchFlow is evolving into a free-first research and visual data-analysis workspace, not a chat-window clone. Its primary screen should be a workspace of KPI cards, charts, tables, filters, data-quality notes and findings; natural language refines the analysis. The first complete generic journey is CSV upload → profiling → multiple charts → natural-language refinement → deterministic verification → export. See [WORKSPACE_PRODUCT_DIRECTION.md](docs/WORKSPACE_PRODUCT_DIRECTION.md).
+
+**Current status:** the existing main branch is primarily the Asian Games sports pipeline and fixed dashboard. The generic visual workspace and complete CSV-to-export journey are not yet complete. Web research is on draft PR #31; live-source end-to-end acceptance and target-Windows save/reuse remain unverified. Asian Games outputs remain a regression baseline.
+
+---
+
+## Original sports-engine overview (implementation context)
 
 ResearchFlow is being built as a **competition-agnostic sports research and intelligence engine**: it collects official multi-sport results, stores them as clean event-level data, runs deterministic analytics and shows the findings on a dashboard.
 
 **Asian Games 2026 (Aichi-Nagoya) is the first production dataset and validation target, not the product boundary.** The design keeps competitions separate by `competition_id`, so another competition is meant to be added through its own adapter, parser configuration and reference mappings, not by changing the core. That second competition and the proof it needs are **planned, not built** (see `docs/PRODUCT_VISION.md`).
 
-**Not yet supported:** answering arbitrary research questions, multiple competitions, and any LLM layer. Today the system provides the verified Asian Games 2026 data, deterministic analytics and a fixed-page dashboard. The immediate engineering priority is Phase 4 (analytics).
+**Not yet supported on `main`:** answering arbitrary research questions, multiple competitions, and any LLM layer. Today the default product still provides verified Asian Games 2026 data, deterministic analytics and a fixed-page dashboard. A separate Phase 4 research prototype lives on draft PR #31; it implements free-source discovery, collection and deterministic reports, but the end-to-end live source acceptance gate has not passed and it is not merged. Current provider limitations are documented in `docs/GENERAL_RESEARCH_ENGINE_VISION.md` and `docs/FREE_SOURCE_CATALOGUE.md`.
 
 ## What it answers
 - Which country wins medals in which sports (full matrix, not only a top 10).
@@ -21,7 +29,8 @@ Everything in the core system is free: Python, pandas, PostgreSQL (Neon free pla
 ## Documents (read in this order)
 | # | File | Purpose |
 |---|------|---------|
-| 0 | `docs/PRODUCT_VISION.md` | Long-term direction: multi-competition, research queries, evidence, role of AI (planned vs built) |
+| 0 | `docs/WORKSPACE_PRODUCT_DIRECTION.md` | Current product source of truth: visual workspace, CSV-first journey, source fallback, privacy, exports and roadmap |
+| 1 | `docs/PRODUCT_VISION.md` | Sports-domain vision and historical status; subordinate to current workspace direction |
 | 1 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
 | 2 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
 | 3 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
