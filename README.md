@@ -1,4 +1,12 @@
-# Sports Intelligence Engine (SIE)
+# ResearchFlow
+
+**Product direction (2026-10-29):** ResearchFlow is evolving into a free-first research and visual data-analysis workspace, not a chat-window clone. Its primary screen should be a workspace of KPI cards, charts, tables, filters, data-quality notes and findings; natural language refines the analysis. The first complete generic journey is CSV upload → profiling → multiple charts → natural-language refinement → deterministic verification → export. See [WORKSPACE_PRODUCT_DIRECTION.md](docs/WORKSPACE_PRODUCT_DIRECTION.md).
+
+**Current status:** the existing main branch is primarily the Asian Games sports pipeline and fixed dashboard. The generic visual workspace and complete CSV-to-export journey are not yet complete. Web research is on draft PR #31; live-source end-to-end acceptance and target-Windows save/reuse remain unverified. Asian Games outputs remain a regression baseline.
+
+---
+
+## Original sports-engine overview (implementation context)
 
 ResearchFlow is being built as a **competition-agnostic sports research and intelligence engine**: it collects official multi-sport results, stores them as clean event-level data, runs deterministic analytics and shows the findings on a dashboard.
 
