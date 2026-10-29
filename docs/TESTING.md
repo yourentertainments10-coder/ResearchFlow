@@ -1,5 +1,7 @@
 # Testing Strategy
 
+> **Current acceptance status (2026-10-30):** unit/integration tests cover existing pipeline and generic dataset-library behaviour, but this does not mean the complete visual workspace exists. The CSV upload → profiling → multiple charts/tables → validated natural-language refinement → deterministic verification → export journey is still an open end-to-end gate. Phase 4 live-source discovery/fetch/collect/save/analyze/report/reuse and target-Windows save/reuse also remain unverified. See [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md), [ROADMAP.md](ROADMAP.md), and root [ACCEPTANCE.md](../ACCEPTANCE.md).
+
 ## 1. Principles
 - Tests are written with (or before) the feature, not at the end.
 - Network calls are never made in automated tests. Adapters are tested against saved fixtures.
