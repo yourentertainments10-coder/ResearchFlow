@@ -1,5 +1,8 @@
 # Product Requirements
 
+> **Scope note (2026-10-29):** This file records the original sports-engine requirements and acceptance criteria. The owner-approved broader product requirements are in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md): visual analysis workspace, CSV-first complete journey, deterministic natural-language refinement, source-selection and fallback controls, privacy, provenance and portable exports. Do not treat the sports-specific requirements below as the full product boundary. Existing sports outputs remain a regression baseline.
+
+
 ## 1. Problem
 Medal tallies show only totals per country. They do not show *which sports* produce a country's medals, how men and women contribute, or how concentrated or diversified a country is. Answering this needs event-level data (every event with its gold, silver and bronze winners), plus a repeatable way to collect, clean and analyse it as a competition is still running.
 
