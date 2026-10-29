@@ -136,7 +136,7 @@ the option is `--out-dir`, so the command exited 2.
 | #18 | `fix/wrangler-previews` | merged `c2903f8` | Cloudflare preview fix |
 | #19 | `feature/dashboard-smoke` | merged `4633cb8` | Browser smoke tests in CI (ADR-036) |
 | #15 | `feature/production-acceptance` | closed, superseded | Overlapped #16 and #19; its acceptance command was kept in #16, the rest dropped (comment on the PR). Its own backup workflow had the same `--out` defect |
-| #20 | `feature/acceptance-evidence` | open | This ledger |
+| #20 | `feature/acceptance-evidence` | merged (2026-10-10) | This ledger; the pull request is closed and merged into `main` |
 
 ## 8. Still pending, for the owner
 
