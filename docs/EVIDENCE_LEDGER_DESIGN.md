@@ -1,6 +1,6 @@
 # Evidence Ledger and Upload Storage (ADR-042)
 
-Status: implemented (Phase 3 health added in section 8) on `feature/evidence-ledger` (Phase 2). Code: `src/sie/evidence/`. DDL: `src/sie/db/sql/005_evidence_ledger.sql`.
+Status: implemented in `main` via merged PR #28; project-scoped health was added by merged PR #30. Code: `src/sie/evidence/`. DDL: `src/sie/db/sql/005_evidence_ledger.sql`.
 
 ## 1. What it is
 A per-project store of **sources** (an uploaded file, or a fetched web page) and **claims** (one stated value taken from a source, with where it came from). It feeds `sie.answer` as `EvidenceRef` and evidence-layer `Figure` objects. It does not change any sports table or view.
