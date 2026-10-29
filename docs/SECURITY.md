@@ -56,3 +56,29 @@ Treat as a design change with a decision record, and then:
 - Uploads are limited in size and decompressed size, hashed, and the filename is sanitised before use. Stored bytes are never executed or rendered.
 - Purge and prune are owner-only (database privilege check), dry-run by default and confirmed explicitly. They do not erase backups or provider history; the Neon window is unverified until the owner records it. See `EVIDENCE_RETENTION.md`.
 - Full web copies need a recorded permission; the default keeps an excerpt only.
+
+## 10. Web fetching (ADR-044)
+- Only https; a URL with credentials is refused. The host name must resolve to public addresses only and the connected address is checked again (loopback, private, link-local, multicast and metadata addresses are refused).
+- robots.txt is read per host and obeyed; if it cannot be read the fetch stops. At least 2 seconds between requests to a host; a 403, 429 or 5xx stops the host for the run.
+- One redirect at most, to the same host only. Content type and size are limited and compressed responses are refused. Nothing fetched is executed or rendered.
+- The real network function is not run in CI; the owner does the first live test. No workflow fetches anything.
+
+
+## 10. ResearchFlow workspace and source-policy requirements (2026-10-29)
+The product-level rules are in `WORKSPACE_PRODUCT_DIRECTION.md`. Apply them to every source adapter and future UI:
+
+- Separate user approval from technical access, source terms, licence/allowed use, privacy, and retention. A user approving a URL never overrides source restrictions.
+- In selected-source mode, do not silently switch to another source. If the selected source has no suitable data, tell the user and ask whether global discovery may be used, unless the user has explicitly enabled global fallback in settings.
+- In global-discovery mode or with previously enabled fallback, try other eligible sources without repeated prompts, but apply the same access, licence, privacy and retention checks to every source.
+- Do not bypass login, paywall, CAPTCHA, 403/429 restrictions or rate limits. Stop that route and offer an eligible alternative source or manual upload. Only transient errors may be retried under bounded backoff and source limits.
+- If analysis is allowed but redistribution is restricted, do not include restricted raw data in public exports. Check derived-output permissions too. If licence/use is unclear, pause broader retention or redistribution until clarified.
+- Private uploads must not be sent to public websites or unrelated providers/models without explicit disclosure and consent.
+- Never claim universal fetch success. Track discovery, fetch, parse/validation and end-to-end completion separately; show clear failure reasons.
+
+## 11. Three independent source-permission checks and fallbacks
+Before a source is fetched, reused or exported, record separately:
+1. **User source choice:** the user selected/approved the source or enabled global discovery. Do not silently change sources in selected-source mode.
+2. **Automated access:** documented API rules, source terms, robots guidance and access controls permit the intended request. User approval does not override these restrictions.
+3. **Intended use:** the licence/policy permits the specific analysis, retention, transformation, export, sharing or redistribution. Public availability alone is not a reuse licence.
+
+If user source approval is missing, explain what was checked and ask whether global discovery is allowed; use other sources automatically only if the explicit global-fallback preference is enabled. If automated access is blocked, stop that route and offer an official permitted API/download, documented alternate format/endpoint, correctly paginated access, bounded retry for transient failures, another eligible source when source mode allows it, or manual upload. Never bypass login, paywall, CAPTCHA, robots/terms restrictions, 403/429 blocks or rate limits. If raw redistribution is not allowed, exclude raw rows/files from exports; only offer attributed aggregates/charts if both the licence and the derived-output context permit sharing. If licence terms are unclear, pause broader retention/redistribution and request clarification or use a clearly permitted alternative. If no permitted source supports a reliable answer, report the gap rather than fabricate or silently substitute data.
