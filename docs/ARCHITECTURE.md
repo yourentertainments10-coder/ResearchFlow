@@ -188,3 +188,9 @@ question -> query planner -> research/data tools -> canonical database (v_medal_
 - **Evidence layer:** keeps raw source data, normalised data, analytical results, external evidence and generated explanation as separate layers, with source tiers (official API, official page, reputable secondary, search result, user-provided). Today only the first three exist.
 - **AI layer:** explains and orchestrates only. It may not compute, change facts or hide conflicts; numbers in its text are verified against results before display.
 - **Multi-competition:** only `competition_id`-scoped data, adapters, parsers and reference mappings differ per competition.
+
+
+## Product direction update (2026-10-29)
+The current product-level target is a general research and **visual data-analysis workspace**, not a chat-window clone. See `WORKSPACE_PRODUCT_DIRECTION.md` for the approved product requirements and delivery order. The architecture described in the sections above primarily documents the existing sports pipeline; it is not a complete design for the future multi-project visual workspace.
+
+The first generic end-to-end journey is CSV upload, profiling, deterministic initial analysis with multiple charts, natural-language refinement via validated operation specs, verification and export. Keep the sports pipeline as a separate domain path and preserve its acceptance outputs. Do not add a hosted UI, model provider, user-authentication design, or schema changes without impact analysis and an approved decision. Private uploads must remain scoped and must not be sent to unrelated providers without explicit consent.
