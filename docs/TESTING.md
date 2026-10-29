@@ -127,3 +127,13 @@ After the review amendment: `test_research_store.py` (permission, expiry, projec
 The complete generic CSV journey is not yet marked done. Before calling it complete, demonstrate with a representative fixture: upload → profile and data-quality findings → multiple useful charts/tables → natural-language request converted to a validated operation → deterministic recomputation → result verification → export. Cover malformed/oversized files, missing values, ambiguous/unsupported requests, reproducibility, and export correctness.
 
 Source-policy tests must verify: selected-source failure asks before switching; pre-enabled global fallback can continue without interruption; source restrictions override user preference; no bypass for login/paywall/CAPTCHA/403/429; bounded retries for transient errors; licence-aware retention and public export; no private upload leaves its project/environment without explicit consent; and clear no-data/failure reporting. Simulated HTTP tests do not replace a controlled live-source smoke test. The web research PR's live discover → permitted fetch → collect/save → analyze → report/reuse and target-Windows save/reuse gates remain open until demonstrated.
+
+## 8. Source permission and fallback acceptance tests
+Test the three checks independently: (1) user-approved source/global-discovery preference, (2) automated-access permission and blocking behaviour, and (3) licence rights for analysis, retention and redistribution. Include combinations where one check passes and another fails.
+
+- Selected-source mode never silently switches source; it explains the gap and asks before global discovery unless the explicit global-fallback preference is enabled.
+- A blocked route (robots/terms restriction, login/paywall/CAPTCHA, 403 or 429) is not bypassed or aggressively retried. The result gives the reason and offers only permitted alternatives: documented API/download/format, correctly paginated endpoint, bounded transient retry, eligible alternate source when allowed, or manual upload.
+- A licence that permits analysis but not raw redistribution prevents raw rows/files from appearing in exports or public shares. Derived charts/aggregates are shareable only when permitted, with attribution and caveats where required.
+- Unclear licence prevents broader retention/redistribution until clarified or replaced by a clearly permitted source.
+- No eligible source or insufficient scope produces a visible limitation; no fabricated values or silent dataset/metric substitution.
+- Test provenance, source-choice mode, policy evidence, retention expiry, source conflicts, freshness, and export contents end to end.
