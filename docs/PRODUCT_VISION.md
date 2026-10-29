@@ -2,6 +2,8 @@
 
 # Product Vision
 
+> **Status note (2026-10-30):** This document preserves the sports-domain vision and historical phase plan. It is not the canonical overall product direction and its historical phase statuses should not be read as a live implementation report. See [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md) and [ROADMAP.md](ROADMAP.md).
+
 > Status legend used in this file: **Built** (in the repository and tested), **Planned** (designed here, not built), **Not planned yet** (an idea, no design commitment).
 
 ## 1. What ResearchFlow is
