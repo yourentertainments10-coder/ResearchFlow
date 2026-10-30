@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Historical phase-plan warning (2026-10-30):** The original sports-engine phase headings below preserve the project's chronology; some individual phase descriptions predate later merges and must not be read as the current workspace status. For the active product sequence and acceptance gates, use the canonical summary above and [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md). The generic dataset library, answer contract, evidence ledger and project-health foundation have since been merged; the visual workspace and complete CSV-to-export journey remain open.
+
 > **Navigation:** [Documentation map](README.md) · [Canonical workspace direction](WORKSPACE_PRODUCT_DIRECTION.md) · [Acceptance evidence](../ACCEPTANCE.md).
 
 > **Product-level roadmap alignment (2026-10-29):** The phase history below contains the original sports-engine plan and intermediate general-research phases. The owner-approved current delivery order is in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md): (1) reconcile documentation, (2) complete the CSV upload → profiling → multiple charts → natural-language refinement → verification → export journey, (3) build the visual workspace, (4) implement source-choice/fallback controls, (5) prove free-first live web research, (6) connect research results to the workspace, and (7) harden end-to-end security/accessibility/export tests. Do not mark a phase complete based only on design documents or simulated CI.
@@ -34,12 +36,12 @@ Tasks: repository, `pyproject.toml`, ruff, pytest, pre-commit, CI workflow, sett
 Delivered: migrations 001 and 002 (explicit SQL), `reporting` schema and least-privilege roles (`sie db-roles`), `sie migrate`, `sie seed-reference`, tests on real PostgreSQL, CI workflow, Docker Compose database.
 Acceptance: `alembic upgrade head` creates the schema; `pytest` and `ruff` pass; `sie seed-reference` loads countries and aliases (sports and disciplines are confirmed in Phase 0).
 
-## Phase 2: Manual import and loader  [M]  (status: done for placings, 2026-10-05: acceptance demonstrated by `tests/integration/test_ingest.py`; entrants, conflict policy and the analytics read path are not built, see ADR-021)
+## Phase 2: Manual import and loader  [M]  (status: done for placings, 2026-10-05: acceptance demonstrated by `tests/integration/test_ingest.py`; the statement below that conflict policy and analytics read path are not built is historical and superseded by later merged work (see `DATA_PIPELINE.md` and `ANALYTICS_SPEC.md`))
 Tasks: define `ParsedResult`, normaliser, validator with quarantine, idempotent loader, `sie import-csv`, `ingest_runs` logging.
 Acceptance: the golden CSV loads; the same file loaded twice changes nothing; bad rows appear in quarantine with reasons; a reallocation in the golden data produces the closed and new placing versions plus one history row.
 Why first: it lets analytics and the dashboard be built even before automation of collection works.
 
-## Phase 3: Source adapter(s)  [M to L]  (status: in progress. The portal fetcher is built (Phase 6 work, ADR-031). Conflict policy engine and `sie resolve-conflict` built (ADR-032, `DATA_PIPELINE.md` section 13). Not built: stored reconciliation of the official table)
+## Phase 3: Source adapter(s)  [M to L]  (historical sports-pipeline phase status: the portal fetcher and conflict policy were implemented later; verify production reconciliation status in `ACCEPTANCE.md` before relying on this phase label)
 Tasks: `SourceAdapter` and `SourceParser` protocols, raw store with version semantics, rate limiter with cache, adapter (fetch only) for the chosen primary source, separate parser tested on fixtures, change detection by hash, conflict policy engine and `sie resolve-conflict`, official medal table adapter and parser, reconciliation.
 Acceptance: one command ingests a full day of results; reconciliation report produced; parser failure on a changed fixture produces a clear error.
 

@@ -2,7 +2,7 @@
 
 # ResearchFlow: General Research Engine Vision
 
-**Status:** Product-direction document, written 2026-10-28  
+**Status:** Research-engine vision and implementation snapshot, written 2026-10-28 (historical snapshot; not the canonical product-direction document)  
 **Implementation status:** Partially implemented on the Phase 4 feature branch; this is not a claim that the complete vision is already built.  
 **Related documents:** PRODUCT_VISION.md, PHASE4_WEB_RESEARCH_DESIGN.md, EVIDENCE_LEDGER_DESIGN.md, DATASET_ANALYTICS_DESIGN.md
 
