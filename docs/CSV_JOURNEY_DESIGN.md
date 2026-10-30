@@ -53,7 +53,7 @@ Metric definitions are written once in `docs/ANALYTICS_SPEC.md`-style form for t
 
 ## 7. Delivery slices (each its own PR, none merged without you)
 1. **Core, headless:** `autoplan`, `charts`, `cards`, `findings`, `verify`, `sie workspace run`; fixture CSV; tests for determinism and independent verification.
-2. **Planner:** grammar, clarification/unsupported paths, session replay, tests including hostile text (SQL/Python-looking input stays data).
+2. **Planner (implemented in its own PR, awaiting owner approval):** grammar, clarification/unsupported paths, session replay, tests including hostile text (SQL/Python-looking input stays data).
 3. **UI + server:** the page, upload, inspect panel, exports (SVG chart, CSV, XLSX, HTML report); browser smoke test in CI (existing Playwright setup).
 4. **Journey acceptance:** one scripted fresh-file test of the full journey plus the negative cases; evidence recorded in `ACCEPTANCE.md`.
 PNG chart export (client-side canvas) and PDF report are **later** and not claimed until tested.
@@ -70,3 +70,13 @@ Determinism (same file+requests -> same result hashes and byte-identical SVG/CSV
 
 ## 10. Not decided here
 Hosted deployment, accounts and sharing permissions, Excel/JSON upload in the UI, linking research datasets (Phase 4) into the workspace, any language-model integration.
+
+## 9. Slice 2 decisions (planner and session; owner may change any of them)
+- **"Compare M by G" means the sum of M per G.** Fixed and shown in every interpretation note; "average", "median", "minimum", "maximum" are explicit.
+- **"Trend of M by U" / "Sum M by U"** (U = day, month, quarter, year) uses the dataset's single date column; several date columns ask which; none is unsupported. A real column named like the unit wins. Week and hour are unsupported.
+- **Types:** measures must be integer or decimal; group columns text, yes/no or whole numbers; text is never converted silently.
+- **"Top N G by M"** ranks by the sum of M; N is required (1 to 1000) and a missing N asks.
+- **"Show as bar|line|table"** re-draws the current result without recomputing (same result hash); line is allowed only for a time trend.
+- **Case:** exact name first, then case-insensitive with a visible note; several case-only matches ask.
+- **Replay** re-asks the recorded request texts and compares specs and result hashes; recorded specs are never executed.
+- Limits: 300 characters per request; English keywords only; one group column.
