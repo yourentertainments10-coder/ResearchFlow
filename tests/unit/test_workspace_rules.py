@@ -115,7 +115,7 @@ def test_random_files_agree_with_the_independent_check(seed):
 app = typer.Typer()
 register(app)
 runner = CliRunner()
-SALES = b"region,units\nnorth,10\nsouth,20\nnorth,5\nsouth,7\nnorth,3\nsouth,2\n"
+SALES = b"region,units\nnorth,10\nsouth,20\nnorth,10\nsouth,20\nnorth,30\nsouth,30\n"
 
 
 def invoke(tmp_path: Path, *args: str):
