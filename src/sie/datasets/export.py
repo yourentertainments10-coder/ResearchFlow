@@ -131,6 +131,11 @@ def _csv_bytes(frame: pd.DataFrame, *, with_index: bool) -> tuple[bytes, int]:
     return buffer.getvalue().encode("utf-8"), neutralised
 
 
+def table_csv_bytes(frame: pd.DataFrame) -> tuple[bytes, int]:
+    """Public CSV form of a result table (no row index): bytes and the neutralised-cell count."""
+    return _csv_bytes(frame, with_index=False)
+
+
 # --- XLSX ----------------------------------------------------------------------------------------
 
 
