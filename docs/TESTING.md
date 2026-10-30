@@ -7,6 +7,9 @@
 - Network calls are never made in automated tests. Adapters are tested against saved fixtures.
 - Analytics are tested with small hand-computed datasets whose answers are known.
 
+### Workspace core tests (slice 1)
+`tests/unit/test_workspace_core.py` and `test_workspace_rules.py`: expected numbers worked out by hand from a small CSV; the independent pandas check (`sie.workspace.verify`) must catch a tampered number, rank, group or period; 40 seeded random files must agree with it; an unverified analysis is not written; no network call is made; import and no-`eval` rules. Limits: the independent check covers the six starter operations on text, integer, decimal and ISO-date columns; anything else is marked unverified, not passed.
+
 ## 2. Test database
 Tests run on **real PostgreSQL**, never SQLite, because the design depends on partial indexes, composite foreign keys and transactional behaviour. Locally the suite starts an embedded Postgres automatically (`pgserver`, installed with the dev extras); in CI it uses a Postgres service container via `TEST_DATABASE_URL`. A template database with all migrations applied is built once per run and each test gets a fresh copy, so tests are isolated and fast.
 

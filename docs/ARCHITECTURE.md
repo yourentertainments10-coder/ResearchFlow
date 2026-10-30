@@ -94,7 +94,9 @@ sie/
 |   |   |-- load.py  profile.py  clean.py  calc.py  (read, describe, cleaning plan, six operations)
 |   |   |-- export.py  store.py  run.py  shorthand.py (outputs and manifest, raw copy and atomic publish,
 |   |   |                                              one-request orchestration, text-to-spec helpers)
-|   |-- datasets_cli.py        (the only importer of sie.datasets: sie profile|clean|calc|calc-spec|operations)
+|   |-- datasets_cli.py        (adapter: sie profile|clean|calc|calc-spec|operations)
+|   |-- workspace/             (CSV journey core, slice 1: autoplan, charts, cards, findings, independent verify, writer; imports sie.datasets and, through figs.py only, sie.answer)
+|   |-- workspace_cli.py       (adapter: sie workspace run)
 |   `-- cli.py
 |-- dashboard/
 |   |-- app.py
