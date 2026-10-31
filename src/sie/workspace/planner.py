@@ -280,10 +280,25 @@ def _aggregate(verb: str, rest: str, profile: ProfileResult, *, trend: bool = Fa
     names = list(types)
     splits = _splits(rest)
     if not splits:
+        verb_text = "Trend of" if trend else verb.capitalize()
+        metric = _resolve(rest, names)
+        if metric.name is None and len(metric.candidates) > 1:
+            return _clarify_columns(
+                _quote(shown(_strip_quotes(rest))),
+                metric.candidates,
+                lambda c: f"{verb_text} {_quote(shown(c))}",
+            )
+        if metric.name is None:
+            return _unknown(rest, names, "the measure")
+        bad = _metric_problem(metric.name, types, function)
+        if bad:
+            return bad
+        groups = [n for n in names if types[n] in GROUP_TYPES]
+        if trend:
+            groups = [u for u in ("day", "month", "quarter", "year")]
         examples = tuple(
-            f"{verb.capitalize() if not trend else 'Trend of'} {_quote(shown(m))} by {_quote(shown(g))}"
-            for m in [n for n in names if types[n] in NUMERIC_TYPES][:1]
-            for g in [n for n in names if types[n] in GROUP_TYPES][:2]
+            f"{verb_text} {_quote(shown(metric.name))} by " + (g if trend else _quote(shown(g)))
+            for g in groups[:2]
         )
         return NeedsClarification(
             "Which column should it be grouped by? Say 'by <column>' (or 'by month' for a date column).",

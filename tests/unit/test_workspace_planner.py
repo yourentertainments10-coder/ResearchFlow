@@ -126,9 +126,7 @@ def test_two_columns_differing_by_case_need_clarification():
     data = b"Region,region,amount\nA,x,1\nB,y,2\n"
     pr = prof(data, "c.csv")
     out = ask("Sum amount by REGION", pr)
-    assert isinstance(out, NeedsClarification) and len(out.options) == 2
-    for option in out.options:  # every offered option is itself an exact, unambiguous request
-        assert isinstance(ask(option, pr), Plan)
+    assert_options_are_strict_plans(out, pr, lambda p: p.spec.by, [["Region"], ["region"]])
     exact = ask("Sum amount by Region", pr)
     assert isinstance(exact, Plan) and exact.spec.by == ["Region"]
 
@@ -158,15 +156,18 @@ def test_text_measure_and_date_group_are_refused_with_the_reason():
 
 def test_no_group_asks_instead_of_guessing():
     out = ask("Sum revenue")
-    assert isinstance(out, NeedsClarification) and out.options
-    for option in out.options:
-        assert isinstance(ask(option), Plan)
+    assert_options_are_strict_plans(
+        out, P, lambda p: (p.spec.op, p.spec.by, p.spec.metrics), 
+        [("group_aggregate", ["region"], ["revenue:sum"]), ("group_aggregate", ["product"], ["revenue:sum"])],
+    )  # fmt: skip
 
 
 def test_top_without_n_asks():
     out = ask("Top product by revenue")
-    assert isinstance(out, NeedsClarification) and out.options
-    assert all(isinstance(ask(o), Plan) for o in out.options)
+    assert_options_are_strict_plans(
+        out, P, lambda p: (p.spec.op, p.spec.by, p.spec.metric, p.spec.n),
+        [("top_n", "product", "revenue:sum", n) for n in (3, 5, 10)],
+    )  # fmt: skip
 
 
 @pytest.mark.parametrize("n", ["0", "1001", "-3", "2.5", "٣"])
@@ -174,18 +175,17 @@ def test_top_n_bounds(n):
     assert isinstance(ask(f"Top {n} product by revenue"), (Unsupported, NeedsClarification))
 
 
-def assert_options_are_strict_plans(out, pr, expect):
-    """Every offered option must itself be an unambiguous, valid Plan, and they must differ."""
+def assert_options_are_strict_plans(out, pr, describe, expect):
+    """Every offered option must itself be an unambiguous, valid Plan (not another clarification or an
+    unsupported result), its spec distinct from every other option's, and ``describe(plan)`` (the part
+    that differs: date column, group column, N ...) must equal ``expect`` in order."""
     assert isinstance(out, NeedsClarification)
     assert len(out.options) == len(expect) >= 2
-    plans = [ask(o, pr) for o in out.options]
-    assert all(isinstance(p, Plan) for p in plans), [p.kind for p in plans]
-    assert [
-        expect_fn(p)
-        for p, expect_fn in zip(plans, [lambda p: p.spec.date_column] * len(plans), strict=True)
-    ] == expect
-    assert len({p.spec.model_dump_json() for p in plans}) == len(plans)
-    assert all(not isinstance(ask(o, pr), NeedsClarification) for o in out.options)
+    outcomes = [ask(o, pr) for o in out.options]
+    assert [o.kind for o in outcomes] == ["plan"] * len(out.options), [o.kind for o in outcomes]
+    assert len(outcomes) == len(out.options)
+    assert [describe(p) for p in outcomes] == expect
+    assert len({p.spec.model_dump_json() for p in outcomes}) == len(outcomes)
 
 
 def test_several_date_columns_need_clarification():
@@ -193,7 +193,7 @@ def test_several_date_columns_need_clarification():
     pr = prof(data, "d.csv")
     for text in ("Sum amount by month", "Trend of amount by quarter"):
         out = ask(text, pr)
-        assert_options_are_strict_plans(out, pr, ["a", "b"])
+        assert_options_are_strict_plans(out, pr, lambda p: p.spec.date_column, ["a", "b"])
         assert not isinstance(out, Plan)  # the planner never picks a date column itself
 
 
@@ -212,7 +212,7 @@ def test_case_only_duplicate_date_columns_ask_with_strict_options():
     data = b"Date,date,amount\n2025-01-01,2025-02-01,1\n2025-03-01,2025-04-01,2\n"
     pr = prof(data, "dd.csv")
     out = ask("Sum amount by month using DATE", pr)
-    assert_options_are_strict_plans(out, pr, ["Date", "date"])
+    assert_options_are_strict_plans(out, pr, lambda p: p.spec.date_column, ["Date", "date"])
 
 
 def test_boolean_groups_are_kept_as_they_are():
@@ -379,3 +379,21 @@ def test_planner_source_never_evaluates_text():
         "sqlite3",
         "pandas",
     }
+
+
+def test_no_group_options_keep_the_users_measure_or_refuse():
+    # the options must be about the measure the user named, never another column
+    out = ask("Average units")
+    assert_options_are_strict_plans(
+        out,
+        P,
+        lambda p: (p.spec.by, p.spec.metrics),
+        [(["region"], ["units:mean"]), (["product"], ["units:mean"])],
+    )
+    out = ask("Trend of revenue")
+    assert_options_are_strict_plans(
+        out, P, lambda p: (p.spec.date_column, p.spec.freq, p.spec.metric),
+        [("sold_on", "day", "revenue:sum"), ("sold_on", "month", "revenue:sum")],
+    )  # fmt: skip
+    assert isinstance(ask("Sum nonexistent"), Unsupported)
+    assert isinstance(ask("Sum product"), Unsupported)  # text measure
