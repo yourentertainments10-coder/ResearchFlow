@@ -397,3 +397,38 @@ def test_no_group_options_keep_the_users_measure_or_refuse():
     )  # fmt: skip
     assert isinstance(ask("Sum nonexistent"), Unsupported)
     assert isinstance(ask("Sum product"), Unsupported)  # text measure
+
+
+def test_no_group_trend_options_for_every_date_layout():
+    one = b"d,amount\n2025-01-01,1\n2025-02-01,2\n"
+    pr = prof(one, "one.csv")
+    assert_options_are_strict_plans(
+        ask("Trend of amount", pr), pr, lambda p: (p.spec.date_column, p.spec.freq),
+        [("d", "day"), ("d", "month")],
+    )  # fmt: skip
+    two = b"a,b,amount\n2025-01-01,2025-02-01,1\n2025-03-01,2025-04-01,2\n"
+    pr = prof(two, "two.csv")
+    assert_options_are_strict_plans(
+        ask("Trend of amount", pr), pr, lambda p: (p.spec.date_column, p.spec.freq),
+        [("a", "month"), ("b", "month")],
+    )  # fmt: skip
+    none = b"g,amount\nx,1\ny,2\n"
+    out = ask("Trend of amount", prof(none, "none.csv"))
+    assert isinstance(out, Unsupported) and "date column" in out.reason
+
+
+def test_no_group_without_any_group_column():
+    # only numbers: nothing to group by -> a clear refusal, never an empty clarification
+    out = ask("Sum amount", prof(b"amount,other\n1.5,2.5\n2.5,3.5\n", "n.csv"))
+    assert isinstance(out, Unsupported) and "no column to group by" in out.reason
+    # only a measure and a date: the offered groupings are time units
+    pr = prof(b"d,amount\n2025-01-01,1\n2025-02-01,2\n", "d.csv")
+    assert_options_are_strict_plans(
+        ask("Sum amount", pr), pr, lambda p: (p.spec.op, p.spec.date_column, p.spec.freq),
+        [("time_trend", "d", "day"), ("time_trend", "d", "month")],
+    )  # fmt: skip
+    # a measure is never offered as its own group
+    pr = prof(b"id,amount\n1,5\n2,6\n", "i.csv")
+    out = ask("Sum amount", pr)
+    assert isinstance(out, NeedsClarification) and out.options == ('Sum "amount" by "id"',)
+    assert isinstance(ask(out.options[0], pr), Plan)

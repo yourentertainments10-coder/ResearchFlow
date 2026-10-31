@@ -293,13 +293,35 @@ def _aggregate(verb: str, rest: str, profile: ProfileResult, *, trend: bool = Fa
         bad = _metric_problem(metric.name, types, function)
         if bad:
             return bad
-        groups = [n for n in names if types[n] in GROUP_TYPES]
+        dates = [n for n in names if types[n] in DATE_TYPES]
+        mq = _quote(shown(metric.name))
+        if len(dates) > 1:  # name the date column in every option so none asks again
+            time_options = tuple(
+                f"{verb_text} {mq} by month using {_quote(shown(d))}" for d in dates[:3]
+            )
+        else:
+            time_options = (
+                tuple(f"{verb_text} {mq} by {u}" for u in ("day", "month")) if dates else ()
+            )
         if trend:
-            groups = [u for u in ("day", "month", "quarter", "year")]
-        examples = tuple(
-            f"{verb_text} {_quote(shown(metric.name))} by " + (g if trend else _quote(shown(g)))
-            for g in groups[:2]
-        )
+            if not dates:
+                return Unsupported(
+                    "A trend needs a date column and the data has none. Columns: "
+                    + ", ".join(_quote(shown(n)) for n in names),
+                    tuple(names),
+                )
+            examples = time_options
+        else:
+            groups = [n for n in names if types[n] in GROUP_TYPES and n != metric.name]
+            examples = tuple(f"{verb_text} {mq} by {_quote(shown(g))}" for g in groups[:2])
+            if not examples:
+                examples = time_options[:2]
+        if not examples:
+            return Unsupported(
+                "There is no column to group by (no text, yes/no, whole-number or date column besides "
+                "the measure), so there is nothing to compare.",
+                tuple(names),
+            )
         return NeedsClarification(
             "Which column should it be grouped by? Say 'by <column>' (or 'by month' for a date column).",
             examples,
