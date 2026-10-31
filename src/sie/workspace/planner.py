@@ -87,6 +87,7 @@ _CHART = re.compile(
     r"\s+(?:as|to)\s+(?:an?\s+)?(?P<kind>bar|line|table)(?:\s+chart)?$",
     re.I,
 )
+_USING = re.compile(r"^(?P<unit>\S+)\s+using\s+(?P<col>.+)$", re.I)
 _BY = re.compile(r"\s+by\s+", re.I)
 _CONTROL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f-\x9f  ]")
 
@@ -350,6 +351,9 @@ def _aggregate_one(
             f"{FUNCTION_WORDS[function].capitalize()} of {_quote(shown(metric.name))} for each "
             f"{_quote(shown(group.name))}, largest first.", tuple(notes),
         )  # fmt: skip
+    using: str | None = None
+    if m := _USING.match(group_text):
+        group_text, using = m["unit"], m["col"]
     unit_word = group_text.casefold()
     if unit_word in UNSUPPORTED_UNITS:
         return Unsupported(
@@ -357,8 +361,30 @@ def _aggregate_one(
         )
     if unit_word in TIME_UNITS:
         unit = TIME_UNITS[unit_word]
-        date_col, problem = _date_column(
-            types, unit, lambda d: f"{verb_text} {_quote(shown(metric.name or ''))} by {unit} using {_quote(shown(d))}"
+        if using is not None:
+            chosen = _resolve(using, names)
+            if chosen.name is None and len(chosen.candidates) > 1:
+                return _clarify_columns(
+                    _quote(shown(_strip_quotes(using))),
+                    chosen.candidates,
+                    lambda c: (
+                        f"{verb_text} {_quote(shown(metric.name or ''))} by {unit} using {_quote(shown(c))}"
+                    ),
+                )
+            if chosen.name is None:
+                return _unknown(using, names, "the date column")
+            if types[chosen.name] not in DATE_TYPES:
+                return Unsupported(
+                    f"Column {_quote(shown(chosen.name))} is read as {types[chosen.name]}, not a date, "
+                    f"so it cannot be used for 'by {unit}'.",
+                    tuple(names),
+                )
+            date_col, problem = chosen.name, None
+            if chosen.rule:
+                notes.append(chosen.rule)
+        else:
+            date_col, problem = _date_column(
+                types, unit, lambda d: f"{verb_text} {_quote(shown(metric.name or ''))} by {unit} using {_quote(shown(d))}"
         )  # fmt: skip
         if problem is not None:
             return problem
@@ -490,7 +516,7 @@ def normalise(text: object) -> str | Unsupported:
 
 HELP = (
     "Supported requests: 'Compare <measure> by <column>', 'Sum|Average|Median|Minimum|Maximum <measure> by "
-    "<column>', 'Trend of <measure> by day|month|quarter|year', 'Top <N> <column> by <measure>', and "
+    "<column>', 'Trend of <measure> by day|month|quarter|year [using <date column>]', 'Top <N> <column> by <measure>', and "
     "'Show as bar|line|table chart'. Filters, joins and several group columns are not supported yet."
 )
 

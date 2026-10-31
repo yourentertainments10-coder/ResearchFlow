@@ -174,12 +174,73 @@ def test_top_n_bounds(n):
     assert isinstance(ask(f"Top {n} product by revenue"), (Unsupported, NeedsClarification))
 
 
+def assert_options_are_strict_plans(out, pr, expect):
+    """Every offered option must itself be an unambiguous, valid Plan, and they must differ."""
+    assert isinstance(out, NeedsClarification)
+    assert len(out.options) == len(expect) >= 2
+    plans = [ask(o, pr) for o in out.options]
+    assert all(isinstance(p, Plan) for p in plans), [p.kind for p in plans]
+    assert [
+        expect_fn(p)
+        for p, expect_fn in zip(plans, [lambda p: p.spec.date_column] * len(plans), strict=True)
+    ] == expect
+    assert len({p.spec.model_dump_json() for p in plans}) == len(plans)
+    assert all(not isinstance(ask(o, pr), NeedsClarification) for o in out.options)
+
+
 def test_several_date_columns_need_clarification():
     data = b"a,b,amount\n2025-01-01,2025-02-01,1\n2025-03-01,2025-04-01,2\n"
     pr = prof(data, "d.csv")
-    out = ask("Sum amount by month", pr)
-    assert isinstance(out, NeedsClarification) and len(out.options) == 2
-    assert all(isinstance(ask(o, pr), (Plan, Unsupported, NeedsClarification)) for o in out.options)
+    for text in ("Sum amount by month", "Trend of amount by quarter"):
+        out = ask(text, pr)
+        assert_options_are_strict_plans(out, pr, ["a", "b"])
+        assert not isinstance(out, Plan)  # the planner never picks a date column itself
+
+
+def test_using_names_the_date_column():
+    data = b"a,b,amount\n2025-01-01,2025-02-01,1\n2025-03-01,2025-04-01,2\n"
+    pr = prof(data, "d.csv")
+    out = ask("Sum amount by year using B", pr)
+    assert isinstance(out, Plan) and out.spec.date_column == "b" and out.spec.freq == "year"
+    assert any("ignoring upper/lower case" in n for n in out.notes)
+    assert isinstance(ask("Sum amount by month using amount", pr), Unsupported)  # not a date
+    assert isinstance(ask("Sum amount by month using nope", pr), Unsupported)
+    assert isinstance(ask("Sum amount by week using a", pr), Unsupported)
+
+
+def test_case_only_duplicate_date_columns_ask_with_strict_options():
+    data = b"Date,date,amount\n2025-01-01,2025-02-01,1\n2025-03-01,2025-04-01,2\n"
+    pr = prof(data, "dd.csv")
+    out = ask("Sum amount by month using DATE", pr)
+    assert_options_are_strict_plans(out, pr, ["Date", "date"])
+
+
+def test_boolean_groups_are_kept_as_they_are():
+    data = b"active,amount\ntrue,1\nfalse,2\ntrue,3\n"
+    pr = prof(data, "b.csv")
+    out = ask("Sum amount by active", pr)
+    assert isinstance(out, Plan) and out.spec.by == ["active"]
+    sess = start_session(data, "b.csv")
+    step = sess.ask("Sum amount by active")
+    assert step.kind == "plan"
+    table = sess.items[0].result.table
+    assert dict(zip(table["active"].astype(str), table["amount:sum"], strict=True)) == {
+        "True": 4, "False": 2,
+    }  # fmt: skip
+    # the independent check does not cover boolean columns (slice 1 limit): never shown as verified
+    assert step.verification == "unverified" and not sess.items[0].exportable
+
+
+def test_top_n_ties_and_order_come_from_the_engine():
+    from sie.datasets import Limits, LoadOptions, open_dataset, run_operation
+
+    data = b"k,v\nb,5\na,5\nc,1\n"
+    s = start_session(data, "t.csv")
+    step = s.ask("Top 2 k by v")
+    ds = open_dataset(data, "t.csv", LoadOptions(), Limits())
+    direct = run_operation(ds, s.items[0].planned.spec)
+    assert step.result_sha256 == direct.provenance.result_sha256
+    assert s.items[0].result.table.equals(direct.table)
 
 
 def test_no_date_column_is_unsupported():

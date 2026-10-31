@@ -73,10 +73,11 @@ Hosted deployment, accounts and sharing permissions, Excel/JSON upload in the UI
 
 ## 9. Slice 2 decisions (planner and session; owner may change any of them)
 - **"Compare M by G" means the sum of M per G.** Fixed and shown in every interpretation note; "average", "median", "minimum", "maximum" are explicit.
-- **"Trend of M by U" / "Sum M by U"** (U = day, month, quarter, year) uses the dataset's single date column; several date columns ask which; none is unsupported. A real column named like the unit wins. Week and hour are unsupported.
+- **"Trend of M by U" / "Sum M by U"** (U = day, month, quarter, year) uses the dataset's single date column; several date columns ask which (every offered option is itself a complete request, e.g. `Sum amount by month using "a"`, that plans without further questions); `by <unit> using <date column>` names the column directly; none is unsupported. A real column named like the unit wins. Week and hour are unsupported.
 - **Types:** measures must be integer or decimal; group columns text, yes/no or whole numbers; text is never converted silently.
 - **"Top N G by M"** ranks by the sum of M; N is required (1 to 1000) and a missing N asks.
 - **"Show as bar|line|table"** re-draws the current result without recomputing (same result hash); line is allowed only for a time trend.
 - **Case:** exact name first, then case-insensitive with a visible note; several case-only matches ask.
 - **Replay** re-asks the recorded request texts and compares specs and result hashes; recorded specs are never executed.
+- **Boolean groups** keep the engine's labels (True/False); the independent check does not cover booleans (slice 1 limit), so such results show as unverified and are not exported.
 - Limits: 300 characters per request; English keywords only; one group column.

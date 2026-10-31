@@ -5,6 +5,7 @@
 - Column names are matched exactly, else ignoring case with a visible note; columns that differ only by case are never chosen silently; missing columns and wrong types (text measure, date group) are refused with the reason. Request text is only ever looked up among column names; SQL, Python, HTML, formula and control-character text cannot execute and is echoed only sanitised and shortened.
 - Added `sie.workspace.session`: request history (text, outcome, spec, chart, result hash; no timestamps or paths), chart changes that reuse the same result, and `replay`, which re-asks the recorded requests on a fresh workspace and raises `ReplayMismatch` listing any difference in source hash, cleaning record, spec, chart or result hash.
 - `Workspace` keeps the cleaning result privately (not serialized) so later requests run on the same cleaned data as the starter analyses.
+- Clarification options are complete requests that each plan unambiguously; added `by <unit> using <date column>` so a date column can be named. Tests assert every offered option yields a distinct valid `Plan`.
 - Out of scope and unchanged: filters, joins, several group columns, week/hour units, any language model, UI and server (later slices).
 
 ## 2026-10-30: Prevent false null warnings in grouped analytics
