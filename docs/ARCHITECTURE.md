@@ -95,7 +95,7 @@ sie/
 |   |   |-- export.py  store.py  run.py  shorthand.py (outputs and manifest, raw copy and atomic publish,
 |   |   |                                              one-request orchestration, text-to-spec helpers)
 |   |-- datasets_cli.py        (adapter: sie profile|clean|calc|calc-spec|operations)
-|   |-- workspace/             (CSV journey core, slice 1: autoplan, charts, cards, findings, independent verify, writer; imports sie.datasets and, through figs.py only, sie.answer)
+|   |-- workspace/             (CSV journey core, slices 1-2: autoplan, charts, cards, findings, independent verify, writer, rule-based request planner, session history and replay; imports sie.datasets and, through figs.py only, sie.answer)
 |   |-- workspace_cli.py       (adapter: sie workspace run)
 |   `-- cli.py
 |-- dashboard/

@@ -6,5 +6,26 @@ separate plain-pandas path (``verify``). Nothing here sends data anywhere.
 """
 
 from sie.workspace.build import Workspace, build_workspace
+from sie.workspace.planner import (
+    ChartChange,
+    NeedsClarification,
+    Plan,
+    Unsupported,
+    plan_request,
+)
+from sie.workspace.session import ReplayMismatch, Session, Step, replay, start_session
 
-__all__ = ["Workspace", "build_workspace"]
+__all__ = [
+    "ChartChange",
+    "NeedsClarification",
+    "Plan",
+    "ReplayMismatch",
+    "Session",
+    "Step",
+    "Unsupported",
+    "Workspace",
+    "build_workspace",
+    "plan_request",
+    "replay",
+    "start_session",
+]

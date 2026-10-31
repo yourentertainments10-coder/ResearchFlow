@@ -7,6 +7,9 @@
 - Network calls are never made in automated tests. Adapters are tested against saved fixtures.
 - Analytics are tested with small hand-computed datasets whose answers are known.
 
+### Workspace planner and session tests (slice 2)
+`tests/unit/test_workspace_planner.py` and `test_workspace_session.py`: every grammar verb, time unit and chart change; ambiguous requests (case-only duplicate columns, several date columns, no group, no N) must ask and each offered option must itself plan; missing columns, wrong types, unsupported units, filters/joins and non-text input are refused with a reason; hostile text (SQL, Python, HTML, formula, NUL, bidi, Cyrillic look-alikes, overlong) never plans anything but a validated spec and is echoed sanitised; a column literally named like SQL is plain data. Session: numbers hand-computed from the slice 1 CSV, chart changes reuse the same result hash, identical input and requests give an identical history hash, and replay detects a changed file, a tampered hash or spec and malformed history. Static checks: no eval/exec/network/OS imports in either module. Limits: the grammar is fixed and English-only.
+
 ### Workspace core tests (slice 1)
 `tests/unit/test_workspace_core.py` and `test_workspace_rules.py`: expected numbers worked out by hand from a small CSV; the independent pandas check (`sie.workspace.verify`) must catch a tampered number, rank, group or period; 40 seeded random files must agree with it; an unverified analysis is not written; no network call is made; import and no-`eval` rules. Limits: the independent check covers the six starter operations on text, integer, decimal and ISO-date columns; anything else is marked unverified, not passed.
 
