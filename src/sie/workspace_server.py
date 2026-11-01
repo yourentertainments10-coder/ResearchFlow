@@ -43,22 +43,30 @@ _EXPORT = re.compile(r"^/api/export/(?P<id>[A-Za-z0-9_]{1,16})\.(?P<ext>csv|xlsx
 _PAGE: dict[str, Any] = {}
 
 
+def prepare_page(raw: bytes) -> tuple[bytes, str]:
+    """The page with LF line endings and its Content-Security-Policy.
+
+    Browsers normalise CR/LF to LF inside inline script and style before checking a CSP hash, so the hash
+    must be computed on LF text, and the page is served as that same LF text. A checkout with CRLF line
+    endings (Windows ``core.autocrlf``) therefore still matches."""
+    text = raw.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    hashes: dict[str, list[str]] = {"script": [], "style": []}
+    for tag in hashes:
+        for body in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", text, flags=re.S):
+            digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode()
+            hashes[tag].append(f"'sha256-{digest}'")
+    csp = (
+        f"default-src 'none'; script-src {' '.join(hashes['script'])}; "
+        f"style-src {' '.join(hashes['style'])}; img-src data:; "
+        "connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    )
+    return text.encode("utf-8"), csp
+
+
 def page_bytes() -> tuple[bytes, str]:
     """The page and its Content-Security-Policy (inline script and style allowed by hash only)."""
     if not _PAGE:
-        html = resources.files("sie.web").joinpath("workspace.html").read_bytes()
-        text = html.decode("utf-8")
-        hashes = []
-        for tag in ("script", "style"):
-            for body in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", text, flags=re.S):
-                digest = base64.b64encode(hashlib.sha256(body.encode("utf-8")).digest()).decode()
-                hashes.append((tag, f"'sha256-{digest}'"))
-        script = " ".join(h for t, h in hashes if t == "script")
-        style = " ".join(h for t, h in hashes if t == "style")
-        csp = (
-            f"default-src 'none'; script-src {script}; style-src {style}; img-src data:; "
-            "connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
-        )
+        html, csp = prepare_page(resources.files("sie.web").joinpath("workspace.html").read_bytes())
         _PAGE.update(html=html, csp=csp)
     return _PAGE["html"], _PAGE["csp"]
 

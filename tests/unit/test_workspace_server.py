@@ -17,7 +17,13 @@ from sie.datasets import Limits
 from sie.workspace import report as report_module
 from sie.workspace import session as session_module
 from sie.workspace.models import Verification
-from sie.workspace_server import MAX_REQUEST_BYTES, make_server, page_bytes, safe_label
+from sie.workspace_server import (
+    MAX_REQUEST_BYTES,
+    make_server,
+    page_bytes,
+    prepare_page,
+    safe_label,
+)
 
 
 class Client:
@@ -316,3 +322,21 @@ def test_report_module_pure_and_offline():
         n.module.split(".")[0] for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.module
     }
     assert not mods & {"socket", "urllib", "http", "requests", "httpx", "subprocess", "os"}
+
+
+def test_crlf_checkout_gets_the_same_page_and_hashes():
+    """Windows git (core.autocrlf) turns the page into CRLF; browsers hash inline script/style with LF."""
+    import base64
+    import hashlib
+    import re
+
+    lf = page_bytes()[0]
+    for crlf in (lf.replace(b"\n", b"\r\n"), lf.replace(b"\n", b"\r")):
+        html, csp = prepare_page(crlf)
+        assert html == lf and csp == page_bytes()[1] and b"\r" not in html
+    # the hash in the policy is the hash of the text exactly as a browser sees it (LF)
+    text = lf.decode()
+    for tag in ("script", "style"):
+        for body in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", text, flags=re.S):
+            digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
+            assert f"'sha256-{digest}'" in page_bytes()[1]

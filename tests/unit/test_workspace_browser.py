@@ -171,3 +171,21 @@ def test_keyboard_reaches_the_main_controls(browser, base):
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement && document.activeElement.id") == "file"
     context.close()
+
+
+def test_page_works_when_the_file_was_checked_out_with_crlf(browser, base, tmp_path, monkeypatch):
+    """Windows ``core.autocrlf`` rewrites the page with CRLF; the CSP hashes must still match in Chromium."""
+    from sie.workspace_server import _PAGE, page_bytes, prepare_page
+
+    lf = page_bytes()[0]
+    monkeypatch.setitem(_PAGE, "html", None)
+    html, csp = prepare_page(lf.replace(b"\n", b"\r\n"))
+    monkeypatch.setitem(_PAGE, "html", html)
+    monkeypatch.setitem(_PAGE, "csp", csp)
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    f = tmp_path / "sales.csv"
+    f.write_bytes(SALES)
+    page.set_input_files("#file", str(f))
+    page.wait_for_selector("#cards .card")
+    assert problems == []
+    context.close()
