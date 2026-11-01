@@ -238,9 +238,11 @@ def test_only_the_command_adapters_and_the_workspace_import_the_datasets_package
             continue
         for name in _imports(path):
             if name == "sie.datasets" or name.startswith("sie.datasets."):
-                allowed = path.name in ("datasets_cli.py", "workspace_cli.py") or (
-                    SRC / "workspace" in path.parents
-                )
+                allowed = path.name in (
+                    "datasets_cli.py",
+                    "workspace_cli.py",
+                    "workspace_server.py",
+                ) or (SRC / "workspace" in path.parents)
                 assert allowed, (str(path), name)
 
 

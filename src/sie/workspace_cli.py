@@ -3,6 +3,7 @@
 Exit codes: 0 every analysis verified and exported; 1 the file or data is unusable; 2 invalid usage;
 3 finished, but at least one analysis failed its independent check (or could not run) and was not exported.
 Files are written only under ``--out`` and ``DATA_DIR/uploads``. Nothing is sent over a network.
+``serve`` (see ``sie.workspace_server``) listens on 127.0.0.1 only and writes nothing.
 """
 
 from __future__ import annotations
@@ -60,6 +61,23 @@ def run_cmd(
     typer.echo(json.dumps(summary, indent=2, sort_keys=True, ensure_ascii=False))
     if skipped:
         raise typer.Exit(code=3)
+
+
+@workspace_app.command("serve")
+def serve_cmd(
+    port: int = typer.Option(8765, min=0, max=65535, help="Port on 127.0.0.1 (0 = any free port)"),
+) -> None:
+    """Serve the workspace page on this computer only (127.0.0.1). Data stays in memory."""
+    from sie.workspace_server import LOOPBACK, make_server
+
+    server = make_server(port)
+    typer.echo(f"Workspace on http://{LOOPBACK}:{server.server_address[1]}/  (Ctrl+C to stop)")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        typer.echo("Stopped; the in-memory data is discarded.")
+    finally:
+        server.server_close()
 
 
 def register(app: typer.Typer) -> None:

@@ -54,7 +54,7 @@ Metric definitions are written once in `docs/ANALYTICS_SPEC.md`-style form for t
 ## 7. Delivery slices (each its own PR, none merged without you)
 1. **Core, headless:** `autoplan`, `charts`, `cards`, `findings`, `verify`, `sie workspace run`; fixture CSV; tests for determinism and independent verification.
 2. **Planner (implemented in its own PR, awaiting owner approval):** grammar, clarification/unsupported paths, session replay, tests including hostile text (SQL/Python-looking input stays data).
-3. **UI + server:** the page, upload, inspect panel, exports (SVG chart, CSV, XLSX, HTML report); browser smoke test in CI (existing Playwright setup).
+3. **UI + server (implemented in its own PR, awaiting owner approval):** the page, upload, inspect panel, exports (SVG chart, CSV, XLSX, HTML report); browser smoke test in CI (existing Playwright setup).
 4. **Journey acceptance:** one scripted fresh-file test of the full journey plus the negative cases; evidence recorded in `ACCEPTANCE.md`.
 PNG chart export (client-side canvas) and PDF report are **later** and not claimed until tested.
 
@@ -81,3 +81,12 @@ Hosted deployment, accounts and sharing permissions, Excel/JSON upload in the UI
 - **Replay** re-asks the recorded request texts and compares specs and result hashes; recorded specs are never executed.
 - **Boolean groups** keep the engine's labels (True/False); the independent check does not cover booleans (slice 1 limit), so such results show as unverified and are not exported.
 - Limits: 300 characters per request; English keywords only; one group column.
+
+## 10. Slice 3 decisions (UI and server; owner may change any of them)
+- **Server lives outside the package** (`src/sie/workspace_server.py`, like `workspace_cli.py`) because `sie.workspace` forbids network modules; `sie.workspace` gained only pure modules `report.py` and `view.py`.
+- **In-memory session, one table per server.** Nothing is written to disk by `serve`; uploading again replaces the session; "remove my data" or stopping discards it. (The earlier "per-session temp dir" idea was dropped: no disk means nothing to clean up.)
+- **Charts reach the page as `<img>` data URIs**, never as inline SVG, so a chart cannot run script even if its text were wrong.
+- **Unverified results show a reason, not numbers**, in the page, the report and the exports.
+- **XLSX** reuses the dataset XLSX writer through one public wrapper; CSV reuses `table_csv_bytes`.
+- **`GET /api/state` answers `{"loaded": false}` (200)** when nothing is loaded, so the page does not log a failed request.
+- Limits: tables show 200 rows in the page and 500 in the report (exports carry all rows); the page has no drag-and-drop, no column picker and no filters.
