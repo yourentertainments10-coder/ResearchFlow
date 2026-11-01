@@ -1,5 +1,7 @@
 # Architecture
 
+> **Current implementation boundary (2026-10-30):** This document primarily describes the existing Asian Games pipeline and static dashboard. The generic dataset engine is available as a Python library/CLI, but the browser-based CSV upload workspace, its serving/API boundary, and the complete CSV-to-export journey are not implemented. The workspace target and delivery gates are defined in [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md). Do not interpret the future layers below as shipped capabilities.
+
 ## 1. Overview
 A batch data pipeline plus an analytics layer plus a read-only dashboard. No web backend with user accounts is needed in v1.
 
@@ -92,7 +94,9 @@ sie/
 |   |   |-- load.py  profile.py  clean.py  calc.py  (read, describe, cleaning plan, six operations)
 |   |   |-- export.py  store.py  run.py  shorthand.py (outputs and manifest, raw copy and atomic publish,
 |   |   |                                              one-request orchestration, text-to-spec helpers)
-|   |-- datasets_cli.py        (the only importer of sie.datasets: sie profile|clean|calc|calc-spec|operations)
+|   |-- datasets_cli.py        (adapter: sie profile|clean|calc|calc-spec|operations)
+|   |-- workspace/             (CSV journey core, slices 1-2: autoplan, charts, cards, findings, independent verify, writer, rule-based request planner, session history and replay; imports sie.datasets and, through figs.py only, sie.answer)
+|   |-- workspace_cli.py       (adapter: sie workspace run)
 |   `-- cli.py
 |-- dashboard/
 |   |-- app.py
@@ -188,3 +192,9 @@ question -> query planner -> research/data tools -> canonical database (v_medal_
 - **Evidence layer:** keeps raw source data, normalised data, analytical results, external evidence and generated explanation as separate layers, with source tiers (official API, official page, reputable secondary, search result, user-provided). Today only the first three exist.
 - **AI layer:** explains and orchestrates only. It may not compute, change facts or hide conflicts; numbers in its text are verified against results before display.
 - **Multi-competition:** only `competition_id`-scoped data, adapters, parsers and reference mappings differ per competition.
+
+
+## Product direction update (2026-10-29)
+The current product-level target is a general research and **visual data-analysis workspace**, not a chat-window clone. See `WORKSPACE_PRODUCT_DIRECTION.md` for the approved product requirements and delivery order. The architecture described in the sections above primarily documents the existing sports pipeline; it is not a complete design for the future multi-project visual workspace.
+
+The first generic end-to-end journey is CSV upload, profiling, deterministic initial analysis with multiple charts, natural-language refinement via validated operation specs, verification and export. Keep the sports pipeline as a separate domain path and preserve its acceptance outputs. Do not add a hosted UI, model provider, user-authentication design, or schema changes without impact analysis and an approved decision. Private uploads must remain scoped and must not be sent to unrelated providers without explicit consent.

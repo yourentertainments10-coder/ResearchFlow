@@ -1,24 +1,11 @@
 # Phase 4: Web research with citations (approved design; free-source-first)
 
+> **Navigation/status:** This is the design for the unmerged Phase 4 research branch, not proof of a production-ready feature. Live-source and target-Windows save/reuse acceptance remain open. See [ROADMAP.md](ROADMAP.md), [FREE_SOURCE_CATALOGUE.md](FREE_SOURCE_CATALOGUE.md), and [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md).
+
 Status: **approved by the owner 2026-10-23 with a wider scope; implemented in stages on `feature/phase-4-web-research` (stacked on Phase 3, draft PR, not merged).** Built: 4a safe fetch, 4b discovery and ranking, 4c collection into normalised tables, free catalogue adapters (data.gov.uk CKAN, OpenAlex), project-scoped expiring dataset store with licence-aware permission, short-lived fetch cache, reuse-sufficiency check, deterministic analysis, number-locked cited report with conflict and licence disclosure, `sie research` commands (ADR-045, ADR-046). **Not built:** a controlled live fetch (see section 10), metric definitions (section 9 item 4) and natural-language query planning (the user still names the operation and columns), linking collected datasets to the evidence ledger, other catalogues in `FREE_SOURCE_CATALOGUE.md`, Phase 5 and 6. Rules: `AGENTS.md` rule 9 (respect sources), rule 2 (no invented numbers), `SECURITY.md` section 2, ADR-031 (politeness), ADR-042 (retention).
 
 ## 1. Requirement (restated)
 A user asks a research question; the system discovers candidate sources from free search options and public dataset catalogues first, prioritises official/government sources, fetches accessible public HTML, CSV, JSON and open APIs politely, records evidence and retrieval metadata, normalises data into a reusable dataset, and answers with reproducible analytics and citations. Follow-up questions reuse the collected dataset whenever it contains the needed fields. Web material is evidence with a status, never verified data (ADR-039 point 3). No paid provider, model API, or billable service may be used by default or as an automatic fallback. If free discovery is unavailable or exhausted, report the limitation and offer the file/URL/manual import fallback.
-
-
-## 1A. Independent permission checks and safe fallback behaviour
-
-For every source, keep these checks separate and record the outcome:
-
-1. **User source choice:** the user selected/approved this source or enabled global discovery. In selected-source mode, do not silently switch sources; explain the gap and ask before global discovery unless the user previously enabled the visible, changeable global-fallback preference.
-2. **Automated-access permission:** documented API rules, terms, robots guidance and access controls permit the request. User approval and a public URL do not override these rules.
-3. **Intended-use permission:** the source's licence/policy permits the specific analysis, retention, transformation, export, sharing and redistribution. These rights are not interchangeable.
-
-If source approval is missing, stay within selected sources and ask about global discovery; if global fallback is already enabled, use only other eligible sources and disclose them. If automated access is blocked by terms, robots guidance, login, paywall, CAPTCHA, 403/429 or similar restrictions, stop that route. Alternatives are an official documented API or permitted download, a documented alternate endpoint/format, correct pagination, bounded backoff for transient errors within source limits, another eligible source when source mode allows it, or manual upload/user-supplied URL. Never bypass restrictions with proxies, identity rotation or aggressive retries.
-
-If analysis is allowed but raw redistribution is not, exclude restricted raw rows/files from exports and public shares. Offer derived charts or aggregates only if the licence permits those outputs too, with attribution and limitations. If rights are unclear, pause broader retention/redistribution and request clarification or use a clearly permitted alternative. If no permitted source supports a reliable result, show the gap; never fabricate numbers or silently substitute a dataset or metric.
-
-Tests must cover all three checks independently, selected-source and global-fallback modes, blocked routes, permitted alternatives, licence-aware exports, unclear licences, and honest no-data outcomes.
 
 ## 2. Assumptions (please confirm or correct)
 1. **Discovery starts with free sources.** Query free search options that have a documented no-cost allowance and public dataset catalogues; prefer official/government sources and open APIs. No paid provider is called, even as a fallback. Do not crawl search-result pages or recursively follow arbitrary links. A provider must declare its free-tier limits and terms in its adapter docs. When the quota is exhausted, fail closed with a clear message and keep any cached leads.

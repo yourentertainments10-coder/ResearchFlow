@@ -236,6 +236,7 @@ def test_the_package_uses_only_the_standard_library_existing_dependencies_and_it
 # a Dataset. Any other importer still fails.
 DATASETS_IMPORTERS = {
     "datasets_cli.py",
+    "workspace_cli.py",
     "evidence/collect.py",
     # Free research (ADR-046): collection of fetched tables, the stored-table reload, and analysis.
     "research/collect.py",
@@ -245,15 +246,18 @@ DATASETS_IMPORTERS = {
 }
 
 
-def test_only_the_command_adapter_imports_the_datasets_package():
+def test_only_the_command_adapters_and_the_workspace_import_the_datasets_package():
     for path in SRC.rglob("*.py"):
         if PKG in path.parents:
             continue
         for name in _imports(path):
             if name == "sie.datasets" or name.startswith("sie.datasets."):
-                assert str(path.relative_to(SRC)) in DATASETS_IMPORTERS or (
-                    path.name in DATASETS_IMPORTERS
-                ), (str(path), name)
+                allowed = (
+                    str(path.relative_to(SRC)) in DATASETS_IMPORTERS
+                    or path.name in DATASETS_IMPORTERS
+                    or SRC / "workspace" in path.parents
+                )
+                assert allowed, (str(path), name)
 
 
 def test_datasets_and_answer_do_not_import_each_other():

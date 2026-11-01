@@ -337,7 +337,7 @@ def _metric_values(
     col = run.col(column)
     values = [col.values[p] for p in positions if col.values[p] is not None]
     value, warning = _aggregate(function, values, col)
-    if warn:
+    if warn:  # the validation pass uses no rows, so its "no non-null values" is not a finding
         run.warn(warning)
     return value, col
 
@@ -357,9 +357,7 @@ def _grouped_rows(
     columns = [*by, "rows", *labels]
     _check_unique(columns, "output columns")
     for label in labels:
-        _metric_values(
-            run, label, [], warn=False
-        )  # validates only; an empty probe is not a finding
+        _metric_values(run, label, [], warn=False)  # validates the column and function only
     rows: list[list[Any]] = []
     sort_keys: list[tuple[Any, ...]] = []
     for positions in groups.values():

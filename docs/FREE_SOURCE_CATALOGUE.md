@@ -1,5 +1,7 @@
 # Free-source catalogue for ResearchFlow
 
+> **Status warning (2026-10-30):** This is a catalogue of candidates and observed provider states, not a guarantee that automated structured-data research is operational. Do not enable a provider without rechecking current access, terms/licence and a controlled live smoke test. See [PHASE4_WEB_RESEARCH_DESIGN.md](PHASE4_WEB_RESEARCH_DESIGN.md) and [ROADMAP.md](ROADMAP.md).
+
 **Reviewed:** 2026-10-28  
 **Policy:** ADR-045. Free access only by default. This shortlist is a set of candidates, not a promise that every record or endpoint is unrestricted. Recheck terms, licence, authentication and quota before each adapter is implemented.
 

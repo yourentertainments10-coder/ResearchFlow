@@ -103,3 +103,9 @@ Reconciliation shows a mismatch for <country>/<medal>. Investigate using raw ver
 Report the likely cause (timing, shared medal, reallocation, parsing error, source error) with evidence.
 Do not change data until I approve the fix.
 ```
+
+
+## 12. Current product direction (2026-10-29)
+Before starting new work, read `docs/WORKSPACE_PRODUCT_DIRECTION.md` and reconcile it with the current implementation and relevant ADRs. The first product milestone is a demonstrated CSV upload → profile → multiple charts → natural-language refinement through validated operation specs → deterministic verification → export journey. Do not build a chat-only UI. Keep Asian Games outputs unchanged.
+
+For source discovery, selected-source mode must not silently fall back to global discovery. Ask first unless the user explicitly enabled global fallback. A user's approval does not override robots rules, terms, access controls, licence, privacy or retention requirements. Never bypass logins, paywalls, CAPTCHAs, 403/429 restrictions or rate limits. Do not claim completion until the end-to-end acceptance path is demonstrated, not merely because unit tests or simulated CI are green.

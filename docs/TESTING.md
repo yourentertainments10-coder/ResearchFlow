@@ -1,9 +1,17 @@
 # Testing Strategy
 
+> **Current acceptance status (2026-10-30):** unit/integration tests cover existing pipeline and generic dataset-library behaviour, but this does not mean the complete visual workspace exists. The CSV upload → profiling → multiple charts/tables → validated natural-language refinement → deterministic verification → export journey is still an open end-to-end gate. Phase 4 live-source discovery/fetch/collect/save/analyze/report/reuse and target-Windows save/reuse also remain unverified. See [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md), [ROADMAP.md](ROADMAP.md), and root [ACCEPTANCE.md](../ACCEPTANCE.md).
+
 ## 1. Principles
 - Tests are written with (or before) the feature, not at the end.
 - Network calls are never made in automated tests. Adapters are tested against saved fixtures.
 - Analytics are tested with small hand-computed datasets whose answers are known.
+
+### Workspace planner and session tests (slice 2)
+`tests/unit/test_workspace_planner.py` and `test_workspace_session.py`: every grammar verb, time unit and chart change; ambiguous requests (case-only duplicate columns, several date columns, no group, no N) must ask and each offered option must itself plan; missing columns, wrong types, unsupported units, filters/joins and non-text input are refused with a reason; hostile text (SQL, Python, HTML, formula, NUL, bidi, Cyrillic look-alikes, overlong) never plans anything but a validated spec and is echoed sanitised; a column literally named like SQL is plain data. Session: numbers hand-computed from the slice 1 CSV, chart changes reuse the same result hash, identical input and requests give an identical history hash, and replay detects a changed file, a tampered hash or spec and malformed history. Static checks: no eval/exec/network/OS imports in either module. Limits: the grammar is fixed and English-only.
+
+### Workspace core tests (slice 1)
+`tests/unit/test_workspace_core.py` and `test_workspace_rules.py`: expected numbers worked out by hand from a small CSV; the independent pandas check (`sie.workspace.verify`) must catch a tampered number, rank, group or period; 40 seeded random files must agree with it; an unverified analysis is not written; no network call is made; import and no-`eval` rules. Limits: the independent check covers the six starter operations on text, integer, decimal and ISO-date columns; anything else is marked unverified, not passed.
 
 ## 2. Test database
 Tests run on **real PostgreSQL**, never SQLite, because the design depends on partial indexes, composite foreign keys and transactional behaviour. Locally the suite starts an embedded Postgres automatically (`pgserver`, installed with the dev extras); in CI it uses a Postgres service container via `TEST_DATABASE_URL`. A template database with all migrations applied is built once per run and each test gets a fresh copy, so tests are isolated and fast.
@@ -121,3 +129,19 @@ Project health (ADR-043): `tests/unit/test_evidence_health_unit.py` (state class
 ## Free research (ADR-046)
 After the review amendment: `test_research_store.py` (permission, expiry, project separation, no page kept, tamper refused), `test_research_reuse.py` (freshness, needed columns, limitations), cache retention and no-cache cases in `test_research_cache.py`, and CLI cases for licence provenance, conflicts in the report and `--project` separation. `tests/unit/test_research_*.py`, all on a simulated site (`tests/research_fakes.py`): cache (hits, expiry, stale fallback flagged, content dedupe, tamper refusal), catalogue registry and adapters (paid or keyed access refused, strict response parsing, registered hosts only), cost guard (429, 5xx, 403, timeout, robots refusal, malformed response; the exhausted host is not called again; old cache used; every request host is registered; a static scan of `sie.research` finds no key, token or paid-provider wiring), collection (CSV, JSON, wrapped JSON, HTML tables, ragged rows rejected not dropped, flags, conflicts), store (idempotent, read-only, integrity, reuse), report (number lock, gaps, determinism, chart escaping), pipeline (discover to report, follow-up with no network, refresh without duplicates) and the CLI. **These prove logic, not live access:** a real controlled fetch has not been run.
 
+
+
+## Workspace journey and source-policy acceptance (2026-10-29)
+The complete generic CSV journey is not yet marked done. Before calling it complete, demonstrate with a representative fixture: upload → profile and data-quality findings → multiple useful charts/tables → natural-language request converted to a validated operation → deterministic recomputation → result verification → export. Cover malformed/oversized files, missing values, ambiguous/unsupported requests, reproducibility, and export correctness.
+
+Source-policy tests must verify: selected-source failure asks before switching; pre-enabled global fallback can continue without interruption; source restrictions override user preference; no bypass for login/paywall/CAPTCHA/403/429; bounded retries for transient errors; licence-aware retention and public export; no private upload leaves its project/environment without explicit consent; and clear no-data/failure reporting. Simulated HTTP tests do not replace a controlled live-source smoke test. The web research PR's live discover → permitted fetch → collect/save → analyze → report/reuse and target-Windows save/reuse gates remain open until demonstrated.
+
+## 8. Source permission and fallback acceptance tests
+Test the three checks independently: (1) user-approved source/global-discovery preference, (2) automated-access permission and blocking behaviour, and (3) licence rights for analysis, retention and redistribution. Include combinations where one check passes and another fails.
+
+- Selected-source mode never silently switches source; it explains the gap and asks before global discovery unless the explicit global-fallback preference is enabled.
+- A blocked route (robots/terms restriction, login/paywall/CAPTCHA, 403 or 429) is not bypassed or aggressively retried. The result gives the reason and offers only permitted alternatives: documented API/download/format, correctly paginated endpoint, bounded transient retry, eligible alternate source when allowed, or manual upload.
+- A licence that permits analysis but not raw redistribution prevents raw rows/files from appearing in exports or public shares. Derived charts/aggregates are shareable only when permitted, with attribution and caveats where required.
+- Unclear licence prevents broader retention/redistribution until clarified or replaced by a clearly permitted source.
+- No eligible source or insufficient scope produces a visible limitation; no fabricated values or silent dataset/metric substitution.
+- Test provenance, source-choice mode, policy evidence, retention expiry, source conflicts, freshness, and export contents end to end.

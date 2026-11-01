@@ -1,4 +1,12 @@
-# Sports Intelligence Engine (SIE)
+# ResearchFlow
+
+**Product direction (2026-10-29):** ResearchFlow is evolving into a free-first research and visual data-analysis workspace, not a chat-window clone. Its primary screen should be a workspace of KPI cards, charts, tables, filters, data-quality notes and findings; natural language refines the analysis. The first complete generic journey is CSV upload → profiling → multiple charts → natural-language refinement → deterministic verification → export. See [WORKSPACE_PRODUCT_DIRECTION.md](docs/WORKSPACE_PRODUCT_DIRECTION.md).
+
+**Current status:** the existing main branch is primarily the Asian Games sports pipeline and fixed dashboard. The generic visual workspace and complete CSV-to-export journey are not yet complete. Web research is on draft PR #31; live-source end-to-end acceptance and target-Windows save/reuse remain unverified. Asian Games outputs remain a regression baseline.
+
+---
+
+## Original sports-engine overview (implementation context)
 
 ResearchFlow is being built as a **competition-agnostic sports research and intelligence engine**: it collects official multi-sport results, stores them as clean event-level data, runs deterministic analytics and shows the findings on a dashboard.
 
@@ -18,22 +26,27 @@ ResearchFlow is being built as a **competition-agnostic sports research and inte
 ## Cost
 Everything in the core system is free: Python, pandas, PostgreSQL (Neon free plan or any Postgres), Streamlit, GitHub, GitHub Actions. Free plans have limits, see `docs/DEPLOYMENT.md`. Optional extras (LLM API, paid sports-data API, custom domain) are clearly marked optional.
 
+## Documentation navigation
+
+Use [`docs/README.md`](docs/README.md) for the full documentation map, which explains each file's responsibility and which documents are historical versus current.
+
 ## Documents (read in this order)
 | # | File | Purpose |
 |---|------|---------|
-| 0 | `docs/PRODUCT_VISION.md` | Long-term direction: multi-competition, research queries, evidence, role of AI (planned vs built) |
-| 1 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
-| 2 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
-| 3 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
-| 4 | `docs/DATA_PIPELINE.md` | Sources, discovery, collection, versioning, cleaning, validation, conflicts |
-| 5 | `docs/DATABASE.md` | Schema, versioning, snapshots, migrations |
-| 6 | `docs/ANALYTICS_SPEC.md` | Exact metric definitions and outputs |
-| 7 | `docs/TESTING.md` | Test strategy and quality gates |
-| 8 | `docs/SECURITY.md` | Secrets, scraping ethics, future auth rules |
-| 9 | `docs/DEPLOYMENT.md` | Where data lives, free hosting and automation |
-| 10 | `docs/ROADMAP.md` | Phases, design-freeze gate, acceptance criteria |
-| 11 | `docs/AI_PROMPTS.md` | Ready prompts for an AI coding agent |
-| 12 | `docs/DECISIONS.md` | Architecture decision records |
+| 0 | `docs/WORKSPACE_PRODUCT_DIRECTION.md` | Current product source of truth: visual workspace, CSV-first journey, source fallback, privacy, exports and roadmap |
+| 1 | `docs/PRODUCT_VISION.md` | Sports-domain vision and historical status; subordinate to current workspace direction |
+| 2 | `docs/PRODUCT_REQUIREMENTS.md` | What we build and how we know it is done |
+| 3 | `docs/DOMAIN_MODEL.md` | Formal definitions: event, medal placing, entrant, country medal |
+| 4 | `docs/ARCHITECTURE.md` | Components, stack, folder layout, data flow |
+| 5 | `docs/DATA_PIPELINE.md` | Sources, discovery, collection, versioning, cleaning, validation, conflicts |
+| 6 | `docs/DATABASE.md` | Schema, versioning, snapshots, migrations |
+| 7 | `docs/ANALYTICS_SPEC.md` | Exact metric definitions and outputs |
+| 8 | `docs/TESTING.md` | Test strategy and quality gates |
+| 9 | `docs/SECURITY.md` | Secrets, scraping ethics, future auth rules |
+| 10 | `docs/DEPLOYMENT.md` | Where data lives, free hosting and automation |
+| 11 | `docs/ROADMAP.md` | Phases, design-freeze gate, acceptance criteria |
+| 12 | `docs/AI_PROMPTS.md` | Ready prompts for an AI coding agent |
+| 13 | `docs/DECISIONS.md` | Architecture decision records |
 | - | `AGENTS.md` | Engineering rules every AI agent must follow |
 | - | `CHANGELOG.md` | History of changes to the project and its docs |
 
