@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — CSV workspace slice 2: request planner and session replay (2026-10-30)
+- Added `sie.workspace.planner`: a rule-based grammar (no model, no network, no new dependency) that turns a request such as "Compare revenue by region", "Average price by category", "Top 5 products by revenue", "Trend of revenue by month" or "Show as line chart" into a validated `OperationSpec` plus chart kind, or a `NeedsClarification` (with complete, unambiguous options) or an `Unsupported` (with the reason and the real column names). It only proposes; `sie.datasets` calculates and `verify_result` re-checks.
+- Column names are matched exactly, else ignoring case with a visible note; columns that differ only by case are never chosen silently; missing columns and wrong types (text measure, date group) are refused with the reason. Request text is only ever looked up among column names; SQL, Python, HTML, formula and control-character text cannot execute and is echoed only sanitised and shortened.
+- Added `sie.workspace.session`: request history (text, outcome, spec, chart, result hash; no timestamps or paths), chart changes that reuse the same result, and `replay`, which re-asks the recorded requests on a fresh workspace and raises `ReplayMismatch` listing any difference in source hash, cleaning record, spec, chart or result hash.
+- `Workspace` keeps the cleaning result privately (not serialized) so later requests run on the same cleaned data as the starter analyses.
+- Clarification options are complete requests that each plan unambiguously; added `by <unit> using <date column>` so a date column can be named. Tests assert every offered option (date column, no group, top without N, case-only duplicates) yields a distinct valid `Plan` with the expected column/N. No-group clarifications are complete for every layout: trend with no date column is unsupported, with several date columns each option names its column (`by month using "a"`), and a dataset with nothing to group by gets a clear refusal instead of empty options. Fixed: the no-group options now keep the measure the user named instead of the first numeric column.
+- Out of scope and unchanged: filters, joins, several group columns, week/hour units, any language model, UI and server (later slices).
+
 ## 2026-10-30: Prevent false null warnings in grouped analytics
 - The validation-only pass for `group_aggregate` and `top_n` no longer emits a misleading "no non-null values" warning before the real groups are evaluated.
 - Added regression coverage proving valid groups stay warning-free while a group with genuinely missing metric values still reports the warning.

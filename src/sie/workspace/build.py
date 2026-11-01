@@ -47,6 +47,9 @@ class Workspace:
     findings: list[Finding]
     cleaning: dict[str, Any] | None = None
     limitations: list[str] = field(default_factory=lambda: list(WORKSPACE_LIMITATIONS))
+    # the cleaning result the starter analyses ran on, kept so later requests run the same way;
+    # never serialized (``cleaning`` above is its record)
+    _cleaning: Any = field(default=None, repr=False, compare=False)
 
     @property
     def unverified(self) -> list[AnalysisItem]:
@@ -107,4 +110,5 @@ def build_workspace(
         cards=cards,
         findings=findings,
         cleaning=cleaning.to_dict() if cleaning is not None else None,
+        _cleaning=cleaning,
     )
