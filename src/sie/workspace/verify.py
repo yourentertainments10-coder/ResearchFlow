@@ -16,6 +16,7 @@ Anything this module cannot check is ``unverified`` (never silently passed) and 
 from __future__ import annotations
 
 import math
+import re
 from typing import Any
 
 import pandas as pd
@@ -132,7 +133,10 @@ def _metric_series(ds: Dataset, label: str, na: tuple[str, ...]) -> tuple[pd.Ser
     series = ds.frame[column]
     if function in ("sum", "mean", "median"):
         return _numbers(series, na), function
-    return _clean(series, na), function
+    cleaned = _clean(series, na)
+    if function in ("min", "max") and _all_plain_numbers(cleaned):
+        return _numbers(series, na), function  # numbers order as numbers, not as text ("11" < "5")
+    return cleaned, function
 
 
 def _agg(group: Any, function: str) -> pd.Series:
@@ -154,12 +158,36 @@ def _agg(group: Any, function: str) -> pd.Series:
     raise NotVerifiable(f"function {function!r}")
 
 
+_PLAIN_NUMBER = re.compile(r"^[+-]?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?$")
+
+
+def _all_plain_numbers(cleaned: pd.Series) -> bool:
+    present = [v for v in cleaned.tolist() if v is not None]
+    return bool(present) and all(_PLAIN_NUMBER.match(str(v).strip()) for v in present)
+
+
+_WHOLE_NUMBER = re.compile(r"^[+-]?(0|[1-9]\d*)$")
+
+
+def _whole_numbers(cleaned: pd.Series) -> pd.Series:
+    """A key column whose every non-null value is a whole number (no leading zeros) is an integer column:
+    its groups are numbers, exactly as the result table shows them (1, not "1"). Anything else stays text."""
+    present = [v for v in cleaned.tolist() if v is not None]
+    if not present or not all(_WHOLE_NUMBER.match(str(v).strip()) for v in present):
+        return cleaned
+    return pd.Series(
+        [None if v is None else int(str(v).strip()) for v in cleaned.tolist()],
+        index=cleaned.index,
+        dtype=object,
+    )
+
+
 def _keys(ds: Dataset, by: list[str], na: tuple[str, ...]) -> list[pd.Series]:
     out = []
     for name in by:
         if name not in ds.frame.columns:
             raise NotVerifiable(f"unknown column {name!r}")
-        cleaned = _clean(ds.frame[name], na)
+        cleaned = _whole_numbers(_clean(ds.frame[name], na))
         out.append(
             pd.Series(
                 [NULL_LABEL if v is None else v for v in cleaned.tolist()],

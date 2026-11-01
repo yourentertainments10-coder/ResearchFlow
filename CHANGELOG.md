@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — fix: independent check rejected correct results for whole-number group columns (2026-11-01)
+- Found by the owner on the Titanic data: `Average Fare by Pclass` came back "not verified" ("group (1,) does not exist"). The engine's numbers were right; the independent check in `sie.workspace.verify` compared the group keys as text ("1") with the result's numbers (1). Whole-number key columns (no leading zeros) are now typed as numbers by the check; codes like `007` stay text.
+- Same investigation: `Minimum`/`Maximum` of a numeric column was compared as text ("11" < "5") and was wrongly marked unverified; plain-number columns now order as numbers.
+- Regression tests with hand-computed numbers (they fail without the fix), including that tampered numbers, renamed or missing groups are still caught. A sweep of 228 measure/group/function combinations on the Titanic data now all verify; boolean group columns remain unverified (documented slice 1 limit).
+
 ## Unreleased — CSV workspace slice 3: local page, server and exports (2026-11-01)
 - Added `sie workspace serve`: a standard-library server on **127.0.0.1 only** (no new dependency) with one accessible, responsive page (`src/sie/web/workspace.html`): choose a CSV, key figures, findings, charts and tables, an "ask or change analysis" box with clickable clarification options, a request history, an inspect panel (source hash, column types, operation specs, result hashes, limitations) and a "remove my data" button. Light and dark themes; transitions respect `prefers-reduced-motion`.
 - Exports of verified analyses only: CSV, XLSX (formula-looking text neutralised, as in the dataset export), SVG chart, and a self-contained, script-free HTML report (`sie.workspace.report`, deterministic). An analysis that failed its independent check is shown with its reason, no numbers, and its exports answer 409.
