@@ -105,8 +105,18 @@ def _remove_tree(path: Path) -> None:
         shutil.rmtree(path, ignore_errors=True)
 
 
-def _fsync_path(path: Path) -> None:
-    fd = os.open(path, os.O_RDONLY)
+def _fsync_path(path: Path, *, windows: bool | None = None) -> None:
+    """Flush a file or directory to disk. Windows cannot open a directory for this, and refuses to
+    fsync a file opened read-only (EBADF), so there files are opened read-write and directories are
+    skipped; the rename that publishes a dataset stays atomic."""
+    nt = os.name == "nt" if windows is None else windows
+    if nt:
+        if path.is_dir():
+            return
+        flags = os.O_RDWR | getattr(os, "O_BINARY", 0)
+    else:
+        flags = os.O_RDONLY
+    fd = os.open(path, flags)
     try:
         os.fsync(fd)
     finally:
