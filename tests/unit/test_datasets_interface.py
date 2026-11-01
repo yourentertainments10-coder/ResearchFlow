@@ -237,6 +237,7 @@ def test_the_package_uses_only_the_standard_library_existing_dependencies_and_it
 DATASETS_IMPORTERS = {
     "datasets_cli.py",
     "workspace_cli.py",
+    "workspace_server.py",
     "evidence/collect.py",
     # Free research (ADR-046): collection of fetched tables, the stored-table reload, and analysis.
     "research/collect.py",
