@@ -251,7 +251,68 @@ def case_register_fetched_source(w):
     assert snapshot_for_project(w, "b") == before_b
 
 
+def _stored_for_b(w, tmp):
+    from sie.evidence.collect import collect
+    from sie.evidence.dataset_store import RowsPermission, save_dataset
+
+    page = b"<table><tr><th>A</th></tr><tr><td>secret-b</td></tr></table>"
+    c = collect(
+        page,
+        "text/html",
+        url="https://b.example.gov.in/p",
+        retrieved_at="2026-10-24T09:00:00+00:00",
+    )
+    root = tmp / "datasets"
+    key = save_dataset(root, w["b"], c, now=NOW, permission=RowsPermission(True, "own_upload")).key
+    return root, key
+
+
+def _dataset_case(fn_name):
+    def case(w):
+        import tempfile
+        from pathlib import Path
+
+        from sie.evidence import dataset_store as ds
+
+        with tempfile.TemporaryDirectory() as t:
+            root, key = _stored_for_b(w, Path(t))
+            fn = getattr(ds, fn_name)
+            if fn_name == "list_datasets":
+                assert fn(root, w["a"], now=NOW) == []
+            elif fn_name == "find_cached":
+                assert fn(root, w["a"], page_url="https://b.example.gov.in/p", now=NOW) == []
+            elif fn_name == "save_dataset":
+                from sie.evidence.collect import collect
+
+                c = collect(
+                    b"x\n1\n",
+                    "text/csv",
+                    url="https://b.example.gov.in/p",
+                    retrieved_at="2026-10-24T09:00:00+00:00",
+                )
+                saved = fn(
+                    root, w["a"], c, now=NOW, permission=ds.RowsPermission(True, "own_upload")
+                )
+                assert (root / f"p{w['a'].project_id}" / saved.key).exists()
+                assert not (root / f"p{w['b'].project_id}" / saved.key).exists()
+            else:
+                with pytest.raises(NotFound) as err:
+                    kwargs = {"now": NOW} if fn_name == "open_stored" else {}
+                    fn(root, w["a"], key, **kwargs)
+                with pytest.raises(NotFound) as missing:
+                    kwargs = {"now": NOW} if fn_name == "open_stored" else {}
+                    fn(root, w["a"], "0" * 12 + "-" + "0" * 8, **kwargs)
+                assert str(err.value) == str(missing.value)
+
+    return case
+
+
 CROSS_PROJECT_CASES = {
+    "sie.evidence.dataset_store.save_dataset": _dataset_case("save_dataset"),
+    "sie.evidence.dataset_store.open_stored": _dataset_case("open_stored"),
+    "sie.evidence.dataset_store.list_datasets": _dataset_case("list_datasets"),
+    "sie.evidence.dataset_store.find_cached": _dataset_case("find_cached"),
+    "sie.evidence.dataset_store.delete_dataset": _dataset_case("delete_dataset"),
     "sie.evidence.health.project_health": case_project_health,
     "sie.evidence.integrity.check_project": case_check_project,
     "sie.evidence.retention.register_fetched_source": case_register_fetched_source,

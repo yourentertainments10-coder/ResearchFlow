@@ -26,6 +26,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import Connection, Engine, text
 
 from sie.config import Settings, get_settings
+from sie.evidence.dataset_store import count_project_datasets, delete_project_datasets
 from sie.evidence.errors import NotFound, PurgeRefused
 from sie.evidence.owner import require_owner
 from sie.evidence.txn import advisory_lock
@@ -217,6 +218,11 @@ def purge_project(
             + ", ".join(f"{v} {k}" for k, v in counts.items() if k != "raw_bytes_stored" and v)
             + f" ({counts['raw_bytes_stored']} bytes of stored files)."
         ]
+        stored = count_project_datasets(settings.evidence_dataset_dir, row.id)
+        lines.append(
+            f"{'Deleted' if execute else 'Would delete'} {stored} stored collected dataset(s) from "
+            f"{settings.evidence_dataset_dir} (files on this machine; copies in backups are not touched)."
+        )
         lines += backup_and_history_lines(settings, now)
         if not execute:  # nothing was written: the transaction ends without changes
             return PurgeReport(
@@ -274,6 +280,9 @@ def purge_project(
             ),
             {"s": f"purged-{pid}", "t": now, "p": pid},
         )
+    delete_project_datasets(
+        settings.evidence_dataset_dir, pid
+    )  # after the commit: files follow the rows
     return PurgeReport(slug, pid, counts, True, lines, tombstone)
 
 

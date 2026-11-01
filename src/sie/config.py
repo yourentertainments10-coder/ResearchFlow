@@ -79,6 +79,18 @@ class Settings(BaseSettings):
     evidence_web_max_age_days: int = Field(default=30, ge=1)
     # An upload older than this gets an informational `old_upload` flag. It never fails a health check.
     evidence_old_upload_days: int = Field(default=180, ge=1)
+    # Web fetching (ADR-044). The interval may be raised but never lowered below 2 s (AGENTS.md rule 9).
+    evidence_fetch_interval_seconds: float = Field(default=2.0, ge=2.0)
+    evidence_fetch_max_bytes: int = Field(default=5 * 1024 * 1024, ge=1024)
+    evidence_fetch_timeout_seconds: float = Field(default=20.0, gt=0, le=120)
+    # Persisted collected datasets (ADR-044): where they live, how long they are kept by default.
+    evidence_dataset_path: Path | None = None
+    evidence_dataset_retention_days: int = Field(default=90, ge=1)
+    # Free-source research (ADR-045): cache lifetimes. Discovery answers go stale faster than data files.
+    research_discovery_cache_hours: int = Field(default=24, ge=1)
+    research_data_cache_hours: int = Field(default=168, ge=1)
+    # The fetch cache is not an archive: nothing in it lives longer than this (ADR-042, ADR-046).
+    research_cache_retention_days: int = Field(default=7, ge=1)
     # The recorded per-source retention policies (docs/EVIDENCE_RETENTION.md). Unset: data/evidence/
     # source_policies.csv. A host that is not listed there can only be kept as excerpts, never in full.
     evidence_policy_path: Path | None = None
@@ -118,12 +130,20 @@ class Settings(BaseSettings):
         return self.evidence_policy_path or self.data_dir / "evidence" / "source_policies.csv"
 
     @property
+    def evidence_dataset_dir(self) -> Path:
+        return self.evidence_dataset_path or self.data_dir / "evidence_datasets"
+
+    @property
     def scheduled_source_list(self) -> list[str]:
         return [s.strip() for s in self.scheduled_sources.split(",") if s.strip()]
 
     @property
     def source_priority_list(self) -> list[str]:
         return [s.strip() for s in self.source_priority.split(",") if s.strip()]
+
+    @property
+    def research_dir(self) -> Path:
+        return self.data_dir / "research"
 
     @property
     def reference_dir(self) -> Path:
