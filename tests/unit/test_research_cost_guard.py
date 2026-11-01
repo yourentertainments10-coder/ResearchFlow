@@ -42,7 +42,7 @@ DATA_URL = "https://data.example.gov.uk/election/results.csv"
 def setup(tmp_path, site, *, clock=None):
     fetcher = CachedFetcher(
         web_fetcher(site, Ticker()),
-        FetchCache(tmp_path / "cache"),
+        FetchCache(tmp_path / "cache", now=lambda: (clock or [NOW])[0]),
         max_age=timedelta(hours=24),
         now=lambda: (clock or [NOW])[0],
     )
