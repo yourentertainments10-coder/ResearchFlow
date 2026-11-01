@@ -59,7 +59,10 @@ def analysis_view(item: AnalysisItem, *, origin: str, request: str | None = None
 
 def session_view(session: Session) -> dict[str, Any]:
     ws = session.workspace
-    asked = {s.analysis_id: s.request for s in session.steps if s.analysis_id}
+    asked: dict[str, str] = {}
+    for s in session.steps:
+        if s.analysis_id and s.kind in ("plan", "chart_change"):
+            asked.setdefault(s.analysis_id, s.request)
     analyses = [analysis_view(i, origin="starter") for i in ws.items]
     analyses += [
         analysis_view(i, origin="asked", request=asked.get(i.planned.id)) for i in session.items

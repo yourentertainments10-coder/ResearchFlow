@@ -16,7 +16,7 @@ REQUESTS = [
     "Compare revenue by region",
     "Show as table",
     "Sum revenue by month",
-    "Show as line chart",
+    "Show as bar chart",
     "Average revenue by product",
     "Top 2 product by revenue",
     "Sum sales by month",  # unsupported: no such column
@@ -71,8 +71,8 @@ def test_chart_change_reuses_the_result_and_its_hash():
     assert table(s, "r1") is table(s, "r2")  # same object: nothing recomputed
     item = next(i for i in s.items if i.planned.id == "r2")
     assert item.svg is None  # a table has no picture
-    line = next(i for i in s.items if i.planned.id == "r4")
-    assert line.svg and line.svg.startswith("<svg")
+    bars = next(i for i in s.items if i.planned.id == "r4")
+    assert bars.svg and bars.svg.startswith("<svg")
 
 
 def test_result_hash_comes_from_the_engine():
@@ -182,3 +182,45 @@ def test_session_module_has_no_network_or_eval():
         n.module.split(".")[0] for n in ast.walk(tree) if isinstance(n, ast.ImportFrom) and n.module
     }
     assert not imported & {"os", "subprocess", "socket", "urllib", "requests", "httpx"}
+
+
+def test_the_same_request_again_adds_no_second_card():
+    s = start_session(SALES, "sales.csv")
+    first = s.ask("Compare revenue by region")
+    again = s.ask("compare REVENUE by region")
+    assert again.kind == "already_shown" and again.analysis_id == first.analysis_id
+    assert again.result_sha256 == first.result_sha256 and "already shown" in again.message
+    assert len(s.items) == 1  # nothing added, nothing recomputed
+
+
+def test_asking_for_the_chart_that_is_already_drawn_adds_no_card():
+    s = start_session(SALES, "sales.csv")
+    s.ask("Sum revenue by month")  # a line chart already
+    again = s.ask("Show as line chart")
+    assert again.kind == "already_shown" and len(s.items) == 1
+
+
+def test_a_starter_analysis_asked_for_again_points_at_the_starter_card():
+    s = start_session(SALES, "sales.csv")
+    starter = next(i for i in s.workspace.items if i.planned.id == "a4")  # sum of units by product
+    step = s.ask("Top 10 product by units")  # same spec as the starter (n=10)
+    assert step.kind == "already_shown" and step.analysis_id == starter.planned.id
+    assert s.items == []
+
+
+def test_replay_reproduces_already_shown_steps():
+    s = start_session(SALES, "sales.csv")
+    for r in ("Compare revenue by region", "Compare revenue by region", "Show as table"):
+        s.ask(r)
+    assert replay(SALES, "sales.csv", s.history()).sha256() == s.sha256()
+
+
+def test_a_top_list_with_fewer_groups_than_n_is_not_called_top():
+    s = start_session(SALES, "sales.csv")
+    step = s.ask("Top 10 product by revenue")  # product has two groups
+    assert step.title == "Sum of revenue by product" and "Top" not in step.title
+    assert any("only 2 groups" in n for n in step.notes)
+    many = start_session(
+        b"k,v\n" + b"".join(f"g{i},{i}\n".encode() for i in range(8)) + b"g1,5\ng2,5\n", "m.csv"
+    )
+    assert many.ask("Top 3 k by v").title == "Top 3 k by sum of v"

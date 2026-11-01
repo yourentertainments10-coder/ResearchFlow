@@ -39,7 +39,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
 .sr{position:absolute;left:-9999px}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:0}to{opacity:1}}
+.hl{outline:3px solid #2a6fdb;outline-offset:2px}.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -125,7 +125,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
   }
 
   function renderAnalysis(a) {
-    var box = el("article", { "class": "an fade", "aria-label": a.title });
+    var box = el("article", { "class": "an fade", "aria-label": a.title, "data-id": a.id, tabindex: "-1" });
     var badge = el("span", { "class": "badge " + (a.exportable ? "ok" : "bad"), text: a.exportable ? "verified" : "not verified" });
     box.appendChild(el("div", { "class": "row" }, [el("h3", { "class": "grow", text: a.title }), badge]));
     if (a.request) box.appendChild(el("p", { "class": "mut", text: "Request: " + a.request }));
@@ -171,7 +171,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
 
   function showStep(step) {
     var box = $("answer"); clear(box);
-    var kind = step.kind === "plan" || step.kind === "chart_change" ? "ok" : step.kind === "clarification" ? "ask" : "error";
+    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" ? "ok" : step.kind === "clarification" ? "ask" : "error";
     var m = el("div", { "class": "msg " + kind + " fade" }, [el("div", { text: step.message })]);
     (step.notes || []).forEach(function (n) { m.appendChild(el("div", { "class": "mut", text: n })); });
     if (step.options && step.options.length) {
@@ -184,6 +184,19 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       m.appendChild(row);
     }
     box.appendChild(m);
+    if (step.kind === "already_shown" && step.analysis_id) highlight(step.analysis_id);
+  }
+
+  function highlight(id) {
+    var cards = document.querySelectorAll("#analyses article");
+    Array.prototype.forEach.call(cards, function (n) {
+      n.classList.remove("hl");
+      if (n.getAttribute("data-id") === id) {
+        n.classList.add("hl");
+        n.scrollIntoView({ block: "nearest" });
+        n.focus({ preventScroll: true });
+      }
+    });
   }
 
   function ask(text) {

@@ -113,8 +113,14 @@ def plan_analyses(profile: ProfileResult) -> list[PlannedAnalysis]:
     if numeric:
         for cat in categories:
             metric = f"{numeric[0]}:sum"
+            groups = by_name[cat].distinct
+            title = (
+                f"Sum of {numeric[0]} by {cat}"  # every group fits: "Top N" would be misleading
+                if groups <= TOP_N
+                else f"Top {TOP_N} {cat} by sum of {numeric[0]}"
+            )
             add(
-                f"Top {TOP_N} {cat} by sum of {numeric[0]}",
+                title,
                 TopN(by=cat, metric=metric, n=TOP_N),
                 "bar",
                 cat,

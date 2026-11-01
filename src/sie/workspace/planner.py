@@ -465,6 +465,7 @@ def _build(model: Any, **fields: Any) -> Any:
 def _top(rest: str, profile: ProfileResult) -> Outcome:
     types = _types(profile)
     names = list(types)
+    distinct = {c.name: c.distinct for c in profile.column_profiles}
     parts = rest.split(None, 1)
     if len(parts) < 2:
         return Unsupported(
@@ -492,7 +493,7 @@ def _top(rest: str, profile: ProfileResult) -> Outcome:
         )
     first_failure: Outcome | None = None
     for group_phrase, metric_phrase in splits:
-        outcome = _top_one(n, group_phrase, metric_phrase, types, names)
+        outcome = _top_one(n, group_phrase, metric_phrase, types, names, distinct)
         if not isinstance(outcome, Unsupported):
             return outcome
         first_failure = first_failure or outcome
@@ -501,7 +502,12 @@ def _top(rest: str, profile: ProfileResult) -> Outcome:
 
 
 def _top_one(
-    n: int, group_phrase: str, metric_phrase: str, types: dict[str, str], names: list[str]
+    n: int,
+    group_phrase: str,
+    metric_phrase: str,
+    types: dict[str, str],
+    names: list[str],
+    distinct: dict[str, int],
 ) -> Outcome:
     def request(group: str, metric: str) -> str:
         return f"Top {n} {_quote(shown(group))} by {_quote(shown(metric))}"
@@ -530,6 +536,15 @@ def _top_one(
     spec = _build(TopN, by=group.name, metric=label, n=n)
     if isinstance(spec, Unsupported):
         return spec
+    groups = distinct.get(group.name, n + 1)
+    if groups <= n:  # every group fits, so a "top" list would be a misleading name
+        notes.append(f"{shown(group.name)} has only {groups} groups, so all of them are listed")
+        return Plan(
+            spec, "bar", group.name, label,
+            f"Sum of {shown(metric.name)} by {shown(group.name)}",
+            f"All {groups} {_quote(shown(group.name))} groups, largest sum of "
+            f"{_quote(shown(metric.name))} first (fewer groups than {n}).", tuple(notes),
+        )  # fmt: skip
     return Plan(
         spec, "bar", group.name, label, f"Top {n} {shown(group.name)} by sum of {shown(metric.name)}",
         f"The {n} {_quote(shown(group.name))} groups with the largest sum of {_quote(shown(metric.name))}, "
