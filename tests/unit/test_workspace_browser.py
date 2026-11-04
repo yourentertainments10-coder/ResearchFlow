@@ -189,3 +189,27 @@ def test_page_works_when_the_file_was_checked_out_with_crlf(browser, base, tmp_p
     page.wait_for_selector("#cards .card")
     assert problems == []
     context.close()
+
+
+def test_cleaning_panel_applies_after_approval_undoes_and_asks_before_removing(
+    browser, base, tmp_path
+):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    f = tmp_path / "sales.csv"
+    f.write_bytes(SALES)
+    page.set_input_files("#file", str(f))
+    page.wait_for_selector("#cards .card")
+    assert page.locator("#cleanstate").inner_text().count("No cleaning applied yet.") == 1
+    assert page.locator("#suggest li").count() >= 1  # suggested, not applied
+    page.locator("#suggest li button.primary").first.click()
+    page.wait_for_selector("#cleanstate ol li")
+    assert "Independent check of the cleaning: verified" in page.inner_text("#cleanstate")
+    assert "were filled" in page.inner_text("#answer") or "was filled" in page.inner_text("#answer")
+    page.click("text=Undo last step")
+    page.wait_for_selector("text=No cleaning applied yet.")
+    page.select_option("#cact", "drop_column")
+    page.click("#cleanform button[type=submit]")  # the harness dismisses the confirmation
+    assert "No cleaning applied yet." in page.inner_text("#cleanstate")
+    assert [p for p in problems if not p.startswith("dialog: This removes data")] == []
+    assert any(p.startswith("dialog: This removes data") for p in problems)
+    context.close()

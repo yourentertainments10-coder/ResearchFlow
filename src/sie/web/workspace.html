@@ -14,12 +14,13 @@ header{padding-top:1rem}
 h1{font-size:1.4rem;margin:.2rem 0}h2{font-size:1.1rem;margin:0 0 .5rem}h3{font-size:1rem;margin:.2rem 0}
 .mut{color:var(--mut)}
 section,.panel{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:1rem;margin:1rem 0}
-button,.btn,input[type=text]{font:inherit;border-radius:6px;border:1px solid var(--line);padding:.45rem .8rem;background:var(--bg);color:var(--fg)}
+button,.btn,input[type=text],select{font:inherit;border-radius:6px;border:1px solid var(--line);padding:.45rem .8rem;background:var(--bg);color:var(--fg)}
 button,.btn{cursor:pointer;text-decoration:none;display:inline-block;transition:background-color .15s}
 button.primary{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 button:hover,.btn:hover{filter:brightness(.96)}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 input[type=text]{width:100%}
+input.narrow{width:14rem}
 .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
 .grow{flex:1 1 16rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.75rem}
@@ -62,6 +63,36 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
   <div id="work" hidden>
     <section aria-labelledby="h-cards"><h2 id="h-cards">Key figures</h2><div id="cards" class="cards"></div></section>
     <section aria-labelledby="h-find"><h2 id="h-find">Findings and data quality</h2><ul id="findings"></ul></section>
+    <section aria-labelledby="h-clean">
+      <h2 id="h-clean">Clean your data</h2>
+      <p id="cleannote" class="mut"></p>
+      <div id="cleanstate" aria-live="polite"></div>
+      <h3>Suggestions</h3>
+      <p class="mut">Suggested from the data. Nothing is applied until you press Apply, and every step can be undone.</p>
+      <ul id="suggest"></ul>
+      <h3>Do it yourself</h3>
+      <form id="cleanform" class="row" autocomplete="off">
+        <label class="sr" for="cact">Action</label>
+        <select id="cact">
+          <option value="fill_median">Fill missing with the median</option>
+          <option value="fill_mean">Fill missing with the mean</option>
+          <option value="fill_mode">Fill missing with the most frequent value</option>
+          <option value="fill_constant">Fill missing with a value</option>
+          <option value="drop_missing_rows">Remove rows where the column is missing</option>
+          <option value="drop_column">Remove the column</option>
+          <option value="remove_duplicates">Remove duplicate rows</option>
+          <option value="text_to_number">Convert text to numbers (1,234.5)</option>
+          <option value="text_to_number_eu">Convert text to numbers (1.234,5)</option>
+          <option value="flag_outliers">Flag outliers (changes nothing)</option>
+          <option value="remove_outliers">Remove outlier rows</option>
+        </select>
+        <label class="sr" for="ccol">Column</label>
+        <select id="ccol"></select>
+        <label class="sr" for="cval">Value</label>
+        <input id="cval" type="text" maxlength="200" class="narrow" placeholder="value (only for 'with a value')">
+        <button class="primary" type="submit">Apply</button>
+      </form>
+    </section>
     <section aria-labelledby="h-ask">
       <h2 id="h-ask">Ask or change an analysis</h2>
       <form id="askform" class="row" autocomplete="off">
@@ -156,7 +187,8 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     var an = $("analyses"); clear(an);
     state.analyses.forEach(function (a) { an.appendChild(renderAnalysis(a)); });
     var h = $("history"); clear(h);
-    state.steps.forEach(function (s) { h.appendChild(el("li", { text: s.request + " - " + s.kind.replace("_", " ") + ": " + s.message })); });
+    state.steps.forEach(function (s) { if (!s.auto) h.appendChild(el("li", { text: s.request + " - " + s.kind.replace(/_/g, " ") + ": " + s.message })); });
+    renderCleaning(state.cleaning, state.columns);
     var ins = $("inspect"); clear(ins);
     ins.appendChild(el("p", { text: "File: " + state.source.name }));
     ins.appendChild(el("p", { text: "SHA-256: " + state.source.sha256 }));
@@ -169,9 +201,68 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     var ul = el("ul"); state.limitations.forEach(function (l) { ul.appendChild(el("li", { text: l })); }); ins.appendChild(ul);
   }
 
+  var skipped = {};
+  function stepFor(action, col, val) {
+    switch (action) {
+      case "fill_median": return { op: "fill_missing", column: col, method: "median" };
+      case "fill_mean": return { op: "fill_missing", column: col, method: "mean" };
+      case "fill_mode": return { op: "fill_missing", column: col, method: "mode" };
+      case "fill_constant": return { op: "fill_missing", column: col, method: "constant", value: val };
+      case "drop_missing_rows": return { op: "drop_missing_rows", columns: [col] };
+      case "drop_column": return { op: "drop_column", column: col };
+      case "remove_duplicates": return { op: "remove_duplicates" };
+      case "text_to_number": return { op: "text_to_number", column: col, decimal: ".", thousands: "," };
+      case "text_to_number_eu": return { op: "text_to_number", column: col, decimal: ",", thousands: "." };
+      case "flag_outliers": return { op: "flag_outliers", column: col };
+      default: return { op: "remove_outliers", column: col };
+    }
+  }
+  function sendClean(step) {
+    var removes = step.op === "drop_missing_rows" || step.op === "drop_column" || step.op === "remove_duplicates" || step.op === "remove_outliers";
+    if (removes && !window.confirm("This removes data from the working copy (your file is not changed, and you can undo it). Continue?")) return;
+    api("POST", "/api/clean", JSON.stringify({ step: step }), { "Content-Type": "application/json" }).then(function (r) {
+      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+      say("", ""); showStep(r.json.step); render(r.json.state);
+    }).catch(function () { say("error", "The server did not answer."); });
+  }
+  function renderCleaning(c, columns) {
+    $("cleannote").textContent = c.note;
+    var box = $("cleanstate"); clear(box);
+    box.appendChild(el("p", { text: "Rows: " + c.rows_loaded + " loaded, " + c.rows_now + " in the working copy." }));
+    if (c.applied.length) {
+      var ol = el("ol"); c.applied.forEach(function (a) { ol.appendChild(el("li", { text: a.text })); }); box.appendChild(ol);
+      if (c.verification) box.appendChild(el("p", { "class": c.verification.status === "verified" ? "ok" : "bad", text: "Independent check of the cleaning: " + c.verification.status }));
+      var u = el("button", { type: "button", text: "Undo last step" });
+      u.addEventListener("click", function () {
+        api("POST", "/api/clean/undo", "{}", { "Content-Type": "application/json" }).then(function (r) {
+          if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+          say("", ""); showStep(r.json.step); render(r.json.state);
+        });
+      });
+      box.appendChild(u);
+    } else { box.appendChild(el("p", { "class": "mut", text: "No cleaning applied yet." })); }
+    var sg = $("suggest"); clear(sg);
+    var shownCount = 0;
+    c.suggestions.forEach(function (x) {
+      if (skipped[x.id]) return;
+      shownCount += 1;
+      var li = el("li", {}, [el("strong", { text: x.label }), el("span", { "class": "mut", text: " - " + x.reason + " " })]);
+      var ap = el("button", { type: "button", "class": "primary", text: "Apply" });
+      ap.addEventListener("click", function () { sendClean(x.step); });
+      var sk = el("button", { type: "button", text: "Skip" });
+      sk.addEventListener("click", function () { skipped[x.id] = true; renderCleaning(c, columns); });
+      li.appendChild(ap); li.appendChild(document.createTextNode(" ")); li.appendChild(sk);
+      sg.appendChild(li);
+    });
+    if (!shownCount) sg.appendChild(el("li", { "class": "mut", text: "No suggestions right now." }));
+    var sel = $("ccol"), keep = sel.value; clear(sel);
+    columns.forEach(function (col) { sel.appendChild(el("option", { value: col.name, text: col.name + " (" + col.type + ")" })); });
+    if (keep) sel.value = keep;
+  }
+
   function showStep(step) {
     var box = $("answer"); clear(box);
-    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" ? "ok" : step.kind === "clarification" ? "ask" : "error";
+    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" || step.kind === "clean" || step.kind === "clean_undo" ? "ok" : step.kind === "clarification" ? "ask" : "error";
     var m = el("div", { "class": "msg " + kind + " fade" }, [el("div", { text: step.message })]);
     (step.notes || []).forEach(function (n) { m.appendChild(el("div", { "class": "mut", text: n })); });
     if (step.options && step.options.length) {
@@ -207,6 +298,10 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     }).catch(function () { say("error", "The server did not answer."); });
   }
 
+  $("cleanform").addEventListener("submit", function (e) {
+    e.preventDefault();
+    sendClean(stepFor($("cact").value, $("ccol").value, $("cval").value));
+  });
   $("askform").addEventListener("submit", function (e) { e.preventDefault(); var t = $("ask").value.trim(); if (t) ask(t); });
   $("file").addEventListener("change", function () {
     var f = this.files[0]; if (!f) return;
