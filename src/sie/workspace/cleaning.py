@@ -424,33 +424,48 @@ def describe(entry: dict[str, Any], source_sha256: str) -> str:
         shown = (
             n(value) if isinstance(value, int | float) and not isinstance(value, bool) else value
         )
-        return f"{n(count)} missing {p['column']} values were filled with {how} ({shown})."
+        noun = "value was" if count == 1 else "values were"
+        return f"{n(count)} missing {p['column']} {noun} filled with {how} ({shown})."
     if op == "drop_missing_rows":
         removed = entry["rows_before"] - entry["rows_after"]
         cols = ", ".join(p["columns"])
-        return f"{n(removed)} rows with a missing value in {cols} were removed; {n(entry['rows_after'])} rows remain."
+        noun = "row" if removed == 1 else "rows"
+        verb = "was" if removed == 1 else "were"
+        return (
+            f"{n(removed)} {noun} with a missing value in {cols} {verb} removed; "
+            f"{n(entry['rows_after'])} rows remain."
+        )
     if op == "drop_column":
         return (
             f"Column {p['column']} was removed ({n(entry['values_empty'])} of "
             f"{n(entry['values_total'])} values were empty)."
         )
     if op == "remove_duplicates":
-        return f"{n(entry['rows_removed'])} duplicate rows were removed (the first occurrence of each is kept)."
+        k = entry["rows_removed"]
+        noun = "duplicate row was" if k == 1 else "duplicate rows were"
+        return f"{n(k)} {noun} removed (the first occurrence of each is kept)."
     if op == "text_to_number":
-        return f"{n(entry['cells_converted'])} {p['column']} values were converted from text to numbers."
+        k = entry["cells_converted"]
+        noun = "value was" if k == 1 else "values were"
+        return f"{n(k)} {p['column']} {noun} converted from text to numbers."
     if op == "flag_outliers":
         if entry["low"] is None:
             return f"{p['column']}: no outlier check was possible (too few numbers or no spread). Nothing was changed."
+        k = entry["outliers"]
+        noun = "value lies" if k == 1 else "values lie"
         return (
-            f"{n(entry['outliers'])} {p['column']} values lie outside {n(entry['low'])} to "
+            f"{n(k)} {p['column']} {noun} outside {n(entry['low'])} to "
             f"{n(entry['high'])} (the interquartile-range rule). They were flagged only; nothing was changed."
         )
     if op == "remove_outliers":
         if entry["low"] is None:
             return f"{p['column']}: no outlier check was possible, so no rows were removed."
+        k = entry["rows_removed"]
+        noun = "row" if k == 1 else "rows"
+        verb = "was" if k == 1 else "were"
         return (
-            f"{n(entry['rows_removed'])} rows with {p['column']} outside {n(entry['low'])} to "
-            f"{n(entry['high'])} were removed."
+            f"{n(k)} {noun} with {p['column']} outside {n(entry['low'])} to "
+            f"{n(entry['high'])} {verb} removed."
         )
     return op
 
@@ -536,7 +551,9 @@ def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Sug
             Suggestion(
                 "remove_duplicates",
                 "Remove duplicate rows",
-                f"{n(profile.duplicate_rows)} rows repeat an earlier row exactly.",
+                f"{n(profile.duplicate_rows)} "
+                + ("row repeats" if profile.duplicate_rows == 1 else "rows repeat")
+                + " an earlier row exactly.",
                 RemoveDuplicates(),
             )
         )
@@ -598,7 +615,9 @@ def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Sug
                     Suggestion(
                         f"flag_outliers:{c.name}",
                         f"Flag outliers in {c.name}",
-                        f"{n(len(hits))} {c.name} values lie far from the rest "
+                        f"{n(len(hits))} {c.name} "
+                        + ("value lies" if len(hits) == 1 else "values lie")
+                        + " far from the rest "
                         f"(outside {n(fence[0])} to {n(fence[1])}). Flagging changes nothing.",
                         FlagOutliers(column=c.name),
                     )

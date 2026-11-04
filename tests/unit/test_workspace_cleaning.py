@@ -143,7 +143,7 @@ def test_suggestions_come_from_the_profile_and_change_nothing():
     assert found["drop_column:cabin"].reason.startswith("cabin is 100% empty")
     assert found["fill_missing:age"].step == cl.FillMissing(column="age", method="median")
     assert found["fill_missing:city"].step == cl.FillMissing(column="city", method="mode")
-    assert "1 rows repeat" in found["remove_duplicates"].reason
+    assert "1 row repeats" in found["remove_duplicates"].reason
 
 
 def test_a_mostly_empty_numeric_column_is_suggested_for_removal_not_filling():
@@ -275,7 +275,7 @@ def test_report_and_workspace_json_list_every_cleaning_step():
     html = build_report(s)
     assert "<h2>Data cleaning</h2>" in html
     assert "2 missing age values were filled with the median (29)." in html
-    assert "1 fare values lie outside 5.50 to 23.50" in html
+    assert "1 fare value lies outside 5.50 to 23.50" in html
     assert "10 rows before, 10 after" in html
     doc = exportable_document(s.workspace)
     assert [e["op"] for e in doc["cleaning_steps"]] == ["fill_missing", "flag_outliers"]

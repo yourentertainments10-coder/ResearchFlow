@@ -20,6 +20,7 @@ button.primary{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
 button:hover,.btn:hover{filter:brightness(.96)}
 :focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 input[type=text]{width:100%}
+input.narrow{width:14rem}
 .row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
 .grow{flex:1 1 16rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.75rem}
@@ -88,7 +89,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
         <label class="sr" for="ccol">Column</label>
         <select id="ccol"></select>
         <label class="sr" for="cval">Value</label>
-        <input id="cval" type="text" maxlength="200" placeholder="value (only for 'with a value')" style="width:14rem">
+        <input id="cval" type="text" maxlength="200" class="narrow" placeholder="value (only for 'with a value')">
         <button class="primary" type="submit">Apply</button>
       </form>
     </section>
