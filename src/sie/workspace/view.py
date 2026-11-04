@@ -57,6 +57,24 @@ def analysis_view(item: AnalysisItem, *, origin: str, request: str | None = None
     return view
 
 
+def cleaning_view(session: Session) -> dict[str, Any]:
+    ws = session.workspace
+    check = ws.cleaning_verification
+    return {
+        "applied": [
+            {"text": e["text"], "op": e["op"], "parameters": e["parameters"]}
+            for e in ws.cleaning_steps
+        ],
+        "verification": check.to_dict() if check is not None else None,
+        "rows_loaded": ws.original_rows,
+        "rows_now": ws.profile.rows,
+        "suggestions": [s.to_dict() for s in session.suggestions()],
+        "can_undo": bool(session.cleaning),
+        "note": "The loaded data is never changed. Cleaning is applied to a copy, one approved step "
+        "at a time, and every step is listed here and in the report.",
+    }
+
+
 def session_view(session: Session) -> dict[str, Any]:
     ws = session.workspace
     asked: dict[str, str] = {}
@@ -82,6 +100,7 @@ def session_view(session: Session) -> dict[str, Any]:
         ],
         "findings": [{"severity": f.severity, "kind": f.kind, "text": f.text} for f in ws.findings],
         "analyses": analyses,
+        "cleaning": cleaning_view(session),
         "steps": [s.to_dict() for s in session.steps],
         "limitations": ws.limitations,
         "session_sha256": session.sha256(),

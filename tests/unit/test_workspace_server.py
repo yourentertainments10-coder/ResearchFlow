@@ -340,3 +340,51 @@ def test_crlf_checkout_gets_the_same_page_and_hashes():
         for body in re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", text, flags=re.S):
             digest = base64.b64encode(hashlib.sha256(body.encode()).digest()).decode()
             assert f"'sha256-{digest}'" in page_bytes()[1]
+
+
+def clean_call(client, step, **kw):
+    return client.json(
+        "POST",
+        "/api/clean",
+        json.dumps({"step": step}).encode(),
+        {"Content-Type": "application/json", **kw.pop("headers", {})},
+        **kw,
+    )
+
+
+def test_cleaning_is_offered_and_applied_only_when_asked(client):
+    status, view = client.upload()
+    assert status == 200 and view["cleaning"]["applied"] == [] and not view["cleaning"]["can_undo"]
+    assert view["cleaning"]["suggestions"]  # SALES has blanks
+    rows_before = view["source"]["rows"]
+    status, out = clean_call(client, view["cleaning"]["suggestions"][0]["step"])
+    assert status == 200 and out["step"]["kind"] == "clean"
+    assert out["state"]["cleaning"]["applied"][0]["text"] == out["step"]["message"]
+    assert out["state"]["cleaning"]["verification"]["status"] == "verified"
+    assert out["state"]["source"]["rows"] <= rows_before
+    status, undone = client.json(
+        "POST", "/api/clean/undo", b"{}", {"Content-Type": "application/json"}
+    )
+    assert status == 200 and undone["step"]["kind"] == "clean_undo"
+    assert undone["state"]["cleaning"]["applied"] == []
+
+
+def test_a_bad_cleaning_step_is_recorded_and_changes_nothing(client):
+    client.upload()
+    status, out = clean_call(client, {"op": "drop_column", "column": "no_such_column"})
+    assert status == 200 and out["step"]["kind"] == "clean_rejected"
+    assert out["state"]["cleaning"]["applied"] == []
+
+
+def test_cleaning_routes_have_the_same_guards(client):
+    assert clean_call(client, {"op": "drop_column", "column": "x"})[0] == 404  # nothing loaded
+    client.upload()
+    step = {"op": "drop_column", "column": "region"}
+    assert clean_call(client, step, headers={"Origin": "http://evil.example"})[0] == 403
+    assert clean_call(client, step, host="evil.example")[0] == 403
+    assert client.json("POST", "/api/clean", b"{}", {"Content-Type": "text/plain"})[0] == 415
+    assert (
+        client.json("POST", "/api/clean", b"nope", {"Content-Type": "application/json"})[0] == 400
+    )
+    big = b"{" + b" " * (MAX_REQUEST_BYTES + 1) + b"}"
+    assert client.json("POST", "/api/clean", big, {"Content-Type": "application/json"})[0] == 413

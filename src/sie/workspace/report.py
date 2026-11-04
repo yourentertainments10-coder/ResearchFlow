@@ -124,6 +124,17 @@ def build_report(session: Session) -> str:
         out.append("<section><h2>Findings</h2><ul>")
         out += [f"<li>{escape(f.text)}</li>" for f in ws.findings]
         out.append("</ul></section>")
+    if ws.cleaning_steps:
+        check = ws.cleaning_verification
+        status = check.status if check is not None else "not_run"
+        out.append(
+            "<section><h2>Data cleaning</h2>"
+            '<p class="mut">The loaded file was not changed. These steps were approved one by one and '
+            f"applied to a copy; independent check: {escape(status)}. "
+            f"{ws.original_rows} rows before, {ws.profile.rows} after.</p><ol>"
+        )
+        out += [f"<li>{escape(e['text'])}</li>" for e in ws.cleaning_steps]
+        out.append("</ol></section>")
     out.append("<h2>Analyses</h2>")
     out += [_analysis_section(i, requests.get(i.planned.id)) for i in good]
     if bad:
