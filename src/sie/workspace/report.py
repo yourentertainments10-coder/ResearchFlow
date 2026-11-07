@@ -166,6 +166,13 @@ def build_report(session: Session) -> str:
         f"SHA-256 <code>{escape(ws.source.sha256)}</code>. {ws.profile.rows} rows, "
         f"{ws.profile.columns} columns.</p>",
     ]
+    if ws.sample:
+        from sie.workspace.view import sample_view
+
+        shown_note = sample_view(ws.sample)
+        out.append(
+            f'<section><h2>Sample</h2><p class="warn">{escape(shown_note["text"])}</p></section>'
+        )
     if ws.cards:
         out.append("<section><h2>Key figures</h2><table><tbody>")
         out += [

@@ -58,6 +58,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <button id="del" type="button" hidden>Remove my data</button>
     </div>
     <div id="msg" role="status" aria-live="polite"></div>
+    <div id="sample" class="msg ask" hidden></div>
   </section>
 
   <div id="work" hidden>
@@ -188,6 +189,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
 
   function render(state) {
     $("work").hidden = false; $("del").hidden = false;
+    var sb = $("sample"); sb.hidden = !state.sample; sb.textContent = state.sample ? state.sample.text : "";
     $("srcinfo").textContent = state.source.name + " - " + state.source.rows + " rows, " + state.source.columns + " columns";
     var cards = $("cards"); clear(cards);
     state.cards.forEach(function (c) {

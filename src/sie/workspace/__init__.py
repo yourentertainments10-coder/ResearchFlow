@@ -13,7 +13,7 @@ from sie.workspace.planner import (
     Unsupported,
     plan_request,
 )
-from sie.workspace.session import ReplayMismatch, Session, Step, replay, start_session
+from sie.workspace.session import ReplayMismatch, Session, Step, open_stream, replay, start_session
 
 __all__ = [
     "ChartChange",
@@ -25,6 +25,7 @@ __all__ = [
     "Unsupported",
     "Workspace",
     "build_workspace",
+    "open_stream",
     "plan_request",
     "replay",
     "start_session",
