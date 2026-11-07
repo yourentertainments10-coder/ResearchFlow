@@ -93,6 +93,61 @@ def _analysis_section(item: AnalysisItem, request: str | None) -> str:
     return "<section>" + "".join(parts) + "</section>"
 
 
+def _model_sections(session: Session) -> list[str]:
+    from sie.workspace.view import model_view
+
+    out: list[str] = []
+    source = session.workspace.source.sha256
+    for run in session.models:
+        v = model_view(run.id, run.report, source, None)
+        parts = [f"<h3>Model comparison {escape(run.id)}: {escape(v['problem'])}</h3>"]
+        parts += [f"<p>{escape(t)}</p>" for t in v["why"]]
+        if v["table"] is None:
+            parts.append(
+                f'<p class="warn">Not included: the scores did not pass the independent check '
+                f"({escape(v.get('reason', ''))}).</p>"
+            )
+        else:
+            t = v["table"]
+            head = "".join(f"<th>{escape(c)}</th>" for c in t["columns"])
+            body = "".join(
+                "<tr>" + "".join(f"<td>{escape(c)}</td>" for c in row) + "</tr>"
+                for row in t["rows"]
+            )
+            parts.append(f"<table><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>")
+            ev = v["evaluation"]
+            parts.append(
+                f'<p class="mut">Evaluation: {escape(ev["method"])}. {escape(ev["selection"])}.</p>'
+            )
+            if v["importance"]:
+                items = "".join(
+                    f"<li>{escape(i['column'])}: {escape(i['drop'])}</li>" for i in v["importance"]
+                )
+                parts.append(
+                    f"<p>Columns that mattered most (score drop when shuffled):</p><ul>{items}</ul>"
+                )
+            if v["clusters"]:
+                for p in v["clusters"]["profiles"]:
+                    means = ", ".join(f"{k} {m}" for k, m in p["means"].items())
+                    parts.append(
+                        f"<p>Group {escape(p['group'])} ({escape(p['rows'])} rows): {escape(means)}</p>"
+                    )
+        if v["excluded"]:
+            items = "".join(
+                f"<li>{escape(e['column'])}: {escape(e['reason'])}</li>" for e in v["excluded"]
+            )
+            parts.append(f"<p>Columns left out:</p><ul>{items}</ul>")
+        parts += [f'<p class="warn">Warning: {escape(w)}</p>' for w in v["warnings"]]
+        parts.append(
+            "<ul>"
+            + "".join(f"<li>{escape(x)}</li>" for x in v["limitations"])
+            + "</ul>"
+            + f'<p class="mut">Report hash <code>{escape(v["report_sha256"])}</code>.</p>'
+        )
+        out.append("<section>" + "".join(parts) + "</section>")
+    return ["<h2>Models</h2>", *out] if out else []
+
+
 def build_report(session: Session) -> str:
     ws = session.workspace
     requests = {
@@ -148,6 +203,7 @@ def build_report(session: Session) -> str:
             )
             out.append(f"<li>{escape(i.planned.title)}: {escape(why)}</li>")
         out.append("</ul></section>")
+    out += _model_sections(session)
     if session.steps:
         out.append("<section><h2>Request history</h2><ol>")
         for s in session.steps:

@@ -26,6 +26,13 @@ from sie.workspace.cleaning import (
     step_title,
     suggest,
 )
+from sie.workspace.modeling import (
+    ModelReport,
+    ModelSpec,
+    parse_model_request,
+    run_model,
+    shown_number,
+)
 from sie.workspace.models import AnalysisItem, PlannedAnalysis, Verification
 from sie.workspace.planner import (
     ChartChange,
@@ -39,6 +46,25 @@ from sie.workspace.verify import verify_result
 
 HISTORY_VERSION = 1
 UNDO_REQUEST = "Undo the last cleaning step"
+
+
+def _model_message(report: ModelReport, source: str) -> str:
+    if report.verification.status != "verified":
+        return "The scores did not pass the independent check, so they are not shown."
+    if report.problem == "clustering":
+        sil = next(
+            (m["silhouette"] for m in report.models if f"{m['k']} groups" == report.best), None
+        )
+        return f"Found {report.best} (silhouette {shown_number(sil, source)})."
+    best = next(m for m in report.models if m["name"] == report.best)
+    base = report.models[0]
+    key, label = ("f1", "F1") if report.problem == "classification" else ("rmse", "RMSE")
+    target = report.spec.target
+    return (
+        f"Predicting {target}: {report.best} scored {label} "
+        f"{shown_number(best['metrics'][key], source)} on rows it had not seen; "
+        f"the baseline scored {shown_number(base['metrics'][key], source)}."
+    )
 
 
 def _plain(entry: dict[str, Any]) -> dict[str, Any]:
@@ -74,6 +100,7 @@ class Step:
     notes: tuple[str, ...] = ()
     options: tuple[str, ...] = ()
     cleaning: dict[str, Any] | None = None  # for clean / clean_undo / clean_rejected steps
+    model: dict[str, Any] | None = None  # for model steps: id, spec, report hash
     auto: bool = False  # asked again by the session after the data changed (not typed by a person)
 
     def to_dict(self) -> dict[str, Any]:
@@ -93,14 +120,32 @@ class Step:
             "notes": list(self.notes),
             "options": list(self.options),
             "cleaning": self.cleaning,
+            "model": self.model,
             "auto": self.auto,
         }
 
     def replay_key(self) -> dict[str, Any]:
         """What a replay must reproduce exactly."""
         d = self.to_dict()
-        keys = ("request", "kind", "spec", "chart", "x", "y", "result_sha256", "cleaning", "auto")
+        keys = (
+            "request",
+            "kind",
+            "spec",
+            "chart",
+            "x",
+            "y",
+            "result_sha256",
+            "cleaning",
+            "model",
+            "auto",
+        )
         return {k: d[k] for k in keys}
+
+
+@dataclass(frozen=True)
+class ModelRun:
+    id: str
+    report: ModelReport
 
 
 @dataclass
@@ -118,6 +163,10 @@ class Session:
         default_factory=list, repr=False
     )  # requests whose cards are on the page
     _auto: bool = field(default=False, repr=False)
+    models: list[ModelRun] = field(
+        default_factory=list
+    )  # model comparisons asked for (m1, m2, ...)
+    _model_counter: int = field(default=0, repr=False)
 
     def ask(self, text: object) -> Step:
         """One request. Always returns a recorded ``Step``; never raises for bad requests or data."""
@@ -125,6 +174,15 @@ class Session:
         current = self._current[0] if self._current else None
         outcome = plan_request(text, profile, current=current)
         request = shown(text, 300)
+        wanted = (
+            parse_model_request(request, [c.name for c in profile.column_profiles])
+            if isinstance(text, str)
+            else None
+        )
+        if isinstance(wanted, ModelSpec):
+            return self._model(request, wanted)
+        if isinstance(wanted, str):
+            return self._record(request, "unsupported", wanted)
         if isinstance(outcome, Plan):
             step = self._run(request, outcome)
         elif isinstance(outcome, ChartChange):
@@ -220,6 +278,30 @@ class Session:
             verification=previous.verification.status, analysis_id=aid,
         )  # fmt: skip
 
+    # -- modeling ----------------------------------------------------------------------------------
+    def _model(self, request: str, spec: ModelSpec) -> Step:
+        for run in self.models:
+            if run.report.spec == spec:
+                return self._record(
+                    request, "already_shown",
+                    "This model comparison is already shown. Nothing was refitted.",
+                    model={"id": run.id, "spec": spec.to_dict(), "report_sha256": run.report.sha256()},
+                )  # fmt: skip
+        ws = self.workspace
+        try:
+            report, _ = run_model(ws.dataset, ws.profile, spec)
+        except DatasetError as exc:
+            return self._record(request, "model_rejected", shown(exc, 300))
+        self._model_counter += 1
+        run = ModelRun(f"m{self._model_counter}", report)
+        self.models.append(run)
+        self._live.append(request)
+        return self._record(
+            request, "model", _model_message(report, ws.source.sha256),
+            model={"id": run.id, "spec": spec.to_dict(), "report_sha256": report.sha256()},
+            verification=report.verification.status,
+        )  # fmt: skip
+
     # -- cleaning ----------------------------------------------------------------------------------
     def suggestions(self) -> list[Suggestion]:
         """Cleaning worth considering, from the profile. Nothing is applied until ``clean`` is called."""
@@ -230,7 +312,7 @@ class Session:
         """Use the rebuilt workspace; returns the requests whose cards must be asked again."""
         again = list(self._live)
         self.workspace, self.cleaning = workspace, steps
-        self.items, self._current, self._live = [], None, []
+        self.items, self._current, self._live, self.models = [], None, [], []
         return again
 
     def _reask(self, requests: list[str]) -> None:

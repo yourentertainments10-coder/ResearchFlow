@@ -388,3 +388,36 @@ def test_cleaning_routes_have_the_same_guards(client):
     )
     big = b"{" + b" " * (MAX_REQUEST_BYTES + 1) + b"}"
     assert client.json("POST", "/api/clean", big, {"Content-Type": "application/json"})[0] == 413
+
+
+def model_call(client, target, **kw):
+    return client.json(
+        "POST",
+        "/api/model",
+        json.dumps({"target": target}).encode(),
+        {"Content-Type": "application/json", **kw.pop("headers", {})},
+        **kw,
+    )
+
+
+def test_model_route_compares_models_or_explains_why_not(client):
+    assert model_call(client, "x")[0] == 404  # nothing loaded
+    client.upload()
+    status, out = model_call(client, "no_such_column")
+    assert status == 200 and out["step"]["kind"] == "unsupported" and out["state"]["models"] == []
+    status, out = model_call(client, "revenue")  # SALES has 8 rows: too few, said plainly
+    assert status == 200 and out["step"]["kind"] == "model_rejected"
+    assert "at least 20" in out["step"]["message"]
+    assert model_call(client, None)[1]["step"]["kind"] == "model_rejected"
+
+
+def test_model_route_has_the_same_guards(client):
+    client.upload()
+    assert model_call(client, "x", headers={"Origin": "http://evil.example"})[0] == 403
+    assert model_call(client, "x", host="evil.example")[0] == 403
+    assert client.json("POST", "/api/model", b"{}", {"Content-Type": "text/plain"})[0] == 415
+    assert client.json("POST", "/api/model", b"{}", {"Content-Type": "application/json"})[0] == 400
+    assert model_call(client, 5)[0] == 400
+    assert model_call(client, "a" * 201)[0] == 400
+    big = b"{" + b" " * (MAX_REQUEST_BYTES + 1) + b"}"
+    assert client.json("POST", "/api/model", big, {"Content-Type": "application/json"})[0] == 413
