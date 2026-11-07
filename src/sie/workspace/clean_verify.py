@@ -23,6 +23,7 @@ from sie.workspace.cleaning import (
     FlagOutliers,
     RemoveDuplicates,
     RemoveOutliers,
+    TextToDate,
     TextToNumber,
 )
 from sie.workspace.models import Verification
@@ -103,6 +104,19 @@ def _expected(frame: pd.DataFrame, step: CleaningStep, na: tuple[str, ...]) -> p
     if isinstance(step, TextToNumber):
         out = frame.copy()
         out[step.column] = _text_number(frame[step.column], step.decimal, step.thousands)
+        return out
+    if isinstance(step, TextToDate):
+        out = frame.copy()
+        nulls = _isnull(frame[step.column], na)
+        texts = pd.Series(
+            [
+                None if n else v
+                for v, n in zip(frame[step.column].tolist(), nulls.tolist(), strict=True)
+            ],
+            index=frame.index,
+            dtype=object,
+        )
+        out[step.column] = pd.to_datetime(texts, format=step.format, errors="raise")
         return out
     if isinstance(step, FlagOutliers):
         return frame

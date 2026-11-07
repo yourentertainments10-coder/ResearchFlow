@@ -84,6 +84,10 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
           <option value="remove_duplicates">Remove duplicate rows</option>
           <option value="text_to_number">Convert text to numbers (1,234.5)</option>
           <option value="text_to_number_eu">Convert text to numbers (1.234,5)</option>
+          <option value="text_to_date_dmy">Convert text to dates (day/month/year, 31/12/2025)</option>
+          <option value="text_to_date_mdy">Convert text to dates (month/day/year, 12/31/2025)</option>
+          <option value="text_to_date_dmy_dash">Convert text to dates (day-month-year, 31-12-2025)</option>
+          <option value="text_to_date_dmy_dot">Convert text to dates (day.month.year, 31.12.2025)</option>
           <option value="flag_outliers">Flag outliers (changes nothing)</option>
           <option value="remove_outliers">Remove outlier rows</option>
         </select>
@@ -263,6 +267,10 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       case "remove_duplicates": return { op: "remove_duplicates" };
       case "text_to_number": return { op: "text_to_number", column: col, decimal: ".", thousands: "," };
       case "text_to_number_eu": return { op: "text_to_number", column: col, decimal: ",", thousands: "." };
+      case "text_to_date_dmy": return { op: "text_to_date", column: col, format: "%d/%m/%Y" };
+      case "text_to_date_mdy": return { op: "text_to_date", column: col, format: "%m/%d/%Y" };
+      case "text_to_date_dmy_dash": return { op: "text_to_date", column: col, format: "%d-%m-%Y" };
+      case "text_to_date_dmy_dot": return { op: "text_to_date", column: col, format: "%d.%m.%Y" };
       case "flag_outliers": return { op: "flag_outliers", column: col };
       default: return { op: "remove_outliers", column: col };
     }
