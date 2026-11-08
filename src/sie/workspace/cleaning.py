@@ -585,8 +585,11 @@ class Suggestion:
 
 def _percent(part: int, whole: int, source: str) -> str:
     value = part * 100 / whole if whole else 0
+    decimals = 1 if 0 < value < 1 else 0  # "0%" for 2 of 891 would be wrong: show 0.2%
     return figs.show(
-        figs.file_figure("pct", value, label="share", file_sha256=source, decimals=0, unit="%")
+        figs.file_figure(
+            "pct", value, label="share", file_sha256=source, decimals=decimals, unit="%"
+        )
     )
 
 
