@@ -10,6 +10,8 @@ Routes
   GET    /api/state              session view (JSON); {"loaded": false} when no file is loaded
   POST   /api/upload?name=...    raw file bytes, size-capped; replaces the session
   POST   /api/ask                {"text": "..."}  -> the step and the new state
+  POST   /api/clean              {"step": {...}}  one approved cleaning step -> the step and the new state
+  POST   /api/clean/undo         remove the last approved cleaning step
   GET    /api/export/<id>.csv|.xlsx|.svg   one verified analysis (unverified ones are refused)
   GET    /api/export/report.html the self-contained report
   DELETE /api/session            discard everything
@@ -231,6 +233,10 @@ class Handler(BaseHTTPRequestHandler):
             self._upload(parse_qs(parts.query))
         elif parts.path == "/api/ask":
             self._ask()
+        elif parts.path == "/api/clean":
+            self._clean()
+        elif parts.path == "/api/clean/undo":
+            self._undo()
         else:
             self._error(404, "Not found.")
 
@@ -273,6 +279,39 @@ class Handler(BaseHTTPRequestHandler):
             step = session.ask(text)
             view = session_view(session)
         self._json(200, {"step": step.to_dict(), "state": view})
+
+    def _clean(self) -> None:
+        if self.headers.get("Content-Type", "").split(";")[0].strip().lower() != "application/json":
+            self._error(415, "Send application/json.")
+            return
+        body = self._body(MAX_REQUEST_BYTES)
+        if body is None:
+            return
+        try:
+            step = json.loads(body.decode("utf-8"))["step"]
+        except (ValueError, KeyError, TypeError):
+            self._error(400, 'Send {"step": {...}}.')
+            return
+        with self.state.lock:
+            session = self.state.session
+            if session is None:
+                self._error(404, "No file is loaded yet.")
+                return
+            result = session.clean(step)
+            view = session_view(session)
+        self._json(200, {"step": result.to_dict(), "state": view})
+
+    def _undo(self) -> None:
+        if self._body(MAX_REQUEST_BYTES) is None:
+            return
+        with self.state.lock:
+            session = self.state.session
+            if session is None:
+                self._error(404, "No file is loaded yet.")
+                return
+            result = session.undo_clean()
+            view = session_view(session)
+        self._json(200, {"step": result.to_dict(), "state": view})
 
     def do_DELETE(self) -> None:  # noqa: N802
         if not self._guard(writes=True):
