@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — CSV workspace slice C: large and difficult data (2026-11-08)
+- CSV files beyond the load limits are streamed in chunks with bounded memory and analysed on a seeded random sample (`sie.workspace.sampling`); the whole file is hashed and counted, a sample note appears on the page and in the report, nothing is scaled up, and replay reproduces the sample. The server accepts streams up to a separate cap (413 above it).
+- Cleaning: `text_to_date` (strict, listed formats; ambiguous columns offer every fitting format, never a guess; independently checked).
+- Modeling: "Predict X over time [using date]" tests on the latest 25 % of rows with forward-chaining model selection; many-valued categories are capped (most common kept, rest grouped, learned on training rows only) instead of dropped; free text is left out with a reason; balanced class weights when the smallest class is under 10 %.
+- Findings add data notes for small files, more columns than rows, many-valued text columns and date columns.
+- Docs: `docs/WORKSPACE_LARGE_DATA.md`. Tests: sampler (determinism across chunk sizes, caps, memory bound, bad files), text-to-date, server streaming, time split / categories / free text / class weights.
+
 ## Unreleased — fix: independent check rejected correct results for whole-number group columns (2026-11-01)
 - Found by the owner on the Titanic data: `Average Fare by Pclass` came back "not verified" ("group (1,) does not exist"). The engine's numbers were right; the independent check in `sie.workspace.verify` compared the group keys as text ("1") with the result's numbers (1). Whole-number key columns (no leading zeros) are now typed as numbers by the check; codes like `007` stay text.
 - Same investigation: `Minimum`/`Maximum` of a numeric column was compared as text ("11" < "5") and was wrongly marked unverified; plain-number columns now order as numbers.

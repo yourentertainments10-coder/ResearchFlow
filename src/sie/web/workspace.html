@@ -115,6 +115,8 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <form id="modelform" class="row" autocomplete="off">
         <label class="sr" for="mtarget">Column to predict</label>
         <select id="mtarget"></select>
+        <label class="sr" for="mtime">How to test</label>
+        <select id="mtime"></select>
         <button class="primary" type="submit">Compare models</button>
       </form>
       <div id="modelmsg" role="status" aria-live="polite"></div>
@@ -224,6 +226,13 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     sel.appendChild(el("option", { value: "", text: "(no target: find groups)" }));
     columns.forEach(function (c) { sel.appendChild(el("option", { value: c.name, text: c.name + " (" + c.type + ")" })); });
     if (keep) sel.value = keep;
+    var tsel = $("mtime"), tkeep = tsel.value; clear(tsel);
+    tsel.appendChild(el("option", { value: "", text: "Test on random rows" }));
+    columns.forEach(function (c) {
+      if (c.type === "date" || c.type === "datetime") tsel.appendChild(el("option", { value: c.name, text: "Test on the latest rows by " + c.name }));
+    });
+    if (tkeep) tsel.value = tkeep;
+    tsel.hidden = tsel.options.length < 2;
     var box = $("models"); clear(box);
     models.forEach(function (m) {
       var a = el("article", { "class": "an", "data-id": m.id, tabindex: "-1" });
@@ -365,7 +374,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     var t = $("mtarget").value;
     var box = $("modelmsg"); clear(box);
     box.appendChild(el("p", { "class": "mut", text: "Fitting and comparing models..." }));
-    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t }), { "Content-Type": "application/json" }).then(function (r) {
+    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t, time: t === "" || $("mtime").value === "" ? null : $("mtime").value }), { "Content-Type": "application/json" }).then(function (r) {
       clear(box);
       if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
       var step = r.json.step;

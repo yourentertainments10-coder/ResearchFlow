@@ -16,6 +16,7 @@ This file is the navigation index for ResearchFlow documentation. **Use it befor
 | Document | Responsibility / status |
 |---|---|
 | [Workspace product direction](WORKSPACE_PRODUCT_DIRECTION.md) | **Canonical current product goal.** Visual general-research and analytics workspace; CSV-first journey. |
+| [Workspace large and difficult data](WORKSPACE_LARGE_DATA.md) | Sampling of files beyond the limits, text-to-date cleaning, time split, many-valued categories, class weights. |
 | [Product requirements](PRODUCT_REQUIREMENTS.md) | Original product and domain requirements; keep sports-specific requirements distinct from workspace requirements. |
 | [Product vision](PRODUCT_VISION.md) | Sports-domain vision and earlier product/phase context; not the canonical overall product direction. |
 | [General research engine vision](GENERAL_RESEARCH_ENGINE_VISION.md) | General research engine technical vision and constraints; design context, not proof of completed features. |

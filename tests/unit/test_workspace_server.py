@@ -425,6 +425,26 @@ def test_model_route_has_the_same_guards(client):
     assert client.json("POST", "/api/model", big, {"Content-Type": "application/json"})[0] == 413
 
 
+def test_model_route_accepts_a_date_column_for_a_test_on_the_latest_rows(client):
+    lines = ["day,x,sales"]
+    for i in range(160):
+        day = f"2024-{1 + i // 28:02d}-{1 + i % 28:02d}"
+        lines.append(f"{day},{i % 7},{100 + i + (i % 7)}")
+    client.upload(("\n".join(lines) + "\n").encode(), name="hist.csv")
+    body = json.dumps({"target": "sales", "time": "day"}).encode()
+    status, out = client.json("POST", "/api/model", body, {"Content-Type": "application/json"})
+    assert status == 200 and out["step"]["kind"] == "model", out
+    assert out["state"]["models"][0]["evaluation"]["method"] == "time_holdout"
+    for bad in (5, "", "a" * 201):
+        body = json.dumps({"target": "sales", "time": bad}).encode()
+        assert (
+            client.json("POST", "/api/model", body, {"Content-Type": "application/json"})[0] == 400
+        )
+    body = json.dumps({"target": "sales", "time": "x"}).encode()  # not a date column: said plainly
+    status, out = client.json("POST", "/api/model", body, {"Content-Type": "application/json"})
+    assert status == 200 and out["step"]["kind"] == "unsupported"
+
+
 def test_a_csv_over_the_normal_limit_is_sampled_and_says_so(client):
     big = b"id,region,amt\n" + b"".join(
         f"{i},{'NSEW'[i % 4]},{i % 97}\n".encode() for i in range(15_000)

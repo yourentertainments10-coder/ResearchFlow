@@ -26,8 +26,8 @@ Page section "Predict something or find groups", or the request `Predict <column
    different, or named like an id), a column whose name contains the target name, a copy of the target, a
    column that maps each of its values to a single target value (only judged when each value has at least five
    rows, so chance does not trigger it), a numeric column that follows a numeric target with |r| >= 0.999,
-   constant columns, columns at least 50 % empty, mixed-type columns, dates, and text with more than 20 different
-   values.
+   constant columns, columns at least 50 % empty, mixed-type columns, dates (other than the time column, see
+   "Difficult data"), and free text (more than 20 different values whose typical value is several words).
 3. **Honest split.** 100 rows or more: a fixed-seed 25 % hold-out (stratified for classes). Fewer: 5-fold
    cross-validation with a warning. More than 20,000 rows: a fixed-seed sample of 20,000, stated.
    Filling missing values (median, or most frequent) and scaling are steps *inside* each model's pipeline, so
@@ -62,6 +62,7 @@ refitted after any cleaning step (marked `auto`), and replay compares the hashes
 ## Limits
 
 * Models are for exploration, not for deciding about people; the report says what they cannot show.
-* Time-ordered data needs a time-based split (a later step); dates are not used as features here.
+* Dates are never predictors. Time-ordered data can be tested on its latest rows ("Predict X over time");
+  see [WORKSPACE_LARGE_DATA.md](WORKSPACE_LARGE_DATA.md).
 * Tuning is minimal on purpose (fixed, small settings).
 * Class labels in a numeric target are shown as whole numbers.

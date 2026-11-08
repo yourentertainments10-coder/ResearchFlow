@@ -350,8 +350,10 @@ class Handler(BaseHTTPRequestHandler):
         if body is None:
             return
         try:
-            target = json.loads(body.decode("utf-8"))["target"]
-        except (ValueError, KeyError, TypeError):
+            doc = json.loads(body.decode("utf-8"))
+            target = doc["target"]
+            time_column = doc.get("time")
+        except (ValueError, KeyError, TypeError, AttributeError):
             self._error(400, 'Send {"target": "column name" or null}.')
             return
         if target is not None and (
@@ -359,12 +361,23 @@ class Handler(BaseHTTPRequestHandler):
         ):
             self._error(400, '"target" must be a column name or null.')
             return
+        if time_column is not None and (
+            not isinstance(time_column, str) or not time_column.strip() or len(time_column) > 200
+        ):
+            self._error(400, '"time" must be a date column name or null.')
+            return
         with self.state.lock:
             session = self.state.session
             if session is None:
                 self._error(404, "No file is loaded yet.")
                 return
-            step = session.ask("Find groups" if target is None else f"Predict {target}")
+            if target is None:
+                request = "Find groups"
+            elif time_column is None:
+                request = f"Predict {target}"
+            else:
+                request = f"Predict {target} over time using {time_column}"
+            step = session.ask(request)
             view = session_view(session)
         self._json(200, {"step": step.to_dict(), "state": view})
 

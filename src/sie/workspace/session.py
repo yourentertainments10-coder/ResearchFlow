@@ -178,7 +178,11 @@ class Session:
         outcome = plan_request(text, profile, current=current)
         request = shown(text, 300)
         wanted = (
-            parse_model_request(request, [c.name for c in profile.column_profiles])
+            parse_model_request(
+                request,
+                [c.name for c in profile.column_profiles],
+                [c.name for c in profile.column_profiles if c.type in ("date", "datetime")],
+            )
             if isinstance(text, str)
             else None
         )
