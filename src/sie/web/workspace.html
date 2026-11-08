@@ -58,6 +58,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <button id="del" type="button" hidden>Remove my data</button>
     </div>
     <div id="msg" role="status" aria-live="polite"></div>
+    <div id="sample" class="msg ask" hidden></div>
   </section>
 
   <div id="work" hidden>
@@ -83,6 +84,10 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
           <option value="remove_duplicates">Remove duplicate rows</option>
           <option value="text_to_number">Convert text to numbers (1,234.5)</option>
           <option value="text_to_number_eu">Convert text to numbers (1.234,5)</option>
+          <option value="text_to_date_dmy">Convert text to dates (day/month/year, 31/12/2025)</option>
+          <option value="text_to_date_mdy">Convert text to dates (month/day/year, 12/31/2025)</option>
+          <option value="text_to_date_dmy_dash">Convert text to dates (day-month-year, 31-12-2025)</option>
+          <option value="text_to_date_dmy_dot">Convert text to dates (day.month.year, 31.12.2025)</option>
           <option value="flag_outliers">Flag outliers (changes nothing)</option>
           <option value="remove_outliers">Remove outlier rows</option>
         </select>
@@ -110,6 +115,8 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <form id="modelform" class="row" autocomplete="off">
         <label class="sr" for="mtarget">Column to predict</label>
         <select id="mtarget"></select>
+        <label class="sr" for="mtime">How to test</label>
+        <select id="mtime"></select>
         <button class="primary" type="submit">Compare models</button>
       </form>
       <div id="modelmsg" role="status" aria-live="polite"></div>
@@ -188,6 +195,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
 
   function render(state) {
     $("work").hidden = false; $("del").hidden = false;
+    var sb = $("sample"); sb.hidden = !state.sample; sb.textContent = state.sample ? state.sample.text : "";
     $("srcinfo").textContent = state.source.name + " - " + state.source.rows + " rows, " + state.source.columns + " columns";
     var cards = $("cards"); clear(cards);
     state.cards.forEach(function (c) {
@@ -218,6 +226,13 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     sel.appendChild(el("option", { value: "", text: "(no target: find groups)" }));
     columns.forEach(function (c) { sel.appendChild(el("option", { value: c.name, text: c.name + " (" + c.type + ")" })); });
     if (keep) sel.value = keep;
+    var tsel = $("mtime"), tkeep = tsel.value; clear(tsel);
+    tsel.appendChild(el("option", { value: "", text: "Test on random rows" }));
+    columns.forEach(function (c) {
+      if (c.type === "date" || c.type === "datetime") tsel.appendChild(el("option", { value: c.name, text: "Test on the latest rows by " + c.name }));
+    });
+    if (tkeep) tsel.value = tkeep;
+    tsel.hidden = tsel.options.length < 2;
     var box = $("models"); clear(box);
     models.forEach(function (m) {
       var a = el("article", { "class": "an", "data-id": m.id, tabindex: "-1" });
@@ -261,6 +276,10 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       case "remove_duplicates": return { op: "remove_duplicates" };
       case "text_to_number": return { op: "text_to_number", column: col, decimal: ".", thousands: "," };
       case "text_to_number_eu": return { op: "text_to_number", column: col, decimal: ",", thousands: "." };
+      case "text_to_date_dmy": return { op: "text_to_date", column: col, format: "%d/%m/%Y" };
+      case "text_to_date_mdy": return { op: "text_to_date", column: col, format: "%m/%d/%Y" };
+      case "text_to_date_dmy_dash": return { op: "text_to_date", column: col, format: "%d-%m-%Y" };
+      case "text_to_date_dmy_dot": return { op: "text_to_date", column: col, format: "%d.%m.%Y" };
       case "flag_outliers": return { op: "flag_outliers", column: col };
       default: return { op: "remove_outliers", column: col };
     }
@@ -355,7 +374,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     var t = $("mtarget").value;
     var box = $("modelmsg"); clear(box);
     box.appendChild(el("p", { "class": "mut", text: "Fitting and comparing models..." }));
-    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t }), { "Content-Type": "application/json" }).then(function (r) {
+    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t, time: t === "" || $("mtime").value === "" ? null : $("mtime").value }), { "Content-Type": "application/json" }).then(function (r) {
       clear(box);
       if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
       var step = r.json.step;

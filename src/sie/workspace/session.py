@@ -11,11 +11,13 @@ this module only sequences planner -> engine -> verifier -> chart.
 
 from __future__ import annotations
 
+import io
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, BinaryIO
 
 from sie.datasets import CleanPlan, DatasetError, Limits, LoadOptions, run_operation
+from sie.datasets.models import LimitExceeded
 from sie.datasets.provenance import result_sha256
 from sie.workspace.build import Workspace, build_workspace
 from sie.workspace.charts import render_chart
@@ -42,6 +44,7 @@ from sie.workspace.planner import (
     plan_request,
     shown,
 )
+from sie.workspace.sampling import MAX_STREAM_BYTES, sample_csv
 from sie.workspace.verify import verify_result
 
 HISTORY_VERSION = 1
@@ -175,7 +178,11 @@ class Session:
         outcome = plan_request(text, profile, current=current)
         request = shown(text, 300)
         wanted = (
-            parse_model_request(request, [c.name for c in profile.column_profiles])
+            parse_model_request(
+                request,
+                [c.name for c in profile.column_profiles],
+                [c.name for c in profile.column_profiles if c.type in ("date", "datetime")],
+            )
             if isinstance(text, str)
             else None
         )
@@ -379,12 +386,15 @@ class Session:
 
     # -- history -----------------------------------------------------------------------------------
     def history(self) -> dict[str, Any]:
-        return {
+        doc: dict[str, Any] = {
             "version": HISTORY_VERSION,
             "source_sha256": self.workspace.source.sha256,
             "cleaning": self.workspace.cleaning,
             "steps": [s.to_dict() for s in self.steps],
         }
+        if self.workspace.sample:  # sampled files only; other histories keep their hashes
+            doc["sample"] = self.workspace.sample
+        return doc
 
     def sha256(self) -> str:
         return result_sha256(self.history())
@@ -397,15 +407,77 @@ def start_session(
     options: LoadOptions | None = None,
     limits: Limits | None = None,
     plan: CleanPlan | None = None,
+    sample: dict[str, Any] | None = None,
 ) -> Session:
     def rebuild(steps: Sequence[CleaningStep]) -> Workspace:
-        return build_workspace(data, name, options=options, limits=limits, plan=plan, steps=steps)
+        return build_workspace(
+            data, name, options=options, limits=limits, plan=plan, steps=steps, sample=sample
+        )
 
     return Session(rebuild([]), _rebuild=rebuild)
 
 
+class _Chain(io.RawIOBase):
+    """Bytes already read, then the rest of the stream, as one readable stream."""
+
+    def __init__(self, head: bytes, rest: BinaryIO) -> None:
+        self._head, self._rest = memoryview(head), rest
+
+    def readable(self) -> bool:
+        return True
+
+    def readinto(self, buffer: Any) -> int:
+        if self._head:
+            n = min(len(buffer), len(self._head))
+            buffer[:n] = self._head[:n]
+            self._head = self._head[n:]
+            return n
+        chunk = self._rest.read(len(buffer))
+        buffer[: len(chunk)] = chunk
+        return len(chunk)
+
+
+def open_stream(
+    stream: BinaryIO,
+    name: str,
+    *,
+    options: LoadOptions | None = None,
+    limits: Limits | None = None,
+    plan: CleanPlan | None = None,
+    seed: int = 0,
+    max_stream_bytes: int = MAX_STREAM_BYTES,
+) -> Session:
+    """A session from a byte stream of any size. A file within the limits is loaded whole, exactly as
+    ``start_session`` does. A CSV beyond the byte, row or cell limits is read in one bounded-memory pass and
+    the session runs on a seeded random sample, with the sample note kept in the workspace and history.
+    Other formats beyond the limits are refused. Raises ``DatasetError`` subclasses for unusable files."""
+    lim = limits or Limits()
+    head = stream.read(lim.max_bytes + 1)
+    is_csv = name.lower().endswith(".csv")
+    if len(head) <= lim.max_bytes:
+        try:
+            return start_session(head, name, options=options, limits=lim, plan=plan)
+        except LimitExceeded as exc:
+            if not (is_csv and exc.limit in ("max_rows", "max_cells")):
+                raise
+    elif not is_csv:
+        raise LimitExceeded("max_bytes", f"more than {lim.max_bytes} bytes; only CSV is sampled")
+    whole: BinaryIO = io.BufferedReader(_Chain(head, stream))  # type: ignore[arg-type]
+    sampled = sample_csv(
+        whole, options=options, limits=lim, seed=seed, max_stream_bytes=max_stream_bytes
+    )
+    return start_session(
+        sampled.data,
+        name,
+        options=sampled.options,
+        limits=lim,
+        plan=plan,
+        sample=sampled.note.to_dict(),
+    )
+
+
 def replay(
-    data: bytes,
+    data: bytes | BinaryIO,
     name: str,
     history: dict[str, Any],
     *,
@@ -413,7 +485,8 @@ def replay(
     limits: Limits | None = None,
     plan: CleanPlan | None = None,
 ) -> Session:
-    """Re-ask every recorded request on a fresh workspace built from the same bytes.
+    """Re-ask every recorded request on a fresh workspace built from the same bytes (or the same stream,
+    which for a file beyond the limits is sampled again with the same seed).
 
     Returns the new ``Session`` when source hash, cleaning record, specs, charts and result hashes all
     match; raises ``ReplayMismatch`` listing every difference otherwise (a changed file, another cleaning
@@ -421,7 +494,10 @@ def replay(
     differences: list[str] = []
     if not isinstance(history, dict) or history.get("version") != HISTORY_VERSION:
         raise ReplayMismatch([f"history version is not {HISTORY_VERSION}"])
-    session = start_session(data, name, options=options, limits=limits, plan=plan)
+    stream = io.BytesIO(bytes(data)) if isinstance(data, bytes | bytearray) else data
+    session = open_stream(stream, name, options=options, limits=limits, plan=plan)
+    if (history.get("sample") or None) != session.workspace.sample:
+        differences.append("sample note differs from the recorded one")
     if history.get("source_sha256") != session.workspace.source.sha256:
         differences.append("source file hash differs from the recorded one")
     if history.get("cleaning") != session.workspace.cleaning:

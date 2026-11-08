@@ -23,6 +23,10 @@ def pretty_metric(metric: str) -> str:
     return f"{function} of {column}"
 
 
+SMALL_ROWS = 100  # fewer rows than this: summaries and model scores are noisy
+MANY_VALUES = 20  # a text column with more distinct values than this is high-cardinality
+
+
 class _Builder:
     def __init__(self) -> None:
         self.items: list[Finding] = []
@@ -117,6 +121,36 @@ def quality_findings(profile: ProfileResult, file_sha256: str, b: _Builder) -> N
                 {"col": c.name, "hint": hint},
             )
             shown += 1
+    if profile.rows < SMALL_ROWS:
+        b.add(
+            "quality", "info",
+            "Only {F:n} rows: summaries from so little data are noisy, and a model's score would be a rough estimate.",
+            "profile", [ff("n", profile.rows, "rows")],
+        )  # fmt: skip
+    if profile.columns > profile.rows:
+        b.add(
+            "quality", "info",
+            "{F:c} columns but only {F:n} rows: with more columns than rows a model can memorise the rows, so scores need extra care.",
+            "profile", [ff("c", profile.columns, "columns"), ff("n", profile.rows, "rows")],
+        )  # fmt: skip
+    many = [
+        c
+        for c in profile.column_profiles
+        if c.type == "text" and c.distinct > MANY_VALUES and c.distinct < 0.9 * profile.rows
+    ]
+    for c in many[:MAX_PER_KIND]:
+        b.add(
+            "quality", "info",
+            "Column {V:col} has {F:d} different values. A model keeps the most common ones and groups the rest as 'other'.",
+            "profile", [ff("d", c.distinct, f"distinct values of {c.name}")], {"col": c.name},
+        )  # fmt: skip
+    dates = [c for c in profile.column_profiles if c.type in ("date", "datetime")]
+    if dates and profile.rows >= SMALL_ROWS:
+        b.add(
+            "quality", "info",
+            "Column {V:col} holds dates. If the rows are a history, ask to predict over time so the test uses the latest rows, not random ones.",
+            "profile", [], {"col": dates[0].name},
+        )  # fmt: skip
     for note in profile.notes[:MAX_PER_KIND]:
         count = note.get("count")
         if isinstance(count, int) and not isinstance(count, bool):

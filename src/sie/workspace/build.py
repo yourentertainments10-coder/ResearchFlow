@@ -55,6 +55,8 @@ class Workspace:
     cleaning_steps: list[dict[str, Any]] = field(default_factory=list)
     cleaning_verification: Verification | None = None
     original_rows: int = 0
+    # set when the file was too large and everything was computed on a seeded random sample (see sampling)
+    sample: dict[str, Any] | None = None
     limitations: list[str] = field(default_factory=lambda: list(WORKSPACE_LIMITATIONS))
     # the cleaning result the starter analyses ran on, kept so later requests run the same way;
     # never serialized (``cleaning`` above is its record)
@@ -75,6 +77,8 @@ class Workspace:
             "analyses": [i.to_dict() for i in self.items],
             "limitations": self.limitations,
         }
+        if self.sample:  # only for sampled files, so every other hash is unchanged
+            doc["sample"] = self.sample
         if (
             self.cleaning_steps
         ):  # only when a person approved cleaning, so other hashes are unchanged
@@ -97,6 +101,7 @@ def build_workspace(
     plan: CleanPlan | None = None,
     examples: bool = True,
     steps: Sequence[CleaningStep] = (),
+    sample: dict[str, Any] | None = None,
 ) -> Workspace:
     """Raises ``DatasetError`` subclasses for an unusable file or a cleaning step that cannot run
     (nothing partial is returned). ``steps`` are approved cleaning steps, applied after ``plan``."""
@@ -147,5 +152,6 @@ def build_workspace(
         cleaning_steps=cleaning_steps,
         cleaning_verification=cleaning_check,
         original_rows=original_rows,
+        sample=sample,
         _cleaning=cleaning,
     )

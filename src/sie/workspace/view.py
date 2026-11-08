@@ -149,6 +149,28 @@ def model_view(
     return view
 
 
+def sample_view(sample: dict[str, Any] | None) -> dict[str, Any] | None:
+    """The sample note for display (None when the whole file was used)."""
+    if not sample:
+        return None
+    from sie.workspace.sampling import SampleNote
+
+    note = SampleNote(
+        **{
+            k: sample[k]
+            for k in (
+                "rows_in_file",
+                "rows_in_sample",
+                "seed",
+                "file_sha256",
+                "file_bytes",
+                "method",
+            )
+        }
+    )
+    return {**sample, "text": note.text()}
+
+
 def session_view(session: Session) -> dict[str, Any]:
     ws = session.workspace
     asked: dict[str, str] = {}
@@ -166,6 +188,7 @@ def session_view(session: Session) -> dict[str, Any]:
             "rows": ws.profile.rows,
             "columns": ws.profile.columns,
         },
+        "sample": sample_view(ws.sample),
         "columns": [{"name": c.name, "type": c.type} for c in ws.profile.column_profiles],
         "cards": [
             {"id": c.id, "label": c.label, "value": c.value, "detail": c.detail}

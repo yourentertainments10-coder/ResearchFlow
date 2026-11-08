@@ -8,7 +8,8 @@ strict Content-Security-Policy; the page's one inline script and style are allow
 Routes
   GET    /                       the page
   GET    /api/state              session view (JSON); {"loaded": false} when no file is loaded
-  POST   /api/upload?name=...    raw file bytes, size-capped; replaces the session
+  POST   /api/upload?name=...    raw file bytes; a CSV beyond the normal limits is read in one bounded
+                                 pass and sampled (up to 2 GiB); replaces the session
   POST   /api/ask                {"text": "..."}  -> the step and the new state
   POST   /api/clean              {"step": {...}}  one approved cleaning step -> the step and the new state
   POST   /api/clean/undo         remove the last approved cleaning step
@@ -35,8 +36,10 @@ from urllib.parse import parse_qs, urlsplit
 
 from sie.datasets import DatasetError, Limits
 from sie.datasets.export import table_csv_bytes, table_xlsx_bytes
-from sie.workspace import Session, start_session
+from sie.workspace import Session
 from sie.workspace.report import build_report
+from sie.workspace.sampling import MAX_STREAM_BYTES
+from sie.workspace.session import open_stream
 from sie.workspace.view import session_view
 
 LOOPBACK = "127.0.0.1"
@@ -82,11 +85,33 @@ def safe_label(raw: str) -> str:
     return (clean or "upload.csv")[:MAX_NAME_CHARS]
 
 
+class _BodyStream:
+    """Exactly ``size`` bytes of a request body as a readable stream (never more, never buffered whole)."""
+
+    def __init__(self, rfile: Any, size: int) -> None:
+        self._rfile, self.remaining = rfile, size
+
+    @property
+    def exhausted(self) -> bool:
+        return self.remaining == 0
+
+    def read(self, n: int = -1) -> bytes:
+        if self.remaining <= 0:
+            return b""
+        n = self.remaining if n is None or n < 0 else min(n, self.remaining)
+        chunk = self._rfile.read(n)
+        self.remaining -= len(chunk)
+        if not chunk:
+            self.remaining = 0
+        return chunk
+
+
 class WorkspaceState:
     """The one in-memory session of this server, guarded by a lock."""
 
-    def __init__(self, limits: Limits | None = None) -> None:
+    def __init__(self, limits: Limits | None = None, stream_limit: int = MAX_STREAM_BYTES) -> None:
         self.limits = limits or Limits()
+        self.stream_limit = stream_limit
         self.session: Session | None = None
         self.lock = threading.Lock()
 
@@ -244,13 +269,26 @@ class Handler(BaseHTTPRequestHandler):
             self._error(404, "Not found.")
 
     def _upload(self, query: dict[str, list[str]]) -> None:
-        body = self._body(self.state.limits.max_bytes)
-        if body is None:
+        raw = self.headers.get("Content-Length")
+        if raw is None or not raw.isdigit():
+            self._error(411, "A Content-Length header is required.")
             return
+        size = int(raw)
         name = safe_label(query.get("name", ["upload.csv"])[0])
+        if size > self.state.stream_limit:
+            self._error(413, f"The file is larger than {self.state.stream_limit} bytes.")
+            self.close_connection = True
+            return
+        # up to the normal limit the file is read whole; a larger CSV is read in one bounded pass and the
+        # session runs on a seeded random sample (stated on the page); the body is never held whole
+        stream = _BodyStream(self.rfile, size)
         try:
-            session = start_session(body, name, limits=self.state.limits)
+            session = open_stream(
+                stream, name, limits=self.state.limits, max_stream_bytes=self.state.stream_limit
+            )
         except DatasetError as exc:
+            if stream.remaining and not stream.exhausted:
+                self.close_connection = True  # unread body left on the connection
             self._error(422, f"This file cannot be used: {exc}")
             return
         with self.state.lock:
@@ -312,8 +350,10 @@ class Handler(BaseHTTPRequestHandler):
         if body is None:
             return
         try:
-            target = json.loads(body.decode("utf-8"))["target"]
-        except (ValueError, KeyError, TypeError):
+            doc = json.loads(body.decode("utf-8"))
+            target = doc["target"]
+            time_column = doc.get("time")
+        except (ValueError, KeyError, TypeError, AttributeError):
             self._error(400, 'Send {"target": "column name" or null}.')
             return
         if target is not None and (
@@ -321,12 +361,23 @@ class Handler(BaseHTTPRequestHandler):
         ):
             self._error(400, '"target" must be a column name or null.')
             return
+        if time_column is not None and (
+            not isinstance(time_column, str) or not time_column.strip() or len(time_column) > 200
+        ):
+            self._error(400, '"time" must be a date column name or null.')
+            return
         with self.state.lock:
             session = self.state.session
             if session is None:
                 self._error(404, "No file is loaded yet.")
                 return
-            step = session.ask("Find groups" if target is None else f"Predict {target}")
+            if target is None:
+                request = "Find groups"
+            elif time_column is None:
+                request = f"Predict {target}"
+            else:
+                request = f"Predict {target} over time using {time_column}"
+            step = session.ask(request)
             view = session_view(session)
         self._json(200, {"step": step.to_dict(), "state": view})
 
@@ -358,10 +409,12 @@ class Handler(BaseHTTPRequestHandler):
     do_PUT = do_PATCH = do_OPTIONS = _method_not_allowed  # noqa: N815
 
 
-def make_server(port: int = 8765, *, limits: Limits | None = None) -> ThreadingHTTPServer:
+def make_server(
+    port: int = 8765, *, limits: Limits | None = None, stream_limit: int = MAX_STREAM_BYTES
+) -> ThreadingHTTPServer:
     """A server bound to 127.0.0.1 only (``port=0`` picks a free port, used by the tests)."""
     server = ThreadingHTTPServer((LOOPBACK, port), Handler)
-    server.state = WorkspaceState(limits)  # type: ignore[attr-defined]
+    server.state = WorkspaceState(limits, stream_limit)  # type: ignore[attr-defined]
     server.daemon_threads = True
     return server
 

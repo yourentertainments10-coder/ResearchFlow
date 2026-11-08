@@ -40,7 +40,10 @@ MIN_ROWS = 20  # fewer usable rows than this: refuse
 SMALL_DATA = 100  # below this: cross-validation instead of a hold-out, and a warning
 MAX_ROWS = 20_000  # more rows than this: a fixed-seed sample is used (and said)
 MAX_CLASSES = 20
-MAX_CATEGORIES = 20  # a feature with more distinct values than this is not one-hot encoded
+MAX_CATEGORIES = 20  # more distinct values than this: the most common are kept, the rest grouped
+FREE_TEXT_WORDS = 4  # a text column whose typical value has this many words is free text
+FREE_TEXT_CHARS = 40
+TIME_SPLITS = 4  # forward-chaining validation blocks inside the earlier rows
 ALMOST_EMPTY = 0.5
 TEST_SIZE = 0.25
 FOLDS = 5
@@ -62,9 +65,13 @@ LIMITATIONS = (
 class ModelSpec:
     target: str | None = None  # None means "find groups" (clustering)
     seed: int = 0
+    time_column: str | None = None  # set: train on the earlier rows, test on the latest ones
 
     def to_dict(self) -> dict[str, Any]:
-        return {"target": self.target, "seed": self.seed}
+        out: dict[str, Any] = {"target": self.target, "seed": self.seed}
+        if self.time_column is not None:  # only when set, so earlier hashes stay the same
+            out["time_column"] = self.time_column
+        return out
 
 
 @dataclass
@@ -171,6 +178,7 @@ def _exclusions(
     problem: str,
     rows: int,
     source: str,
+    time_column: str | None = None,
 ) -> tuple[list[ColumnProfile], list[dict[str, str]]]:
     keep: list[ColumnProfile] = []
     out: list[dict[str, str]] = []
@@ -184,9 +192,13 @@ def _exclusions(
         s = columns.get(c.name)
         if c.type == "empty" or s is None:
             drop(c.name, "the column is empty")
+        elif c.name == time_column:
+            drop(c.name, "used only to put the rows in time order, not as a predictor")
         elif c.type in ("date", "datetime"):
             drop(
-                c.name, "dates are not used by these models (a time-based model is a separate step)"
+                c.name,
+                'dates are not used as predictors (ask for the model "over time" to test on '
+                "the latest rows)",
             )
         elif c.type == "mixed":
             drop(c.name, "the column mixes numbers and text; clean it first")
@@ -209,10 +221,11 @@ def _exclusions(
                 c.name,
                 "it looks like an identifier (named like an id, almost all values different)",
             )
-        elif c.type in ("text", "boolean") and s.nunique() > MAX_CATEGORIES:
+        elif c.type == "text" and s.nunique() > MAX_CATEGORIES and _free_text(s):
             drop(
                 c.name,
-                f"{_n(int(s.nunique()), source)} different values: too many to use as categories",
+                f"free text ({_n(int(s.nunique()), source)} different values, typically several "
+                "words); these models do not read sentences, so it is left out",
             )
         elif y is not None and _same_as_target(s, y):
             drop(c.name, "it is a copy of the target")
@@ -225,6 +238,15 @@ def _exclusions(
         else:
             keep.append(c)
     return keep, out
+
+
+def _free_text(s: pd.Series) -> bool:
+    texts = s.dropna().astype(str)
+    if texts.empty:
+        return False
+    words = float(texts.map(lambda v: len(v.split())).median())
+    chars = float(texts.map(len).median())
+    return words >= FREE_TEXT_WORDS or chars >= FREE_TEXT_CHARS
 
 
 def _same_as_target(s: pd.Series, y: pd.Series) -> bool:
@@ -328,7 +350,7 @@ def _import_sklearn() -> None:
         ) from exc
 
 
-def _estimators(problem: str, seed: int) -> list[tuple[str, Any]]:
+def _estimators(problem: str, seed: int, balanced: bool = False) -> list[tuple[str, Any]]:
     from sklearn.dummy import DummyClassifier, DummyRegressor
     from sklearn.ensemble import (
         GradientBoostingClassifier,
@@ -340,13 +362,22 @@ def _estimators(problem: str, seed: int) -> list[tuple[str, Any]]:
     from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
     if problem == "classification":
+        weight = "balanced" if balanced else None
         return [
             ("Baseline (most frequent class)", DummyClassifier(strategy="most_frequent")),
-            ("Logistic regression", LogisticRegression(max_iter=1000, random_state=seed)),
-            ("Decision tree", DecisionTreeClassifier(max_depth=5, random_state=seed)),
+            (
+                "Logistic regression",
+                LogisticRegression(max_iter=1000, random_state=seed, class_weight=weight),
+            ),
+            (
+                "Decision tree",
+                DecisionTreeClassifier(max_depth=5, random_state=seed, class_weight=weight),
+            ),
             (
                 "Random forest",
-                RandomForestClassifier(n_estimators=100, random_state=seed, n_jobs=1),
+                RandomForestClassifier(
+                    n_estimators=100, random_state=seed, n_jobs=1, class_weight=weight
+                ),
             ),
             ("Gradient boosting", GradientBoostingClassifier(random_state=seed)),
         ]
@@ -381,7 +412,14 @@ def _pipeline(estimator: Any, numeric: list[str], categorical: list[str]) -> Any
                 Pipeline(
                     [
                         ("fill", SimpleImputer(strategy="most_frequent")),
-                        ("hot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
+                        (
+                            "hot",
+                            OneHotEncoder(
+                                handle_unknown="infrequent_if_exist",
+                                max_categories=MAX_CATEGORIES,
+                                sparse_output=False,
+                            ),
+                        ),
                     ]
                 ),
                 categorical,
@@ -444,6 +482,24 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
     if (~have).any():
         dropped["target_missing"] = int((~have).sum())
     index = y_all.index[have]
+    stamps: pd.Series | None = None
+    if spec.time_column is not None:
+        tprof = by_name.get(spec.time_column)
+        if (
+            tprof is None
+            or tprof.type not in ("date", "datetime")
+            or spec.time_column not in columns
+        ):
+            raise OperationError(
+                f"{spec.time_column!r} is not a date column, so the rows cannot be put in time order."
+            )
+        if spec.time_column == spec.target:
+            raise OperationError("The target and the time column must be different columns.")
+        stamps = pd.to_datetime(columns[spec.time_column], format="ISO8601", errors="coerce")
+        no_time = stamps.loc[index].isna()
+        if no_time.any():
+            dropped["time_missing"] = int(no_time.sum())
+            index = index[~no_time.to_numpy()]
     rows_total = len(index)
     if rows_total < MIN_ROWS:
         raise OperationError(
@@ -458,10 +514,21 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
             f"The file has {_n(rows_total, source)} usable rows; a fixed-seed sample of "
             f"{_n(MAX_ROWS, source)} was used for speed. Scores describe that sample."
         )
+    if stamps is not None:
+        order = np.argsort(stamps.loc[index].to_numpy(), kind="stable")
+        index = index[order]
     columns = {k: v.loc[index] for k, v in columns.items()}
     y_series = columns[spec.target]
     rows = len(index)
-    keep, excluded = _exclusions(ds, profile, spec.target, columns, y_series, problem, rows, source)
+    if stamps is not None and rows < SMALL_DATA:
+        raise OperationError(
+            f"A test on the latest rows needs at least {SMALL_DATA} rows with a value and a date; "
+            f"{rows} are usable. Cross-validation would let the model learn from the future, so it "
+            "is not offered here."
+        )
+    keep, excluded = _exclusions(
+        ds, profile, spec.target, columns, y_series, problem, rows, source, spec.time_column
+    )
     if not keep:
         raise OperationError(
             "No column is usable as a predictor after leaving out identifiers, copies of the target "
@@ -470,6 +537,14 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
         )
     numeric = [c.name for c in keep if c.type in ("integer", "decimal")]
     categorical = [c.name for c in keep if c.name not in numeric]
+    for name in categorical:
+        distinct = int(columns[name].nunique(dropna=True))
+        if distinct > MAX_CATEGORIES:
+            warnings.append(
+                f"{name} has {_n(distinct, source)} different values: the "
+                f"{_n(MAX_CATEGORIES - 1, source)} most common in the training rows are kept apart "
+                "and all the others are grouped as one 'other' value."
+            )
     X = pd.DataFrame({name: columns[name] for name in numeric + categorical})
     X = X.reset_index(drop=True)
     if problem == "classification":
@@ -487,12 +562,13 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
         y = y_series.to_numpy(dtype="float64")
         classes = []
         smallest = rows
-    if rows < SMALL_DATA:
+    if rows < SMALL_DATA:  # (the time-based test refuses this case above)
         warnings.append(
             f"Only {_n(rows, source)} rows: scores come from {FOLDS}-fold cross-validation and are noisy; "
             "treat small differences between models as noise."
         )
-    est = _estimators(problem, spec.seed)
+    balanced = bool(classes) and smallest / rows < IMBALANCE
+    est = _estimators(problem, spec.seed, balanced)
     evidence = Evidence(problem)
     results: list[dict[str, Any]] = []
     folds = FOLDS if rows <= 5000 else 3
@@ -514,11 +590,63 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
             pipe, Xs, ys, cv=fold_splitter(ys if classes else None), method=method
         )
 
+    def forward_chain(pipe: Any, Xs: pd.DataFrame, ys: np.ndarray) -> tuple[np.ndarray, Any]:
+        """Each later block predicted by a model fitted only on the rows before it."""
+        from sklearn.base import clone
+        from sklearn.model_selection import TimeSeriesSplit
+
+        truth: list[np.ndarray] = []
+        preds: list[np.ndarray] = []
+        for fit_i, val_i in TimeSeriesSplit(n_splits=TIME_SPLITS).split(Xs):
+            if classes and len(set(ys[fit_i].tolist())) < 2:
+                continue  # a block cannot be learned from one class alone
+            model = clone(pipe).fit(Xs.iloc[fit_i], ys[fit_i])
+            if classes:
+                got = model.predict_proba(Xs.iloc[val_i])
+                full = np.zeros((len(val_i), len(classes)))
+                for col, label in enumerate(model.classes_):
+                    full[:, classes.index(str(label))] = got[:, col]
+                preds.append(full)
+            else:
+                preds.append(np.asarray(model.predict(Xs.iloc[val_i]), dtype="float64"))
+            truth.append(ys[val_i])
+        if not truth:
+            raise OperationError(
+                "The earlier rows hold only one class in their first blocks, so models cannot be "
+                "compared over time."
+            )
+        return np.concatenate(truth), np.concatenate(preds)
+
     def score(ys: np.ndarray, pred: Any) -> dict[str, float | None]:
         return classification_scores(ys, pred, classes) if classes else regression_scores(ys, pred)
 
     holdout = rows >= SMALL_DATA
-    if holdout:
+    timed = stamps is not None
+    if timed:
+        assert stamps is not None
+        n_test = max(1, round(rows * TEST_SIZE))
+        train_idx, test_idx = np.arange(rows - n_test), np.arange(rows - n_test, rows)
+        X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+        y_train, y_test = y[train_idx], y[test_idx]
+        ordered = stamps.loc[index].reset_index(drop=True)
+        evaluation: dict[str, Any] = {
+            "method": "time_holdout",
+            "time_column": spec.time_column,
+            "train_rows": int(len(train_idx)),
+            "test_rows": int(len(test_idx)),
+            "train_until": ordered.iloc[len(train_idx) - 1].isoformat(),
+            "test_from": ordered.iloc[len(train_idx)].isoformat(),
+            "seed": spec.seed,
+            "selection": "best score in forward-chaining validation inside the earlier rows (each "
+            "block is predicted by models fitted only on rows before it); reported on the latest "
+            "rows, which no model saw",
+        }
+        if ordered.iloc[len(train_idx) - 1] == ordered.iloc[len(train_idx)]:
+            warnings.append(
+                "Rows share the date at the edge between the earlier and the latest rows, so a few "
+                "rows on the same date are on both sides."
+            )
+    elif holdout:
         from sklearn.model_selection import train_test_split
 
         stratify = y if classes and smallest >= 2 else None
@@ -532,7 +660,7 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
         train_idx, test_idx = np.sort(train_idx), np.sort(test_idx)
         X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
         y_train, y_test = y[train_idx], y[test_idx]
-        evaluation: dict[str, Any] = {
+        evaluation = {
             "method": "holdout",
             "train_rows": int(len(train_idx)),
             "test_rows": int(len(test_idx)),
@@ -550,12 +678,20 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
             "selection": f"best out-of-fold score in {folds}-fold cross-validation; every row is scored "
             "by a model that did not see it",
         }
+    if balanced:
+        evaluation["class_weights"] = (
+            "balanced for logistic regression, decision tree and random forest (rarer classes count "
+            "more); gradient boosting has no such option"
+        )
     fitted: dict[str, Any] = {}
     for name, estimator in est:
         pipe = _pipeline(estimator, numeric, categorical)
-        pred_sel = out_of_fold(pipe, X_train, y_train)
-        selection = score(y_train, pred_sel)
-        evidence.scored.append((name, "selection", y_train, pred_sel, classes or None, selection))
+        if timed:
+            sel_true, pred_sel = forward_chain(pipe, X_train, y_train)
+        else:
+            sel_true, pred_sel = y_train, out_of_fold(pipe, X_train, y_train)
+        selection = score(sel_true, pred_sel)
+        evidence.scored.append((name, "selection", sel_true, pred_sel, classes or None, selection))
         if holdout:
             from sklearn.base import clone
 
@@ -779,25 +915,66 @@ def _cluster(
 _PREDICT = re.compile(
     r"^\s*(?:predict|model|classify|forecast|estimate)\s+(?:the\s+)?(?P<col>.+?)\s*$", re.I
 )
+_OVER_TIME = re.compile(
+    r"^(?P<col>.+?)\s+over\s+time(?:\s+(?:using|by|with|on)\s+(?:the\s+)?(?P<time>.+?))?\s*$", re.I
+)
 _GROUPS = re.compile(
     r"^\s*(?:cluster|segment|find\s+(?:groups|clusters|segments)|group\s+similar\s+rows)\b.*$", re.I
 )
 
 
-def parse_model_request(text: str, columns: list[str]) -> ModelSpec | str | None:
-    """A ``ModelSpec`` for "Predict <column>" or "Find groups", a plain message when the column is not
-    found, or None when the text is not a modeling request."""
+def _find_column(wanted: str, columns: list[str]) -> str | None | list[str]:
+    wanted = wanted.strip().strip("\"'`").strip()
+    exact = [c for c in columns if c == wanted]
+    folded = [c for c in columns if c.lower() == wanted.lower()]
+    found = exact or folded
+    if len(found) == 1:
+        return found[0]
+    return found or None
+
+
+def parse_model_request(
+    text: str, columns: list[str], date_columns: list[str] | None = None
+) -> ModelSpec | str | None:
+    """A ``ModelSpec`` for "Predict <column>" (optionally "... over time [using <date column>]") or
+    "Find groups", a plain message when a column is not found, or None when the text is not a
+    modeling request."""
     if _GROUPS.match(text):
         return ModelSpec(None)
     m = _PREDICT.match(text)
     if not m:
         return None
-    wanted = m["col"].strip().strip("\"'`").strip()
-    exact = [c for c in columns if c == wanted]
-    folded = [c for c in columns if c.lower() == wanted.lower()]
-    found = exact or folded
-    if len(found) == 1:
-        return ModelSpec(found[0])
-    if not found:
-        return f"There is no column named {wanted[:60]!r}. Columns are: {', '.join(columns)[:300]}."
-    return f"More than one column matches {wanted[:60]!r}; use its exact name."
+    wanted = m["col"].strip()
+    time_word: str | None = None
+    timed = False
+    over = _OVER_TIME.match(wanted)
+    if over:
+        timed = True
+        wanted = over["col"].strip()
+        time_word = over["time"]
+    found = _find_column(wanted, columns)
+    if found is None:
+        return (
+            f"There is no column named {wanted.strip(chr(34) + chr(39) + chr(96))[:60]!r}. "
+            f"Columns are: {', '.join(columns)[:300]}."
+        )
+    if isinstance(found, list):
+        return f"More than one column matches {wanted[:60]!r}; use its exact name."
+    if not timed:
+        return ModelSpec(found)
+    dates = date_columns or []
+    if time_word is not None:
+        chosen = _find_column(time_word, columns)
+        if not isinstance(chosen, str):
+            return f"There is no single column named {time_word.strip()[:60]!r} to put the rows in order."
+        if chosen not in dates:
+            return f"{chosen} is not a date column, so it cannot put the rows in time order."
+        return ModelSpec(found, time_column=chosen)
+    if len(dates) == 1:
+        return ModelSpec(found, time_column=dates[0])
+    if not dates:
+        return "There is no date column to put the rows in time order. Clean a text column to dates first."
+    return (
+        "There is more than one date column; say which one, for example: "
+        f"Predict {found} over time using {dates[0]}. Date columns: {', '.join(dates)[:200]}."
+    )

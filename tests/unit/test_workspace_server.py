@@ -60,7 +60,7 @@ class Client:
 
 @pytest.fixture
 def client():
-    server = make_server(0, limits=Limits(max_bytes=50_000))
+    server = make_server(0, limits=Limits(max_bytes=50_000), stream_limit=200_000)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     yield Client(server)
     server.shutdown()
@@ -231,8 +231,10 @@ def test_safe_label():
 
 
 def test_upload_size_cap_and_bad_files(client):
-    big = b"a,b\n" + b"1,2\n" * 20_000  # over the 50 000 byte test cap
-    assert client.upload(big)[0] == 413
+    too_big = (
+        b"a,b\n" + b"1,2\n" * 80_000
+    )  # over the 200 000 byte stream cap: refused, not truncated
+    assert client.upload(too_big)[0] == 413
     assert client.upload(b"a,b\n1,2,3\n")[0] == 422
     assert client.upload(b"")[0] == 422
     assert client.upload(b"a,b\n1,2\x00\n")[0] == 422
@@ -421,3 +423,49 @@ def test_model_route_has_the_same_guards(client):
     assert model_call(client, "a" * 201)[0] == 400
     big = b"{" + b" " * (MAX_REQUEST_BYTES + 1) + b"}"
     assert client.json("POST", "/api/model", big, {"Content-Type": "application/json"})[0] == 413
+
+
+def test_model_route_accepts_a_date_column_for_a_test_on_the_latest_rows(client):
+    lines = ["day,x,sales"]
+    for i in range(160):
+        day = f"2024-{1 + i // 28:02d}-{1 + i % 28:02d}"
+        lines.append(f"{day},{i % 7},{100 + i + (i % 7)}")
+    client.upload(("\n".join(lines) + "\n").encode(), name="hist.csv")
+    body = json.dumps({"target": "sales", "time": "day"}).encode()
+    status, out = client.json("POST", "/api/model", body, {"Content-Type": "application/json"})
+    assert status == 200 and out["step"]["kind"] == "model", out
+    assert out["state"]["models"][0]["evaluation"]["method"] == "time_holdout"
+    for bad in (5, "", "a" * 201):
+        body = json.dumps({"target": "sales", "time": bad}).encode()
+        assert (
+            client.json("POST", "/api/model", body, {"Content-Type": "application/json"})[0] == 400
+        )
+    body = json.dumps({"target": "sales", "time": "x"}).encode()  # not a date column: said plainly
+    status, out = client.json("POST", "/api/model", body, {"Content-Type": "application/json"})
+    assert status == 200 and out["step"]["kind"] == "unsupported"
+
+
+def test_a_csv_over_the_normal_limit_is_sampled_and_says_so(client):
+    big = b"id,region,amt\n" + b"".join(
+        f"{i},{'NSEW'[i % 4]},{i % 97}\n".encode() for i in range(15_000)
+    )
+    assert 50_000 < len(big) <= 200_000
+    status, state = client.upload(big, name="big.csv")
+    assert status == 200
+    sample = state["sample"]
+    assert sample["rows_in_file"] == 15_000 and 0 < sample["rows_in_sample"] < 20_000
+    assert state["source"]["rows"] == sample["rows_in_sample"]
+    assert "random sample" in sample["text"] and "nothing is scaled up" in sample["text"]
+    assert len(sample["file_sha256"]) == 64
+    assert all(a["exportable"] for a in state["analyses"])  # the checks ran on the sample too
+    rep = client.call("GET", "/api/export/report.html")[1].decode()
+    assert "random sample" in rep and "<h2>Sample</h2>" in rep
+
+
+def test_a_small_file_has_no_sample_note(client):
+    assert client.upload()[1]["sample"] is None
+
+
+def test_oversized_non_csv_is_refused_not_sampled(client):
+    status, state = client.upload(b"x" * 60_000, name="big.xlsx")
+    assert status == 422 and "only CSV is sampled" in state["error"]

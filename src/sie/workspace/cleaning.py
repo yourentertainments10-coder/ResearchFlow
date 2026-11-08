@@ -21,7 +21,8 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field, replace
-from typing import Annotated, Any, Literal
+from datetime import datetime
+from typing import Annotated, Any, Literal, get_args
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
@@ -31,6 +32,7 @@ from sie.datasets.models import (
     ColumnProfile,
     Dataset,
     DatasetError,
+    DateFormat,
     DedupSpec,
     NumberFormat,
     OperationError,
@@ -78,6 +80,46 @@ class TextToNumber(_Step):
     thousands: Literal["", ",", ".", " ", "'"] = ""
 
 
+DateFormatName = Literal[
+    "%d/%m/%Y",
+    "%m/%d/%Y",
+    "%d-%m-%Y",
+    "%m-%d-%Y",
+    "%d.%m.%Y",
+    "%Y/%m/%d",
+    "%Y.%m.%d",
+    "%d %b %Y",
+    "%d %B %Y",
+    "%b %d, %Y",
+    "%B %d, %Y",
+    "%d-%b-%Y",
+]
+DATE_FORMATS: tuple[str, ...] = get_args(DateFormatName)
+DATE_FORMAT_WORDS = {  # how each format reads, for people; a fixed list, so nothing is guessed
+    "%d/%m/%Y": "day/month/year, like 31/12/2025",
+    "%m/%d/%Y": "month/day/year, like 12/31/2025",
+    "%d-%m-%Y": "day-month-year, like 31-12-2025",
+    "%m-%d-%Y": "month-day-year, like 12-31-2025",
+    "%d.%m.%Y": "day.month.year, like 31.12.2025",
+    "%Y/%m/%d": "year/month/day, like 2025/12/31",
+    "%Y.%m.%d": "year.month.day, like 2025.12.31",
+    "%d %b %Y": "day, short month name, year, like 31 Dec 2025",
+    "%d %B %Y": "day, month name, year, like 31 December 2025",
+    "%b %d, %Y": "short month name, day, year, like Dec 31, 2025",
+    "%B %d, %Y": "month name, day, year, like December 31, 2025",
+    "%d-%b-%Y": "day-short month name-year, like 31-Dec-2025",
+}
+MAX_DISTINCT_DATE_CHECK = 50_000
+
+
+class TextToDate(_Step):
+    """Text in one stated date format to real dates. Strict: a value that does not fit stops the step."""
+
+    op: Literal["text_to_date"] = "text_to_date"
+    column: _COL
+    format: DateFormatName
+
+
 class FlagOutliers(_Step):
     op: Literal["flag_outliers"] = "flag_outliers"
     column: _COL
@@ -96,6 +138,7 @@ CleaningStep = (
     | DropColumn
     | RemoveDuplicates
     | TextToNumber
+    | TextToDate
     | FlagOutliers
     | RemoveOutliers
 )
@@ -325,6 +368,29 @@ def _text_to_number(ds: Dataset, step: TextToNumber) -> tuple[Dataset, dict[str,
     )
 
 
+def _text_to_date(ds: Dataset, step: TextToDate) -> tuple[Dataset, dict[str, Any]]:
+    _require(ds.frame, [step.column], "text_to_date")
+    values = [v for v in ds.frame[step.column].tolist() if not _null(v, ds)]
+    if not values or not all(isinstance(v, str) for v in values):
+        raise OperationError(
+            f"{step.column} is not a text column with values to read as dates: nothing was changed."
+        )
+    plan = CleanPlan(
+        parse_date=[DateFormat(column=step.column, format=step.format)], max_reject_share=0.0
+    )
+    try:
+        result = clean(ds, plan)
+    except DatasetError as exc:
+        raise OperationError(
+            f"{step.column} cannot all be read as dates written {DATE_FORMAT_WORDS[step.format]}: "
+            f"nothing was changed. {str(exc)[:160]}"
+        ) from exc
+    log = next(e for e in result.log if e["operation"] == "parse_date")
+    return result.dataset, _entry(
+        step, len(ds.frame), len(result.dataset.frame), cells_converted=int(log["cells_changed"])
+    )
+
+
 def _outlier_rows(
     ds: Dataset, column: str, k: float
 ) -> tuple[list[int], tuple[float, float] | None]:
@@ -374,6 +440,7 @@ _RUN = {
     "drop_column": _drop_column,
     "remove_duplicates": _remove_duplicates,
     "text_to_number": _text_to_number,
+    "text_to_date": _text_to_date,
     "flag_outliers": _flag,
     "remove_outliers": _remove_outliers,
 }
@@ -448,6 +515,13 @@ def describe(entry: dict[str, Any], source_sha256: str) -> str:
         k = entry["cells_converted"]
         noun = "value was" if k == 1 else "values were"
         return f"{n(k)} {p['column']} {noun} converted from text to numbers."
+    if op == "text_to_date":
+        k = entry["cells_converted"]
+        noun = "value was" if k == 1 else "values were"
+        return (
+            f"{n(k)} {p['column']} {noun} converted from text to dates "
+            f"(written {DATE_FORMAT_WORDS[p['format']]})."
+        )
     if op == "flag_outliers":
         if entry["low"] is None:
             return f"{p['column']}: no outlier check was possible (too few numbers or no spread). Nothing was changed."
@@ -483,6 +557,8 @@ def step_title(step: CleaningStep) -> str:
         return "Remove duplicate rows"
     if isinstance(step, TextToNumber):
         return f"Convert {step.column} to numbers"
+    if isinstance(step, TextToDate):
+        return f"Convert {step.column} to dates ({DATE_FORMAT_WORDS[step.format]})"
     if isinstance(step, FlagOutliers):
         return f"Flag outliers in {step.column}"
     return f"Remove outliers in {step.column}"
@@ -541,6 +617,25 @@ def _plain_numbers(ds: Dataset, column: str) -> str | None:
     return None
 
 
+def _date_formats_that_fit(ds: Dataset, column: str) -> list[str]:
+    """The listed formats under which every filled value of a text column reads as a date."""
+    values = [v for v in ds.frame[column].tolist() if not _null(v, ds)]
+    if not values or not all(isinstance(v, str) for v in values):
+        return []
+    distinct = list(dict.fromkeys(values))
+    if len(distinct) > MAX_DISTINCT_DATE_CHECK:
+        return []
+    fits = []
+    for fmt in DATE_FORMATS:
+        try:
+            for v in distinct:
+                datetime.strptime(v, fmt)  # noqa: DTZ007 - dates only, no time zone
+        except ValueError:
+            continue
+        fits.append(fmt)
+    return fits
+
+
 def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Suggestion]:
     """Steps worth considering, from the profile. Proposals only; nothing here changes the data."""
     out: list[Suggestion] = []
@@ -571,6 +666,27 @@ def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Sug
                         TextToNumber(column=c.name, decimal=decimal, thousands=thousands),  # type: ignore[arg-type]
                     )
                 )
+    for c in cols:
+        if c.type != "text" or not c.non_null:
+            continue
+        fits = _date_formats_that_fit(ds, c.name)
+        for fmt in fits:
+            reason = (
+                f"Every filled {c.name} value reads as a date written {DATE_FORMAT_WORDS[fmt]}."
+            )
+            if len(fits) > 1:
+                reason += (
+                    " More than one order fits every value, so nothing is guessed: pick the one that"
+                    " matches how your data was written."
+                )
+            out.append(
+                Suggestion(
+                    f"text_to_date:{c.name}:{fmt}",
+                    f"Convert {c.name} to dates ({DATE_FORMAT_WORDS[fmt].split(',')[0]})",
+                    reason,
+                    TextToDate(column=c.name, format=fmt),  # type: ignore[arg-type]
+                )
+            )
     for c in cols:
         if not c.nulls or not rows:
             continue
