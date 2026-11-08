@@ -116,8 +116,30 @@ class Session:
         self.steps.append(step)
         return step
 
+    def _existing(self, spec: Any, chart: str) -> AnalysisItem | None:
+        """An analysis already on the page with the same typed spec and chart, else None."""
+        wanted = spec.model_dump(mode="json")
+        for item in [*self.workspace.items, *self.items]:
+            if item.planned.chart == chart and item.planned.spec.model_dump(mode="json") == wanted:
+                return item
+        return None
+
+    def _already_shown(self, request: str, item: AnalysisItem) -> Step:
+        result = item.result.provenance.result_sha256 if item.result is not None else None
+        return self._record(
+            request, "already_shown",
+            f"This analysis is already shown ({item.planned.title}). Nothing was added or recomputed.",
+            spec=item.planned.spec.model_dump(mode="json"), chart=item.planned.chart,
+            x=item.planned.x, y=item.planned.y, title=item.planned.title,
+            result_sha256=result, verification=item.verification.status,
+            analysis_id=item.planned.id,
+        )  # fmt: skip
+
     def _run(self, request: str, plan: Plan) -> Step:
         ws = self.workspace
+        shown_already = self._existing(plan.spec, plan.chart)
+        if shown_already is not None:
+            return self._already_shown(request, shown_already)
         try:
             result = run_operation(ws.dataset, plan.spec, cleaning=ws._cleaning)
         except DatasetError as exc:
@@ -141,6 +163,9 @@ class Session:
     def _redraw(self, request: str, change: ChartChange) -> Step:
         assert self._current is not None  # the planner returns ChartChange only with a current plan
         plan, previous = self._current
+        shown_already = self._existing(plan.spec, change.chart)
+        if shown_already is not None:
+            return self._already_shown(request, shown_already)
         redrawn = Plan(
             plan.spec, change.chart, plan.x, plan.y, plan.title, plan.interpretation, plan.notes
         )

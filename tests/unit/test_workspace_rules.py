@@ -67,7 +67,7 @@ def test_only_the_figure_module_imports_the_answer_package():
 
 
 def test_no_dynamic_evaluation_anywhere_in_the_package():
-    for path in [*PKG.glob("*.py"), SRC / "workspace_cli.py"]:
+    for path in [*PKG.glob("*.py"), SRC / "workspace_cli.py", SRC / "workspace_server.py"]:
         for node in ast.walk(ast.parse(path.read_text())):
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
                 assert node.func.id not in {"eval", "exec", "compile", "__import__"}, path.name
@@ -159,3 +159,14 @@ def test_run_exits_3_and_exports_nothing_unverified(tmp_path, monkeypatch):
     summary = json.loads(result.output)
     assert [s["id"] for s in summary["not_exported"]] == ["a2"]
     assert not list(Path(summary["directory"]).glob("analysis_a2.*"))
+
+
+def test_the_server_adapter_binds_loopback_only_and_stays_outside_the_package():
+    server = (SRC / "workspace_server.py").read_text()
+    assert 'LOOPBACK = "127.0.0.1"' in server and "ThreadingHTTPServer((LOOPBACK, port)" in server
+    assert "0.0.0.0" not in server and "socketserver" not in server
+    assert not (PKG / "server.py").exists()  # network code lives outside sie.workspace
+    for name in _imports(SRC / "workspace_server.py"):
+        assert not name.startswith(("sie.db", "sie.pipeline", "sie.analytics", "sie.evidence")), (
+            name
+        )

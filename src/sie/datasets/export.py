@@ -251,6 +251,12 @@ def _xlsx_bytes(sheets: list[tuple[str, pd.DataFrame, bool]]) -> tuple[bytes, di
     return _normalise_xlsx(buffer.getvalue()), {**counts, "sheets_skipped": skipped}
 
 
+def table_xlsx_bytes(frame: pd.DataFrame, sheet: str = "result") -> tuple[bytes, dict[str, Any]]:
+    """Public XLSX form of one result table (no row index), with the same cell protections as the
+    dataset export: formula-looking text neutralised, large integers and timezone values as text."""
+    return _xlsx_bytes([(sheet, frame, False)])
+
+
 # --- manifest ------------------------------------------------------------------------------------
 
 

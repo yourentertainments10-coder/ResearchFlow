@@ -8,6 +8,8 @@
 
 **Current gate:** Phase 4 web research remains on draft PR #31. Live structured-data discover → permitted fetch → collect/save → deterministic analysis → report/reuse, and target-Windows save/reuse, have not yet passed acceptance. The complete generic visual workspace is not built. Preserve the existing sports acceptance baseline.
 
+**Slice 3 (2026-11-01):** the local workspace page, `sie workspace serve` and CSV/XLSX/SVG/HTML-report exports are implemented on `feature/workspace-ui-server` in a separate PR awaiting owner approval; slice 2 (PR #43) is merged. The scripted end-to-end journey acceptance (slice 4) is not done.
+
 **Slice 2 (2026-10-30):** the CSV workspace request planner and session replay are implemented on `feature/workspace-planner` in a separate PR awaiting owner approval (headless library only; no UI, server, filters or model). Not merged until approved.
 
 **Execution update (2026-10-30):** PR #35 merged after CI completed successfully. It fixes a false `no non-null values` warning emitted by the validation-only pass in grouped dataset analytics and adds regression coverage. This is a correctness fix to the existing generic dataset library, not completion of the visual workspace. The next active work is the verified repository/documentation audit followed by the CSV-first visual workspace design and end-to-end acceptance path.
