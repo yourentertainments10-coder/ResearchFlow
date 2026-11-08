@@ -104,6 +104,17 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <div id="answer" role="status" aria-live="polite"></div>
       <ol id="history" class="mut"></ol>
     </section>
+    <section aria-labelledby="h-model">
+      <h2 id="h-model">Predict something or find groups</h2>
+      <p class="mut">Pick the column you want to predict. The tool chooses classification or regression from the data, leaves out columns that would be cheating (identifiers, copies of the target), compares simple models on rows they did not see, and says how far to trust the result. With no target it looks for groups of similar rows.</p>
+      <form id="modelform" class="row" autocomplete="off">
+        <label class="sr" for="mtarget">Column to predict</label>
+        <select id="mtarget"></select>
+        <button class="primary" type="submit">Compare models</button>
+      </form>
+      <div id="modelmsg" role="status" aria-live="polite"></div>
+      <div id="models"></div>
+    </section>
     <section aria-labelledby="h-an">
       <div class="row"><h2 id="h-an" class="grow">Charts and tables</h2><a class="btn" href="/api/export/report.html" download>Download report (HTML)</a></div>
       <div id="analyses" class="grid"></div>
@@ -189,6 +200,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     var h = $("history"); clear(h);
     state.steps.forEach(function (s) { if (!s.auto) h.appendChild(el("li", { text: s.request + " - " + s.kind.replace(/_/g, " ") + ": " + s.message })); });
     renderCleaning(state.cleaning, state.columns);
+    renderModels(state.models, state.columns);
     var ins = $("inspect"); clear(ins);
     ins.appendChild(el("p", { text: "File: " + state.source.name }));
     ins.appendChild(el("p", { text: "SHA-256: " + state.source.sha256 }));
@@ -199,6 +211,42 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     });
     ins.appendChild(el("h3", { text: "Limitations" }));
     var ul = el("ul"); state.limitations.forEach(function (l) { ul.appendChild(el("li", { text: l })); }); ins.appendChild(ul);
+  }
+
+  function renderModels(models, columns) {
+    var sel = $("mtarget"), keep = sel.value; clear(sel);
+    sel.appendChild(el("option", { value: "", text: "(no target: find groups)" }));
+    columns.forEach(function (c) { sel.appendChild(el("option", { value: c.name, text: c.name + " (" + c.type + ")" })); });
+    if (keep) sel.value = keep;
+    var box = $("models"); clear(box);
+    models.forEach(function (m) {
+      var a = el("article", { "class": "an", "data-id": m.id, tabindex: "-1" });
+      a.appendChild(el("h3", { text: m.id + ": " + (m.request || m.problem) + " (" + m.problem + ")" }));
+      m.why.forEach(function (t) { a.appendChild(el("p", { text: t })); });
+      if (!m.table) {
+        a.appendChild(el("p", { "class": "bad", text: "Not shown: the scores did not pass the independent check (" + (m.reason || "") + ")." }));
+      } else {
+        a.appendChild(renderTable({ columns: m.table.columns, rows: m.table.rows }));
+        a.appendChild(el("p", { "class": "mut", text: "Evaluation: " + m.evaluation.method.replace(/_/g, " ") + ". " + m.evaluation.selection + "." }));
+        if (m.importance.length) {
+          a.appendChild(el("p", { text: "Columns that mattered most (score drop when the column is shuffled):" }));
+          var ul = el("ul"); m.importance.forEach(function (i) { ul.appendChild(el("li", { text: i.column + ": " + i.drop })); }); a.appendChild(ul);
+        }
+        if (m.clusters) {
+          m.clusters.profiles.forEach(function (p) {
+            a.appendChild(el("p", { text: "Group " + p.group + " (" + p.rows + " rows): " + Object.keys(p.means).map(function (k) { return k + " " + p.means[k]; }).join(", ") }));
+          });
+        }
+      }
+      m.warnings.forEach(function (w) { a.appendChild(el("p", { "class": "warn", text: "Warning: " + w })); });
+      if (m.excluded.length) {
+        var d = el("details", {}, [el("summary", { text: "Columns left out and why (" + m.excluded.length + ")" })]);
+        var ex = el("ul"); m.excluded.forEach(function (e) { ex.appendChild(el("li", { text: e.column + ": " + e.reason })); }); d.appendChild(ex); a.appendChild(d);
+      }
+      var lim = el("details", {}, [el("summary", { text: "Limits" })]);
+      var lu = el("ul"); m.limitations.forEach(function (t) { lu.appendChild(el("li", { text: t })); }); lim.appendChild(lu); a.appendChild(lim);
+      box.appendChild(a);
+    });
   }
 
   var skipped = {};
@@ -262,7 +310,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
 
   function showStep(step) {
     var box = $("answer"); clear(box);
-    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" || step.kind === "clean" || step.kind === "clean_undo" ? "ok" : step.kind === "clarification" ? "ask" : "error";
+    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" || step.kind === "clean" || step.kind === "clean_undo" || step.kind === "model" ? "ok" : step.kind === "clarification" ? "ask" : "error";
     var m = el("div", { "class": "msg " + kind + " fade" }, [el("div", { text: step.message })]);
     (step.notes || []).forEach(function (n) { m.appendChild(el("div", { "class": "mut", text: n })); });
     if (step.options && step.options.length) {
@@ -301,6 +349,20 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
   $("cleanform").addEventListener("submit", function (e) {
     e.preventDefault();
     sendClean(stepFor($("cact").value, $("ccol").value, $("cval").value));
+  });
+  $("modelform").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var t = $("mtarget").value;
+    var box = $("modelmsg"); clear(box);
+    box.appendChild(el("p", { "class": "mut", text: "Fitting and comparing models..." }));
+    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t }), { "Content-Type": "application/json" }).then(function (r) {
+      clear(box);
+      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+      var step = r.json.step;
+      box.appendChild(el("div", { "class": "msg " + (step.kind === "model" || step.kind === "already_shown" ? "ok" : "error") + " fade", text: step.message }));
+      render(r.json.state);
+      if (step.model) { var n = document.querySelector('#models article[data-id="' + step.model.id + '"]'); if (n) { n.classList.add("hl"); n.scrollIntoView({ block: "nearest" }); } }
+    }).catch(function () { clear(box); say("error", "The server did not answer."); });
   });
   $("askform").addEventListener("submit", function (e) { e.preventDefault(); var t = $("ask").value.trim(); if (t) ask(t); });
   $("file").addEventListener("change", function () {

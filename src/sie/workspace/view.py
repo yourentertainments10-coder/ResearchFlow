@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from sie.workspace.modeling import ModelReport, shown_number
 from sie.workspace.models import AnalysisItem
 from sie.workspace.report import _cell, svg_data_uri
 from sie.workspace.session import Session
@@ -75,6 +76,79 @@ def cleaning_view(session: Session) -> dict[str, Any]:
     }
 
 
+def model_view(
+    run_id: str, report: ModelReport, source: str, request: str | None
+) -> dict[str, Any]:
+    """A model comparison for the page. Scores that failed their independent check are not included."""
+
+    def num(v: float | int | None) -> str:
+        return shown_number(v, source)
+
+    view: dict[str, Any] = {
+        "id": run_id,
+        "request": request,
+        "problem": report.problem,
+        "why": report.why,
+        "rows_used": report.rows_used,
+        "features": report.features,
+        "excluded": report.excluded,
+        "evaluation": report.evaluation,
+        "warnings": report.warnings,
+        "limitations": report.limitations,
+        "verification": {
+            "status": report.verification.status,
+            "reason": report.verification.reason,
+        },
+        "report_sha256": report.sha256(),
+        "table": None,
+        "best": None,
+        "importance": [],
+        "clusters": None,
+    }
+    if report.verification.status != "verified":
+        view["reason"] = report.verification.reason or "not verified"
+        return view
+    view["best"] = report.best
+    if report.problem == "classification":
+        cols = ["Model", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"]
+        keys = ["accuracy", "precision", "recall", "f1", "roc_auc"]
+    elif report.problem == "regression":
+        cols = ["Model", "RMSE", "MAE", "R squared"]
+        keys = ["rmse", "mae", "r2"]
+    else:
+        cols, keys = ["Groups", "Silhouette", "Group sizes"], []
+    if report.problem == "clustering":
+        rows = [
+            [num(m["k"]), num(m["silhouette"]), ", ".join(num(x) for x in m["sizes"])]
+            for m in report.models
+        ]
+        view["clusters"] = {
+            "k": report.clusters["k"] if report.clusters else None,
+            "profiles": [
+                {
+                    "group": num(p["group"]),
+                    "rows": num(p["rows"]),
+                    "means": {k: num(v) for k, v in p["means"].items()},
+                }
+                for p in (report.clusters or {}).get("profiles", [])
+            ],
+        }
+    else:
+        rows = [
+            [
+                m["name"] + (" (best)" if m.get("best") else ""),
+                *[num(m["metrics"][k]) for k in keys],
+            ]
+            for m in report.models
+        ]
+    view["table"] = {"columns": cols, "rows": rows}
+    view["importance"] = [
+        {"column": i["column"], "drop": num(i["drop"]), "spread": num(i["spread"])}
+        for i in report.importance
+    ]
+    return view
+
+
 def session_view(session: Session) -> dict[str, Any]:
     ws = session.workspace
     asked: dict[str, str] = {}
@@ -101,6 +175,18 @@ def session_view(session: Session) -> dict[str, Any]:
         "findings": [{"severity": f.severity, "kind": f.kind, "text": f.text} for f in ws.findings],
         "analyses": analyses,
         "cleaning": cleaning_view(session),
+        "models": [
+            model_view(
+                r.id,
+                r.report,
+                ws.source.sha256,
+                next(
+                    (x.request for x in session.steps if x.model and x.model.get("id") == r.id),
+                    None,
+                ),
+            )
+            for r in session.models
+        ],
         "steps": [s.to_dict() for s in session.steps],
         "limitations": ws.limitations,
         "session_sha256": session.sha256(),

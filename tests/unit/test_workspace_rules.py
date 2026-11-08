@@ -50,13 +50,32 @@ def test_the_package_imports_only_datasets_answer_and_the_standard_library():
     for path in PKG.glob("*.py"):
         for name in _imports(path):
             root = name.split(".")[0]
-            assert root in stdlib or root in ALLOWED_THIRD_PARTY or root == "sie", (path.name, name)
+            # scikit-learn (the optional "modeling" extra) is allowed in modeling.py only, and only
+            # inside functions; the independent score check never imports it
+            ml = root == "sklearn" and path.name == "modeling.py"
+            assert root in stdlib or root in ALLOWED_THIRD_PARTY or root == "sie" or ml, (
+                path.name,
+                name,
+            )
             assert not any(name == f or name.startswith(f + ".") for f in FORBIDDEN_SIE), (
                 path.name,
                 name,
             )
             assert root not in NETWORK, (path.name, name)
             assert root != "typer", path.name
+
+
+def test_scikit_learn_is_imported_by_the_modeling_module_alone_and_never_at_the_top():
+    users = sorted(
+        p.name for p in PKG.glob("*.py") if any(n.split(".")[0] == "sklearn" for n in _imports(p))
+    )
+    assert users == ["modeling.py"]
+    top = ast.parse((PKG / "modeling.py").read_text()).body
+    for node in top:
+        if isinstance(node, ast.Import):
+            assert all(a.name.split(".")[0] != "sklearn" for a in node.names)
+        if isinstance(node, ast.ImportFrom):
+            assert (node.module or "").split(".")[0] != "sklearn"
 
 
 def test_only_the_figure_module_imports_the_answer_package():

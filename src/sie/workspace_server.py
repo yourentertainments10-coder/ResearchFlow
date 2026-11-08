@@ -12,6 +12,7 @@ Routes
   POST   /api/ask                {"text": "..."}  -> the step and the new state
   POST   /api/clean              {"step": {...}}  one approved cleaning step -> the step and the new state
   POST   /api/clean/undo         remove the last approved cleaning step
+  POST   /api/model              {"target": "column" | null}  compare models (null = find groups)
   GET    /api/export/<id>.csv|.xlsx|.svg   one verified analysis (unverified ones are refused)
   GET    /api/export/report.html the self-contained report
   DELETE /api/session            discard everything
@@ -237,6 +238,8 @@ class Handler(BaseHTTPRequestHandler):
             self._clean()
         elif parts.path == "/api/clean/undo":
             self._undo()
+        elif parts.path == "/api/model":
+            self._model()
         else:
             self._error(404, "Not found.")
 
@@ -300,6 +303,32 @@ class Handler(BaseHTTPRequestHandler):
             result = session.clean(step)
             view = session_view(session)
         self._json(200, {"step": result.to_dict(), "state": view})
+
+    def _model(self) -> None:
+        if self.headers.get("Content-Type", "").split(";")[0].strip().lower() != "application/json":
+            self._error(415, "Send application/json.")
+            return
+        body = self._body(MAX_REQUEST_BYTES)
+        if body is None:
+            return
+        try:
+            target = json.loads(body.decode("utf-8"))["target"]
+        except (ValueError, KeyError, TypeError):
+            self._error(400, 'Send {"target": "column name" or null}.')
+            return
+        if target is not None and (
+            not isinstance(target, str) or not target.strip() or len(target) > 200
+        ):
+            self._error(400, '"target" must be a column name or null.')
+            return
+        with self.state.lock:
+            session = self.state.session
+            if session is None:
+                self._error(404, "No file is loaded yet.")
+                return
+            step = session.ask("Find groups" if target is None else f"Predict {target}")
+            view = session_view(session)
+        self._json(200, {"step": step.to_dict(), "state": view})
 
     def _undo(self) -> None:
         if self._body(MAX_REQUEST_BYTES) is None:

@@ -213,3 +213,29 @@ def test_cleaning_panel_applies_after_approval_undoes_and_asks_before_removing(
     assert [p for p in problems if not p.startswith("dialog: This removes data")] == []
     assert any(p.startswith("dialog: This removes data") for p in problems)
     context.close()
+
+
+def test_model_panel_compares_models_and_finds_groups(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    rows = ["id,sex,age,fare,survived"]
+    for i in range(120):
+        sex = "female" if i % 2 else "male"
+        survived = 1 if (sex == "female") != (i % 9 == 0) else 0
+        rows.append(f"{i + 1},{sex},{20 + i % 40},{10 + i % 70},{survived}")
+    f = tmp_path / "people.csv"
+    f.write_text("\n".join(rows) + "\n")
+    page.set_input_files("#file", str(f))
+    page.wait_for_selector("#cards .card")
+    page.select_option("#mtarget", "survived")
+    page.click("#modelform button[type=submit]")
+    page.wait_for_selector("#models article")
+    text = page.inner_text("#models")
+    assert "Baseline (most frequent class)" in text and "(best)" in text
+    assert "Columns that mattered most" in text and "Limits" in text
+    assert "Predicting survived:" in page.inner_text("#modelmsg")
+    page.select_option("#mtarget", "")
+    page.click("#modelform button[type=submit]")
+    page.locator("#models article").nth(1).wait_for()
+    assert "Found" in page.inner_text("#modelmsg")
+    assert problems == []
+    context.close()
