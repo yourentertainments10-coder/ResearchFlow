@@ -136,7 +136,9 @@ def quality_findings(profile: ProfileResult, file_sha256: str, b: _Builder) -> N
     many = [
         c
         for c in profile.column_profiles
-        if c.type == "text" and c.distinct > MANY_VALUES and c.distinct < 0.9 * profile.rows
+        if c.type == "text"
+        and c.null_share < 0.5  # a mostly empty column is left out of models anyway
+        and MANY_VALUES < c.distinct < 0.9 * profile.rows
     ]
     for c in many[:MAX_PER_KIND]:
         b.add(

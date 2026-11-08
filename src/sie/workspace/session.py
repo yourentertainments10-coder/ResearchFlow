@@ -313,7 +313,12 @@ class Session:
     def suggestions(self) -> list[Suggestion]:
         """Cleaning worth considering, from the profile. Nothing is applied until ``clean`` is called."""
         ws = self.workspace
-        return suggest(ws.dataset, ws.profile, ws.source.sha256)
+        flagged = {c.column for c in self.cleaning if getattr(c, "op", "") == "flag_outliers"}
+        return [
+            sg
+            for sg in suggest(ws.dataset, ws.profile, ws.source.sha256)
+            if not (getattr(sg.step, "op", "") == "flag_outliers" and sg.step.column in flagged)
+        ]
 
     def _swap(self, workspace: Workspace, steps: list[CleaningStep]) -> list[str]:
         """Use the rebuilt workspace; returns the requests whose cards must be asked again."""
@@ -342,6 +347,13 @@ class Session:
             )
         request = f"Clean: {step_title(typed)}"
         dumped = typed.model_dump(mode="json")
+        if typed in self.cleaning and getattr(typed, "op", "") == "flag_outliers":
+            return self._record(
+                request, "clean_rejected",
+                "Not applied: these outliers are already flagged by an earlier step, so nothing "
+                "would change.",
+                cleaning={"step": dumped},
+            )  # fmt: skip
         if self._rebuild is None:
             return self._record(request, "clean_rejected", "Cleaning is not available here.")
         try:
