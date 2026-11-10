@@ -23,11 +23,13 @@ from sie.workspace.build import Workspace, build_workspace
 from sie.workspace.charts import render_chart
 from sie.workspace.cleaning import (
     CleaningStep,
+    FilterRows,
     Suggestion,
     parse_step,
     step_title,
     suggest,
 )
+from sie.workspace.filters import parse_filter_request
 from sie.workspace.modeling import (
     ModelReport,
     ModelSpec,
@@ -188,6 +190,15 @@ class Session:
         )
         if isinstance(wanted, ModelSpec):
             return self._model(request, wanted)
+        narrowed = (
+            parse_filter_request(request, self.workspace.dataset, profile)
+            if wanted is None and isinstance(text, str)
+            else None
+        )
+        if isinstance(narrowed, FilterRows):  # a request in words is the approval of this one step
+            return self.clean(narrowed.model_dump(mode="json"), asked=request)
+        if isinstance(narrowed, str):
+            return self._record(request, "unsupported", narrowed)
         if isinstance(wanted, str):
             return self._record(request, "unsupported", wanted)
         if isinstance(outcome, Plan):
@@ -335,7 +346,7 @@ class Session:
         finally:
             self._auto = False
 
-    def clean(self, step: object) -> Step:
+    def clean(self, step: object, *, asked: str | None = None) -> Step:
         """Apply one approved cleaning step to a copy of the data. Everything asked so far is asked again
         on the cleaned data, so no card shows numbers from before the change. A step that cannot run, or
         whose independent check fails, changes nothing and is recorded as ``clean_rejected``."""
@@ -345,7 +356,7 @@ class Session:
             return self._record(
                 "Clean: invalid step", "clean_rejected", f"Not applied: {shown(exc, 300)}"
             )
-        request = f"Clean: {step_title(typed)}"
+        request = asked or f"Clean: {step_title(typed)}"
         dumped = typed.model_dump(mode="json")
         if typed in self.cleaning and getattr(typed, "op", "") == "flag_outliers":
             return self._record(
@@ -526,7 +537,10 @@ def replay(
         kind = old.get("kind")
         if kind in ("clean", "clean_rejected") and isinstance(old.get("cleaning"), dict):
             try:
-                session.clean(old["cleaning"].get("step"))
+                session.clean(
+                    old["cleaning"].get("step"),
+                    asked=None if old["request"].startswith("Clean:") else old["request"],
+                )
             except DatasetError:
                 differences.append(
                     f"step {old.get('index')}: the recorded cleaning step is invalid"

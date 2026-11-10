@@ -20,12 +20,13 @@ Deterministic: no clock, no randomness, no environment.
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field, replace
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated, Any, Literal, get_args
 
 import pandas as pd
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, model_validator
 
 from sie.datasets import CleanPlan, clean
 from sie.datasets.models import (
@@ -132,6 +133,41 @@ class RemoveOutliers(_Step):
     k: float = Field(default=OUTLIER_K, gt=0, le=10)
 
 
+FilterTest = Literal["equals", "not_equals", "in", "not_in", "between"]
+MAX_FILTER_VALUES = 50
+
+
+class FilterRows(_Step):
+    """Keep or drop rows by one column. ``equals``/``in`` keep the rows whose value is one of ``values``
+    (rows with no value are dropped); ``not_equals``/``not_in`` drop those rows (rows with no value are
+    kept, since an empty cell is not that value); ``between`` keeps rows whose number or date lies in
+    ``low``..``high``, both ends included and either end optional (dates are written YYYY-MM-DD; rows with
+    no value are dropped). Text is matched exactly, capitals included."""
+
+    op: Literal["filter_rows"] = "filter_rows"
+    column: _COL
+    test: FilterTest
+    values: list[Annotated[str, Field(min_length=1, max_length=200)]] | None = None
+    low: Annotated[str, Field(min_length=1, max_length=40)] | None = None
+    high: Annotated[str, Field(min_length=1, max_length=40)] | None = None
+
+    @model_validator(mode="after")
+    def _shape(self) -> FilterRows:
+        if self.test == "between":
+            if self.values is not None:
+                raise ValueError("between takes low and high, not values")
+            if self.low is None and self.high is None:
+                raise ValueError("between needs low, high or both")
+        else:
+            if self.low is not None or self.high is not None:
+                raise ValueError(f"{self.test} takes values, not low and high")
+            if not self.values or len(self.values) > MAX_FILTER_VALUES:
+                raise ValueError(f"{self.test} needs 1 to {MAX_FILTER_VALUES} values")
+            if self.test in ("equals", "not_equals") and len(self.values) != 1:
+                raise ValueError(f"{self.test} takes exactly one value; use in / not_in for more")
+        return self
+
+
 CleaningStep = (
     FillMissing
     | DropMissingRows
@@ -141,6 +177,7 @@ CleaningStep = (
     | TextToDate
     | FlagOutliers
     | RemoveOutliers
+    | FilterRows
 )
 _ADAPTER: TypeAdapter[CleaningStep] = TypeAdapter(
     Annotated[CleaningStep, Field(discriminator="op")]
@@ -434,6 +471,119 @@ def _remove_outliers(ds: Dataset, step: RemoveOutliers) -> tuple[Dataset, dict[s
     )
 
 
+_ISO_DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_LEADING_ZERO = re.compile(r"^0\d")
+
+
+def column_kind(ds: Dataset, column: str) -> Literal["date", "number", "text"]:
+    """How a filter reads the column. Numbers and ISO dates written as text count as numbers and dates
+    (a CSV is read as text until it is converted); a value with a leading zero is an identifier, so the
+    column is text."""
+    present = [v for v in ds.frame[column].tolist() if not _null(v, ds)]
+    if any(isinstance(v, datetime | date | pd.Timestamp) for v in present):
+        return "date"
+    if present and all(isinstance(v, str) for v in present):
+        texts = [v.strip() for v in present]
+        if all(_ISO_DAY.match(t) for t in texts):
+            try:
+                for t in set(texts):
+                    date.fromisoformat(t)
+                return "date"
+            except ValueError:
+                return "text"
+        try:
+            numeric = all(math.isfinite(float(t)) for t in texts)
+        except ValueError:
+            numeric = False
+        if numeric and not any(_LEADING_ZERO.match(t) for t in texts):
+            return "number"
+        return "text"
+    if present and not any(isinstance(v, str | bool) for v in present):
+        return "number"
+    return "text"
+
+
+def _iso_date(text: str, what: str) -> date:
+    try:
+        if len(text) != 10:
+            raise ValueError
+        return date.fromisoformat(text)
+    except ValueError:
+        raise OperationError(
+            f"{what} must be a date written YYYY-MM-DD, not {text[:30]!r}"
+        ) from None
+
+
+def _plain_number(text: str, what: str) -> float:
+    try:
+        x = float(text)
+    except ValueError:
+        raise OperationError(f"{what} must be a number, not {text[:30]!r}") from None
+    if not math.isfinite(x):
+        raise OperationError(f"{what} must be a finite number")
+    return x
+
+
+def _filter(ds: Dataset, step: FilterRows) -> tuple[Dataset, dict[str, Any]]:
+    _require(ds.frame, [step.column], "filter_rows")
+    kind = column_kind(ds, step.column)
+    cells = ds.frame[step.column].tolist()
+    empty = [_null(v, ds) for v in cells]
+    if step.test == "between":
+        if kind == "text":
+            raise OperationError(
+                f"{step.column} holds text, so a range does not apply; "
+                "convert it to numbers or dates first"
+            )
+        parse = _iso_date if kind == "date" else _plain_number
+        low = None if step.low is None else parse(step.low, "low")
+        high = None if step.high is None else parse(step.high, "high")
+        if low is not None and high is not None and low > high:
+            raise OperationError("low is above high, so no row could match")
+        keep = []
+        for v, gone in zip(cells, empty, strict=True):
+            if gone:
+                keep.append(False)
+                continue
+            x = (
+                pd.Timestamp(str(v).strip() if isinstance(v, str) else v).date()
+                if kind == "date"
+                else float(v)
+            )
+            keep.append((low is None or x >= low) and (high is None or x <= high))
+    else:
+        assert step.values is not None
+        if kind == "date":
+            wanted: set[Any] = {_iso_date(v, "a value") for v in step.values}
+            hit = [
+                (not g)
+                and pd.Timestamp(str(v).strip() if isinstance(v, str) else v).date() in wanted
+                for v, g in zip(cells, empty, strict=True)
+            ]
+        elif kind == "number":
+            numbers = {_plain_number(v, "a value") for v in step.values}
+            hit = [(not g) and float(v) in numbers for v, g in zip(cells, empty, strict=True)]
+        else:
+            texts = set(step.values)
+            hit = [(not g) and str(v) in texts for v, g in zip(cells, empty, strict=True)]
+        if step.test in ("equals", "in"):
+            keep = hit
+        else:
+            keep = [g or not h for h, g in zip(hit, empty, strict=True)]
+    if not any(keep):
+        raise OperationError("no row would remain, so nothing was changed")
+    frame = ds.frame[pd.Series(keep, index=ds.frame.index)]
+    dropped_empty = sum(1 for k, g in zip(keep, empty, strict=True) if g and not k)
+    return replace(ds, frame=frame), _entry(
+        step,
+        len(ds.frame),
+        len(frame),
+        rows_removed=len(ds.frame) - len(frame),
+        rows_without_value_removed=dropped_empty,
+        kind=kind,
+    )
+
+
 _RUN = {
     "fill_missing": _fill,
     "drop_missing_rows": _drop_missing_rows,
@@ -443,6 +593,7 @@ _RUN = {
     "text_to_date": _text_to_date,
     "flag_outliers": _flag,
     "remove_outliers": _remove_outliers,
+    "filter_rows": _filter,
 }
 
 
@@ -531,6 +682,19 @@ def describe(entry: dict[str, Any], source_sha256: str) -> str:
             f"{n(k)} {p['column']} {noun} outside {n(entry['low'])} to "
             f"{n(entry['high'])} (the interquartile-range rule). They were flagged only; nothing was changed."
         )
+    if op == "filter_rows":
+        kept, removed = entry["rows_after"], entry["rows_removed"]
+        what = _filter_words(p)
+        text = (
+            f"Kept the {n(kept)} rows where {what}; {n(removed)} "
+            f"{'row was' if removed == 1 else 'rows were'} removed."
+        )
+        if entry["rows_without_value_removed"]:
+            text += (
+                f" {n(entry['rows_without_value_removed'])} of them had no {p['column']} value "
+                "at all."
+            )
+        return text
     if op == "remove_outliers":
         if entry["low"] is None:
             return f"{p['column']}: no outlier check was possible, so no rows were removed."
@@ -542,6 +706,24 @@ def describe(entry: dict[str, Any], source_sha256: str) -> str:
             f"{n(entry['high'])} {verb} removed."
         )
     return op
+
+
+def _filter_words(p: dict[str, Any]) -> str:
+    """The test of a filter step in words (parameters only; no computed numbers)."""
+    col = p["column"]
+    if p["test"] == "between":
+        if p["low"] is not None and p["high"] is not None:
+            return f"{col} is from {p['low']} to {p['high']}"
+        return (
+            f"{col} is {'at least ' + p['low'] if p['low'] is not None else 'at most ' + p['high']}"
+        )
+    values = ", ".join(p["values"])
+    return {
+        "equals": f"{col} is {values}",
+        "in": f"{col} is one of {values}",
+        "not_equals": f"{col} is not {values}",
+        "not_in": f"{col} is none of {values}",
+    }[p["test"]]
 
 
 def step_title(step: CleaningStep) -> str:
@@ -561,6 +743,8 @@ def step_title(step: CleaningStep) -> str:
         return f"Convert {step.column} to dates ({DATE_FORMAT_WORDS[step.format]})"
     if isinstance(step, FlagOutliers):
         return f"Flag outliers in {step.column}"
+    if isinstance(step, FilterRows):
+        return f"Keep rows where {_filter_words(step.model_dump(mode='json'))}"
     return f"Remove outliers in {step.column}"
 
 

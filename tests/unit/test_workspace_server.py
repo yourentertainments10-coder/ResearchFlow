@@ -469,3 +469,17 @@ def test_a_small_file_has_no_sample_note(client):
 def test_oversized_non_csv_is_refused_not_sampled(client):
     status, state = client.upload(b"x" * 60_000, name="big.xlsx")
     assert status == 422 and "only CSV is sampled" in state["error"]
+
+
+def test_a_filter_in_words_over_http_is_one_logged_undoable_step(client):
+    client.upload()
+    status, out = client.ask("only region is north")
+    assert status == 200 and out["step"]["kind"] == "clean", out["step"]
+    assert out["state"]["source"]["rows"] < 8
+    assert out["state"]["cleaning"]["verification"]["status"] == "verified"
+    status, out = client.ask("only region is atlantis")
+    assert out["step"]["kind"] == "unsupported" and "No row has" in out["step"]["message"]
+    status, undone = client.json(
+        "POST", "/api/clean/undo", b"{}", {"Content-Type": "application/json"}
+    )
+    assert undone["state"]["source"]["rows"] == 8
