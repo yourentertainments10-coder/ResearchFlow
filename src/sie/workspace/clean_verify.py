@@ -10,6 +10,7 @@ count) makes the cleaning ``unverified``, and the workspace then refuses to expo
 from __future__ import annotations
 
 import math
+from datetime import date, datetime
 from typing import Any
 
 import pandas as pd
@@ -20,6 +21,7 @@ from sie.workspace.cleaning import (
     DropColumn,
     DropMissingRows,
     FillMissing,
+    FilterRows,
     FlagOutliers,
     RemoveDuplicates,
     RemoveOutliers,
@@ -63,6 +65,60 @@ def _text_number(series: pd.Series, decimal: str, thousands: str) -> pd.Series:
     return pd.to_numeric(
         pd.Series([conv(v) for v in series.tolist()], index=series.index, dtype=object)
     )
+
+
+def _filter_keep(frame: pd.DataFrame, step: FilterRows, na: tuple[str, ...]) -> pd.Series:
+    """Rows a filter keeps, worked out with Series operations (the step itself loops over cells)."""
+    col = frame[step.column]
+    nulls = _isnull(col, na)
+    present = col[~nulls]
+    texts = present.map(lambda v: v.strip() if isinstance(v, str) else v)
+    if present.map(lambda v: isinstance(v, datetime | date)).any():
+        kind = "date"
+    elif len(present) and present.map(lambda v: isinstance(v, str)).all():
+        as_text = texts.astype(str)
+        if as_text.str.fullmatch(r"\d{4}-\d{2}-\d{2}").all():
+            kind = (
+                "date"
+                if pd.to_datetime(as_text, format="%Y-%m-%d", errors="coerce").notna().all()
+                else "text"
+            )
+        elif (
+            pd.to_numeric(as_text, errors="coerce").notna().all()
+            and not as_text.str.match(r"0\d").any()
+        ):
+            kind = "number"
+        else:
+            kind = "text"
+    elif len(present) and not present.map(lambda v: isinstance(v, str | bool)).any():
+        kind = "number"
+    else:
+        kind = "text"
+    if kind == "date":
+        day = pd.to_datetime(
+            col.where(~nulls, None).map(lambda v: v.strip() if isinstance(v, str) else v)
+        ).dt.normalize()
+
+        def conv(t: str) -> Any:
+            return pd.Timestamp(t)
+    elif kind == "number":
+        day = pd.to_numeric(
+            col.where(~nulls, None).map(lambda v: v.strip() if isinstance(v, str) else v)
+        )
+        conv = float
+    else:
+        day = col.astype(str)
+        conv = str
+    if step.test == "between":
+        ok = pd.Series(True, index=frame.index)
+        if step.low is not None:
+            ok &= day >= conv(step.low)
+        if step.high is not None:
+            ok &= day <= conv(step.high)
+        return ok & ~nulls
+    assert step.values is not None
+    hit = day.isin([conv(v) for v in step.values]) & ~nulls
+    return hit if step.test in ("equals", "in") else (~hit | nulls)
 
 
 def _expected(frame: pd.DataFrame, step: CleaningStep, na: tuple[str, ...]) -> pd.DataFrame:
@@ -120,6 +176,8 @@ def _expected(frame: pd.DataFrame, step: CleaningStep, na: tuple[str, ...]) -> p
         return out
     if isinstance(step, FlagOutliers):
         return frame
+    if isinstance(step, FilterRows):
+        return frame[_filter_keep(frame, step, na)]
     assert isinstance(step, RemoveOutliers)
     numbers = _numeric(frame[step.column], na)
     clean = numbers.dropna()

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — CSV workspace: typed filters (2026-11-10)
+- "only 2024", "only region is north, south", "exclude north", "only fare between 10 and 50" are read by a fixed grammar (`sie.workspace.filters`) into a typed `FilterRows` cleaning step: applied on a copy, logged, independently re-checked, undoable and replayed. Values that occur nowhere, ambiguous columns and filters that would leave no rows are refused with a plain message; nothing is guessed.
+- Docs: `docs/WORKSPACE_FILTERS.md`. Tests: grammar, step, verification, session replay and an HTTP test.
+
 ## Unreleased — CSV workspace slice C: large and difficult data (2026-11-08)
 - CSV files beyond the load limits are streamed in chunks with bounded memory and analysed on a seeded random sample (`sie.workspace.sampling`); the whole file is hashed and counted, a sample note appears on the page and in the report, nothing is scaled up, and replay reproduces the sample. The server accepts streams up to a separate cap (413 above it).
 - Cleaning: `text_to_date` (strict, listed formats; ambiguous columns offer every fitting format, never a guess; independently checked).
