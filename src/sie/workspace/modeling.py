@@ -221,6 +221,18 @@ def _exclusions(
                 c.name,
                 "it looks like an identifier (named like an id, almost all values different)",
             )
+        elif (
+            c.type in ("integer", "text")
+            and _looks_like_id_name(c.name)
+            and s.nunique() > MAX_CATEGORIES
+        ):
+            drop(
+                c.name,
+                "it is named like an id and repeats across rows (the same person, user or item "
+                "in several rows); it would let a model recognise rows instead of learning "
+                "patterns. Scores can still be optimistic because the same id can be in both the "
+                "training and the test rows: this tool does not yet split by id",
+            )
         elif c.type == "text" and s.nunique() > MAX_CATEGORIES and _free_text(s):
             drop(
                 c.name,
@@ -548,7 +560,9 @@ def run_model(ds: Dataset, profile: ProfileResult, spec: ModelSpec) -> tuple[Mod
     X = pd.DataFrame({name: columns[name] for name in numeric + categorical})
     X = X.reset_index(drop=True)
     if problem == "classification":
-        y = np.array([_label(v) for v in y_series.tolist()], dtype=object)
+        # "class_" prefix: scikit-learn mis-reads labels like "0" and "1" as numbers when class weights
+        # are used; the labels are never shown, so the prefix is invisible
+        y = np.array(["class_" + _label(v) for v in y_series.tolist()], dtype=object)
         classes = sorted({str(v) for v in y})
         counts = {c: int((y == c).sum()) for c in classes}
         smallest = min(counts.values())

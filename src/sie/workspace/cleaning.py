@@ -657,7 +657,8 @@ def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Sug
         )
     cols: list[ColumnProfile] = profile.column_profiles
     for c in cols:
-        if c.type == "text" and c.non_null:
+        # "mixed" too: "320.12" next to "1,234.50" is a mix only because of the separators
+        if c.type in ("text", "mixed") and c.non_null:
             seps = _plain_numbers(ds, c.name)
             if seps:
                 decimal, thousands = seps.split("|")
