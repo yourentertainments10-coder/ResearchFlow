@@ -143,7 +143,7 @@ def quality_findings(profile: ProfileResult, file_sha256: str, b: _Builder) -> N
     for c in many[:MAX_PER_KIND]:
         b.add(
             "quality", "info",
-            "Column {V:col} has {F:d} different values. A model keeps the most common ones and groups the rest as 'other'.",
+            "Column {V:col} has {F:d} different values. A model keeps the most common ones apart and groups the rest as 'other'; free text (sentences) is left out.",
             "profile", [ff("d", c.distinct, f"distinct values of {c.name}")], {"col": c.name},
         )  # fmt: skip
     dates = [c for c in profile.column_profiles if c.type in ("date", "datetime")]

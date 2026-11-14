@@ -6,6 +6,7 @@ from typing import Any
 
 from sie.datasets.models import ProfileResult
 from sie.workspace import figs
+from sie.workspace.autoplan import MANY_IDS, _id_name
 from sie.workspace.models import Card
 
 
@@ -19,6 +20,15 @@ def profile_figures(profile: ProfileResult) -> dict[str, Any]:
         "duplicate_rows": profile.duplicate_rows,
         "missing_share": (missing / cells * 100) if cells else 0.0,
     }
+
+
+def _identifier(row: Any) -> bool:
+    """A whole-number column that numbers or names rows: its mean and range say nothing."""
+    if row["type"] != "integer":
+        return False
+    if row["count"] >= 3 and row["distinct"] == row["count"]:
+        return True
+    return _id_name(str(row["column"])) and row["distinct"] > MANY_IDS
 
 
 def build_cards(
@@ -65,6 +75,7 @@ def build_cards(
     if describe_item is not None and describe_item.result is not None:
         table = describe_item.result.table
         numeric = table[table["type"].isin(["integer", "decimal"]) & (table["count"] > 0)]
+        numeric = numeric[[not _identifier(r) for _, r in numeric.iterrows()]]
         if len(numeric):
             row = numeric.iloc[0]
             for key, label in (("mean", "Mean"), ("min", "Minimum"), ("max", "Maximum")):
