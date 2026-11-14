@@ -78,3 +78,43 @@ def test_numbers_with_and_without_thousands_separators_are_offered_for_conversio
     assert (
         next(c for c in s.workspace.profile.column_profiles if c.name == "amount").type == "decimal"
     )
+
+
+def _ids_file() -> bytes:
+    lines = ["patient_id,ward,score,site_id"]
+    for i in range(400):
+        lines.append(f"{i % 60},{'ABC'[i % 3]},{(i * 7) % 23 + 1},site_{i % 40:02d}")
+    return ("\n".join(lines) + "\n").encode()
+
+
+def test_id_columns_are_not_summed_averaged_or_correlated():
+    s = start_session(_ids_file(), "ids.csv")
+    titles = " ".join(i.planned.title for i in s.workspace.items)
+    assert "patient_id" not in titles and "score" in titles
+    cards = " ".join(c.label for c in s.workspace.cards)
+    assert "patient_id" not in cards and "score" in cards
+
+
+def test_a_text_id_column_stays_a_capped_category_in_a_model():
+    from sie.datasets import Limits, LoadOptions, open_dataset, profile
+    from sie.workspace import modeling as md
+
+    ds = open_dataset(_ids_file(), "ids.csv", LoadOptions(), Limits())
+    rep, _ = md.run_model(ds, profile(ds), md.ModelSpec("score"))
+    assert "site_id" in [f["column"] for f in rep.features]
+    assert "patient_id" not in [f["column"] for f in rep.features]
+
+
+def test_a_line_chart_with_big_numbers_keeps_its_axis_label_inside_the_picture():
+    import re
+
+    import pandas as pd
+
+    from sie.workspace.charts import line_chart
+
+    t = pd.DataFrame({"m": ["a", "b", "c"], "v": [107437.77, 93000.5, 99100.25]})
+    svg = line_chart(t, "m", "v", "v by m")
+    x, label = re.search(
+        r'<text class="m" x="([\d.]+)" y="[\d.]+" text-anchor="end">([^<]+)</text>', svg
+    ).groups()
+    assert float(x) - 6.0 * len(label) >= 0  # room for the whole label left of the axis

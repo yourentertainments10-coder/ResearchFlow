@@ -112,7 +112,8 @@ def line_scene(table: pd.DataFrame, x: str, y: str, title: str) -> Scene:
     if low >= 0:
         low = 0.0
     span = (high - low) or 1.0
-    left, right, top, bottom, height = 56, 16, 34, 40, 300
+    right, top, bottom, height = 16, 34, 40, 300
+    left = max(56, 14 + round(6.6 * max(len(display_number(high)), len(display_number(low)))))
     pw, ph = WIDTH - left - right, height - top - bottom
     n = len(values)
 

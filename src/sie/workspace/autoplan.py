@@ -37,6 +37,9 @@ CATEGORY_MAX_DISTINCT = 50
 _ID_WORDS = {"id", "index", "key", "no", "number", "code", "uuid", "idx"}
 
 
+MANY_IDS = 20  # an id-named whole-number column with more values than this is an identifier
+
+
 def _id_name(name: str) -> bool:
     words = "".join(ch if ch.isalnum() else " " for ch in name.lower()).split()
     return bool(set(words) & _ID_WORDS) or name.lower().endswith("id")
@@ -49,7 +52,11 @@ def _numeric(profile: ProfileResult) -> list[str]:
             continue
         identifier_like = (
             (c.type == "integer" and c.non_null >= 3 and c.distinct == c.non_null)
-            or (c.type == "integer" and _id_name(c.name) and c.distinct >= 0.9 * c.non_null)
+            or (
+                c.type == "integer"
+                and _id_name(c.name)
+                and (c.distinct >= 0.9 * c.non_null or c.distinct > MANY_IDS)
+            )
             or any("identifier" in h.lower() for h in c.hints)
         )
         if not identifier_like:
