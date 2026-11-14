@@ -123,7 +123,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       <div id="models"></div>
     </section>
     <section aria-labelledby="h-an">
-      <div class="row"><h2 id="h-an" class="grow">Charts and tables</h2><a class="btn" href="/api/export/report.html" download>Download report (HTML)</a></div>
+      <div class="row"><h2 id="h-an" class="grow">Charts and tables</h2><a class="btn" href="/api/export/report.html" download>Download report (HTML)</a> <a class="btn" href="/api/export/report.pdf" download>Download report (PDF)</a></div>
       <div id="analyses" class="grid"></div>
     </section>
     <section aria-labelledby="h-inspect">
@@ -186,7 +186,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     if (a.table) box.appendChild(renderTable(a.table));
     (a.warnings || []).forEach(function (w) { box.appendChild(el("p", { "class": "warn", text: "Warning: " + w })); });
     var links = el("div", { "class": "row" });
-    ["csv", "xlsx"].concat(a.image ? ["svg"] : []).forEach(function (ext) {
+    ["csv", "xlsx"].concat(a.image ? ["svg", "png"] : []).forEach(function (ext) {
       links.appendChild(el("a", { "class": "btn", href: "/api/export/" + a.id + "." + ext, download: "", text: ext.toUpperCase() }));
     });
     box.appendChild(links);

@@ -14,8 +14,9 @@ Routes
   POST   /api/clean              {"step": {...}}  one approved cleaning step -> the step and the new state
   POST   /api/clean/undo         remove the last approved cleaning step
   POST   /api/model              {"target": "column" | null}  compare models (null = find groups)
-  GET    /api/export/<id>.csv|.xlsx|.svg   one verified analysis (unverified ones are refused)
+  GET    /api/export/<id>.csv|.xlsx|.svg|.png   one verified analysis (unverified ones are refused)
   GET    /api/export/report.html the self-contained report
+  GET    /api/export/report.pdf  the same report as a PDF
   DELETE /api/session            discard everything
 
 Requests whose Host is not this server's loopback address are refused (DNS-rebinding guard); a POST or
@@ -37,15 +38,18 @@ from urllib.parse import parse_qs, urlsplit
 from sie.datasets import DatasetError, Limits
 from sie.datasets.export import table_csv_bytes, table_xlsx_bytes
 from sie.workspace import Session
+from sie.workspace.pdf import build_pdf
+from sie.workspace.raster import render_png
 from sie.workspace.report import build_report
 from sie.workspace.sampling import MAX_STREAM_BYTES
+from sie.workspace.scene import chart_scene
 from sie.workspace.session import open_stream
 from sie.workspace.view import session_view
 
 LOOPBACK = "127.0.0.1"
 MAX_REQUEST_BYTES = 8 * 1024
 MAX_NAME_CHARS = 120
-_EXPORT = re.compile(r"^/api/export/(?P<id>[A-Za-z0-9_]{1,16})\.(?P<ext>csv|xlsx|svg)$")
+_EXPORT = re.compile(r"^/api/export/(?P<id>[A-Za-z0-9_]{1,16})\.(?P<ext>csv|xlsx|svg|png)$")
 _PAGE: dict[str, Any] = {}
 
 
@@ -213,6 +217,17 @@ class Handler(BaseHTTPRequestHandler):
                     200, body, "text/html; charset=utf-8",
                     {"Content-Disposition": 'attachment; filename="report.html"'},
                 )  # fmt: skip
+        elif path == "/api/export/report.pdf":
+            with self.state.lock:
+                session = self.state.session
+                pdf = build_pdf(session) if session else None
+            if pdf is None:
+                self._error(404, "No file is loaded yet.")
+            else:
+                self._send(
+                    200, pdf, "application/pdf",
+                    {"Content-Disposition": 'attachment; filename="report.pdf"'},
+                )  # fmt: skip
         elif m := _EXPORT.match(path):
             self._export(m["id"], m["ext"])
         else:
@@ -243,7 +258,19 @@ class Handler(BaseHTTPRequestHandler):
                 if not item.svg:
                     self._error(404, "This analysis is a table and has no chart.")
                     return
-                body, ctype = item.svg.encode("utf-8"), "image/svg+xml"
+                if ext == "png":
+                    p = item.planned
+                    scene = chart_scene(p.chart, item.result.table, p.x, p.y, p.title)
+                    if scene is None:
+                        self._error(404, "This analysis is a table and has no chart.")
+                        return
+                    try:
+                        body, ctype = render_png(scene), "image/png"
+                    except ValueError as exc:
+                        self._error(422, str(exc))
+                        return
+                else:
+                    body, ctype = item.svg.encode("utf-8"), "image/svg+xml"
         self._send(
             200,
             body,

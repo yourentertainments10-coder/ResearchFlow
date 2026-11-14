@@ -483,3 +483,35 @@ def test_a_filter_in_words_over_http_is_one_logged_undoable_step(client):
         "POST", "/api/clean/undo", b"{}", {"Content-Type": "application/json"}
     )
     assert undone["state"]["source"]["rows"] == 8
+
+
+def test_png_chart_and_pdf_report_exports(client):
+    client.upload()
+    _, out = client.ask("Compare revenue by region")
+    aid = next(a["id"] for a in out["state"]["analyses"] if a["origin"] == "asked")
+    status, png, h = client.call("GET", f"/api/export/{aid}.png")
+    assert status == 200 and h["content-type"] == "image/png" and png[:8] == b"\x89PNG\r\n\x1a\n"
+    assert "attachment" in h["content-disposition"]
+    assert client.call("GET", f"/api/export/{aid}.png")[1] == png  # deterministic
+    status, pdf, h = client.call("GET", "/api/export/report.pdf")
+    assert status == 200 and h["content-type"] == "application/pdf" and pdf.startswith(b"%PDF-1.4")
+    assert client.call("GET", "/api/export/report.pdf")[1] == pdf
+    _, out = client.ask("Show as table")
+    table_id = [a["id"] for a in out["state"]["analyses"] if a["origin"] == "asked"][-1]
+    assert client.call("GET", f"/api/export/{table_id}.png")[0] == 404
+
+
+def test_unverified_analysis_is_not_exported_as_png(client, monkeypatch):
+    monkeypatch.setattr(
+        session_module,
+        "verify_result",
+        lambda ds, spec, table: Verification("unverified", 1, ["forced"]),
+    )
+    client.upload()
+    _, out = client.ask("Compare revenue by region")
+    aid = [a for a in out["state"]["analyses"] if a["origin"] == "asked"][0]["id"]
+    assert client.call("GET", f"/api/export/{aid}.png")[0] == 409
+
+
+def test_pdf_report_before_any_file_is_a_clear_404(client):
+    assert client.call("GET", "/api/export/report.pdf")[0] == 404

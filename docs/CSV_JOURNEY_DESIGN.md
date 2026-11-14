@@ -65,7 +65,7 @@ Determinism (same file+requests -> same result hashes and byte-identical SVG/CSV
 1. **Package and layout:** OK to add `src/sie/workspace/` and `src/sie/web/workspace.html`? (Recommended: yes.)
 2. **UI delivery:** local stdlib server + static page with no new dependency (recommended), or FastAPI/another framework (new dependency, needs justification)?
 3. **Natural language:** rule-based grammar only for now (recommended), a model later behind the same validator?
-4. **Charts:** deterministic server-side SVG first; PNG and PDF later (recommended), or PNG required in slice 3?
+4. **Charts:** deterministic server-side SVG first; PNG charts and a PDF report followed (see WORKSPACE_EXPORTS.md).
 5. **Filters** ("only 2024", "exclude X") are excluded from slice 1-2; add as a typed operation in a later slice?
 
 ## 10. Not decided here
