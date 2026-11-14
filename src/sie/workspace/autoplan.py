@@ -128,7 +128,7 @@ def plan_analyses(profile: ProfileResult) -> list[PlannedAnalysis]:
             )
             add(
                 title,
-                TopN(by=cat, metric=metric, n=TOP_N),
+                TopN(by=cat, metric=metric, n=TOP_N, used_counts=True),
                 "bar",
                 cat,
                 metric,

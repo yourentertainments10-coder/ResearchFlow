@@ -94,7 +94,7 @@ def test_the_whole_journey_on_a_fresh_messy_file(client):
     assert "remove_duplicates" in offered and "fill_missing:price" in offered
 
     # 2. a plain-language request is planned into a typed step and answered
-    status, out = client.ask("Compare age by region")
+    status, out = client.ask("Median age by region")
     assert status == 200 and out["step"]["kind"] == "plan", out["step"]
     asked = [a for a in out["state"]["analyses"] if a["origin"] == "asked"]
     assert asked and all(a["verification"]["status"] == "verified" for a in asked)
@@ -144,7 +144,7 @@ def test_the_whole_journey_on_a_fresh_messy_file(client):
     assert status == 200 and zipfile.ZipFile(io.BytesIO(xlsx)).testzip() is None
     status, rep, h = client.call("GET", "/api/export/report.html")
     assert status == 200 and b"<script" not in rep
-    assert b"Compare age by region" in rep and b"churned" in rep
+    assert b"Median age by region" in rep and b"churned" in rep
     assert client.call("GET", "/api/export/report.html")[1] == rep
     assert client.call("GET", f"/api/export/{aid}.csv")[1] == csv_bytes
 
@@ -174,7 +174,7 @@ def test_unverified_results_are_not_exported(client, monkeypatch):
         lambda ds, spec, table: Verification("unverified", 1, ["forced"]),
     )
     client.upload(messy_customers())
-    _, out = client.ask("Compare age by region")
+    _, out = client.ask("Median age by region")
     asked = next(a for a in out["state"]["analyses"] if a["origin"] == "asked")
     assert asked["exportable"] is False and asked["table"] is None and asked["image"] is None
     assert client.call("GET", f"/api/export/{asked['id']}.csv")[0] == 409

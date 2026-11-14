@@ -249,7 +249,7 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
         }
         if (m.clusters) {
           m.clusters.profiles.forEach(function (p) {
-            a.appendChild(el("p", { text: "Group " + p.group + " (" + p.rows + " rows): " + Object.keys(p.means).map(function (k) { return k + " " + p.means[k]; }).join(", ") }));
+            a.appendChild(el("p", { text: "Group " + p.group + " (" + p.rows + " rows): " + Object.keys(p.means).map(function (k) { return k + " " + p.means[k]; }).join(", ") + (p.common && Object.keys(p.common).length ? "; most common: " + Object.keys(p.common).map(function (k) { return k + " " + p.common[k]; }).join(", ") : "") }));
           });
         }
       }

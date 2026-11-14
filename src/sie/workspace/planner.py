@@ -43,6 +43,7 @@ from sie.datasets.models import (
     ProfileResult,
     TimeTrend,
     TopN,
+    ValueCounts,
 )
 from sie.workspace.models import ChartKind
 
@@ -85,6 +86,12 @@ _TOP = re.compile(r"^top\s+(?P<rest>.+)$", re.I)
 _CHART = re.compile(
     r"^(?:show|display|plot|view|change|switch)(?:\s+(?:it|this|that|the\s+chart|the\s+result))?"
     r"\s+(?:as|to)\s+(?:an?\s+)?(?P<kind>bar|line|table)(?:\s+chart)?$",
+    re.I,
+)
+_COUNT = re.compile(r"^(?:count|number|how\s+many)(?:\s+of)?(?:\s+rows)?\s+by\s+(?P<col>.+)$", re.I)
+_RATE = re.compile(
+    r"^(?:(?:rate|share|percent|percentage|proportion)\s+of\s+(?P<m1>.+?)"
+    r"|(?P<m2>.+?)\s+(?:rate|share))\s+by\s+(?P<group>.+)$",
     re.I,
 )
 _USING = re.compile(r"^(?P<unit>\S+)\s+using\s+(?P<col>.+)$", re.I)
@@ -379,7 +386,7 @@ def _aggregate_one(
             )
         if group.rule:
             notes.append(group.rule)
-        spec = _build(GroupAggregate, by=[group.name], metrics=[f"{metric.name}:{function}"], sort=f"{metric.name}:{function}")  # fmt: skip
+        spec = _build(GroupAggregate, by=[group.name], metrics=[f"{metric.name}:{function}"], sort=f"{metric.name}:{function}", used_counts=True)  # fmt: skip
         if isinstance(spec, Unsupported):
             return spec
         y = f"{metric.name}:{function}"
@@ -466,6 +473,7 @@ def _top(rest: str, profile: ProfileResult) -> Outcome:
     types = _types(profile)
     names = list(types)
     distinct = {c.name: c.distinct for c in profile.column_profiles}
+    blanks = {c.name: c.nulls for c in profile.column_profiles}
     parts = rest.split(None, 1)
     if len(parts) < 2:
         return Unsupported(
@@ -493,7 +501,7 @@ def _top(rest: str, profile: ProfileResult) -> Outcome:
         )
     first_failure: Outcome | None = None
     for group_phrase, metric_phrase in splits:
-        outcome = _top_one(n, group_phrase, metric_phrase, types, names, distinct)
+        outcome = _top_one(n, group_phrase, metric_phrase, types, names, distinct, blanks)
         if not isinstance(outcome, Unsupported):
             return outcome
         first_failure = first_failure or outcome
@@ -508,6 +516,7 @@ def _top_one(
     types: dict[str, str],
     names: list[str],
     distinct: dict[str, int],
+    blanks: dict[str, int],
 ) -> Outcome:
     def request(group: str, metric: str) -> str:
         return f"Top {n} {_quote(shown(group))} by {_quote(shown(metric))}"
@@ -533,10 +542,16 @@ def _top_one(
     notes = ["'top' ranks by the sum of the measure for each group"]
     notes += [r for r in (group.rule, metric.rule) if r]
     label = f"{metric.name}:sum"
-    spec = _build(TopN, by=group.name, metric=label, n=n)
+    spec = _build(TopN, by=group.name, metric=label, n=n, used_counts=True)
     if isinstance(spec, Unsupported):
         return spec
-    groups = distinct.get(group.name, n + 1)
+    # rows with no value form a "(null)" group of their own, so they count as a group here
+    groups = distinct.get(group.name, n + 1) + (1 if blanks.get(group.name, 0) else 0)
+    if blanks.get(group.name, 0):
+        notes.append(
+            f"{blanks[group.name]} rows have no {shown(group.name)}; they form one group, "
+            "shown as (null), and are ranked with the others"
+        )
     if groups <= n:  # every group fits, so a "top" list would be a misleading name
         notes.append(f"{shown(group.name)} has only {groups} groups, so all of them are listed")
         return Plan(
@@ -568,7 +583,7 @@ def normalise(text: object) -> str | Unsupported:
 
 HELP = (
     "Supported requests: 'Compare <measure> by <column>', 'Sum|Average|Median|Minimum|Maximum <measure> by "
-    "<column>', 'Trend of <measure> by day|month|quarter|year [using <date column>]', 'Top <N> <column> by <measure>', and "
+    "<column>', 'Trend of <measure> by day|month|quarter|year [using <date column>]', 'Top <N> <column> by <measure>', 'Count by <column>', 'Rate of <0/1 column> by <column>', and "
     "'Show as bar|line|table chart'. Filters, joins and several group columns are not supported yet."
 )
 
@@ -590,9 +605,92 @@ def plan_request(text: object, profile: ProfileResult, *, current: Plan | None =
         return _aggregate("trend", m["rest"], profile, trend=True)
     if m := _TOP.match(clean):
         return _top(m["rest"], profile)
+    if m := _COUNT.match(clean):
+        return _count(m["col"], profile)
+    if m := _RATE.match(clean):
+        return _rate(m["m1"] or m["m2"], m["group"], profile)
     if m := _AGG.match(clean):
         return _aggregate(m["verb"], m["rest"], profile)
     return Unsupported(f"I could not read {_quote(shown(clean))} as a request. " + HELP)
+
+
+def _count(col_phrase: str, profile: ProfileResult) -> Outcome:
+    """'Count by <column>': how many rows each value has (the same table as the starter card)."""
+    types = _types(profile)
+    names = list(types)
+    col = _resolve(col_phrase, names)
+    if col.name is None and len(col.candidates) > 1:
+        return _clarify_columns(
+            _quote(shown(_strip_quotes(col_phrase))),
+            col.candidates,
+            lambda c: f"Count by {_quote(shown(c))}",
+        )
+    if col.name is None:
+        return _unknown(col_phrase, names, "what to count by")
+    bad = _group_problem(col.name, types)
+    if bad:
+        return bad
+    spec = _build(ValueCounts, column=col.name, top=15, normalize=True)
+    if isinstance(spec, Unsupported):
+        return spec
+    notes = ["'count' is read as the number of rows for each value"]
+    if col.rule:
+        notes.append(col.rule)
+    return Plan(
+        spec, "bar", "value", "count", f"Number of rows by {shown(col.name)}",
+        f"How many rows each {_quote(shown(col.name))} value has, most common first.", tuple(notes),
+    )  # fmt: skip
+
+
+def _rate(measure_phrase: str, group_phrase: str, profile: ProfileResult) -> Outcome:
+    """'Rate of <0/1 column> by <column>': the average of a 0/1 column is the share of ones."""
+    types = _types(profile)
+    names = list(types)
+    metric = _resolve(measure_phrase, names)
+    if metric.name is None and len(metric.candidates) > 1:
+        return _clarify_columns(
+            _quote(shown(_strip_quotes(measure_phrase))), metric.candidates,
+            lambda c: f"Rate of {_quote(shown(c))} by {_quote(shown(_strip_quotes(group_phrase)))}",
+        )  # fmt: skip
+    if metric.name is None:
+        return Unsupported(
+            f"There is no column named {_quote(shown(_strip_quotes(measure_phrase)))}. A rate or share "
+            "needs a 0/1 column that is named exactly, for example 'Rate of Survived by Sex'.",
+            tuple(names),
+        )
+    profile_by = {c.name: c for c in profile.column_profiles}
+    p = profile_by[metric.name]
+    if types[metric.name] not in NUMERIC_TYPES or p.distinct != 2 or p.min != "0" or p.max != "1":
+        return Unsupported(
+            f"{_quote(shown(metric.name))} is not a 0/1 column, so a rate cannot be read from it. "
+            "Use 'Average <measure> by <column>' for numbers.",
+            tuple(names),
+        )
+    group = _resolve(group_phrase, names)
+    if group.name is None and len(group.candidates) > 1:
+        return _clarify_columns(
+            _quote(shown(_strip_quotes(group_phrase))), group.candidates,
+            lambda c: f"Rate of {_quote(shown(metric.name or ''))} by {_quote(shown(c))}",
+        )  # fmt: skip
+    if group.name is None:
+        return _unknown(group_phrase, names, "the grouping")
+    bad = _group_problem(group.name, types)
+    if bad:
+        return bad
+    label = f"{metric.name}:mean"
+    spec = _build(GroupAggregate, by=[group.name], metrics=[label], sort=label, used_counts=True)
+    if isinstance(spec, Unsupported):
+        return spec
+    notes = [
+        f"the average of the 0/1 column {shown(metric.name)} is the share of rows with 1 "
+        "(0.25 means 25 %)"
+    ]
+    notes += [r for r in (metric.rule, group.rule) if r]
+    return Plan(
+        spec, "bar", group.name, label, f"Share of {shown(metric.name)} by {shown(group.name)}",
+        f"The share of rows where {_quote(shown(metric.name))} is 1, for each {_quote(shown(group.name))}, "
+        "highest first.", tuple(notes),
+    )  # fmt: skip
 
 
 def _chart_change(kind: str, current: Plan | None) -> Outcome:

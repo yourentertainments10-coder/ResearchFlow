@@ -192,19 +192,19 @@ def test_a_large_file_runs_on_the_sample_and_every_number_is_checked_against_pan
     note = s.workspace.sample
     assert note["rows_in_file"] == 8000 and note["file_sha256"] == hashlib.sha256(BIG).hexdigest()
     assert s.workspace.profile.rows == note["rows_in_sample"] < 8000
-    step = s.ask("Sum amt by grp")
+    step = s.ask("Maximum amt by grp")
     assert step.kind == "plan" and step.verification == "verified"
-    # independent: the same sum from pandas over the sample rows
+    # independent: the same maximum from pandas over the sample rows
     sample_rows = sample_csv(io.BytesIO(BIG), limits=LIM).data
-    want = pd.read_csv(io.BytesIO(sample_rows)).groupby("grp")["amt"].sum().to_dict()
+    want = pd.read_csv(io.BytesIO(sample_rows)).groupby("grp")["amt"].max().to_dict()
     t = s.items[-1].result.table
-    assert dict(zip(t["grp"], t["amt:sum"], strict=True)) == want
+    assert dict(zip(t["grp"], t["amt:max"], strict=True)) == want
     assert s.history()["sample"] == note
 
 
 def test_replay_reproduces_a_sampled_session_from_the_stream_only():
     s = open_stream(io.BytesIO(BIG), "big.csv", limits=LIM)
-    s.ask("Sum amt by grp")
+    s.ask("Maximum amt by grp")
     s.ask("Show as table")
     again = replay(io.BytesIO(BIG), "big.csv", s.history(), limits=LIM)
     assert again.sha256() == s.sha256()

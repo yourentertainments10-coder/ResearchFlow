@@ -889,7 +889,15 @@ def _cluster(
     for g in range(best["k"]):
         part = sub[sub["_g"] == g]
         means = {n: _r(float(pd.to_numeric(part[n]).mean())) for n in numeric}
-        profiles.append({"group": g + 1, "rows": int(len(part)), "means": means})
+        common: dict[str, str] = {}
+        for n in categorical:  # the value most rows of the group have, and how many of them
+            present = part[n].dropna().astype(str).str.strip()
+            present = present[present != ""]
+            if len(present):
+                counts = present.value_counts()
+                top = sorted(counts[counts == counts.max()].index)[0]
+                common[n] = f"{top} ({round(100 * int(counts[top]) / len(present))} %)"
+        profiles.append({"group": g + 1, "rows": int(len(part)), "means": means, "common": common})
     sil = best["silhouette"]
     if sil is None or sil < 0.25:
         warnings.append(
