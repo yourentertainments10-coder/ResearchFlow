@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from sie.workspace.charts import themed
 from sie.workspace.modeling import ModelReport, shown_number
 from sie.workspace.models import AnalysisItem
 from sie.workspace.report import _cell, svg_data_uri
@@ -40,6 +41,7 @@ def analysis_view(item: AnalysisItem, *, origin: str, request: str | None = None
         "verification": {"status": item.verification.status, "reason": item.verification.reason},
         "error": item.error,
         "image": None,
+        "png": False,
         "table": None,
     }
     if item.exportable:
@@ -48,6 +50,13 @@ def analysis_view(item: AnalysisItem, *, origin: str, request: str | None = None
         view["warnings"] = [str(w) for w in item.result.warnings]
         if item.svg:
             view["image"] = svg_data_uri(item.svg)
+            # fixed-look copies for the page's own light/dark switch (an image sees only the system theme)
+            view["image_light"] = svg_data_uri(themed(item.svg, "light"))
+            view["image_dark"] = svg_data_uri(themed(item.svg, "dark"))
+            view["png"] = p.chart in (
+                "bar",
+                "line",
+            )  # the PNG and PDF drawings cover these two kinds
     else:
         view["reason"] = (
             item.error

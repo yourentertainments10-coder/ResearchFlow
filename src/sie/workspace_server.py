@@ -15,6 +15,8 @@ Routes
   POST   /api/clean/undo         remove the last approved cleaning step
   POST   /api/remove             {"id": "r1"} take one asked result off the page (history keeps a note)
   POST   /api/clear              take every asked result off the page (cleaning steps stay)
+  GET    /api/samples            the fixed list of made-up example files
+  POST   /api/sample             {"name": "sales"} load one of them (replaces the session)
   POST   /api/model              {"target": "column" | null}  compare models (null = find groups)
   GET    /api/export/<id>.csv|.xlsx|.svg|.png   one verified analysis (unverified ones are refused)
   GET    /api/export/report.html the self-contained report
@@ -39,10 +41,11 @@ from urllib.parse import parse_qs, urlsplit
 
 from sie.datasets import DatasetError, Limits
 from sie.datasets.export import table_csv_bytes, table_xlsx_bytes
-from sie.workspace import Session
+from sie.workspace import Session, start_session
 from sie.workspace.pdf import build_pdf
 from sie.workspace.raster import render_png
 from sie.workspace.report import build_report
+from sie.workspace.samples import SAMPLES, sample_bytes
 from sie.workspace.sampling import MAX_STREAM_BYTES
 from sie.workspace.scene import chart_scene
 from sie.workspace.session import open_stream
@@ -203,6 +206,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/":
             html, _ = page_bytes()
             self._send(200, html, "text/html; charset=utf-8")
+        elif path == "/api/samples":
+            self._json(
+                200,
+                {"samples": [{"id": x.id, "title": x.title, "blurb": x.blurb} for x in SAMPLES]},
+            )
         elif path == "/api/state":
             with self.state.lock:
                 session = self.state.session
@@ -294,6 +302,8 @@ class Handler(BaseHTTPRequestHandler):
             self._undo()
         elif parts.path == "/api/model":
             self._model()
+        elif parts.path == "/api/sample":
+            self._sample()
         elif parts.path == "/api/remove":
             self._remove()
         elif parts.path == "/api/clear":
@@ -413,6 +423,35 @@ class Handler(BaseHTTPRequestHandler):
             step = session.ask(request)
             view = session_view(session)
         self._json(200, {"step": step.to_dict(), "state": view})
+
+    def _sample(self) -> None:
+        if self.headers.get("Content-Type", "").split(";")[0].strip().lower() != "application/json":
+            self._error(415, "Send application/json.")
+            return
+        body = self._body(MAX_REQUEST_BYTES)
+        if body is None:
+            return
+        try:
+            wanted = json.loads(body.decode("utf-8"))["name"]
+        except (ValueError, KeyError, TypeError):
+            self._error(400, 'Send {"name": "sales"}.')
+            return
+        found = sample_bytes(wanted)
+        if found is None:
+            self._error(404, "There is no such example.")
+            return
+        sample, data = found
+        try:
+            session = start_session(data, sample.filename, limits=self.state.limits)
+        except (
+            DatasetError
+        ) as exc:  # cannot happen with the fixed files; said plainly if it ever does
+            self._error(422, f"This example cannot be used: {exc}")
+            return
+        with self.state.lock:
+            self.state.session = session
+            view = session_view(session)
+        self._json(200, view)
 
     def _remove(self) -> None:
         if self.headers.get("Content-Type", "").split(";")[0].strip().lower() != "application/json":

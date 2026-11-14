@@ -8,6 +8,7 @@ table always gives the same bytes.
 from __future__ import annotations
 
 import math
+import re
 from html import escape
 from typing import Any
 
@@ -16,15 +17,58 @@ import pandas as pd
 WIDTH = 640
 MAX_BARS = 25
 MAX_POINTS = 400
+MAX_HEAT = 12
 LABEL_CHARS = 28
 
-_STYLE = (
-    "<style>.bg{fill:none}.t{fill:#1d1d1f;font:600 14px sans-serif}.l{fill:#1d1d1f;font:12px sans-serif}"
-    ".m{fill:#5b5b61;font:11px sans-serif}.bar{fill:#2a6fdb}.ln{fill:none;stroke:#2a6fdb;stroke-width:2}"
-    ".pt{fill:#2a6fdb}.ax{stroke:#8a8a90;stroke-width:1}"
-    "@media (prefers-color-scheme:dark){.t,.l{fill:#f2f2f4}.m{fill:#b4b4ba}.bar,.pt{fill:#6aa3ff}"
-    ".ln{stroke:#6aa3ff}.ax{stroke:#8a8a90}}</style>"
+_PALETTE_LIGHT = (
+    "#2a6fdb",
+    "#d97a00",
+    "#1a9e6b",
+    "#c2410c",
+    "#7c4dbd",
+    "#0e8f9c",
+    "#b5338a",
+    "#6b7280",
 )
+_PALETTE_DARK = (
+    "#6aa3ff",
+    "#f0a030",
+    "#3fc896",
+    "#f2784b",
+    "#a98bef",
+    "#4cc3cf",
+    "#e06cb8",
+    "#9ca3af",
+)
+
+
+def _style(theme: str | None) -> str:
+    """The chart's CSS: light, dark, or (``None``) light that follows the viewer's colour scheme."""
+    light = (
+        ".bg{fill:none}.t{fill:#1d1d1f;font:600 14px sans-serif}.l{fill:#1d1d1f;font:12px sans-serif}"
+        ".m{fill:#5b5b61;font:11px sans-serif}.bar{fill:#2a6fdb}.ln{fill:none;stroke:#2a6fdb;stroke-width:2}"
+        ".pt{fill:#2a6fdb}.ax{stroke:#8a8a90;stroke-width:1}"
+        + "".join(f".c{i}{{fill:{c}}}" for i, c in enumerate(_PALETTE_LIGHT))
+    )
+    dark = (
+        ".t,.l{fill:#f2f2f4}.m{fill:#b4b4ba}.bar,.pt{fill:#6aa3ff}.ln{stroke:#6aa3ff}.ax{stroke:#8a8a90}"
+        + "".join(f".c{i}{{fill:{c}}}" for i, c in enumerate(_PALETTE_DARK))
+    )
+    if theme == "dark":
+        return f"<style>{light}{dark}</style>"
+    if theme == "light":
+        return f"<style>{light}</style>"
+    return f"<style>{light}@media (prefers-color-scheme:dark){{{dark}}}</style>"
+
+
+_STYLE = _style(None)
+_STYLE_RE = re.compile(r"<style>.*?</style>", re.S)
+
+
+def themed(svg: str, theme: str) -> str:
+    """The same chart with a fixed light or dark look, for a page that has its own theme switch (an image
+    cannot see the page's theme, only the system's)."""
+    return _STYLE_RE.sub(lambda _m: _style(theme), svg, count=1)
 
 
 def display_number(value: Any) -> str:
@@ -57,12 +101,12 @@ def _cut(text: Any) -> str:
     return s if len(s) <= LABEL_CHARS else s[: LABEL_CHARS - 1] + "…"
 
 
-def _wrap(title: str, height: int, body: str, summary: str) -> str:
+def _wrap(title: str, height: int, body: str, summary: str, width: int = WIDTH) -> str:
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {WIDTH} {height}" width="{WIDTH}" '
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" '
         f'height="{height}" role="img" aria-label="{escape(summary, quote=True)}">{_STYLE}'
         f"<title>{escape(title)}</title>"
-        f'<rect class="bg" width="{WIDTH}" height="{height}"/>'
+        f'<rect class="bg" width="{width}" height="{height}"/>'
         f'<text class="t" x="12" y="20">{escape(_cut_title(title))}</text>{body}</svg>'
     )
 
@@ -103,7 +147,7 @@ def bar_chart(table: pd.DataFrame, x: str, y: str, title: str) -> str:
         end = left + plot * (value - low) / span
         x0, w = min(zero, end), abs(end - zero)
         body.append(
-            f'<rect class="bar" x="{x0:.2f}" y="{y0 + 2}" width="{max(w, 1):.2f}" height="{step - 8}"/>'
+            f'<rect class="bar c{i % len(_PALETTE_LIGHT)}" x="{x0:.2f}" y="{y0 + 2}" width="{max(w, 1):.2f}" height="{step - 8}"/>'
         )
         tx = end + 6 if value >= 0 else end - 6
         anchor = "start" if value >= 0 else "end"
@@ -172,6 +216,74 @@ def line_chart(table: pd.DataFrame, x: str, y: str, title: str) -> str:
     return _wrap(title, height, "".join(body), f"Line chart: {title}")
 
 
+def heatmap_chart(table: pd.DataFrame, title: str) -> str:
+    """A square grid of correlation coefficients (-1 blue, 0 white, +1 orange) from an ``a, b, coefficient``
+    table. Every cell carries its number; the colour is only a help."""
+    names: list[str] = []
+    cell: dict[tuple[str, str], float | None] = {}
+    for _, r in table.iterrows():
+        for n in (str(r["a"]), str(r["b"])):
+            if n not in names:
+                names.append(n)
+        value = _number(r["coefficient"])
+        cell[(str(r["a"]), str(r["b"]))] = value
+        cell[(str(r["b"]), str(r["a"]))] = value
+    shown = names[:MAX_HEAT]
+    if len(shown) < 2:
+        return _wrap(
+            title,
+            80,
+            '<text class="m" x="12" y="52">no pairs to chart</text>',
+            f"{title}: no pairs",
+        )
+    left, top, size = 150, 34 + 70, 38
+    width = max(WIDTH, left + size * len(shown) + 20)
+    body: list[str] = []
+    for i, n in enumerate(shown):
+        body.append(
+            f'<text class="l" x="{left - 8}" y="{top + i * size + size / 2 + 4:.1f}" text-anchor="end">{escape(_cut(n))}</text>'
+        )
+        x = left + i * size + size / 2
+        body.append(
+            f'<text class="l" transform="translate({x:.1f},{top - 8}) rotate(-40)" text-anchor="start">{escape(_cut(n))}</text>'
+        )
+    for i, a in enumerate(shown):
+        for j, b in enumerate(shown):
+            v = 1.0 if i == j else cell.get((a, b))
+            x, y = left + j * size, top + i * size
+            if v is None:
+                body.append(
+                    f'<rect x="{x}" y="{y}" width="{size - 2}" height="{size - 2}" fill="#d0d0d4"/>'
+                )
+                body.append(
+                    f'<text x="{x + size / 2 - 1}" y="{y + size / 2 + 3}" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1d1d1f">n/a</text>'
+                )
+                continue
+            fill, ink = _heat(v)
+            body.append(
+                f'<rect x="{x}" y="{y}" width="{size - 2}" height="{size - 2}" fill="{fill}"/>'
+            )
+            body.append(
+                f'<text x="{x + size / 2 - 1}" y="{y + size / 2 + 4}" text-anchor="middle" font-family="sans-serif" font-size="11" fill="{ink}">{v:.2f}</text>'
+            )
+    height = top + size * len(shown) + 24
+    if len(names) > MAX_HEAT:
+        body.append(
+            f'<text class="m" x="12" y="{height - 6}">first {MAX_HEAT} of {len(names)} columns shown</text>'
+        )
+    return _wrap(title, height, "".join(body), f"Heat map: {title}", width)
+
+
+def _heat(v: float) -> tuple[str, str]:
+    """Fill and text colour for a coefficient between -1 and 1."""
+    v = max(-1.0, min(1.0, v))
+    lo, mid, hi = (42, 111, 219), (255, 255, 255), (217, 122, 0)
+    a, b, t = (mid, hi, v) if v >= 0 else (mid, lo, -v)
+    rgb = tuple(round(a[k] + (b[k] - a[k]) * t) for k in range(3))
+    luminance = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+    return "#%02x%02x%02x" % rgb, "#1d1d1f" if luminance > 140 else "#ffffff"  # noqa: UP031
+
+
 def render_chart(
     kind: str, table: pd.DataFrame, x: str | None, y: str | None, title: str
 ) -> str | None:
@@ -180,4 +292,6 @@ def render_chart(
         return bar_chart(table, x, y, title)
     if kind == "line" and x and y:
         return line_chart(table, x, y, title)
+    if kind == "heatmap" and {"a", "b", "coefficient"} <= set(table.columns):
+        return heatmap_chart(table, title)
     return None

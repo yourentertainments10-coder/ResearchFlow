@@ -150,7 +150,7 @@ def plan_analyses(profile: ProfileResult) -> list[PlannedAnalysis]:
         add(
             "Correlation between numeric columns",
             Correlation(columns=corr_cols),
-            "table",
+            "heatmap",
             None,
             None,
         )

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — workspace page redesign (2026-11-14)
+- Page rewritten: tabs Overview · Clean · Explore · Predict · Report, theme toggle (light/dark), sticky "Ask" bar, newest answers on top.
+- Start screen with drag-and-drop upload and three small sample datasets (clearly labelled made-up data): `GET /api/samples`, `POST /api/sample`.
+- Errors and notes appear next to the control that caused them; long tables are collapsed by default with no inner scroll trap, and the expanded table has a sticky header.
+- Charts: correlation heatmap (new chart kind `heatmap`), coloured category bars, light/dark chart images.
+- Remove one result / clear all results buttons (uses `/api/remove`, `/api/clear` from the previous PR).
+- Honest limits: heatmap is not in PNG/PDF export (table only); PNG/PDF bars stay single-colour. See `docs/WORKSPACE_UI_AND_DEPLOYMENT.md`.
+- Stacked on the previous pull request (#54).
+
 ## Unreleased — fix: second Titanic review, behaviour (2026-11-14)
 - Key figures skip identifier columns (no more "Mean of PassengerId").
 - Grouped tables whose measure column has blanks gain a `rows with <column>` column: how many rows of each group the average or sum really used (opt-in spec flag `used_counts`, set by the planner; the engine default and its golden tests are unchanged). The independent check recomputes it.
