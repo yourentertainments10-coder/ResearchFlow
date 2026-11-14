@@ -5,73 +5,130 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Analysis workspace</title>
 <style>
-:root{color-scheme:light dark;--bg:#fff;--fg:#1b1f24;--mut:#59636e;--line:#d0d7de;--card:#f6f8fa;--acc:#0b57d0;--accfg:#fff;--warn:#9a6700;--bad:#b42318;--ok:#1a7f37}
-@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#9198a1;--line:#30363d;--card:#161b22;--acc:#4493f8;--accfg:#0d1117;--warn:#d29922;--bad:#f85149;--ok:#3fb950}}
+:root{color-scheme:light dark;--bg:#F7F8FA;--card:#fff;--fg:#111827;--mut:#6B7280;--line:#E5E7EB;--brand:#2563EB;--brand-fg:#fff;--soft:#EFF4FF;--ok:#15803D;--warn:#9A6700;--bad:#B42318;--sh:0 1px 2px rgba(17,24,39,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0B1020;--card:#111827;--fg:#F3F4F6;--mut:#9CA3AF;--line:#1F2937;--brand:#3B82F6;--brand-fg:#0B1020;--soft:#16233f;--ok:#4ADE80;--warn:#E3B341;--bad:#F87171;--sh:none}}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0B1020;--card:#111827;--fg:#F3F4F6;--mut:#9CA3AF;--line:#1F2937;--brand:#3B82F6;--brand-fg:#0B1020;--soft:#16233f;--ok:#4ADE80;--warn:#E3B341;--bad:#F87171;--sh:none}
+:root[data-theme=light]{color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-header,main{max-width:72rem;margin:0 auto;padding:0 1rem}
-header{padding-top:1rem}
-h1{font-size:1.4rem;margin:.2rem 0}h2{font-size:1.1rem;margin:0 0 .5rem}h3{font-size:1rem;margin:.2rem 0}
-.mut{color:var(--mut)}
-section,.panel{border:1px solid var(--line);border-radius:8px;background:var(--card);padding:1rem;margin:1rem 0}
-button,.btn,input[type=text],select{font:inherit;border-radius:6px;border:1px solid var(--line);padding:.45rem .8rem;background:var(--bg);color:var(--fg)}
-button,.btn{cursor:pointer;text-decoration:none;display:inline-block;transition:background-color .15s}
-button.primary{background:var(--acc);color:var(--accfg);border-color:var(--acc)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 Inter,Geist,Manrope,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.1;margin:0 0 8px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:18px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}h3{font-size:15px;margin:2px 0 6px;font-weight:650}
+.mut{color:var(--mut)}.sm{font-size:13px}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+body:has(#file:focus-visible) .drop{outline:2px solid var(--brand);outline-offset:2px}
+header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.barrow{display:flex;align-items:center;gap:14px;min-height:56px}
+.brand{font-weight:800;letter-spacing:.14em;font-size:13px;white-space:nowrap}.brand i{font-style:normal;color:var(--brand)}
+nav{display:flex;gap:2px;overflow-x:auto;flex:1;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+nav button{border:1px solid transparent;background:none;color:var(--mut);border-radius:10px;padding:6px 12px;font:inherit;font-weight:500;font-size:14px;white-space:nowrap;cursor:pointer}
+nav button:hover{color:var(--fg)}nav button[aria-selected=true]{background:var(--soft);border-color:var(--brand);color:var(--brand)}
+@media (max-width:760px){.barrow{flex-wrap:wrap;gap:0 10px;padding-top:6px;padding-bottom:6px}.brand{flex:1}nav{order:3;flex:0 0 100%;padding:2px 0 4px}}
+button,.btn,select,input[type=text]{font:inherit;font-size:14px;border-radius:10px;border:1px solid var(--line);padding:7px 12px;background:var(--card);color:var(--fg)}
+button,.btn{cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-weight:600;transition:background-color .15s,filter .15s}
+button.primary,.btn.primary{background:var(--brand);color:var(--brand-fg);border-color:var(--brand)}
 button:hover,.btn:hover{filter:brightness(.96)}
-:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-input[type=text]{width:100%}
-input.narrow{width:14rem}
-.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
-.grow{flex:1 1 16rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.75rem}
-.card{border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:.6rem .8rem}
-.card .v{font-size:1.4rem;font-weight:600;font-variant-numeric:tabular-nums}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,26rem),1fr));gap:1rem}
-.an{border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:.8rem;min-width:0}
-.an img{max-width:100%;height:auto;display:block;background:#fff;border-radius:4px}
-.tw{overflow:auto;max-height:18rem}
-table{border-collapse:collapse;width:100%;font-size:.9rem}
-th,td{border-bottom:1px solid var(--line);padding:.25rem .5rem;text-align:left;white-space:nowrap}
-.badge{font-size:.8rem;border:1px solid var(--line);border-radius:99px;padding:0 .5rem}
+button.quiet{border-color:transparent;background:none;color:var(--mut);font-weight:500;padding:4px 8px}
+button.theme{padding:5px 10px;font-weight:500}
+input[type=text]{width:100%}input.narrow{width:14rem}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.grow{flex:1 1 16rem}
+.card,.an,.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--sh);min-width:0}
+.panel{margin:0 0 16px}
+.hero{padding:34px 0 10px}.hero p{max-width:640px;color:var(--mut);font-size:16px;margin:0 0 18px}
+.drop{display:block;border:2px dashed var(--line);border-radius:16px;background:var(--card);padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background-color .15s}
+.drop:hover,.drop.over{border-color:var(--brand);background:var(--soft)}
+.drop b{display:block;font-size:17px}
+.samples{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:12px;margin:14px 0 8px}
+.sample{text-align:left;display:block;padding:14px 16px;border-radius:14px}
+.sample b{display:block;font-size:15px}.sample span{display:block;font-weight:400;color:var(--mut);font-size:13px;margin-top:2px}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh);margin:16px 0 12px;overflow:hidden}
+.strip>div{padding:10px 16px;border-left:1px solid var(--line);min-width:0}.strip>div:first-child{border-left:0}
+.strip b{display:block;font-size:22px;line-height:1.2;font-weight:800;font-variant-numeric:tabular-nums}.strip span{font-size:13px;color:var(--mut)}
+@media (max-width:640px){.strip{grid-template-columns:repeat(2,1fr)}.strip>div:nth-child(3){border-left:0}.strip>div:nth-child(n+3){border-top:1px solid var(--line)}}
+.askbar{position:sticky;top:57px;z-index:20;background:var(--bg);padding:6px 0 4px}
+@media (max-width:760px){.askbar{top:96px}}
+.askbar form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:var(--sh)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(11rem,1fr));gap:12px}
+.cards .card{padding:12px 14px}.cards .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,26rem),1fr));gap:14px}
+.an img{max-width:100%;height:auto;display:block}
+.tw{overflow-x:auto}.tw.open{max-height:60vh;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;white-space:nowrap;font-variant-numeric:tabular-nums}
+th{font-size:12px;font-weight:600;color:var(--mut);background:var(--card)}.tw.open th{position:sticky;top:0;z-index:1}
+.badge{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:0 8px}
 .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
-pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;font-size:.8rem}
-.msg{margin:.5rem 0;padding:.5rem .75rem;border-left:4px solid var(--line)}
+pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:8px;font-size:12px}
+.msg{margin:.5rem 0;padding:.5rem .75rem;border-left:4px solid var(--line);background:var(--card);border-radius:0 8px 8px 0}
 .msg.error{border-color:var(--bad)}.msg.ask{border-color:var(--warn)}.msg.ok{border-color:var(--ok)}
-.sr{position:absolute;left:-9999px}
+ul.flat{margin:0;padding-left:1.1rem}ul.flat li{margin:.15rem 0}
+.sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 [hidden]{display:none!important}
+.hl{outline:3px solid var(--brand);outline-offset:2px}.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-.hl{outline:3px solid #2a6fdb;outline-offset:2px}.fade{animation:fade .25s ease-out}@keyframes fade{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
-<header>
-  <h1>Analysis workspace</h1>
-  <p class="mut">Your file stays on this computer. Every number is recalculated by a second, independent calculation before it is shown or exported.</p>
-</header>
-<main>
-  <section id="sources" aria-labelledby="h-sources">
-    <h2 id="h-sources">Data source</h2>
-    <div class="row">
-      <label class="btn primary" for="file">Choose a CSV file</label>
-      <input id="file" type="file" accept=".csv,text/csv" class="sr">
-      <span id="srcinfo" class="mut" aria-live="polite">No file loaded.</span>
-      <button id="del" type="button" hidden>Remove my data</button>
-    </div>
-    <div id="msg" role="status" aria-live="polite"></div>
-    <div id="sample" class="msg ask" hidden></div>
+<input id="file" type="file" accept=".csv,text/csv" class="sr">
+<header class="top"><div class="wrap barrow">
+  <div class="brand">ANALYSIS <i>WORKSPACE</i></div>
+  <nav id="tabs" role="tablist" aria-label="Sections" hidden>
+    <button role="tab" id="t-overview" aria-controls="p-overview" aria-selected="true" data-tab="overview" type="button">Overview</button>
+    <button role="tab" id="t-clean" aria-controls="p-clean" aria-selected="false" data-tab="clean" tabindex="-1" type="button">Clean</button>
+    <button role="tab" id="t-explore" aria-controls="p-explore" aria-selected="false" data-tab="explore" tabindex="-1" type="button">Explore</button>
+    <button role="tab" id="t-predict" aria-controls="p-predict" aria-selected="false" data-tab="predict" tabindex="-1" type="button">Predict</button>
+    <button role="tab" id="t-report" aria-controls="p-report" aria-selected="false" data-tab="report" tabindex="-1" type="button">Report</button>
+  </nav>
+  <span class="grow"></span>
+  <button id="del" type="button" class="quiet" hidden>Remove my data</button>
+  <button id="theme" type="button" class="theme" aria-label="Switch between light and dark">Theme</button>
+</div></header>
+<div class="wrap"><div id="msg" role="status" aria-live="polite"></div></div>
+
+<div id="start" class="wrap hero">
+  <h1>Look into your data</h1>
+  <p>Drop a CSV file and get key figures, charts, a clean-up you approve step by step, simple predictions and a report. Every number is recalculated a second, independent way before it is shown or exported. Your file stays on this computer.</p>
+  <label class="drop" id="drop" for="file"><b>Drop a CSV file here, or choose one</b><span class="mut">The file is read on this computer only (this app runs locally).</span></label>
+  <h2 class="sm mut hs">Or try an example (made-up data)</h2>
+  <div id="samples" class="samples"></div>
+</div>
+
+<main id="work" class="wrap" hidden>
+  <div class="strip" id="strip"></div>
+  <p id="srcinfo" class="mut sm" aria-live="polite">No file loaded.</p>
+  <div id="sample" class="msg ask" hidden></div>
+  <div class="askbar">
+    <form id="askform" class="row" autocomplete="off">
+      <label class="sr" for="ask">Ask or change an analysis</label>
+      <input id="ask" type="text" class="grow" maxlength="300" placeholder="Ask: Compare revenue by region, Top 5 product by revenue, Count by Pclass, Rate of Survived by Sex, only 2024 ...">
+      <button class="primary" type="submit">Run</button>
+    </form>
+  </div>
+  <div id="answer" role="status" aria-live="polite"></div>
+
+  <section id="p-overview" role="tabpanel" aria-labelledby="t-overview">
+    <div id="nudge" class="msg ask" hidden></div>
+    <div class="panel"><h2>Key figures</h2><div id="cards" class="cards"></div></div>
+    <div class="panel"><h2>Findings and data quality</h2><ul id="findings" class="flat"></ul></div>
+    <h2>Charts and tables from your data</h2>
+    <div id="starter" class="grid"></div>
   </section>
 
-  <div id="work" hidden>
-    <section aria-labelledby="h-cards"><h2 id="h-cards">Key figures</h2><div id="cards" class="cards"></div></section>
-    <section aria-labelledby="h-find"><h2 id="h-find">Findings and data quality</h2><ul id="findings"></ul></section>
-    <section aria-labelledby="h-clean">
-      <h2 id="h-clean">Clean your data</h2>
-      <p id="cleannote" class="mut"></p>
+  <section id="p-clean" role="tabpanel" aria-labelledby="t-clean" hidden>
+    <div class="panel">
+      <h2>Clean your data</h2>
+      <p id="cleannote" class="mut sm"></p>
+      <div id="cleanmsg" role="status" aria-live="polite"></div>
       <div id="cleanstate" aria-live="polite"></div>
-      <h3>Suggestions</h3>
-      <p class="mut">Suggested from the data. Nothing is applied until you press Apply, and every step can be undone.</p>
-      <ul id="suggest"></ul>
-      <h3>Do it yourself</h3>
+    </div>
+    <div class="panel">
+      <h2>Suggestions</h2>
+      <p class="mut sm">Suggested from the data. Nothing is applied until you press Apply, and every step can be undone.</p>
+      <ul id="suggest" class="flat"></ul>
+    </div>
+    <div class="panel">
+      <h2>Do it yourself</h2>
       <form id="cleanform" class="row" autocomplete="off">
         <label class="sr" for="cact">Action</label>
         <select id="cact">
@@ -97,21 +154,22 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
         <input id="cval" type="text" maxlength="200" class="narrow" placeholder="value (only for 'with a value')">
         <button class="primary" type="submit">Apply</button>
       </form>
-    </section>
-    <section aria-labelledby="h-ask">
-      <h2 id="h-ask">Ask or change an analysis</h2>
-      <form id="askform" class="row" autocomplete="off">
-        <label class="sr" for="ask">Request</label>
-        <input id="ask" type="text" class="grow" maxlength="300" placeholder="e.g. Compare revenue by region, Top 5 product by revenue, Show as line chart">
-        <button class="primary" type="submit">Run</button>
-      </form>
-      <p class="mut">Supported: Compare / Sum / Average / Median / Minimum / Maximum &lt;measure&gt; by &lt;column&gt;; Trend of &lt;measure&gt; by day, month, quarter or year; Top &lt;N&gt; &lt;column&gt; by &lt;measure&gt;; Show as bar, line or table. "Compare" means the sum. Filters and joins are not supported yet.</p>
-      <div id="answer" role="status" aria-live="polite"></div>
-      <ol id="history" class="mut"></ol>
-    </section>
-    <section aria-labelledby="h-model">
-      <h2 id="h-model">Predict something or find groups</h2>
-      <p class="mut">Pick the column you want to predict. The tool chooses classification or regression from the data, leaves out columns that would be cheating (identifiers, copies of the target), compares simple models on rows they did not see, and says how far to trust the result. With no target it looks for groups of similar rows.</p>
+      <div id="cleanformmsg" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="p-explore" role="tabpanel" aria-labelledby="t-explore" hidden>
+    <div class="row"><h2 class="grow">Your results</h2><button id="clearres" type="button" hidden>Clear all results</button></div>
+    <p class="mut sm">Newest first. Supported: Compare / Sum / Average / Median / Minimum / Maximum &lt;measure&gt; by &lt;column&gt;; Trend of &lt;measure&gt; by day, month, quarter or year; Top &lt;N&gt; &lt;column&gt; by &lt;measure&gt;; Count by &lt;column&gt;; Rate of &lt;0/1 column&gt; by &lt;column&gt;; Show as bar, line or table; only / exclude filters. "Compare" means the sum. Joins are not supported.</p>
+    <div id="none" class="msg" hidden>Nothing asked yet. Type a request in the bar above.</div>
+    <div id="analyses" class="grid"></div>
+    <details class="panel"><summary>Request history</summary><ol id="history" class="mut sm"></ol></details>
+  </section>
+
+  <section id="p-predict" role="tabpanel" aria-labelledby="t-predict" hidden>
+    <div class="panel">
+      <h2>Predict something or find groups</h2>
+      <p class="mut sm">Pick the column you want to predict. The tool chooses classification or regression from the data, leaves out columns that would be cheating (identifiers, copies of the target), compares simple models on rows they did not see, and says how far to trust the result. With no target it looks for groups of similar rows.</p>
       <form id="modelform" class="row" autocomplete="off">
         <label class="sr" for="mtarget">Column to predict</label>
         <select id="mtarget"></select>
@@ -120,19 +178,22 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
         <button class="primary" type="submit">Compare models</button>
       </form>
       <div id="modelmsg" role="status" aria-live="polite"></div>
-      <div id="models"></div>
-    </section>
-    <section aria-labelledby="h-an">
-      <div class="row"><h2 id="h-an" class="grow">Charts and tables</h2><a class="btn" href="/api/export/report.html" download>Download report (HTML)</a> <a class="btn" href="/api/export/report.pdf" download>Download report (PDF)</a></div>
-      <div id="analyses" class="grid"></div>
-    </section>
-    <section aria-labelledby="h-inspect">
-      <h2 id="h-inspect">Inspect</h2>
-      <details><summary>Source, definitions and limitations</summary>
-        <div id="inspect"></div>
-      </details>
-    </section>
-  </div>
+    </div>
+    <div id="models" class="grid"></div>
+  </section>
+
+  <section id="p-report" role="tabpanel" aria-labelledby="t-report" hidden>
+    <div class="panel">
+      <h2>Report</h2>
+      <p class="mut sm">Only results that passed the independent check are included.</p>
+      <div class="row"><a class="btn primary" href="/api/export/report.html" download>Download report (HTML)</a> <a class="btn" href="/api/export/report.pdf" download>Download report (PDF)</a></div>
+    </div>
+    <div class="panel"><h2>Downloads per result</h2><div id="exports"></div></div>
+    <div class="panel">
+      <h2>Inspect</h2>
+      <details><summary>Source, definitions and limitations</summary><div id="inspect"></div></details>
+    </div>
+  </section>
 </main>
 <script>
 (function () {
@@ -147,8 +208,8 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     return n;
   }
   function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
-  function say(kind, text) {
-    var box = $("msg"); clear(box);
+  function say(kind, text, target) {
+    var box = $(target || "msg"); clear(box);
     if (text) box.appendChild(el("div", { "class": "msg " + kind + " fade", text: text }));
   }
   function api(method, path, body, headers) {
@@ -156,69 +217,154 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       return r.json().then(function (j) { return { ok: r.ok, status: r.status, json: j }; });
     });
   }
+  var JSONH = { "Content-Type": "application/json" };
+  var last = null;
 
+  // ---- theme ----------------------------------------------------------------------------------
+  function isDark() {
+    var t = document.documentElement.getAttribute("data-theme");
+    return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function applyTheme(t) {
+    if (t) document.documentElement.setAttribute("data-theme", t); else document.documentElement.removeAttribute("data-theme");
+    if (last) renderAll(last);
+  }
+  try { var saved = localStorage.getItem("ws-theme"); if (saved === "dark" || saved === "light") document.documentElement.setAttribute("data-theme", saved); } catch (e) { /* no storage: follow the system */ }
+  $("theme").addEventListener("click", function () {
+    var next = isDark() ? "light" : "dark";
+    try { localStorage.setItem("ws-theme", next); } catch (e) { /* not kept */ }
+    applyTheme(next);
+  });
+  if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { if (last) renderAll(last); });
+
+  // ---- tabs -----------------------------------------------------------------------------------
+  var TABS = ["overview", "clean", "explore", "predict", "report"];
+  function showTab(name, focus) {
+    TABS.forEach(function (t) {
+      var on = t === name;
+      $("p-" + t).hidden = !on;
+      var b = $("t-" + t); b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    });
+  }
+  $("tabs").addEventListener("click", function (e) { var b = e.target.closest("button[data-tab]"); if (b) showTab(b.getAttribute("data-tab")); });
+  $("tabs").addEventListener("keydown", function (e) {
+    var cur = TABS.indexOf(document.activeElement.getAttribute("data-tab")); if (cur < 0) return;
+    var to = e.key === "ArrowRight" ? (cur + 1) % TABS.length : e.key === "ArrowLeft" ? (cur + TABS.length - 1) % TABS.length : e.key === "Home" ? 0 : e.key === "End" ? TABS.length - 1 : -1;
+    if (to >= 0) { e.preventDefault(); showTab(TABS[to], true); }
+  });
+
+  // ---- tables and results ---------------------------------------------------------------------
+  var COLLAPSED_ROWS = 12;
   function renderTable(t) {
     var table = el("table"), head = el("tr");
     t.columns.forEach(function (c) { head.appendChild(el("th", { scope: "col", text: c })); });
     table.appendChild(el("thead", {}, [head]));
     var body = el("tbody");
-    t.rows.forEach(function (r) {
-      var tr = el("tr");
+    t.rows.forEach(function (r, i) {
+      var tr = el("tr"); if (i >= COLLAPSED_ROWS) tr.className = "more"; if (i >= COLLAPSED_ROWS) tr.hidden = true;
       r.forEach(function (v) { tr.appendChild(el("td", { text: v })); });
       body.appendChild(tr);
     });
     table.appendChild(body);
     var wrap = el("div", { "class": "tw", tabindex: "0", role: "region", "aria-label": "Table data" }, [table]);
-    if (t.truncated) wrap.appendChild(el("p", { "class": "mut", text: "Showing " + t.rows.length + " of " + t.total_rows + " rows; the CSV and XLSX exports have all of them." }));
-    return wrap;
+    var out = el("div", {}, [wrap]);
+    if (t.rows.length > COLLAPSED_ROWS) {
+      var more = el("button", { type: "button", "class": "quiet", text: "Show all " + t.rows.length + " rows" });
+      more.addEventListener("click", function () {
+        var open = wrap.classList.toggle("open");
+        Array.prototype.forEach.call(body.querySelectorAll("tr.more"), function (r) { r.hidden = !open; });
+        more.textContent = open ? "Show fewer rows" : "Show all " + t.rows.length + " rows";
+      });
+      out.appendChild(more);
+    }
+    if (t.truncated) out.appendChild(el("p", { "class": "mut sm", text: "Showing " + t.rows.length + " of " + t.total_rows + " rows; the CSV and XLSX exports have all of them." }));
+    return out;
   }
 
-  function renderAnalysis(a) {
+  function renderAnalysis(a, removable) {
     var box = el("article", { "class": "an fade", "aria-label": a.title, "data-id": a.id, tabindex: "-1" });
     var badge = el("span", { "class": "badge " + (a.exportable ? "ok" : "bad"), text: a.exportable ? "verified" : "not verified" });
-    box.appendChild(el("div", { "class": "row" }, [el("h3", { "class": "grow", text: a.title }), badge]));
-    if (a.request) box.appendChild(el("p", { "class": "mut", text: "Request: " + a.request }));
+    var top = el("div", { "class": "row" }, [el("h3", { "class": "grow", text: a.title }), badge]);
+    if (removable) {
+      var rm = el("button", { type: "button", "class": "quiet", text: "Remove", "aria-label": "Remove " + a.title });
+      rm.addEventListener("click", function () { removeResult(a.id); });
+      top.appendChild(rm);
+    }
+    box.appendChild(top);
+    if (a.request) box.appendChild(el("p", { "class": "mut sm", text: "Request: " + a.request }));
     if (!a.exportable) {
       box.appendChild(el("p", { "class": "bad", text: "Not shown: " + (a.reason || "not verified") }));
       return box;
     }
-    if (a.image && a.chart !== "table") box.appendChild(el("img", { src: a.image, alt: a.title }));
+    var src = isDark() ? (a.image_dark || a.image) : (a.image_light || a.image);
+    if (src && a.chart !== "table") box.appendChild(el("img", { src: src, alt: a.title }));
     if (a.table) box.appendChild(renderTable(a.table));
-    (a.warnings || []).forEach(function (w) { box.appendChild(el("p", { "class": "warn", text: "Warning: " + w })); });
+    (a.warnings || []).forEach(function (w) { box.appendChild(el("p", { "class": "warn sm", text: "Warning: " + w })); });
     var links = el("div", { "class": "row" });
-    ["csv", "xlsx"].concat(a.image ? ["svg", "png"] : []).forEach(function (ext) {
+    ["csv", "xlsx"].concat(a.image ? ["svg"] : []).concat(a.png ? ["png"] : []).forEach(function (ext) {
       links.appendChild(el("a", { "class": "btn", href: "/api/export/" + a.id + "." + ext, download: "", text: ext.toUpperCase() }));
     });
     box.appendChild(links);
     return box;
   }
 
-  function render(state) {
-    $("work").hidden = false; $("del").hidden = false;
+  function stat(label, value) { return el("div", {}, [el("b", { text: String(value) }), el("span", { text: label })]); }
+
+  function renderAll(state) {
+    last = state;
+    $("start").hidden = true; $("work").hidden = false; $("tabs").hidden = false; $("del").hidden = false;
     var sb = $("sample"); sb.hidden = !state.sample; sb.textContent = state.sample ? state.sample.text : "";
     $("srcinfo").textContent = state.source.name + " - " + state.source.rows + " rows, " + state.source.columns + " columns";
+    var verified = state.analyses.filter(function (a) { return a.exportable; }).length;
+    var strip = $("strip"); clear(strip);
+    strip.appendChild(stat("rows in the working copy", state.cleaning.rows_now));
+    strip.appendChild(stat("columns", state.source.columns));
+    strip.appendChild(stat("cleaning steps applied", state.cleaning.applied.length));
+    strip.appendChild(stat("results independently checked", verified + " of " + state.analyses.length));
     var cards = $("cards"); clear(cards);
     state.cards.forEach(function (c) {
-      cards.appendChild(el("div", { "class": "card" }, [el("div", { "class": "mut", text: c.label }), el("div", { "class": "v", text: c.value }), el("div", { "class": "mut", text: c.detail })]));
+      cards.appendChild(el("div", { "class": "card" }, [el("div", { "class": "mut sm", text: c.label }), el("div", { "class": "v", text: c.value }), el("div", { "class": "mut sm", text: c.detail })]));
     });
     var f = $("findings"); clear(f);
     state.findings.forEach(function (x) { f.appendChild(el("li", { "class": x.severity === "warning" ? "warn" : "", text: x.text })); });
-    var an = $("analyses"); clear(an);
-    state.analyses.forEach(function (a) { an.appendChild(renderAnalysis(a)); });
+    var starter = $("starter"), asked = $("analyses"); clear(starter); clear(asked);
+    state.analyses.filter(function (a) { return a.origin !== "asked"; }).forEach(function (a) { starter.appendChild(renderAnalysis(a, false)); });
+    var mine = state.analyses.filter(function (a) { return a.origin === "asked"; }).reverse();
+    mine.forEach(function (a) { asked.appendChild(renderAnalysis(a, true)); });
+    $("none").hidden = mine.length > 0 || state.models.length > 0;
+    $("clearres").hidden = !(mine.length || state.models.length);
     var h = $("history"); clear(h);
-    state.steps.forEach(function (s) { if (!s.auto) h.appendChild(el("li", { text: s.request + " - " + s.kind.replace(/_/g, " ") + ": " + s.message })); });
+    state.steps.slice().reverse().forEach(function (s) { if (!s.auto) h.appendChild(el("li", { text: s.request + " - " + s.kind.replace(/_/g, " ") + ": " + s.message })); });
     renderCleaning(state.cleaning, state.columns);
     renderModels(state.models, state.columns);
+    var nudge = $("nudge"), n = state.cleaning.suggestions.filter(function (x) { return !skipped[x.id]; }).length;
+    nudge.hidden = !n;
+    clear(nudge);
+    if (n) {
+      var go = el("button", { type: "button", text: "Review the suggestions" });
+      go.addEventListener("click", function () { showTab("clean"); });
+      nudge.appendChild(el("span", { text: n + " clean-up suggestion" + (n === 1 ? "" : "s") + " from the data. Nothing is changed until you approve it. " }));
+      nudge.appendChild(go);
+    }
+    var ex = $("exports"); clear(ex);
+    state.analyses.forEach(function (a) {
+      if (!a.exportable) { ex.appendChild(el("p", { "class": "mut sm", text: a.id + " " + a.title + ": not included (" + (a.reason || "not verified") + ")" })); return; }
+      var row = el("div", { "class": "row" }, [el("span", { "class": "grow", text: a.title })]);
+      ["csv", "xlsx"].concat(a.image ? ["svg"] : []).concat(a.png ? ["png"] : []).forEach(function (ext) {
+        row.appendChild(el("a", { "class": "btn", href: "/api/export/" + a.id + "." + ext, download: "", text: ext.toUpperCase() }));
+      });
+      ex.appendChild(row);
+    });
     var ins = $("inspect"); clear(ins);
     ins.appendChild(el("p", { text: "File: " + state.source.name }));
     ins.appendChild(el("p", { text: "SHA-256: " + state.source.sha256 }));
     ins.appendChild(el("p", { text: "Columns: " + state.columns.map(function (c) { return c.name + " (" + c.type + ")"; }).join(", ") }));
     state.analyses.forEach(function (a) {
-      var d = el("details", {}, [el("summary", { text: a.id + ": " + a.title }), el("pre", { text: JSON.stringify(a.spec, null, 2) + (a.result_sha256 ? "\nresult sha256: " + a.result_sha256 : "") })]);
-      ins.appendChild(d);
+      ins.appendChild(el("details", {}, [el("summary", { text: a.id + ": " + a.title }), el("pre", { text: JSON.stringify(a.spec, null, 2) + (a.result_sha256 ? "\nresult sha256: " + a.result_sha256 : "") })]));
     });
     ins.appendChild(el("h3", { text: "Limitations" }));
-    var ul = el("ul"); state.limitations.forEach(function (l) { ul.appendChild(el("li", { text: l })); }); ins.appendChild(ul);
+    var ul = el("ul", { "class": "flat" }); state.limitations.forEach(function (l) { ul.appendChild(el("li", { text: l })); }); ins.appendChild(ul);
   }
 
   function renderModels(models, columns) {
@@ -234,18 +380,20 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     if (tkeep) tsel.value = tkeep;
     tsel.hidden = tsel.options.length < 2;
     var box = $("models"); clear(box);
-    models.forEach(function (m) {
+    models.slice().reverse().forEach(function (m) {
       var a = el("article", { "class": "an", "data-id": m.id, tabindex: "-1" });
-      a.appendChild(el("h3", { text: m.id + ": " + (m.request || m.problem) + " (" + m.problem + ")" }));
+      var rm = el("button", { type: "button", "class": "quiet", text: "Remove", "aria-label": "Remove model comparison " + m.id });
+      rm.addEventListener("click", function () { removeResult(m.id); });
+      a.appendChild(el("div", { "class": "row" }, [el("h3", { "class": "grow", text: m.id + ": " + (m.request || m.problem) + " (" + m.problem + ")" }), rm]));
       m.why.forEach(function (t) { a.appendChild(el("p", { text: t })); });
       if (!m.table) {
         a.appendChild(el("p", { "class": "bad", text: "Not shown: the scores did not pass the independent check (" + (m.reason || "") + ")." }));
       } else {
         a.appendChild(renderTable({ columns: m.table.columns, rows: m.table.rows }));
-        a.appendChild(el("p", { "class": "mut", text: "Evaluation: " + m.evaluation.method.replace(/_/g, " ") + ". " + m.evaluation.selection + "." }));
+        a.appendChild(el("p", { "class": "mut sm", text: "Evaluation: " + m.evaluation.method.replace(/_/g, " ") + ". " + m.evaluation.selection + "." }));
         if (m.importance.length) {
           a.appendChild(el("p", { text: "Columns that mattered most (score drop when the column is shuffled):" }));
-          var ul = el("ul"); m.importance.forEach(function (i) { ul.appendChild(el("li", { text: i.column + ": " + i.drop })); }); a.appendChild(ul);
+          var ul = el("ul", { "class": "flat" }); m.importance.forEach(function (i) { ul.appendChild(el("li", { text: i.column + ": " + i.drop })); }); a.appendChild(ul);
         }
         if (m.clusters) {
           m.clusters.profiles.forEach(function (p) {
@@ -253,17 +401,18 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
           });
         }
       }
-      m.warnings.forEach(function (w) { a.appendChild(el("p", { "class": "warn", text: "Warning: " + w })); });
+      m.warnings.forEach(function (w) { a.appendChild(el("p", { "class": "warn sm", text: "Warning: " + w })); });
       if (m.excluded.length) {
         var d = el("details", {}, [el("summary", { text: "Columns left out and why (" + m.excluded.length + ")" })]);
-        var ex = el("ul"); m.excluded.forEach(function (e) { ex.appendChild(el("li", { text: e.column + ": " + e.reason })); }); d.appendChild(ex); a.appendChild(d);
+        var ex = el("ul", { "class": "flat" }); m.excluded.forEach(function (e) { ex.appendChild(el("li", { text: e.column + ": " + e.reason })); }); d.appendChild(ex); a.appendChild(d);
       }
       var lim = el("details", {}, [el("summary", { text: "Limits" })]);
-      var lu = el("ul"); m.limitations.forEach(function (t) { lu.appendChild(el("li", { text: t })); }); lim.appendChild(lu); a.appendChild(lim);
+      var lu = el("ul", { "class": "flat" }); m.limitations.forEach(function (t) { lu.appendChild(el("li", { text: t })); }); lim.appendChild(lu); a.appendChild(lim);
       box.appendChild(a);
     });
   }
 
+  // ---- cleaning -------------------------------------------------------------------------------
   var skipped = {};
   function stepFor(action, col, val) {
     switch (action) {
@@ -284,27 +433,32 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       default: return { op: "remove_outliers", column: col };
     }
   }
-  function sendClean(step) {
+  function cleanResult(r, where) {
+    if (!r.ok) { say("error", r.json.error || "The request failed.", where); return; }
+    var kind = r.json.step.kind, good = kind === "clean" || kind === "clean_undo";
+    var box = $(where); clear(box);
+    box.appendChild(el("div", { "class": "msg " + (good ? "ok" : "error") + " fade", text: r.json.step.message }));
+    (r.json.step.notes || []).forEach(function (n) { box.appendChild(el("div", { "class": "mut sm", text: n })); });
+    renderAll(r.json.state);
+    if (where === "cleanmsg") showTab("clean");
+  }
+  function sendClean(step, where) {
     var removes = step.op === "drop_missing_rows" || step.op === "drop_column" || step.op === "remove_duplicates" || step.op === "remove_outliers";
     if (removes && !window.confirm("This removes data from the working copy (your file is not changed, and you can undo it). Continue?")) return;
-    api("POST", "/api/clean", JSON.stringify({ step: step }), { "Content-Type": "application/json" }).then(function (r) {
-      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
-      say("", ""); showStep(r.json.step); render(r.json.state);
-    }).catch(function () { say("error", "The server did not answer."); });
+    say("", "", "cleanmsg"); say("", "", "cleanformmsg");
+    api("POST", "/api/clean", JSON.stringify({ step: step }), JSONH).then(function (r) { cleanResult(r, where); }).catch(function () { say("error", "The server did not answer.", where); });
   }
   function renderCleaning(c, columns) {
     $("cleannote").textContent = c.note;
     var box = $("cleanstate"); clear(box);
     box.appendChild(el("p", { text: "Rows: " + c.rows_loaded + " loaded, " + c.rows_now + " in the working copy." }));
     if (c.applied.length) {
-      var ol = el("ol"); c.applied.forEach(function (a) { ol.appendChild(el("li", { text: a.text })); }); box.appendChild(ol);
+      var ol = el("ol", { "class": "flat" }); c.applied.forEach(function (a) { ol.appendChild(el("li", { text: a.text })); }); box.appendChild(ol);
       if (c.verification) box.appendChild(el("p", { "class": c.verification.status === "verified" ? "ok" : "bad", text: "Independent check of the cleaning: " + c.verification.status }));
       var u = el("button", { type: "button", text: "Undo last step" });
       u.addEventListener("click", function () {
-        api("POST", "/api/clean/undo", "{}", { "Content-Type": "application/json" }).then(function (r) {
-          if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
-          say("", ""); showStep(r.json.step); render(r.json.state);
-        });
+        say("", "", "cleanmsg");
+        api("POST", "/api/clean/undo", "{}", JSONH).then(function (r) { cleanResult(r, "cleanmsg"); });
       });
       box.appendChild(u);
     } else { box.appendChild(el("p", { "class": "mut", text: "No cleaning applied yet." })); }
@@ -315,9 +469,9 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       shownCount += 1;
       var li = el("li", {}, [el("strong", { text: x.label }), el("span", { "class": "mut", text: " - " + x.reason + " " })]);
       var ap = el("button", { type: "button", "class": "primary", text: "Apply" });
-      ap.addEventListener("click", function () { sendClean(x.step); });
+      ap.addEventListener("click", function () { sendClean(x.step, "cleanmsg"); });
       var sk = el("button", { type: "button", text: "Skip" });
-      sk.addEventListener("click", function () { skipped[x.id] = true; renderCleaning(c, columns); });
+      sk.addEventListener("click", function () { skipped[x.id] = true; renderAll(last); });
       li.appendChild(ap); li.appendChild(document.createTextNode(" ")); li.appendChild(sk);
       sg.appendChild(li);
     });
@@ -327,11 +481,12 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
     if (keep) sel.value = keep;
   }
 
+  // ---- asking ---------------------------------------------------------------------------------
   function showStep(step) {
     var box = $("answer"); clear(box);
-    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" || step.kind === "clean" || step.kind === "clean_undo" || step.kind === "model" ? "ok" : step.kind === "clarification" ? "ask" : "error";
+    var kind = step.kind === "plan" || step.kind === "chart_change" || step.kind === "already_shown" || step.kind === "clean" || step.kind === "clean_undo" || step.kind === "model" || step.kind === "removed" || step.kind === "cleared" ? "ok" : step.kind === "clarification" ? "ask" : "error";
     var m = el("div", { "class": "msg " + kind + " fade" }, [el("div", { text: step.message })]);
-    (step.notes || []).forEach(function (n) { m.appendChild(el("div", { "class": "mut", text: n })); });
+    (step.notes || []).forEach(function (n) { m.appendChild(el("div", { "class": "mut sm", text: n })); });
     if (step.options && step.options.length) {
       var row = el("div", { "class": "row" });
       step.options.forEach(function (o) {
@@ -342,62 +497,101 @@ pre{overflow:auto;border:1px solid var(--line);padding:.5rem;border-radius:6px;f
       m.appendChild(row);
     }
     box.appendChild(m);
-    if (step.kind === "already_shown" && step.analysis_id) highlight(step.analysis_id);
   }
-
   function highlight(id) {
-    var cards = document.querySelectorAll("#analyses article");
+    var cards = document.querySelectorAll("#analyses article, #starter article");
     Array.prototype.forEach.call(cards, function (n) {
       n.classList.remove("hl");
       if (n.getAttribute("data-id") === id) {
+        showTab(n.parentNode.id === "starter" ? "overview" : "explore");
         n.classList.add("hl");
         n.scrollIntoView({ block: "nearest" });
         n.focus({ preventScroll: true });
       }
     });
   }
-
   function ask(text) {
     $("ask").value = text;
-    return api("POST", "/api/ask", JSON.stringify({ text: text }), { "Content-Type": "application/json" }).then(function (r) {
+    return api("POST", "/api/ask", JSON.stringify({ text: text }), JSONH).then(function (r) {
       if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
-      say("", ""); showStep(r.json.step); render(r.json.state);
+      say("", ""); showStep(r.json.step); renderAll(r.json.state);
+      var s = r.json.step;
+      if (s.kind === "already_shown" && s.analysis_id) { highlight(s.analysis_id); return; }
+      if (s.kind === "plan" || s.kind === "chart_change") {
+        showTab("explore");
+        var first = document.querySelector("#analyses article");
+        if (first) { first.classList.add("hl"); first.scrollIntoView({ block: "nearest" }); }
+      } else if (s.kind === "clean") { showTab("clean"); }
     }).catch(function () { say("error", "The server did not answer."); });
   }
-
+  function removeResult(id) {
+    api("POST", "/api/remove", JSON.stringify({ id: id }), JSONH).then(function (r) {
+      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+      showStep(r.json.step); renderAll(r.json.state);
+    });
+  }
+  $("clearres").addEventListener("click", function () {
+    api("POST", "/api/clear", "{}", JSONH).then(function (r) {
+      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+      showStep(r.json.step); renderAll(r.json.state);
+    });
+  });
+  $("askform").addEventListener("submit", function (e) { e.preventDefault(); var t = $("ask").value.trim(); if (t) ask(t); });
   $("cleanform").addEventListener("submit", function (e) {
     e.preventDefault();
-    sendClean(stepFor($("cact").value, $("ccol").value, $("cval").value));
+    sendClean(stepFor($("cact").value, $("ccol").value, $("cval").value), "cleanformmsg");
   });
   $("modelform").addEventListener("submit", function (e) {
     e.preventDefault();
     var t = $("mtarget").value;
     var box = $("modelmsg"); clear(box);
     box.appendChild(el("p", { "class": "mut", text: "Fitting and comparing models..." }));
-    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t, time: t === "" || $("mtime").value === "" ? null : $("mtime").value }), { "Content-Type": "application/json" }).then(function (r) {
+    api("POST", "/api/model", JSON.stringify({ target: t === "" ? null : t, time: t === "" || $("mtime").value === "" ? null : $("mtime").value }), JSONH).then(function (r) {
       clear(box);
-      if (!r.ok) { say("error", r.json.error || "The request failed."); return; }
+      if (!r.ok) { say("error", r.json.error || "The request failed.", "modelmsg"); return; }
       var step = r.json.step;
-      box.appendChild(el("div", { "class": "msg " + (step.kind === "model" || step.kind === "already_shown" ? "ok" : "error") + " fade", text: step.message }));
-      render(r.json.state);
+      box.appendChild(el("div", { "class": "msg " + (step.model || step.kind === "model" || step.kind === "already_shown" ? "ok" : "error") + " fade", text: step.message }));
+      renderAll(r.json.state);
       if (step.model) { var n = document.querySelector('#models article[data-id="' + step.model.id + '"]'); if (n) { n.classList.add("hl"); n.scrollIntoView({ block: "nearest" }); } }
-    }).catch(function () { clear(box); say("error", "The server did not answer."); });
+    }).catch(function () { clear(box); say("error", "The server did not answer.", "modelmsg"); });
   });
-  $("askform").addEventListener("submit", function (e) { e.preventDefault(); var t = $("ask").value.trim(); if (t) ask(t); });
-  $("file").addEventListener("change", function () {
-    var f = this.files[0]; if (!f) return;
+
+  // ---- loading a file or an example -----------------------------------------------------------
+  function loaded(r) {
+    if (!r.ok) { say("error", r.json.error || "The upload failed."); return; }
+    say("ok", "Loaded."); $("answer").textContent = ""; skipped = {}; renderAll(r.json); showTab("overview");
+  }
+  function upload(f) {
+    if (!f) return;
     say("", "Reading " + f.name + "...");
-    api("POST", "/api/upload?name=" + encodeURIComponent(f.name), f, { "Content-Type": "application/octet-stream" }).then(function (r) {
-      if (!r.ok) { say("error", r.json.error || "The upload failed."); return; }
-      say("ok", "Loaded."); $("answer").textContent = ""; render(r.json);
-    }).catch(function () { say("error", "The server did not answer."); });
-  });
+    api("POST", "/api/upload?name=" + encodeURIComponent(f.name), f, { "Content-Type": "application/octet-stream" }).then(loaded).catch(function () { say("error", "The server did not answer."); });
+  }
+  $("file").addEventListener("change", function () { var f = this.files[0]; this.value = ""; upload(f); });
+  var drop = $("drop");
+  ["dragenter", "dragover"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (ev) { drop.addEventListener(ev, function () { drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function (e) { e.preventDefault(); if (e.dataTransfer && e.dataTransfer.files.length) upload(e.dataTransfer.files[0]); });
+  window.addEventListener("dragover", function (e) { e.preventDefault(); });
+  window.addEventListener("drop", function (e) { e.preventDefault(); });
   $("del").addEventListener("click", function () {
     api("DELETE", "/api/session").then(function () {
-      $("work").hidden = true; $("del").hidden = true; $("srcinfo").textContent = "No file loaded."; $("file").value = ""; say("ok", "Your data was removed from the server.");
+      last = null; $("work").hidden = true; $("tabs").hidden = true; $("del").hidden = true; $("start").hidden = false;
+      $("srcinfo").textContent = "No file loaded."; $("file").value = ""; say("ok", "Your data was removed from the server.");
     });
   });
-  api("GET", "/api/state").then(function (r) { if (r.ok && r.json.source) render(r.json); }).catch(function () {});
+  api("GET", "/api/samples").then(function (r) {
+    var box = $("samples"); clear(box);
+    if (!r.ok) return;
+    r.json.samples.forEach(function (s) {
+      var b = el("button", { type: "button", "class": "sample card" }, [el("b", { text: s.title }), el("span", { text: s.blurb })]);
+      b.addEventListener("click", function () {
+        say("", "Opening " + s.title + "...");
+        api("POST", "/api/sample", JSON.stringify({ name: s.id }), JSONH).then(loaded).catch(function () { say("error", "The server did not answer."); });
+      });
+      box.appendChild(b);
+    });
+  }).catch(function () {});
+  api("GET", "/api/state").then(function (r) { if (r.ok && r.json.source) { renderAll(r.json); showTab("overview"); } }).catch(function () {});
 })();
 </script>
 </body>

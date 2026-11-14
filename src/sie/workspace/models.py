@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-ChartKind = Literal["bar", "line", "table"]
+ChartKind = Literal["bar", "line", "table", "heatmap"]
 VerifyStatus = Literal["verified", "unverified", "not_run"]
 
 

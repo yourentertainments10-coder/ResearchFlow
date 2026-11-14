@@ -60,7 +60,7 @@ def test_the_starter_plan_follows_the_column_types():
         ("a3", "top_n", "bar"),
         ("a4", "top_n", "bar"),
         ("a5", "time_trend", "line"),
-        ("a6", "correlation", "table"),
+        ("a6", "correlation", "heatmap"),
     ]
 
 

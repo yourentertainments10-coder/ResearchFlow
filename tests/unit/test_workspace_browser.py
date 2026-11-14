@@ -85,7 +85,7 @@ def test_the_whole_journey_in_the_browser(browser, base, tmp_path, vname, scheme
     assert page.locator("#work").is_visible()
     assert "sales.csv" in page.inner_text("#srcinfo") and "8 rows" in page.inner_text("#srcinfo")
     assert page.locator("#cards .card").count() >= 4
-    assert page.locator("#analyses img").count() >= 1
+    assert page.locator("#starter img").count() >= 1
     assert page.locator("#findings li").count() >= 1
     # a request that plans
     page.fill("#ask", "Compare revenue by region")
@@ -107,12 +107,17 @@ def test_the_whole_journey_in_the_browser(browser, base, tmp_path, vname, scheme
     with page.expect_download() as dl:
         page.click("#analyses a:has-text('CSV') >> nth=0")
     assert dl.value.suggested_filename.endswith(".csv")
+    page.click("#t-report")
     with page.expect_download() as dl:
         page.click("text=Download report (HTML)")
     assert dl.value.suggested_filename == "report.html"
     # layout and theme
     overflow = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
     assert overflow <= 0, f"horizontal overflow of {overflow}px"
+    for tab in ("overview", "clean", "explore", "predict", "report"):
+        page.click(f"#t-{tab}")
+        wide = page.evaluate("document.documentElement.scrollWidth - window.innerWidth")
+        assert wide <= 0, f"horizontal overflow of {wide}px on the {tab} tab"
     bg = page.evaluate("getComputedStyle(document.body).backgroundColor")
     r, g, b = (int(v) for v in bg.replace("rgb(", "").replace(")", "").split(",")[:3])
     assert (r + g + b) / 3 < 100 if scheme == "dark" else (r + g + b) / 3 > 200
@@ -199,12 +204,14 @@ def test_cleaning_panel_applies_after_approval_undoes_and_asks_before_removing(
     f.write_bytes(SALES)
     page.set_input_files("#file", str(f))
     page.wait_for_selector("#cards .card")
+    page.click("#t-clean")
     assert page.locator("#cleanstate").inner_text().count("No cleaning applied yet.") == 1
     assert page.locator("#suggest li").count() >= 1  # suggested, not applied
     page.locator("#suggest li button.primary").first.click()
     page.wait_for_selector("#cleanstate ol li")
     assert "Independent check of the cleaning: verified" in page.inner_text("#cleanstate")
-    assert "were filled" in page.inner_text("#answer") or "was filled" in page.inner_text("#answer")
+    done = page.inner_text("#cleanmsg")
+    assert "were filled" in done or "was filled" in done
     page.click("text=Undo last step")
     page.wait_for_selector("text=No cleaning applied yet.")
     page.select_option("#cact", "drop_column")
@@ -226,6 +233,7 @@ def test_model_panel_compares_models_and_finds_groups(browser, base, tmp_path):
     f.write_text("\n".join(rows) + "\n")
     page.set_input_files("#file", str(f))
     page.wait_for_selector("#cards .card")
+    page.click("#t-predict")
     page.select_option("#mtarget", "survived")
     page.click("#modelform button[type=submit]")
     page.wait_for_selector("#models article")
@@ -237,5 +245,167 @@ def test_model_panel_compares_models_and_finds_groups(browser, base, tmp_path):
     page.click("#modelform button[type=submit]")
     page.locator("#models article").nth(1).wait_for()
     assert "Found" in page.inner_text("#modelmsg")
+    assert problems == []
+    context.close()
+
+
+def load_sales(page, tmp_path):
+    f = tmp_path / "sales.csv"
+    f.write_bytes(SALES)
+    page.set_input_files("#file", str(f))
+    page.wait_for_selector("#cards .card")
+
+
+def test_start_screen_offers_examples_and_a_drop_zone_and_loads_an_example(browser, base):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    assert page.locator("#start").is_visible() and page.locator("#drop").is_visible()
+    page.wait_for_selector("#samples button")
+    assert page.locator("#samples button").count() == 3
+    assert "made-up" in page.inner_text("#start")
+    page.click("#samples button >> nth=0")
+    page.wait_for_selector("#cards .card")
+    assert page.locator("#start").is_hidden()
+    assert "example-sales.csv" in page.inner_text("#srcinfo")
+    assert page.locator("#starter img").count() >= 1
+    assert problems == []
+    context.close()
+
+
+def test_dropping_a_file_loads_it(browser, base):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    page.evaluate(
+        """() => {
+        const dt = new DataTransfer();
+        dt.items.add(new File(["a,b\\n1,x\\n2,y\\n3,x\\n"], "dropped.csv", {type: "text/csv"}));
+        document.getElementById("drop").dispatchEvent(new DragEvent("drop", {dataTransfer: dt, bubbles: true, cancelable: true}));
+    }"""
+    )
+    page.wait_for_selector("#cards .card")
+    assert "dropped.csv" in page.inner_text("#srcinfo")
+    assert problems == []
+    context.close()
+
+
+def test_tabs_show_one_section_and_work_with_the_keyboard(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    assert page.locator("#p-overview").is_visible() and page.locator("#p-clean").is_hidden()
+    page.focus("#t-overview")
+    page.keyboard.press("ArrowRight")
+    assert page.locator("#p-clean").is_visible() and page.locator("#p-overview").is_hidden()
+    assert page.get_attribute("#t-clean", "aria-selected") == "true"
+    page.keyboard.press("End")
+    assert page.locator("#p-report").is_visible()
+    assert problems == []
+    context.close()
+
+
+def test_a_request_from_any_tab_opens_the_new_answer_at_the_top_of_explore(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    page.click("#t-clean")
+    page.fill("#ask", "Average revenue by product")
+    page.click("#askform button[type=submit]")
+    page.wait_for_selector("#answer .msg.ok")
+    assert page.locator("#p-explore").is_visible()
+    page.fill("#ask", "Median revenue by region")
+    page.click("#askform button[type=submit]")
+    page.locator("#analyses article").nth(1).wait_for()
+    assert page.locator("#analyses article").count() == 2
+    first = page.locator("#analyses article").first.inner_text()
+    assert "Median of revenue by region" in first  # newest first
+    assert problems == []
+    context.close()
+
+
+def test_the_ask_bar_stays_in_view_while_scrolling(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    page.mouse.wheel(0, 1500)
+    page.wait_for_timeout(200)
+    box = page.locator("#ask").bounding_box()
+    assert box is not None and 0 <= box["y"] < 160
+    assert problems == []
+    context.close()
+
+
+def test_a_cleaning_error_shows_next_to_the_cleaning_controls(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    page.click("#t-clean")
+    page.select_option("#cact", "fill_constant")
+    page.select_option("#ccol", "revenue")
+    page.click("#cleanform button[type=submit]")  # no value typed
+    page.wait_for_selector("#cleanformmsg .msg")
+    assert page.locator("#cleanformmsg .msg").inner_text().strip() != ""
+    assert page.locator("#answer").inner_text().strip() == ""
+    assert "No cleaning applied yet." in page.inner_text("#cleanstate")
+    page.select_option("#cact", "fill_median")
+    page.select_option("#ccol", "product")  # text column: the step would change nothing
+    page.click("#cleanform button[type=submit]")
+    page.wait_for_selector("#cleanformmsg .msg.error")
+    assert "No cleaning applied yet." in page.inner_text("#cleanstate")
+    assert [p for p in problems if not p.startswith("HTTP")] == []
+    context.close()
+
+
+def test_long_tables_are_cut_and_open_in_place_with_a_sticky_header(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    rows = ["id,group,value"] + [f"{i},g{i},{i * 3 % 17}" for i in range(1, 61)]
+    f = tmp_path / "long.csv"
+    f.write_text("\n".join(rows) + "\n")
+    page.set_input_files("#file", str(f))
+    page.wait_for_selector("#cards .card")
+    page.fill("#ask", "Sum value by group")
+    page.click("#askform button[type=submit]")
+    page.wait_for_selector("#analyses article")
+    table = page.locator("#analyses article table").first
+    assert table.locator("tbody tr:visible").count() == 12
+    page.click("#analyses article button:has-text('Show all')")
+    assert table.locator("tbody tr:visible").count() > 12
+    assert (
+        page.evaluate("getComputedStyle(document.querySelector('#analyses th')).position")
+        == "sticky"
+    )
+    # the wheel over a collapsed table moves the page, not a hidden inner scroller
+    page.click("#analyses article button:has-text('Show fewer')")
+    assert page.evaluate(
+        "document.querySelector('#analyses .tw').scrollHeight <= document.querySelector('#analyses .tw').clientHeight + 1"
+    )
+    assert problems == []
+    context.close()
+
+
+def test_results_can_be_removed_and_cleared(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    for text in ("Average revenue by product", "Median revenue by region"):
+        page.fill("#ask", text)
+        page.click("#askform button[type=submit]")
+        page.wait_for_selector("#answer .msg.ok")
+    page.locator("#analyses article").nth(1).wait_for()
+    page.click("#analyses article >> nth=0 >> button:has-text('Remove')")
+    page.wait_for_selector("#answer .msg:has-text('Removed')")
+    assert page.locator("#analyses article").count() == 1
+    page.click("#clearres")
+    page.wait_for_selector("#answer .msg:has-text('Removed 1 result')")
+    assert page.locator("#analyses article").count() == 0
+    assert page.locator("#none").is_visible() and page.locator("#clearres").is_hidden()
+    assert problems == []
+    context.close()
+
+
+def test_theme_switch_changes_the_page_and_the_chart_images(browser, base, tmp_path):
+    context, page, problems = open_page(browser, base, "desktop", "light")
+    load_sales(page, tmp_path)
+    before = page.get_attribute("#starter img >> nth=0", "src")
+    page.click("#theme")
+    assert page.evaluate("document.documentElement.getAttribute('data-theme')") == "dark"
+    after = page.get_attribute("#starter img >> nth=0", "src")
+    assert before != after
+    bg = page.evaluate("getComputedStyle(document.body).backgroundColor")
+    assert sum(int(v) for v in bg.replace("rgb(", "").replace(")", "").split(",")[:3]) / 3 < 100
+    page.click("#theme")
+    assert page.evaluate("document.documentElement.getAttribute('data-theme')") == "light"
     assert problems == []
     context.close()
