@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased — PNG chart and PDF report exports (2026-11-14)
+- `GET /api/export/<id>.png` and `/api/export/report.pdf`, built with the standard library and numpy only (no new dependency); verified analyses only, deterministic bytes. See `docs/WORKSPACE_EXPORTS.md`.
+
 ## Unreleased — CSV workspace: typed filters (2026-11-10)
 - "only 2024", "only region is north, south", "exclude north", "only fare between 10 and 50" are read by a fixed grammar (`sie.workspace.filters`) into a typed `FilterRows` cleaning step: applied on a copy, logged, independently re-checked, undoable and replayed. Values that occur nowhere, ambiguous columns and filters that would leave no rows are refused with a plain message; nothing is guessed.
 - Docs: `docs/WORKSPACE_FILTERS.md`. Tests: grammar, step, verification, session replay and an HTTP test.

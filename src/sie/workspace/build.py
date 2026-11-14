@@ -36,7 +36,8 @@ WORKSPACE_LIMITATIONS = (
     *STANDARD_LIMITATIONS,
     "Starter analyses are chosen by fixed rules from column types, not by understanding the data's meaning.",
     "A number is shown as verified only when a separate pandas calculation agrees; unverified results are not exported.",
-    "Charts are deterministic SVG; PNG and PDF export are not available yet.",
+    "Charts are deterministic SVG; PNG charts and the PDF report are drawn by this tool itself (the PDF "
+    "uses a plain monospaced font and shows accented or non-Latin letters as '?').",
 )
 
 
