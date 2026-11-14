@@ -222,7 +222,7 @@ def _exclusions(
                 "it looks like an identifier (named like an id, almost all values different)",
             )
         elif (
-            c.type in ("integer", "text")
+            c.type == "integer"  # a text id (a site, a product) is a category: capped, not dropped
             and _looks_like_id_name(c.name)
             and s.nunique() > MAX_CATEGORIES
         ):
