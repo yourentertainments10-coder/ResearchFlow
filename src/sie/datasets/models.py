@@ -261,6 +261,7 @@ class GroupAggregate(_Spec):
     by: list[_COL] = Field(min_length=1, max_length=3)
     metrics: list[str] = Field(min_length=1, max_length=20)
     sort: str | None = None  # a metric label (column:function) to sort by, descending
+    used_counts: bool = False  # add "rows with <column>": rows of each group that hold the measure
 
     @field_validator("metrics")
     @classmethod
@@ -276,6 +277,7 @@ class TopN(_Spec):
     metric: str
     n: int = Field(default=10, ge=1, le=1000)
     order: Literal["desc", "asc"] = "desc"
+    used_counts: bool = False  # add "rows with <column>": rows of each group that hold the measure
 
     @field_validator("metric")
     @classmethod

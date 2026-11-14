@@ -823,10 +823,16 @@ def _date_formats_that_fit(ds: Dataset, column: str) -> list[str]:
     return fits
 
 
-def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Suggestion]:
+def suggest(
+    ds: Dataset,
+    profile: ProfileResult,
+    source_sha256: str,
+    applied: list[CleaningStep] | None = None,
+) -> list[Suggestion]:
     """Steps worth considering, from the profile. Proposals only; nothing here changes the data."""
     out: list[Suggestion] = []
     rows = profile.rows
+    filled = {st.column for st in applied or [] if isinstance(st, FillMissing)}
     n = lambda v: _n(v, source_sha256, "suggestion")  # noqa: E731
     if profile.duplicate_rows:
         out.append(
@@ -922,7 +928,13 @@ def suggest(ds: Dataset, profile: ProfileResult, source_sha256: str) -> list[Sug
                         f"{n(len(hits))} {c.name} "
                         + ("value lies" if len(hits) == 1 else "values lie")
                         + " far from the rest "
-                        f"(outside {n(fence[0])} to {n(fence[1])}). Flagging changes nothing.",
+                        f"(outside {n(fence[0])} to {n(fence[1])}). Flagging changes nothing."
+                        + (
+                            f" The empty cells of {c.name} were filled with one typical value, which"
+                            " narrows the usual range, so more values count as outliers than before."
+                            if c.name in filled
+                            else ""
+                        ),
                         FlagOutliers(column=c.name),
                     )
                 )

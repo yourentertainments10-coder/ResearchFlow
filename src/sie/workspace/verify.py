@@ -208,13 +208,18 @@ def _expected_groups(
         series, _ = _metric_series(ds, m, na)
         frame[m] = series
     frame["__n"] = 1
+    for m in metrics:  # how many rows of each group hold a value for the measure
+        frame[f"__used:{parse_metric(m)[0]}"] = frame[m].notna().astype(int)
     grouped = frame.groupby(kcols, sort=False, dropna=False)
     sizes = grouped["__n"].sum()
+    used = {parse_metric(m)[0]: grouped[f"__used:{parse_metric(m)[0]}"].sum() for m in metrics}
     metric_values = {m: _agg(grouped[m], parse_metric(m)[1]) for m in metrics}
     out: dict[tuple[Any, ...], dict[str, Any]] = {}
     for key in sizes.index:
         tup = key if isinstance(key, tuple) else (key,)
         entry: dict[str, Any] = {"rows": int(sizes.loc[key])}
+        for column, counts in used.items():
+            entry[f"rows with {column}"] = int(counts.loc[key])
         for m in metrics:
             entry[m] = metric_values[m].loc[key]
         out[tuple(tup)] = entry
@@ -241,6 +246,9 @@ def _verify_groups(
             c.true(f"group {key!r} does not exist in the data", False)
             continue
         c.eq(f"rows of group {key!r}", row["rows"], want["rows"])
+        for name in want:
+            if name.startswith("rows with ") and name in table.columns:
+                c.eq(f"{name} of group {key!r}", row[name], want[name])
         for m in metrics:
             c.eq(f"{m} of group {key!r}", row[m], want[m])
     return expected
@@ -297,9 +305,9 @@ def _value_counts(ds: Dataset, spec: ValueCounts, table: pd.DataFrame) -> Verifi
     na = tuple(ds.options.na_values)
     if spec.column not in ds.frame.columns:
         raise NotVerifiable(f"unknown column {spec.column!r}")
-    cleaned = _clean(ds.frame[spec.column], na)
-    if any(v is not None and not isinstance(v, str) for v in cleaned.tolist()):
-        raise NotVerifiable("value_counts check covers text columns only")
+    cleaned = _whole_numbers(_clean(ds.frame[spec.column], na))  # whole numbers count as numbers
+    if any(v is not None and not isinstance(v, str | int) for v in cleaned.tolist()):
+        raise NotVerifiable("value_counts check covers text and whole-number columns only")
     labelled = pd.Series([NULL_LABEL if v is None else v for v in cleaned.tolist()], dtype=object)
     counts = labelled.value_counts(dropna=False)
     total = int(len(cleaned))

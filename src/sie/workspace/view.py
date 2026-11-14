@@ -129,6 +129,7 @@ def model_view(
                     "group": num(p["group"]),
                     "rows": num(p["rows"]),
                     "means": {k: num(v) for k, v in p["means"].items()},
+                    "common": dict(p.get("common", {})),
                 }
                 for p in (report.clusters or {}).get("profiles", [])
             ],

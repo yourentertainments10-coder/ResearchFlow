@@ -207,7 +207,7 @@ def _top_n(item: AnalysisItem, b: _Builder) -> None:
         "v", value, label=spec.metric, result=item.result, decimals=figs.decimals_for(value)
     )
     b.add(
-        "result", "info", "The highest {V:by} is {V:key}, with {V:metric} of {F:v}.", item.planned.id, [fig],
+        "result", "info", "Within {V:by}, the group {V:key} has the highest {V:metric}: {F:v}.", item.planned.id, [fig],
         {"by": spec.by, "key": str(top[spec.by]), "metric": pretty_metric(spec.metric)},
     )  # fmt: skip
     if item.result.extra.get("tied_at_cutoff"):

@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — fix: second Titanic review, behaviour (2026-11-14)
+- Key figures skip identifier columns (no more "Mean of PassengerId").
+- Grouped tables whose measure column has blanks gain a `rows with <column>` column: how many rows of each group the average or sum really used (opt-in spec flag `used_counts`, set by the planner; the engine default and its golden tests are unchanged). The independent check recomputes it.
+- "Compare Survived by Sex" no longer adds a second copy of the starter "Sum of Survived by Sex" chart: a full group list and an un-truncated top list count as the same analysis. A top list that is cut off is still different.
+- "Top 3 Embarked by Fare" keeps its name when the empty group makes it a real top list; the note says how many rows have no value and that they form a (null) group.
+- A cleaning step that would not change any value (fill on a column with no blanks, remove duplicates when there are none) is refused as `clean_rejected` and is not added to the log or the undo stack.
+- New requests: "Count by <column>" (also "how many rows by"), "Rate of <0/1 column> by <column>" / "<column> rate by": the average of a 0/1 column, labelled as a share. Other rates are refused with the reason. The independent check now covers value counts of whole-number columns.
+- "The highest Sex is female" now reads "Within Sex, the group female has the highest ...". Cluster profiles list the most common value of each text column. After a fill, the outlier suggestion explains why the count grew.
+- Results can be removed: `POST /api/remove {"id": "r1"}` and `POST /api/clear` (cleaning steps stay; the history keeps a note, so replay reaches the same state).
+- Tests: `tests/unit/test_workspace_review_round2.py`. Two older tests that asked "Compare/Sum" for a chart the page already shows now use another measure.
+- Page changes (error placement, scrolling, tabs, start screen, charts, theme) are a separate pull request.
+
 ## Unreleased — PNG chart and PDF report exports (2026-11-14)
 - `GET /api/export/<id>.png` and `/api/export/report.pdf`, built with the standard library and numpy only (no new dependency); verified analyses only, deterministic bytes. See `docs/WORKSPACE_EXPORTS.md`.
 

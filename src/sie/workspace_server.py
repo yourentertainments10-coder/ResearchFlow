@@ -13,6 +13,8 @@ Routes
   POST   /api/ask                {"text": "..."}  -> the step and the new state
   POST   /api/clean              {"step": {...}}  one approved cleaning step -> the step and the new state
   POST   /api/clean/undo         remove the last approved cleaning step
+  POST   /api/remove             {"id": "r1"} take one asked result off the page (history keeps a note)
+  POST   /api/clear              take every asked result off the page (cleaning steps stay)
   POST   /api/model              {"target": "column" | null}  compare models (null = find groups)
   GET    /api/export/<id>.csv|.xlsx|.svg|.png   one verified analysis (unverified ones are refused)
   GET    /api/export/report.html the self-contained report
@@ -292,6 +294,10 @@ class Handler(BaseHTTPRequestHandler):
             self._undo()
         elif parts.path == "/api/model":
             self._model()
+        elif parts.path == "/api/remove":
+            self._remove()
+        elif parts.path == "/api/clear":
+            self._clear()
         else:
             self._error(404, "Not found.")
 
@@ -407,6 +413,42 @@ class Handler(BaseHTTPRequestHandler):
             step = session.ask(request)
             view = session_view(session)
         self._json(200, {"step": step.to_dict(), "state": view})
+
+    def _remove(self) -> None:
+        if self.headers.get("Content-Type", "").split(";")[0].strip().lower() != "application/json":
+            self._error(415, "Send application/json.")
+            return
+        body = self._body(MAX_REQUEST_BYTES)
+        if body is None:
+            return
+        try:
+            target = json.loads(body.decode("utf-8"))["id"]
+        except (ValueError, KeyError, TypeError):
+            self._error(400, 'Send {"id": "r1"}.')
+            return
+        if not isinstance(target, str) or len(target) > 20:
+            self._error(400, '"id" must be a result id such as r1 or m1.')
+            return
+        with self.state.lock:
+            session = self.state.session
+            if session is None:
+                self._error(404, "No file is loaded yet.")
+                return
+            result = session.remove(target)
+            view = session_view(session)
+        self._json(200, {"step": result.to_dict(), "state": view})
+
+    def _clear(self) -> None:
+        if self._body(MAX_REQUEST_BYTES) is None:
+            return
+        with self.state.lock:
+            session = self.state.session
+            if session is None:
+                self._error(404, "No file is loaded yet.")
+                return
+            result = session.clear_results()
+            view = session_view(session)
+        self._json(200, {"step": result.to_dict(), "state": view})
 
     def _undo(self) -> None:
         if self._body(MAX_REQUEST_BYTES) is None:

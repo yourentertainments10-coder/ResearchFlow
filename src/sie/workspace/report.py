@@ -129,6 +129,10 @@ def _model_sections(session: Session) -> list[str]:
             if v["clusters"]:
                 for p in v["clusters"]["profiles"]:
                     means = ", ".join(f"{k} {m}" for k, m in p["means"].items())
+                    if p.get("common"):
+                        means += "; most common: " + ", ".join(
+                            f"{k} {m}" for k, m in p["common"].items()
+                        )
                     parts.append(
                         f"<p>Group {escape(p['group'])} ({escape(p['rows'])} rows): {escape(means)}</p>"
                     )

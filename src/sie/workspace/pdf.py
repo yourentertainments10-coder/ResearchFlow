@@ -298,6 +298,10 @@ def build_pdf(session: Session) -> bytes:
             if v["clusters"]:
                 for g in v["clusters"]["profiles"]:
                     means = ", ".join(f"{k} {m}" for k, m in g["means"].items())
+                    if g.get("common"):
+                        means += "; most common: " + ", ".join(
+                            f"{k} {m}" for k, m in g["common"].items()
+                        )
                     d.para(f"Group {g['group']} ({g['rows']} rows): {means}")
         if v["excluded"]:
             d.para("Columns left out:")

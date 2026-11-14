@@ -351,13 +351,27 @@ def _note_metric_nulls(run: _Run, labels: list[str]) -> None:
 
 
 def _grouped_rows(
-    run: _Run, by: list[str], labels: list[str]
+    run: _Run, by: list[str], labels: list[str], used_counts: bool = False
 ) -> tuple[list[str], list[list[Any]], list[tuple[Any, ...]]]:
     key_cols, groups = _group(run, by)
-    columns = [*by, "rows", *labels]
-    _check_unique(columns, "output columns")
     for label in labels:
         _metric_values(run, label, [], warn=False)  # validates the column and function only
+    # A measure column with blanks: say how many rows of each group the measure really used, because the
+    # group size ("rows") then over-states it (an average of Age over 577 rows that hold 453 ages).
+    used: list[str] = []
+    for label in labels:
+        column = parse_metric(label)[0]
+        name = f"rows with {column}"
+        if (
+            used_counts
+            and column not in used
+            and name not in by
+            and name not in labels
+            and any(v is None for v in run.col(column).values)
+        ):
+            used.append(column)
+    columns = [*by, "rows", *(f"rows with {c}" for c in used), *labels]
+    _check_unique(columns, "output columns")
     rows: list[list[Any]] = []
     sort_keys: list[tuple[Any, ...]] = []
     for positions in groups.values():
@@ -365,6 +379,9 @@ def _grouped_rows(
         keys = [col.values[first] for col in key_cols]
         row: list[Any] = [_label(k, c.kind) for k, c in zip(keys, key_cols, strict=True)]
         row.append(len(positions))
+        for column in used:
+            values = run.col(column).values
+            row.append(sum(1 for p in positions if values[p] is not None))
         for label in labels:
             value, _ = _metric_values(run, label, positions)
             row.append(value)
@@ -401,7 +418,7 @@ def _sorted_by_metric(
 
 def _op_group_aggregate(spec: GroupAggregate, run: _Run) -> pd.DataFrame:
     _check_unique(list(spec.metrics), "metrics")
-    columns, rows, keys = _grouped_rows(run, list(spec.by), list(spec.metrics))
+    columns, rows, keys = _grouped_rows(run, list(spec.by), list(spec.metrics), spec.used_counts)
     if spec.sort is not None:
         if spec.sort not in spec.metrics:
             raise OperationError(
@@ -419,7 +436,7 @@ def _op_group_aggregate(spec: GroupAggregate, run: _Run) -> pd.DataFrame:
 
 
 def _op_top_n(spec: TopN, run: _Run) -> pd.DataFrame:
-    columns, rows, keys = _grouped_rows(run, [spec.by], [spec.metric])
+    columns, rows, keys = _grouped_rows(run, [spec.by], [spec.metric], spec.used_counts)
     descending = spec.order == "desc"
     order = _sorted_by_metric(rows, keys, columns.index(spec.metric), descending)
     metric_at = columns.index(spec.metric)

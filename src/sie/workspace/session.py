@@ -12,6 +12,7 @@ this module only sequences planner -> engine -> verifier -> chart.
 from __future__ import annotations
 
 import io
+import re
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, BinaryIO
@@ -51,6 +52,8 @@ from sie.workspace.verify import verify_result
 
 HISTORY_VERSION = 1
 UNDO_REQUEST = "Undo the last cleaning step"
+CLEAR_REQUEST = "Remove all results asked for"
+_RESULT_ID = re.compile(r"^[rm][0-9]{1,6}$")
 
 
 def _model_message(report: ModelReport, source: str) -> str:
@@ -223,12 +226,38 @@ class Session:
         return step
 
     def _existing(self, spec: Any, chart: str) -> AnalysisItem | None:
-        """An analysis already on the page with the same typed spec and chart, else None."""
+        """An analysis already on the page with the same typed spec and chart, else None.
+
+        "Compare Survived by Sex" (every group, largest first) and the starter "Top 10 Sex by sum of
+        Survived" show the same table when the top list is not cut off, so they count as the same."""
         wanted = spec.model_dump(mode="json")
+        ranked = _ranking(wanted)
         for item in [*self.workspace.items, *self.items]:
-            if item.planned.chart == chart and item.planned.spec.model_dump(mode="json") == wanted:
+            if item.planned.chart != chart:
+                continue
+            have = item.planned.spec.model_dump(mode="json")
+            if have == wanted:
+                return item
+            if (
+                ranked is not None
+                and item.result is not None
+                and _ranking(have) == ranked
+                and self._lists_every_group(wanted, have, item)
+            ):
                 return item
         return None
+
+    @staticmethod
+    def _lists_every_group(
+        wanted: dict[str, Any], have: dict[str, Any], item: AnalysisItem
+    ) -> bool:
+        """True when one of the two is a plain "every group" list and the other top list is not cut off."""
+        top = have if have.get("op") == "top_n" else wanted
+        if have.get("op") == wanted.get("op"):
+            return False
+        if top is have:  # an existing top list: not cut off when it has fewer rows than n
+            return len(item.result.table) < int(top["n"])
+        return len(item.result.table) <= int(top["n"])  # an existing full list, a new top list
 
     def _already_shown(self, request: str, item: AnalysisItem) -> Step:
         result = item.result.provenance.result_sha256 if item.result is not None else None
@@ -327,7 +356,7 @@ class Session:
         flagged = {c.column for c in self.cleaning if getattr(c, "op", "") == "flag_outliers"}
         return [
             sg
-            for sg in suggest(ws.dataset, ws.profile, ws.source.sha256)
+            for sg in suggest(ws.dataset, ws.profile, ws.source.sha256, self.cleaning)
             if not (getattr(sg.step, "op", "") == "flag_outliers" and sg.step.column in flagged)
         ]
 
@@ -383,6 +412,17 @@ class Session:
                 f"Not applied: the independent check of this cleaning failed ({shown(check.reason, 200)}).",
                 cleaning={"step": dumped},
             )  # fmt: skip
+        if getattr(typed, "op", "") != "flag_outliers" and rebuilt.dataset.frame.equals(
+            self.workspace.dataset.frame
+        ):
+            column = getattr(typed, "column", None)
+            where = f" in {shown(column)}" if column else ""
+            return self._record(
+                request, "clean_rejected",
+                f"Not applied: this step would not change any value{where}, so it was not added "
+                "to the cleaning log.",
+                cleaning={"step": dumped},
+            )  # fmt: skip
         entry = rebuilt.cleaning_steps[-1]
         again = self._swap(rebuilt, [*self.cleaning, typed])
         step_record = self._record(
@@ -390,6 +430,51 @@ class Session:
         )
         self._reask(again)
         return step_record
+
+    # -- removing results ----------------------------------------------------------------------------
+    def _request_of(self, result_id: str) -> str | None:
+        for step in reversed(self.steps):
+            if step.analysis_id == result_id or (step.model or {}).get("id") == result_id:
+                return step.request
+        return None
+
+    def remove(self, result_id: object) -> Step:
+        """Take one result the person asked for (r1, r2 ... or a model comparison m1 ...) off the page.
+        The history keeps a note, so a replay reaches the same state; the starter cards cannot be removed."""
+        rid = result_id if isinstance(result_id, str) and _RESULT_ID.match(result_id) else ""
+        request = f"Remove {shown(result_id, 20)}"
+        item = next((i for i in self.items if i.planned.id == rid), None)
+        run = next((m for m in self.models if m.id == rid), None)
+        if not rid or (item is None and run is None):
+            return self._record(
+                request, "remove_rejected",
+                "There is no such result to remove (the starter charts and tables stay).",
+                analysis_id=rid or None,
+            )  # fmt: skip
+        asked = self._request_of(rid)
+        if item is not None:
+            self.items.remove(item)
+            title = item.planned.title
+            if self._current is not None and self._current[1] is item:
+                self._current = None
+        else:
+            assert run is not None
+            self.models.remove(run)
+            title = f"model comparison {run.id}"
+        if asked in self._live:
+            self._live.remove(asked)
+        return self._record(
+            request, "removed", f"Removed {title}. The history keeps a note of it.", analysis_id=rid
+        )
+
+    def clear_results(self) -> Step:
+        """Take every result the person asked for off the page (cleaning steps stay; undo them one by one)."""
+        count = len(self.items) + len(self.models)
+        self.items, self.models, self._live, self._current = [], [], [], None
+        return self._record(
+            CLEAR_REQUEST, "cleared",
+            f"Removed {count} result{'' if count == 1 else 's'}. Cleaning steps are kept.",
+        )  # fmt: skip
 
     def undo_clean(self) -> Step:
         """Remove the last approved cleaning step (the data is rebuilt from the loaded file)."""
@@ -499,6 +584,17 @@ def open_stream(
     )
 
 
+def _ranking(spec: dict[str, Any]) -> tuple[str, str] | None:
+    """(group column, measure) when a spec ranks groups by one measure, largest first."""
+    if spec.get("op") == "group_aggregate":
+        by, metrics = spec.get("by") or [], spec.get("metrics") or []
+        if len(by) == 1 and len(metrics) == 1 and spec.get("sort") == metrics[0]:
+            return by[0], metrics[0]
+    if spec.get("op") == "top_n" and spec.get("order") == "desc":
+        return spec["by"], spec["metric"]
+    return None
+
+
 def replay(
     data: bytes | BinaryIO,
     name: str,
@@ -545,6 +641,10 @@ def replay(
                 differences.append(
                     f"step {old.get('index')}: the recorded cleaning step is invalid"
                 )
+        elif kind in ("removed", "remove_rejected"):
+            session.remove(old["request"].removeprefix("Remove "))
+        elif kind == "cleared":
+            session.clear_results()
         elif kind == "clean_undo" or old["request"] == UNDO_REQUEST:
             session.undo_clean()
         elif kind == "clean_rejected":

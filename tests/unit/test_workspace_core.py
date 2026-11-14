@@ -94,12 +94,12 @@ def test_value_counts_include_the_null_group_and_shares():
 
 def test_top_n_sums_skip_nulls_and_keep_the_null_group():
     table = item(ws(), "a3").result.table
-    assert table.columns.tolist() == ["rank", "region", "rows", "units:sum"]
-    # South 5+6 (one empty cell skipped), North 2+3+2, empty region 4, East 1
+    assert table.columns.tolist() == ["rank", "region", "rows", "rows with units", "units:sum"]
+    # South 5+6 (one empty cell skipped, so 2 of its 3 rows were used), North 2+3+2, empty region 4, East 1
     assert table.values.tolist() == [
-        [1, "South", 3, 11], [2, "North", 3, 7], [3, "(null)", 1, 4], [4, "East", 1, 1],
+        [1, "South", 3, 2, 11], [2, "North", 3, 3, 7], [3, "(null)", 1, 1, 4], [4, "East", 1, 1, 1],
     ]  # fmt: skip
-    assert rows(ws(), "a4") == [[1, "B", 4, 14], [2, "A", 4, 9]]
+    assert rows(ws(), "a4") == [[1, "B", 4, 4, 14], [2, "A", 4, 3, 9]]
 
 
 def test_the_monthly_trend_lists_the_empty_month_as_a_gap():

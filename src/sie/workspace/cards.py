@@ -6,6 +6,7 @@ from typing import Any
 
 from sie.datasets.models import ProfileResult
 from sie.workspace import figs
+from sie.workspace.autoplan import _numeric
 from sie.workspace.models import Card
 
 
@@ -64,7 +65,12 @@ def build_cards(
         )
     if describe_item is not None and describe_item.result is not None:
         table = describe_item.result.table
-        numeric = table[table["type"].isin(["integer", "decimal"]) & (table["count"] > 0)]
+        measures = _numeric(profile)  # an id or row-number column is not a measure worth a card
+        numeric = table[
+            table["type"].isin(["integer", "decimal"])
+            & (table["count"] > 0)
+            & table["column"].isin(measures)
+        ]
         if len(numeric):
             row = numeric.iloc[0]
             for key, label in (("mean", "Mean"), ("min", "Minimum"), ("max", "Maximum")):
