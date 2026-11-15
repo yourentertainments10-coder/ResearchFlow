@@ -2,9 +2,53 @@
 
 from __future__ import annotations
 
-from tests.unit.test_evidence_web import Site, fetcher
+from datetime import UTC, datetime
 
+from sie.evidence.web import RawResponse, WebFetcher
 from sie.research.pipeline import probe_urls
+
+UA = "SIE-research/0.1 (contact: owner@example.org)"
+NOW = datetime(2026, 10, 23, 10, 0, tzinfo=UTC)
+
+
+class Site:
+    """A fake network: robots.txt only; any other request is recorded and answered 404."""
+
+    def __init__(self, robots="User-agent: *\nAllow: /\n", robots_status=200):
+        self.robots, self.robots_status = robots, robots_status
+        self.requests: list[str] = []
+
+    def get(self, url, headers, timeout, max_bytes):
+        self.requests.append(url)
+        if url.endswith("/robots.txt"):
+            return RawResponse(
+                self.robots_status, {"content-type": "text/plain"}, self.robots.encode()
+            )
+        return RawResponse(404, {}, b"no")
+
+
+class Ticker:
+    def __init__(self):
+        self.t = 0.0
+
+    def __call__(self):
+        return self.t
+
+    def sleep(self, s):
+        self.t += s
+
+
+def fetcher(site, resolver=lambda h, p: ["93.184.216.34"]):
+    clock = Ticker()
+    return WebFetcher(
+        user_agent=UA,
+        get=site.get,
+        resolver=resolver,
+        clock=clock,
+        sleep=clock.sleep,
+        now=lambda: NOW,
+    )
+
 
 ROBOTS = "User-agent: *\nDisallow: /api/\nCrawl-delay: 5\nAllow: /\n"
 
