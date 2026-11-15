@@ -48,5 +48,5 @@ A free-only engine will not find every source for every topic. It must disclose 
 | Wikimedia, Common Crawl, APISetu, Kaggle | Not enabled | Each candidate needs an individual policy, endpoint, licence and rate-limit review. |
 | General web search | None added | No currently verified keyless provider meeting the documented permission and access rules is enabled. |
 
-No replacement source has passed the controlled live smoke test. The current active provider is useful for paper references only; structured-data discovery is therefore not yet operational from registered catalogues.
+**Update 2026-11-15:** the live smoke test passed for fetching, saving, reporting and reusing one URL-supplied table (see PHASE4_WEB_RESEARCH_DESIGN.md section 12). No catalogue has yet passed as a replacement for structured-data *discovery*. The current active provider is useful for paper references only; structured-data discovery is therefore not yet operational from registered catalogues.
 

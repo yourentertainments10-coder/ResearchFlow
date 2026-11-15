@@ -76,6 +76,10 @@ def default_columns(table: pd.DataFrame) -> tuple[str, str]:
     cols = [str(c) for c in table.columns]
     if len(cols) < 2:
         raise EvidenceError("the result has no value column to report")
+    if {"column", "type", "count", "nulls", "distinct"} <= set(cols):
+        # a column summary ends in text-length statistics: they are not a headline number, so the
+        # default is how many values each column holds
+        return "column", "count"
     label = next((c for c in cols if c != "rank"), cols[0])
     return label, cols[-1]
 
@@ -258,7 +262,10 @@ def build_report(
         if t_url not in seen:
             continue
         for note in notes:  # one gap per note, so a long address never truncates a limitation away
-            gap(GapKind.UNVERIFIED, f"{t_url} was chosen from a search lead and not verified against the question: {note}.")  # fmt: skip
+            if note.startswith("supplied by URL"):
+                gap(GapKind.UNVERIFIED, f"{t_url} was {note}.")
+            else:
+                gap(GapKind.UNVERIFIED, f"{t_url} was chosen from a search lead and not verified against the question: {note}.")  # fmt: skip
     scope_text, lits = _text(
         "Whether the collected table covers everything the question asks about (for example every "
         f"constituency or every year) was not checked; it has {sum(c['rows'] for c in cov)} rows in total."

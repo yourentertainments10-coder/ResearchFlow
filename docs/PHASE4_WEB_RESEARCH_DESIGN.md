@@ -1,6 +1,6 @@
 # Phase 4: Web research with citations (approved design; free-source-first)
 
-> **Navigation/status:** This is the design for the unmerged Phase 4 research branch, not proof of a production-ready feature. Live-source and target-Windows save/reuse acceptance remain open. See [ROADMAP.md](ROADMAP.md), [FREE_SOURCE_CATALOGUE.md](FREE_SOURCE_CATALOGUE.md), and [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md).
+> **Navigation/status (updated 2026-11-15):** This is the design for Phase 4, which is merged (PR #31). A controlled live run on the owner's Windows computer passed on 2026-11-14 for fetch, save, report and reuse of one URL-supplied table (section 12); structured-data discovery from a catalogue is still not operational. See [ROADMAP.md](ROADMAP.md), [FREE_SOURCE_CATALOGUE.md](FREE_SOURCE_CATALOGUE.md), and [WORKSPACE_PRODUCT_DIRECTION.md](WORKSPACE_PRODUCT_DIRECTION.md).
 
 Status: **approved by the owner 2026-10-23 with a wider scope; implemented in stages on `feature/phase-4-web-research` (stacked on Phase 3, draft PR, not merged).** Built: 4a safe fetch, 4b discovery and ranking, 4c collection into normalised tables, free catalogue adapters (data.gov.uk CKAN, OpenAlex), project-scoped expiring dataset store with licence-aware permission, short-lived fetch cache, reuse-sufficiency check, deterministic analysis, number-locked cited report with conflict and licence disclosure, `sie research` commands (ADR-045, ADR-046). **Not built:** a controlled live fetch (see section 10), metric definitions (section 9 item 4) and natural-language query planning (the user still names the operation and columns), linking collected datasets to the evidence ledger, other catalogues in `FREE_SOURCE_CATALOGUE.md`, Phase 5 and 6. Rules: `AGENTS.md` rule 9 (respect sources), rule 2 (no invented numbers), `SECURITY.md` section 2, ADR-031 (politeness), ADR-042 (retention).
 
@@ -91,3 +91,18 @@ The collection, deterministic analysis and report pipeline exists on the Phase 4
 - `WebFetcher` already applies robots Crawl-delay. Regression tests now explicitly check a 10-second delay and refusal above the configured 60-second maximum.
 - Test fixtures explicitly create a temporary registry that re-enables CKAN only for synthetic-network tests. This preserves ranking, redirects, quota and failure-path coverage without reopening the production endpoint.
 - Automated CI covers simulated network behaviour only. Do not merge PR #31 until a permitted live structured-data discovery/collect/save/report smoke test passes in an environment with outbound access, and a save/reuse check passes on the target Windows environment.
+
+## 12. Controlled live run (2026-11-14, owner's Windows computer, no sandbox)
+
+Commands: `sie research discover`, `collect --licence cc-by-sa`, `datasets`, `ask` twice.
+
+| Step | Result |
+|---|---|
+| `discover "population of countries"` | OpenAlex answered live (15 hits, 3 listed as references, all papers). data.gov.uk reported `disabled` with the recorded reason; nothing paid was tried. No structured-data lead. |
+| `collect` of a Wikipedia table (URL supplied by the owner) | robots.txt allowed the page; table of 238 rows parsed; a second table was refused by the parser (`colspan`), flagged. Without `--licence` the table was **not saved** (no recorded permission), exactly as designed; with `--licence cc-by-sa` it was stored until 2027-02-12. |
+| `datasets` | the table was listed with its licence and expiry. |
+| `ask` (first and second run) | `report.md` written from stored data both times ("reused stored data"), so save and reuse works on Windows. |
+
+Found and fixed afterwards: a column-summary report took a text-length statistic as its headline number (the default is now the count of values per column), and a URL supplied by the person was described as "chosen from a search lead". The population columns were typed `mixed` and so produced no numbers: the report said so instead of guessing; a cleaning plan (`--clean`) is needed to convert them.
+
+Not shown by this run: discovery of structured data from a catalogue, the quality of a report on a numeric table (the owner was given a `--clean` command to try), other operating systems.
