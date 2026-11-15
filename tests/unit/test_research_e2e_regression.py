@@ -148,6 +148,20 @@ def test_a_lead_that_does_not_state_place_or_year_is_kept_with_the_limits_disclo
     assert all(g.endswith(".") for g in gaps if "search lead" in g)
 
 
+def test_a_url_the_person_supplied_is_not_called_a_search_lead(tmp_path):
+    from sie.research_cli import MANUAL_NOTE
+
+    url = "https://data.example.gov.uk/elections/constituency-results.csv"
+    ds = dataset("General election constituency results", url)
+    site, disc, data, store = world(tmp_path, ckan=json_page(ckan_result(ds)),
+                                    pages={url: csv_page(RESULTS_CSV)})  # fmt: skip
+    run = go(disc, data, store)
+    run.lead_limitations[url] = [MANUAL_NOTE]
+    gaps = [g.message for g in report_for(run).answer.gaps]
+    assert any(url in g and "supplied by URL" in g for g in gaps)
+    assert not any("search lead" in g for g in gaps)
+
+
 # -- academic results ---------------------------------------------------------------------------
 def test_unrelated_papers_are_rejected_and_a_related_paper_is_only_a_reference(tmp_path):
     papers = json_page({"results": [

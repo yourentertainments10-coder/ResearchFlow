@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased — Phase 4 follow-up (2026-11-15)
+- A research report on a column summary no longer headlines a text-length statistic (default: count of values per column); a URL supplied by the person is no longer called a search lead. Docs record the 2026-11-14 live run and the current status.
+
 ## Unreleased — PNG chart and PDF report exports (2026-11-14)
 - `GET /api/export/<id>.png` and `/api/export/report.pdf`, built with the standard library and numpy only (no new dependency); verified analyses only, deterministic bytes. See `docs/WORKSPACE_EXPORTS.md`.
 

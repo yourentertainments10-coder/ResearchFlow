@@ -141,5 +141,19 @@ def test_default_columns_pick_the_name_and_the_final_metric_for_each_operation()
     top = analyze(t, {"op": "top_n", "by": "party", "metric": "seats:sum", "n": 2}, PLAN).table
     assert default_columns(grouped) == ("party", "seats:sum")  # not the group-size column
     assert default_columns(top) == ("party", "seats:sum")  # not the rank column
+    describe = pd.DataFrame(
+        columns=[
+            "column",
+            "type",
+            "count",
+            "nulls",
+            "distinct",
+            "min",
+            "max",
+            "mean",
+            "mean_length",
+        ]
+    )
+    assert default_columns(describe) == ("column", "count")  # not the text-length statistic
     with pytest.raises(EvidenceError):
         default_columns(pd.DataFrame({"only": [1]}))
