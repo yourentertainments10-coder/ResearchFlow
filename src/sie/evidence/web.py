@@ -289,6 +289,14 @@ class WebFetcher:
         parser, _ = self._robots_for(host, port)
         return parser.can_fetch(self.user_agent, current)
 
+    def robots_policy(self, url: str) -> tuple[bool, float | None]:
+        """(allowed, crawl delay in seconds or None) for an address, from its host's robots.txt only.
+        Requests nothing but robots.txt; refusals raise ``FetchRefused`` as for any fetch."""
+        current, host, port = check_url(url, allow_ports=self._ports)
+        parser, _ = self._robots_for(host, port)
+        delay = parser.crawl_delay(self.user_agent)
+        return parser.can_fetch(self.user_agent, current), None if delay is None else float(delay)
+
     def fetch(self, url: str) -> FetchedPage:
         """Fetch one page. Raises FetchRefused with a code when any rule says no."""
         current, host, port = check_url(url, allow_ports=self._ports)

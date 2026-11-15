@@ -104,6 +104,28 @@ def research_collect(
         typer.echo("note: an older cached copy was used because the live fetch failed", err=True)
 
 
+@research_app.command("probe")
+def research_probe(
+    urls: list[str] = typer.Argument(..., help="https addresses to check against robots.txt."),
+) -> None:
+    """Check whether each address is allowed by its host's robots.txt. Requests robots.txt only (no
+    page, no data), with the same rules and User-Agent as every other fetch. Use it to vet a source."""
+    from sie.evidence.web import WebFetcher
+    from sie.research.pipeline import probe_urls
+
+    settings = get_settings()
+    fetcher = WebFetcher(
+        user_agent=settings.http_user_agent,
+        interval=settings.evidence_fetch_interval_seconds,
+        max_bytes=settings.evidence_fetch_max_bytes,
+        timeout=settings.evidence_fetch_timeout_seconds,
+    )
+    results = probe_urls(urls, fetcher)
+    typer.echo(json.dumps(results, indent=2, sort_keys=True))
+    if any(r["allowed"] is not True for r in results):
+        raise typer.Exit(code=1)
+
+
 @research_app.command("datasets")
 def research_datasets(project: str = PROJECT) -> None:
     """List this project's saved datasets (reused for follow-up questions)."""

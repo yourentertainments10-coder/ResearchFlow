@@ -249,3 +249,24 @@ __all__ = [
     "make_store",
     "run_research",
 ]
+
+
+def probe_urls(urls: list[str], fetcher: WebFetcher) -> list[dict[str, object]]:
+    """For each address: does its host's robots.txt allow it, and with what crawl delay? Only robots.txt is
+    requested (once per host); no page, no data. Used to vet a source before it is enabled."""
+    from sie.evidence import FetchRefused
+
+    out: list[dict[str, object]] = []
+    for url in urls:
+        try:
+            allowed, delay = fetcher.robots_policy(url)
+        except FetchRefused as exc:
+            out.append(
+                {"url": url, "allowed": None, "crawl_delay": None, "detail": f"{exc.code}: {exc}"}
+            )
+            continue
+        out.append(
+            {"url": url, "allowed": allowed, "crawl_delay": delay,
+             "detail": "allowed by robots.txt" if allowed else "disallowed by robots.txt: do not fetch"}
+        )  # fmt: skip
+    return out

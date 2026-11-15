@@ -50,3 +50,18 @@ A free-only engine will not find every source for every topic. It must disclose 
 
 **Update 2026-11-15:** the live smoke test passed for fetching, saving, reporting and reusing one URL-supplied table (see PHASE4_WEB_RESEARCH_DESIGN.md section 12). No catalogue has yet passed as a replacement for structured-data *discovery*. The current active provider is useful for paper references only; structured-data discovery is therefore not yet operational from registered catalogues.
 
+## Vetting a candidate with `sie research probe` (added 2026-11-15)
+
+`sie research probe <url> [<url> ...]` asks each address's host for its `robots.txt` **only** (no page, no data), with the same rules, User-Agent and pacing as every other fetch, and prints whether the address is allowed, the crawl delay if any, or why the check was refused. It exits with code 1 if any address is not clearly allowed. It does not read terms, licences or API-key rules: those still have to be read and recorded by a person before a provider is enabled.
+
+Addresses to probe, from this session's knowledge only (**none of them was fetched or verified here**; the build sandbox cannot reach these hosts):
+
+| Candidate | Address to probe | Also to check by hand before enabling |
+|---|---|---|
+| World Bank Indicators API | `https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json` | terms of use and dataset licence (stated on the Bank's open-data pages), rate guidance |
+| Our World in Data downloads | `https://ourworldindata.org/grapher/population.csv` | the licence stated on each chart (usually CC BY), whether bulk automated use is allowed |
+| Eurostat dissemination API | `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?format=JSON` | reuse policy, rate limits |
+| catalog.data.gov | `https://catalog.data.gov/dataset` | v4 API key requirement (see the table above) |
+| data.gov.in | `https://data.gov.in/` | key requirement and terms of its API |
+
+A provider is enabled only when its `probe` result is "allowed", its terms and licence are recorded, and a controlled live run (discover, collect, save, report, reuse) has passed on the owner's computer. data.gov.uk stays disabled.
